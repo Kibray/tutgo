@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Plus, Store, Save } from 'lucide-react';
+import { Plus, Store, Save, ArrowLeft } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -118,8 +118,11 @@ const Partner = () => {
   return (
     <div className="min-h-screen bg-background pb-24 overflow-y-auto">
       <div className="px-4 pt-6">
-        <div className="flex items-center justify-between mb-6">
-          <h1 className="text-lg font-bold font-display text-foreground">Мой бизнес</h1>
+        <div className="flex items-center gap-3 mb-6">
+          <motion.button whileTap={{ scale: 0.9 }} onClick={() => navigate('/profile')}>
+            <ArrowLeft className="w-5 h-5 text-foreground" />
+          </motion.button>
+          <h1 className="text-lg font-bold font-display text-foreground flex-1">Мой бизнес</h1>
           <motion.button whileTap={{ scale: 0.95 }} onClick={() => setShowForm(!showForm)}
             className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-primary text-accent-foreground text-xs font-medium">
             <Plus className="w-4 h-4" />

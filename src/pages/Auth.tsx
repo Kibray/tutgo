@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
+import { ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
@@ -31,7 +32,11 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col items-center justify-center px-6">
+    <div className="min-h-screen bg-background flex flex-col items-center justify-center px-6 relative">
+      <motion.button whileTap={{ scale: 0.9 }} onClick={() => navigate(-1 as any)}
+        className="absolute top-6 left-4 w-9 h-9 flex items-center justify-center rounded-full glass">
+        <ArrowLeft className="w-5 h-5 text-foreground" />
+      </motion.button>
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="w-full max-w-sm">
         <h1 className="text-2xl font-bold font-display text-foreground text-center mb-2">
           {isLogin ? 'Вход в TUTGO' : 'Регистрация'}
