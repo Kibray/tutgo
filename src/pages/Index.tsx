@@ -139,7 +139,7 @@ const Index = () => {
       <button
         onClick={handleCenterOnMe}
         className="absolute z-[1000] w-10 h-10 glass-strong rounded-full flex items-center justify-center shadow-lg"
-        style={{ bottom: listExpanded ? 'calc(55% + 16px)' : '100px', right: '16px', transition: 'bottom 0.3s ease' }}
+        style={{ bottom: listExpanded ? 'calc(50% + 80px + 16px)' : 'calc(80px + 70px + 16px)', right: '16px', transition: 'bottom 0.3s ease' }}
       >
         <Locate className="w-5 h-5 text-primary" />
       </button>
@@ -151,7 +151,7 @@ const Index = () => {
         }}
         transition={{ type: 'spring', stiffness: 300, damping: 30 }}
         className="absolute bottom-0 left-0 right-0 z-[1000] bg-background/95 backdrop-blur-xl rounded-t-2xl border-t border-border"
-        style={{ paddingBottom: '80px' }}
+        style={{ paddingBottom: '70px' }}
       >
         {/* Drag handle + toggle */}
         <button

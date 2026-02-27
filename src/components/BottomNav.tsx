@@ -20,8 +20,8 @@ const BottomNav = () => {
   };
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 glass-strong safe-bottom z-50">
-      <div className="flex items-center justify-around py-2 max-w-lg mx-auto">
+    <div className="fixed bottom-0 left-0 right-0 z-[2000] safe-bottom bg-background/60 backdrop-blur-xl border-t border-border/50 rounded-t-[20px]">
+      <div className="flex items-center justify-around py-2.5 max-w-lg mx-auto">
         {tabs.map((tab) => {
           const isActive = pathname === tab.id;
           const Icon = tab.icon;

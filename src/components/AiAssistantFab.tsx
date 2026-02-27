@@ -12,7 +12,8 @@ const AiAssistantFab = () => {
       <motion.button
         whileTap={{ scale: 0.9 }}
         onClick={() => setOpen(true)}
-        className="fixed bottom-24 right-4 z-[1100] w-14 h-14 rounded-full bg-primary text-accent-foreground flex items-center justify-center glow-green shadow-lg"
+        className="fixed z-[1100] w-14 h-14 rounded-full bg-primary text-accent-foreground flex items-center justify-center glow-green shadow-lg"
+        style={{ bottom: 'calc(70px + 16px)', right: '16px' }}
       >
         <Sparkles className="w-6 h-6" />
       </motion.button>
