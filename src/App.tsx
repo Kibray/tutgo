@@ -14,6 +14,12 @@ import Profile from "./pages/Profile";
 import Auth from "./pages/Auth";
 import Partner from "./pages/Partner";
 import PartnerLanding from "./pages/PartnerLanding";
+import PartnerBookings from "./pages/partner/PartnerBookings";
+import PartnerClients from "./pages/partner/PartnerClients";
+import PartnerAnalytics from "./pages/partner/PartnerAnalytics";
+import PartnerServices from "./pages/partner/PartnerServices";
+import PartnerStaff from "./pages/partner/PartnerStaff";
+import PartnerCompanySettings from "./pages/partner/PartnerCompanySettings";
 import Settings from "./pages/Settings";
 import EditProfile from "./pages/EditProfile";
 import Help from "./pages/Help";
@@ -42,6 +48,12 @@ const App = () => (
                 <Route path="/help" element={<Help />} />
                 <Route path="/auth" element={<Auth />} />
                 <Route path="/partner" element={<Partner />} />
+                <Route path="/partner/bookings" element={<PartnerBookings />} />
+                <Route path="/partner/clients" element={<PartnerClients />} />
+                <Route path="/partner/analytics" element={<PartnerAnalytics />} />
+                <Route path="/partner/services" element={<PartnerServices />} />
+                <Route path="/partner/staff" element={<PartnerStaff />} />
+                <Route path="/partner/settings" element={<PartnerCompanySettings />} />
                 <Route path="/partner-landing" element={<PartnerLanding />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
