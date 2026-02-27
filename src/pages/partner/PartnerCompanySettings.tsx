@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Settings } from 'lucide-react';
+import { ArrowLeft, Building2, Clock, Camera, Users } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { usePreferences } from '@/hooks/usePreferences';
@@ -8,16 +8,17 @@ import { supabase } from '@/integrations/supabase/client';
 import BottomNav from '@/components/BottomNav';
 
 const tabs = [
-  { id: 'main', labelKey: 'partner.tab_main' },
-  { id: 'hours', labelKey: 'partner.tab_hours' },
-  { id: 'photos', labelKey: 'partner.tab_photos' },
+  { id: 'about', labelKey: 'partner.tab_about', icon: Building2 },
+  { id: 'pricelist', labelKey: 'partner.tab_pricelist', icon: Clock },
+  { id: 'team', labelKey: 'partner.tab_team', icon: Users },
+  { id: 'schedule', labelKey: 'partner.tab_schedule', icon: Clock },
 ];
 
 const PartnerCompanySettings = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { t } = usePreferences();
-  const [activeTab, setActiveTab] = useState('main');
+  const [activeTab, setActiveTab] = useState('about');
   const [businesses, setBusinesses] = useState<any[]>([]);
 
   useEffect(() => {
@@ -33,25 +34,25 @@ const PartnerCompanySettings = () => {
           <motion.button whileTap={{ scale: 0.9 }} onClick={() => navigate('/partner')}>
             <ArrowLeft className="w-5 h-5 text-foreground" />
           </motion.button>
-          <h1 className="text-lg font-bold font-display text-foreground">{t('partner.company_settings')}</h1>
+          <h1 className="text-lg font-bold font-display text-foreground">{t('partner.company_profile')}</h1>
         </div>
 
-        {/* Tabs */}
-        <div className="flex gap-1 bg-secondary/50 rounded-xl p-1 mb-6">
+        {/* 4 Tabs */}
+        <div className="flex gap-1 bg-secondary/50 rounded-xl p-1 mb-6 overflow-x-auto scrollbar-hide">
           {tabs.map(tab => (
             <button key={tab.id} onClick={() => setActiveTab(tab.id)}
-              className={`flex-1 py-2 rounded-lg text-xs font-medium transition-colors ${activeTab === tab.id ? 'bg-primary text-primary-foreground' : 'text-muted-foreground'}`}>
+              className={`flex-1 py-2 px-2 rounded-lg text-[11px] font-medium transition-colors whitespace-nowrap ${activeTab === tab.id ? 'bg-primary text-primary-foreground' : 'text-muted-foreground'}`}>
               {t(tab.labelKey)}
             </button>
           ))}
         </div>
 
-        {/* Tab Content */}
-        {activeTab === 'main' && (
+        {/* About */}
+        {activeTab === 'about' && (
           <div className="space-y-3">
             {businesses.length === 0 ? (
               <div className="text-center py-12 text-muted-foreground">
-                <Settings className="w-10 h-10 mx-auto mb-3 opacity-50" />
+                <Building2 className="w-10 h-10 mx-auto mb-3 opacity-50" />
                 <p className="text-sm">{t('partner.no_services')}</p>
                 <p className="text-xs mt-1">{t('partner.add_in_services')}</p>
               </div>
@@ -68,17 +69,28 @@ const PartnerCompanySettings = () => {
           </div>
         )}
 
-        {activeTab === 'hours' && (
+        {/* Pricelist */}
+        {activeTab === 'pricelist' && (
           <div className="text-center py-12 text-muted-foreground">
-            <p className="text-sm">{t('partner.hours_coming')}</p>
-            <p className="text-xs mt-1">{t('partner.hours_hint')}</p>
+            <p className="text-sm">{t('partner.pricelist_coming')}</p>
+            <p className="text-xs mt-1">{t('partner.pricelist_hint')}</p>
           </div>
         )}
 
-        {activeTab === 'photos' && (
+        {/* Team */}
+        {activeTab === 'team' && (
           <div className="text-center py-12 text-muted-foreground">
-            <p className="text-sm">{t('partner.photos_coming')}</p>
-            <p className="text-xs mt-1">{t('partner.photos_hint')}</p>
+            <Users className="w-10 h-10 mx-auto mb-3 opacity-50" />
+            <p className="text-sm">{t('partner.no_staff')}</p>
+            <p className="text-xs mt-1">{t('partner.staff_hint')}</p>
+          </div>
+        )}
+
+        {/* Schedule */}
+        {activeTab === 'schedule' && (
+          <div className="text-center py-12 text-muted-foreground">
+            <p className="text-sm">{t('partner.hours_coming')}</p>
+            <p className="text-xs mt-1">{t('partner.hours_hint')}</p>
           </div>
         )}
       </div>
