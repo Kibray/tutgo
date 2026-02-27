@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -24,17 +24,26 @@ const createCategoryIcon = (category: string, isPromoted: boolean) => {
   });
 };
 
-interface CenterOnLocationProps {
-  center: [number, number] | null;
-}
-
-const CenterOnLocation = ({ center }: CenterOnLocationProps) => {
+const CenterOnLocation = ({ center }: { center: [number, number] | null }) => {
   const map = useMap();
   useEffect(() => {
     if (center) {
       map.flyTo(center, 13, { duration: 0.8 });
     }
   }, [center, map]);
+  return null;
+};
+
+// Invalidate map size when container resizes
+const ResizeHandler = () => {
+  const map = useMap();
+  useEffect(() => {
+    const observer = new ResizeObserver(() => {
+      map.invalidateSize();
+    });
+    observer.observe(map.getContainer());
+    return () => observer.disconnect();
+  }, [map]);
   return null;
 };
 
@@ -46,13 +55,13 @@ interface MapViewProps {
 }
 
 const MapView = ({ services, onMarkerClick, center, className = '' }: MapViewProps) => {
-  const defaultCenter: [number, number] = [41.3111, 69.2797]; // Tashkent
+  const defaultCenter: [number, number] = [41.3111, 69.2797];
 
   return (
     <MapContainer
       center={defaultCenter}
       zoom={12}
-      className={`w-full h-full rounded-none ${className}`}
+      className={`w-full h-full ${className}`}
       zoomControl={false}
       attributionControl={false}
       style={{ background: 'hsl(220, 15%, 5%)' }}
@@ -61,6 +70,7 @@ const MapView = ({ services, onMarkerClick, center, className = '' }: MapViewPro
         url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
       />
       <CenterOnLocation center={center || null} />
+      <ResizeHandler />
       {services.map((s) => (
         <Marker
           key={s.id}
