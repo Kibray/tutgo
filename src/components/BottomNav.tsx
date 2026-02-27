@@ -3,15 +3,21 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 
 const tabs = [
-  { id: '/', icon: Home, label: 'Home' },
-  { id: '/explore', icon: Map, label: 'Explore' },
-  { id: '/bookings', icon: Calendar, label: 'Bookings' },
-  { id: '/profile', icon: User, label: 'Profile' },
+  { id: '/', icon: Home, label: 'Главная' },
+  { id: '/explore', icon: Map, label: 'Карта' },
+  { id: '/bookings', icon: Calendar, label: 'Записи' },
+  { id: '/profile', icon: User, label: 'Профиль' },
 ];
 
 const BottomNav = () => {
   const navigate = useNavigate();
   const { pathname } = useLocation();
+
+  const handleTap = (id: string) => {
+    const tg = (window as any).Telegram?.WebApp;
+    tg?.HapticFeedback?.selectionChanged();
+    navigate(id);
+  };
 
   return (
     <div className="fixed bottom-0 left-0 right-0 glass-strong safe-bottom z-50">
@@ -22,7 +28,7 @@ const BottomNav = () => {
           return (
             <button
               key={tab.id}
-              onClick={() => navigate(tab.id)}
+              onClick={() => handleTap(tab.id)}
               className="flex flex-col items-center gap-0.5 px-4 py-1.5 relative"
             >
               {isActive && (

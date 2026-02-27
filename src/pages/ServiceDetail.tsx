@@ -2,14 +2,17 @@ import { useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
-  ArrowLeft, Star, Clock, MapPin, Users, Check, ChevronRight,
+  ArrowLeft, Star, Clock, MapPin, Users, Check, ChevronRight, Navigation, Copy,
 } from 'lucide-react';
-import { services, staff, generateTimeSlots, formatPrice } from '@/lib/mock-data';
+import { services, staff, generateTimeSlots, formatPrice, openDirections, copyAddress } from '@/lib/mock-data';
 import BottomNav from '@/components/BottomNav';
+import DateChip from '@/components/DateChip';
+import { useToast } from '@/hooks/use-toast';
 
 const ServiceDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { toast } = useToast();
   const service = services.find((s) => s.id === id);
 
   const [selectedDate, setSelectedDate] = useState(0);
@@ -23,7 +26,7 @@ const ServiceDetail = () => {
   if (!service) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center text-muted-foreground">
-        Service not found
+        Услуга не найдена
       </div>
     );
   }
@@ -34,7 +37,13 @@ const ServiceDetail = () => {
     return d;
   });
 
+  const fullAddress = `${service.address}, ${service.city}`;
+  const lat = service.meetingPoint?.lat || service.lat || 41.3111;
+  const lng = service.meetingPoint?.lng || service.lng || 69.2797;
+
   const handleBook = () => {
+    const tg = (window as any).Telegram?.WebApp;
+    tg?.HapticFeedback?.impactOccurred('medium');
     navigate('/booking-confirm', {
       state: {
         service,
@@ -44,6 +53,11 @@ const ServiceDetail = () => {
         seats: isTour ? seats : 1,
       },
     });
+  };
+
+  const handleCopyAddress = () => {
+    copyAddress(fullAddress);
+    toast({ title: 'Адрес скопирован', description: fullAddress });
   };
 
   return (
@@ -76,12 +90,21 @@ const ServiceDetail = () => {
             </span>
             <span className="flex items-center gap-1">
               <Clock className="w-3.5 h-3.5" />
-              {service.duration} min
+              {service.duration} мин
             </span>
             <span className="flex items-center gap-1">
               <MapPin className="w-3.5 h-3.5" />
               {service.city}
             </span>
+          </div>
+
+          {/* Address with copy */}
+          <div className="flex items-center gap-2 mt-3 text-xs text-muted-foreground">
+            <MapPin className="w-3.5 h-3.5 text-primary flex-shrink-0" />
+            <span className="flex-1">{fullAddress}</span>
+            <button onClick={handleCopyAddress} className="p-1.5 rounded-md hover:bg-secondary transition-colors">
+              <Copy className="w-3.5 h-3.5 text-muted-foreground" />
+            </button>
           </div>
 
           <div className="mt-3 flex items-center justify-between">
@@ -91,20 +114,36 @@ const ServiceDetail = () => {
             {isTour && (
               <span className="flex items-center gap-1 text-xs text-primary bg-green-soft/30 px-2 py-1 rounded-md">
                 <Users className="w-3 h-3" />
-                {service.seatsLeft}/{service.maxCapacity} seats
+                {service.seatsLeft}/{service.maxCapacity} мест
               </span>
             )}
           </div>
         </div>
       </div>
 
+      {/* Directions button */}
+      <div className="px-4 mt-4">
+        <motion.button
+          whileTap={{ scale: 0.98 }}
+          onClick={() => openDirections(lat, lng, fullAddress)}
+          className="w-full glass rounded-lg p-4 flex items-center gap-3 cursor-pointer active:scale-[0.98] transition-transform"
+        >
+          <div className="w-10 h-10 rounded-lg bg-primary/15 flex items-center justify-center">
+            <Navigation className="w-5 h-5 text-primary" />
+          </div>
+          <div className="flex-1 text-left">
+            <p className="text-sm font-medium text-foreground">Проложить маршрут</p>
+            <p className="text-xs text-muted-foreground">Яндекс Карты · Google Maps · 2GIS</p>
+          </div>
+          <ChevronRight className="w-4 h-4 text-muted-foreground" />
+        </motion.button>
+      </div>
+
       {/* Tour extras */}
       {isTour && service.whatsIncluded && (
         <div className="px-4 mt-4">
           <div className="glass rounded-lg p-4">
-            <h3 className="text-sm font-semibold text-foreground mb-2">
-              What's Included
-            </h3>
+            <h3 className="text-sm font-semibold text-foreground mb-2">Что включено</h3>
             <div className="space-y-1.5">
               {service.whatsIncluded.map((item) => (
                 <div key={item} className="flex items-center gap-2 text-xs text-muted-foreground">
@@ -117,7 +156,7 @@ const ServiceDetail = () => {
               <div className="mt-3 pt-3 border-t border-border">
                 <p className="text-xs text-muted-foreground flex items-center gap-1.5">
                   <MapPin className="w-3.5 h-3.5 text-primary" />
-                  Meeting: {service.meetingPoint.address}
+                  Место встречи: {service.meetingPoint.address}
                 </p>
               </div>
             )}
@@ -129,9 +168,7 @@ const ServiceDetail = () => {
       {isTour && (
         <div className="px-4 mt-4">
           <div className="glass rounded-lg p-4">
-            <h3 className="text-sm font-semibold text-foreground mb-3">
-              Number of Seats
-            </h3>
+            <h3 className="text-sm font-semibold text-foreground mb-3">Количество мест</h3>
             <div className="flex items-center gap-4">
               <button
                 onClick={() => setSeats(Math.max(1, seats - 1))}
@@ -153,7 +190,7 @@ const ServiceDetail = () => {
 
       {/* Date Picker */}
       <div className="px-4 mt-4">
-        <h3 className="text-sm font-semibold text-foreground mb-3">Select Date</h3>
+        <h3 className="text-sm font-semibold text-foreground mb-3">Выберите дату</h3>
         <div className="flex gap-2 overflow-x-auto scrollbar-hide -mx-4 px-4 pb-1">
           {dates.map((date, i) => (
             <DateChip
@@ -168,7 +205,7 @@ const ServiceDetail = () => {
 
       {/* Time Slots */}
       <div className="px-4 mt-4">
-        <h3 className="text-sm font-semibold text-foreground mb-3">Select Time</h3>
+        <h3 className="text-sm font-semibold text-foreground mb-3">Выберите время</h3>
         <div className="grid grid-cols-4 gap-2">
           {timeSlots.map((slot) => (
             <motion.button
@@ -190,10 +227,10 @@ const ServiceDetail = () => {
         </div>
       </div>
 
-      {/* Staff (for services, not tours) */}
+      {/* Staff */}
       {!isTour && (
         <div className="px-4 mt-4">
-          <h3 className="text-sm font-semibold text-foreground mb-3">Choose Specialist</h3>
+          <h3 className="text-sm font-semibold text-foreground mb-3">Выберите специалиста</h3>
           <div className="space-y-2">
             {staff.map((s) => (
               <motion.button
@@ -235,42 +272,13 @@ const ServiceDetail = () => {
           }`}
         >
           {isTour
-            ? `Book ${seats} seat${seats > 1 ? 's' : ''} · ${formatPrice(service.price * seats)} ${service.currency}`
-            : `Book Now · ${formatPrice(service.price)} ${service.currency}`}
+            ? `Забронировать ${seats} ${seats === 1 ? 'место' : seats < 5 ? 'места' : 'мест'} · ${formatPrice(service.price * seats)} ${service.currency}`
+            : `Записаться · ${formatPrice(service.price)} ${service.currency}`}
         </motion.button>
       </div>
 
       <BottomNav />
     </div>
-  );
-};
-
-const DateChip = ({
-  date,
-  active,
-  onClick,
-}: {
-  date: Date;
-  active: boolean;
-  onClick: () => void;
-}) => {
-  const day = date.toLocaleDateString('en', { weekday: 'short' });
-  const num = date.getDate();
-  const isToday = new Date().toDateString() === date.toDateString();
-
-  return (
-    <motion.button
-      whileTap={{ scale: 0.95 }}
-      onClick={onClick}
-      className={`flex flex-col items-center px-3 py-2.5 rounded-lg min-w-[52px] transition-colors ${
-        active
-          ? 'bg-primary text-accent-foreground glow-green-sm'
-          : 'glass text-muted-foreground'
-      }`}
-    >
-      <span className="text-[10px] font-medium">{isToday ? 'Today' : day}</span>
-      <span className="text-base font-bold mt-0.5">{num}</span>
-    </motion.button>
   );
 };
 

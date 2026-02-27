@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import SearchBar from '@/components/SearchBar';
 import CategoryChips from '@/components/CategoryChips';
 import ServiceCard from '@/components/ServiceCard';
@@ -8,6 +9,7 @@ import { SkeletonList } from '@/components/SkeletonCard';
 import { services } from '@/lib/mock-data';
 
 const Index = () => {
+  const navigate = useNavigate();
   const [category, setCategory] = useState('all');
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
@@ -28,6 +30,18 @@ const Index = () => {
 
   const recentlyVisited = services.slice(0, 3);
 
+  const handleSearch = (query: string) => {
+    setSearch(query);
+  };
+
+  const handleSearchSubmit = (query: string) => {
+    if (query.trim()) {
+      const tg = (window as any).Telegram?.WebApp;
+      tg?.HapticFeedback?.impactOccurred('light');
+      navigate('/explore', { state: { searchQuery: query } });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background pb-24">
       {/* Header */}
@@ -42,7 +56,7 @@ const Index = () => {
               TUT<span className="text-gradient-green">GO</span>
             </h1>
             <p className="text-xs text-muted-foreground mt-0.5">
-              Book services & tours in Uzbekistan
+              Бронируй услуги и туры по Узбекистану
             </p>
           </div>
           <div className="w-9 h-9 rounded-full bg-secondary flex items-center justify-center text-sm">
@@ -50,7 +64,7 @@ const Index = () => {
           </div>
         </motion.div>
 
-        <SearchBar onSearch={setSearch} />
+        <SearchBar onSearch={handleSearch} onSubmit={handleSearchSubmit} />
       </div>
 
       {/* Categories */}
@@ -59,27 +73,34 @@ const Index = () => {
       </div>
 
       {/* Recently Visited */}
-      {!search && category === 'all' && (
-        <div className="mt-6 px-4">
-          <h2 className="text-sm font-semibold text-foreground mb-3">
-            Recently Visited
-          </h2>
-          <div className="flex gap-3 overflow-x-auto scrollbar-hide -mx-4 px-4 pb-1">
-            {recentlyVisited.map((s) => (
-              <RecentCard key={s.id} service={s} />
-            ))}
-          </div>
-        </div>
-      )}
+      <AnimatePresence>
+        {!search && category === 'all' && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="mt-6 px-4"
+          >
+            <h2 className="text-sm font-semibold text-foreground mb-3">
+              Недавно просмотренные
+            </h2>
+            <div className="flex gap-3 overflow-x-auto scrollbar-hide -mx-4 px-4 pb-1">
+              {recentlyVisited.map((s) => (
+                <RecentCard key={s.id} service={s} />
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Service List */}
       <div className="mt-6 px-4">
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-sm font-semibold text-foreground">
-            {category === 'all' ? 'Popular Near You' : `${category.charAt(0).toUpperCase() + category.slice(1)}`}
+            {category === 'all' ? 'Популярное рядом' : `${categories_label(category)}`}
           </h2>
           <span className="text-xs text-muted-foreground">
-            {filtered.length} found
+            {filtered.length} найдено
           </span>
         </div>
 
@@ -92,7 +113,7 @@ const Index = () => {
             ))}
             {filtered.length === 0 && (
               <div className="text-center py-12 text-muted-foreground text-sm">
-                No services found. Try a different search.
+                Ничего не найдено. Попробуйте другой запрос.
               </div>
             )}
           </div>
@@ -104,10 +125,20 @@ const Index = () => {
   );
 };
 
+const categories_label = (id: string) => {
+  const map: Record<string, string> = {
+    beauty: 'Красота', nails: 'Маникюр', spa: 'Спа', medical: 'Медицина',
+    dental: 'Стоматология', tours: 'Туры', massage: 'Массаж', fitness: 'Фитнес',
+  };
+  return map[id] || id.charAt(0).toUpperCase() + id.slice(1);
+};
+
 const RecentCard = ({ service }: { service: typeof services[0] }) => {
+  const navigate = useNavigate();
   return (
     <motion.div
       whileTap={{ scale: 0.97 }}
+      onClick={() => navigate(`/service/${service.id}`)}
       className="glass rounded-lg p-3 min-w-[140px] flex-shrink-0 cursor-pointer"
     >
       <div className="w-full h-16 rounded-md bg-secondary flex items-center justify-center text-xl mb-2">

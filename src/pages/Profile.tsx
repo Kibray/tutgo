@@ -1,19 +1,18 @@
 import { motion } from 'framer-motion';
-import { User, Settings, Globe, HelpCircle, LogOut, ChevronRight } from 'lucide-react';
+import { User, Settings, Globe, HelpCircle, ChevronRight } from 'lucide-react';
 import BottomNav from '@/components/BottomNav';
 
 const Profile = () => {
   const menuItems = [
-    { icon: User, label: 'My Profile', desc: 'Personal information' },
-    { icon: Globe, label: 'Language', desc: 'English, Русский, O\'zbek' },
-    { icon: Settings, label: 'Settings', desc: 'Notifications, privacy' },
-    { icon: HelpCircle, label: 'Help & Support', desc: 'FAQ, contact us' },
+    { icon: User, label: 'Мой профиль', desc: 'Личная информация' },
+    { icon: Globe, label: 'Язык', desc: 'Русский, O\'zbek, English' },
+    { icon: Settings, label: 'Настройки', desc: 'Уведомления, приватность' },
+    { icon: HelpCircle, label: 'Помощь', desc: 'FAQ, связаться с нами' },
   ];
 
   return (
     <div className="min-h-screen bg-background pb-24">
       <div className="px-4 pt-6">
-        {/* Avatar */}
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -23,12 +22,11 @@ const Profile = () => {
             <User className="w-7 h-7 text-primary" />
           </div>
           <div>
-            <h1 className="text-lg font-bold font-display text-foreground">Guest User</h1>
-            <p className="text-xs text-muted-foreground">Tap to sign in via Telegram</p>
+            <h1 className="text-lg font-bold font-display text-foreground">Гость</h1>
+            <p className="text-xs text-muted-foreground">Войдите через Telegram</p>
           </div>
         </motion.div>
 
-        {/* Sign in CTA */}
         <motion.button
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -39,13 +37,12 @@ const Profile = () => {
             ✈️
           </div>
           <div className="flex-1 text-left">
-            <p className="text-sm font-medium text-foreground">Connect Telegram</p>
-            <p className="text-xs text-muted-foreground">Phone verification for booking</p>
+            <p className="text-sm font-medium text-foreground">Подключить Telegram</p>
+            <p className="text-xs text-muted-foreground">Верификация по номеру телефона</p>
           </div>
           <ChevronRight className="w-4 h-4 text-muted-foreground" />
         </motion.button>
 
-        {/* Menu */}
         <div className="space-y-2">
           {menuItems.map((item, i) => (
             <motion.div
@@ -65,7 +62,6 @@ const Profile = () => {
           ))}
         </div>
 
-        {/* Partner Access */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -76,14 +72,14 @@ const Profile = () => {
             B
           </div>
           <div className="flex-1">
-            <p className="text-sm font-medium text-foreground">Business Portal</p>
-            <p className="text-xs text-muted-foreground">Manage your listings & bookings</p>
+            <p className="text-sm font-medium text-foreground">Бизнес-портал</p>
+            <p className="text-xs text-muted-foreground">Управление листингами</p>
           </div>
           <ChevronRight className="w-4 h-4 text-muted-foreground" />
         </motion.div>
 
         <p className="text-center text-[10px] text-muted-foreground/50 mt-8">
-          TUTGO v1.0 · Made in Uzbekistan 🇺🇿
+          TUTGO v1.0 · Сделано в Узбекистане 🇺🇿
         </p>
       </div>
       <BottomNav />
