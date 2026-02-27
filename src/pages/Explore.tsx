@@ -4,15 +4,16 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { MapPin, Search } from 'lucide-react';
 import BottomNav from '@/components/BottomNav';
 import ServiceCard from '@/components/ServiceCard';
-import { services } from '@/lib/mock-data';
+import BusinessSheet from '@/components/BusinessSheet';
+import { services, Service } from '@/lib/mock-data';
 
 const Explore = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const incomingQuery = (location.state as any)?.searchQuery || '';
   const [search, setSearch] = useState(incomingQuery);
+  const [sheetService, setSheetService] = useState<Service | null>(null);
 
-  // Clear location state after consuming
   useEffect(() => {
     if (incomingQuery) {
       window.history.replaceState({}, '');
@@ -32,12 +33,23 @@ const Explore = () => {
   });
 
   const cities = [
-    { name: 'Ташкент', emoji: '🏙️', count: 4 },
+    { name: 'Ташкент', emoji: '🏙️', count: 7 },
     { name: 'Самарканд', emoji: '🕌', count: 1 },
     { name: 'Бухара', emoji: '🏛️', count: 0 },
     { name: 'Хива', emoji: '🏰', count: 0 },
     { name: 'Фергана', emoji: '🌄', count: 0 },
   ];
+
+  const isBookable = (s: Service) =>
+    s.bookable !== false && ['beauty', 'medical', 'tour', 'service'].includes(s.category);
+
+  const handleCardClick = (s: Service) => {
+    if (isBookable(s)) {
+      navigate(`/service/${s.id}`);
+    } else {
+      setSheetService(s);
+    }
+  };
 
   return (
     <motion.div
@@ -48,9 +60,8 @@ const Explore = () => {
     >
       <div className="px-4 pt-6">
         <h1 className="text-lg font-bold font-display text-foreground mb-1">Карта</h1>
-        <p className="text-xs text-muted-foreground mb-4">Услуги и туры по Узбекистану</p>
+        <p className="text-xs text-muted-foreground mb-4">Услуги, туры и заведения Узбекистана</p>
 
-        {/* Search bar */}
         <div className="glass rounded-lg px-4 py-3 flex items-center gap-3 mb-4">
           <Search className="w-5 h-5 text-muted-foreground flex-shrink-0" />
           <input
@@ -68,22 +79,21 @@ const Explore = () => {
           <div className="text-center">
             <MapPin className="w-8 h-8 text-primary mx-auto mb-2" />
             <p className="text-xs text-muted-foreground">Интерактивная карта скоро</p>
-            <p className="text-[10px] text-muted-foreground mt-1">react-leaflet-cluster</p>
           </div>
-          {/* Dots representing filtered services */}
-          {filtered.slice(0, 5).map((s, i) => (
-            <div
+          {filtered.slice(0, 6).map((s, i) => (
+            <button
               key={s.id}
-              className="absolute w-3 h-3 rounded-full bg-primary animate-pulse-green"
+              onClick={() => handleCardClick(s)}
+              className="absolute w-3 h-3 rounded-full bg-primary animate-pulse-green cursor-pointer"
               style={{
-                top: `${25 + i * 12}%`,
-                left: `${30 + i * 10}%`,
+                top: `${25 + i * 10}%`,
+                left: `${20 + i * 12}%`,
               }}
             />
           ))}
         </div>
 
-        {/* Filtered results when searching */}
+        {/* Results */}
         <AnimatePresence>
           {search && (
             <motion.div
@@ -97,7 +107,12 @@ const Explore = () => {
               </h2>
               <div className="space-y-3">
                 {filtered.map((s, i) => (
-                  <ServiceCard key={s.id} service={s} index={i} />
+                  <ServiceCard
+                    key={s.id}
+                    service={s}
+                    index={i}
+                    onClick={() => handleCardClick(s)}
+                  />
                 ))}
                 {filtered.length === 0 && (
                   <div className="text-center py-8 text-muted-foreground text-xs">
@@ -126,7 +141,7 @@ const Explore = () => {
                   <span className="text-2xl">{city.emoji}</span>
                   <div className="flex-1">
                     <p className="text-sm font-medium text-foreground">{city.name}</p>
-                    <p className="text-xs text-muted-foreground">{city.count} услуг</p>
+                    <p className="text-xs text-muted-foreground">{city.count} заведений</p>
                   </div>
                   <Search className="w-4 h-4 text-muted-foreground" />
                 </motion.div>
@@ -135,6 +150,18 @@ const Explore = () => {
           </>
         )}
       </div>
+
+      <BusinessSheet
+        service={sheetService}
+        open={!!sheetService}
+        onClose={() => setSheetService(null)}
+        onFullPage={() => {
+          if (sheetService) {
+            navigate(`/service/${sheetService.id}`);
+            setSheetService(null);
+          }
+        }}
+      />
       <BottomNav />
     </motion.div>
   );

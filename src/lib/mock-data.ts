@@ -1,7 +1,9 @@
+export type BusinessType = 'beauty' | 'medical' | 'tour' | 'cafe' | 'retail' | 'service' | 'office';
+
 export interface Service {
   id: string;
   name: string;
-  category: 'beauty' | 'medical' | 'tour';
+  category: BusinessType;
   subcategory: string;
   price: number;
   currency: string;
@@ -19,6 +21,11 @@ export interface Service {
   meetingPoint?: { lat: number; lng: number; address: string };
   whatsIncluded?: string[];
   staffId?: string;
+  bookable?: boolean;
+  verified?: boolean;
+  phone?: string;
+  website?: string;
+  metadata?: Record<string, any>;
 }
 
 export interface Staff {
@@ -44,14 +51,12 @@ export interface Category {
 }
 
 export const categories: Category[] = [
-  { id: 'beauty', name: 'Красота', icon: '✂️', count: 342 },
-  { id: 'nails', name: 'Маникюр', icon: '💅', count: 189 },
-  { id: 'spa', name: 'Спа', icon: '🧖', count: 95 },
-  { id: 'medical', name: 'Медицина', icon: '🏥', count: 156 },
-  { id: 'dental', name: 'Стоматология', icon: '🦷', count: 78 },
-  { id: 'tours', name: 'Туры', icon: '🏔️', count: 64 },
-  { id: 'massage', name: 'Массаж', icon: '💆', count: 112 },
-  { id: 'fitness', name: 'Фитнес', icon: '🏋️', count: 43 },
+  { id: 'tour', name: 'Туры', icon: '🏔️', count: 64 },
+  { id: 'beauty', name: 'Красота', icon: '✨', count: 342 },
+  { id: 'cafe', name: 'Кофейни', icon: '☕️', count: 128 },
+  { id: 'retail', name: 'Магазины', icon: '🛍️', count: 95 },
+  { id: 'service', name: 'Услуги', icon: '🛠️', count: 156 },
+  { id: 'medical', name: 'Медицина', icon: '🏥', count: 78 },
 ];
 
 export const services: Service[] = [
@@ -164,6 +169,72 @@ export const services: Service[] = [
     city: 'Ташкент',
     lat: 41.3050,
     lng: 69.2700,
+    bookable: true,
+  },
+  {
+    id: '7',
+    name: 'Авторский кофе и десерты',
+    category: 'cafe',
+    subcategory: 'Coffee',
+    price: 25000,
+    currency: 'сум',
+    duration: 0,
+    rating: 4.8,
+    reviewCount: 312,
+    image: '',
+    businessName: 'Brew Lab Tashkent',
+    address: 'ул. Шота Руставели, 5',
+    city: 'Ташкент',
+    lat: 41.3100,
+    lng: 69.2650,
+    bookable: false,
+    verified: true,
+    phone: '+998901234567',
+    website: 'https://instagram.com/brewlab',
+    metadata: { menu_url: 'https://brewlab.uz/menu', wifi: true },
+  },
+  {
+    id: '8',
+    name: 'Канцелярия и товары для офиса',
+    category: 'retail',
+    subcategory: 'Office Supplies',
+    price: 0,
+    currency: 'сум',
+    duration: 0,
+    rating: 4.5,
+    reviewCount: 87,
+    image: '',
+    businessName: 'PaperHouse',
+    address: 'ул. Бабура, 33',
+    city: 'Ташкент',
+    lat: 41.3180,
+    lng: 69.2800,
+    bookable: false,
+    verified: false,
+    phone: '+998712345678',
+    website: 'https://paperhouse.uz',
+    metadata: { stock_status: 'in_stock', delivery: true },
+  },
+  {
+    id: '9',
+    name: 'Ремонт техники Apple',
+    category: 'service',
+    subcategory: 'Repair',
+    price: 100000,
+    currency: 'сум',
+    duration: 60,
+    rating: 4.6,
+    reviewCount: 145,
+    image: '',
+    businessName: 'iFix Tashkent',
+    address: 'ул. Навои, 30',
+    city: 'Ташкент',
+    lat: 41.3120,
+    lng: 69.2580,
+    bookable: true,
+    verified: true,
+    phone: '+998933456789',
+    metadata: { brands: ['Apple', 'Samsung'] },
   },
 ];
 

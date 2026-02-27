@@ -127,8 +127,8 @@ const Index = () => {
 
 const categories_label = (id: string) => {
   const map: Record<string, string> = {
-    beauty: 'Красота', nails: 'Маникюр', spa: 'Спа', medical: 'Медицина',
-    dental: 'Стоматология', tours: 'Туры', massage: 'Массаж', fitness: 'Фитнес',
+    beauty: 'Красота', medical: 'Медицина', tour: 'Туры',
+    cafe: 'Кофейни', retail: 'Магазины', service: 'Услуги', office: 'Офисы',
   };
   return map[id] || id.charAt(0).toUpperCase() + id.slice(1);
 };
@@ -142,7 +142,7 @@ const RecentCard = ({ service }: { service: typeof services[0] }) => {
       className="glass rounded-lg p-3 min-w-[140px] flex-shrink-0 cursor-pointer"
     >
       <div className="w-full h-16 rounded-md bg-secondary flex items-center justify-center text-xl mb-2">
-        {service.category === 'tour' ? '🏔️' : '✂️'}
+        {{ tour: '🏔️', beauty: '✨', cafe: '☕️', retail: '🛍️', service: '🛠️', medical: '🏥' }[service.category] || '📍'}
       </div>
       <p className="text-xs font-medium text-foreground truncate">
         {service.businessName}
