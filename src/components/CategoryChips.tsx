@@ -50,6 +50,7 @@ const CategoryChips = ({ selected, onSelect, selectedSub, onSubSelect }: Categor
               <SubChip
                 key={sub.id}
                 label={sub.name}
+                icon={(sub as any).icon}
                 active={selectedSub === sub.id}
                 onClick={() => onSubSelect(sub.id)}
               />
@@ -88,22 +89,25 @@ const ChipButton = ({
 
 const SubChip = ({
   label,
+  icon,
   active,
   onClick,
 }: {
   label: string;
+  icon?: string;
   active: boolean;
   onClick: () => void;
 }) => (
   <motion.button
     whileTap={{ scale: 0.95 }}
     onClick={onClick}
-    className={`px-3 py-1.5 rounded-md text-xs font-medium whitespace-nowrap transition-colors ${
+    className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${
       active
         ? 'bg-primary/20 text-primary border border-primary/30'
         : 'bg-secondary/50 text-muted-foreground hover:text-foreground'
     }`}
   >
+    {icon && <span>{icon}</span>}
     {label}
   </motion.button>
 );
