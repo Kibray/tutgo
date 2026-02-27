@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Calendar, Users, BarChart3, List, UserCog, Settings, ArrowLeft, Store } from 'lucide-react';
+import { Calendar, Users, BarChart3, List, UserCog, Building2, ArrowLeft, Store } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { usePreferences } from '@/hooks/usePreferences';
 import { useNavigate } from 'react-router-dom';
@@ -11,7 +11,7 @@ const dashboardItems = [
   { id: 'analytics', icon: BarChart3, labelKey: 'partner.analytics', route: '/partner/analytics' },
   { id: 'services', icon: List, labelKey: 'partner.services', route: '/partner/services' },
   { id: 'staff', icon: UserCog, labelKey: 'partner.staff', route: '/partner/staff' },
-  { id: 'settings', icon: Settings, labelKey: 'partner.company_settings', route: '/partner/settings' },
+  { id: 'company', icon: Building2, labelKey: 'partner.company_profile', route: '/partner/settings' },
 ];
 
 const Partner = () => {
@@ -53,7 +53,6 @@ const Partner = () => {
 
   return (
     <div className="min-h-screen bg-background pb-24">
-      {/* Header */}
       <div className="px-4 pt-6">
         <div className="flex items-center gap-3 mb-6">
           <motion.button whileTap={{ scale: 0.9 }} onClick={() => navigate('/profile')}>
@@ -62,7 +61,6 @@ const Partner = () => {
           <h1 className="text-lg font-bold font-display text-foreground flex-1">{t('partner.dashboard')}</h1>
         </div>
 
-        {/* 6-Grid Dashboard */}
         <div className="grid grid-cols-2 gap-3">
           {dashboardItems.map((item, i) => (
             <motion.div

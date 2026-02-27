@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { User, Settings, Globe, HelpCircle, ChevronRight, LogOut, Key, Briefcase, Store } from 'lucide-react';
+import { User, Settings, Globe, HelpCircle, ChevronRight, LogOut, Key, Briefcase, Store, BookOpen } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { usePreferences } from '@/hooks/usePreferences';
@@ -7,7 +7,7 @@ import { useToast } from '@/hooks/use-toast';
 import BottomNav from '@/components/BottomNav';
 
 const Profile = () => {
-  const { user, isPartner, signOut } = useAuth();
+  const { user, isPartner, signOut, becomePartner } = useAuth();
   const { t } = usePreferences();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -17,7 +17,18 @@ const Profile = () => {
     toast({ title: t('profile.signed_out') });
   };
 
-  const menuItems = [
+  const handleBecomePartner = async () => {
+    if (!user) {
+      navigate('/auth');
+      return;
+    }
+    const { error } = await becomePartner();
+    if (!error) {
+      toast({ title: t('profile.partner_success'), description: t('profile.partner_welcome') });
+    }
+  };
+
+  const systemItems = [
     { icon: Globe, label: t('profile.language'), desc: t('profile.lang_options'), route: '/settings' },
     { icon: Settings, label: t('profile.settings'), desc: t('profile.settings_desc'), route: '/settings' },
     { icon: HelpCircle, label: t('profile.help'), desc: t('profile.help_desc'), route: '/help' },
@@ -28,8 +39,8 @@ const Profile = () => {
       <div className="px-4 pt-6">
         {/* Avatar & name */}
         <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="flex items-center gap-4 mb-6">
-          <div className="w-16 h-16 rounded-full bg-primary/20 flex items-center justify-center">
-            <User className="w-7 h-7 text-primary" />
+          <div className="w-14 h-14 rounded-full bg-primary/20 flex items-center justify-center">
+            <User className="w-6 h-6 text-primary" />
           </div>
           <div>
             <h1 className="text-lg font-bold font-display text-foreground">
@@ -46,79 +57,53 @@ const Profile = () => {
           </div>
         </motion.div>
 
-        {/* Top entry points */}
-        <div className="space-y-2 mb-4">
-          {!user ? (
-            <>
-              {/* Sign in / Sign up */}
-              <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
-                onClick={() => navigate('/auth')}
-                className="glass rounded-lg p-4 flex items-center gap-3 cursor-pointer active:scale-[0.98] transition-transform">
-                <div className="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center">
-                  <Key className="w-5 h-5 text-primary" />
-                </div>
-                <div className="flex-1">
-                  <p className="text-sm font-medium text-foreground">{t('profile.login')}</p>
-                  <p className="text-xs text-muted-foreground">{t('profile.login_desc')}</p>
-                </div>
-                <ChevronRight className="w-4 h-4 text-muted-foreground" />
-              </motion.div>
+        {/* Two main cards */}
+        <div className="grid grid-cols-2 gap-3 mb-6">
+          {/* Card 1 — Personal Cabinet */}
+          <motion.div
+            initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}
+            onClick={() => user ? navigate('/bookings') : navigate('/auth')}
+            className="glass rounded-2xl p-5 flex flex-col items-center gap-3 cursor-pointer active:scale-[0.97] transition-transform"
+          >
+            <div className="w-12 h-12 rounded-xl bg-primary/15 flex items-center justify-center">
+              <BookOpen className="w-6 h-6 text-primary" />
+            </div>
+            <div className="text-center">
+              <p className="text-xs font-bold text-foreground leading-tight">{t('profile.personal_cabinet')}</p>
+              <p className="text-[10px] text-muted-foreground mt-0.5">{t('profile.personal_cabinet_desc')}</p>
+            </div>
+          </motion.div>
 
-              {/* Business login */}
-              <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}
-                onClick={() => navigate('/partner-landing')}
-                className="glass rounded-lg p-4 flex items-center gap-3 cursor-pointer active:scale-[0.98] transition-transform">
-                <div className="w-10 h-10 rounded-lg bg-accent/60 flex items-center justify-center">
-                  <Briefcase className="w-5 h-5 text-primary" />
-                </div>
-                <div className="flex-1">
-                  <p className="text-sm font-medium text-foreground">{t('profile.business_login')}</p>
-                  <p className="text-xs text-muted-foreground">{t('profile.business_login_desc')}</p>
-                </div>
-                <ChevronRight className="w-4 h-4 text-muted-foreground" />
-              </motion.div>
-            </>
-          ) : (
-            <>
-              {/* My profile (logged in) */}
-              <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
-                onClick={() => navigate('/edit-profile')}
-                className="glass rounded-lg p-4 flex items-center gap-3 cursor-pointer active:scale-[0.98] transition-transform">
-                <User className="w-5 h-5 text-muted-foreground" />
-                <div className="flex-1">
-                  <p className="text-sm font-medium text-foreground">{t('profile.my_profile')}</p>
-                  <p className="text-xs text-muted-foreground">{t('profile.personal_info')}</p>
-                </div>
-                <ChevronRight className="w-4 h-4 text-muted-foreground" />
-              </motion.div>
-
-              {/* Business portal for partners */}
-              {isPartner && (
-                <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}
-                  onClick={() => navigate('/partner')}
-                  className="glass rounded-lg p-4 flex items-center gap-3 cursor-pointer active:scale-[0.98] transition-transform ring-1 ring-primary/20">
-                  <Briefcase className="w-5 h-5 text-primary" />
-                  <div className="flex-1">
-                    <p className="text-sm font-medium text-foreground">{t('profile.business_portal')}</p>
-                    <p className="text-xs text-muted-foreground">{t('profile.manage_listings')}</p>
-                  </div>
-                  <ChevronRight className="w-4 h-4 text-muted-foreground" />
-                </motion.div>
-              )}
-            </>
-          )}
+          {/* Card 2 — Business Portal */}
+          <motion.div
+            initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
+            onClick={() => {
+              if (!user) { navigate('/auth'); return; }
+              if (isPartner) { navigate('/partner'); return; }
+              handleBecomePartner();
+            }}
+            className="glass rounded-2xl p-5 flex flex-col items-center gap-3 cursor-pointer active:scale-[0.97] transition-transform ring-1 ring-primary/10"
+          >
+            <div className="w-12 h-12 rounded-xl bg-accent/15 flex items-center justify-center">
+              <Briefcase className="w-6 h-6 text-primary" />
+            </div>
+            <div className="text-center">
+              <p className="text-xs font-bold text-foreground leading-tight">{t('profile.business_portal')}</p>
+              <p className="text-[10px] text-muted-foreground mt-0.5">{t('profile.business_portal_desc')}</p>
+            </div>
+          </motion.div>
         </div>
 
-        {/* Menu items */}
+        {/* System menu */}
         <div className="space-y-2">
-          {menuItems.map((item, i) => (
-            <motion.div key={item.label} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.05 }}
+          {systemItems.map((item, i) => (
+            <motion.div key={item.label} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.15 + i * 0.04 }}
               onClick={() => navigate(item.route)}
-              className="glass rounded-lg p-4 flex items-center gap-3 cursor-pointer active:scale-[0.98] transition-transform">
-              <item.icon className="w-5 h-5 text-muted-foreground" />
+              className="glass rounded-xl p-3.5 flex items-center gap-3 cursor-pointer active:scale-[0.98] transition-transform">
+              <item.icon className="w-4.5 h-4.5 text-muted-foreground" />
               <div className="flex-1">
                 <p className="text-sm font-medium text-foreground">{item.label}</p>
-                <p className="text-xs text-muted-foreground">{item.desc}</p>
+                <p className="text-[10px] text-muted-foreground">{item.desc}</p>
               </div>
               <ChevronRight className="w-4 h-4 text-muted-foreground" />
             </motion.div>
@@ -129,8 +114,8 @@ const Profile = () => {
         {user && (
           <motion.button initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }} whileTap={{ scale: 0.98 }}
             onClick={handleSignOut}
-            className="w-full mt-4 glass rounded-lg p-4 flex items-center gap-3 cursor-pointer">
-            <LogOut className="w-5 h-5 text-destructive" />
+            className="w-full mt-4 glass rounded-xl p-3.5 flex items-center gap-3 cursor-pointer">
+            <LogOut className="w-4.5 h-4.5 text-destructive" />
             <p className="text-sm font-medium text-destructive">{t('profile.sign_out')}</p>
           </motion.button>
         )}
