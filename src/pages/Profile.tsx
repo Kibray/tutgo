@@ -14,6 +14,7 @@ const Profile = () => {
 
   const menuItems = [
     { icon: User, label: t('profile.my_profile'), desc: t('profile.personal_info'), route: '/edit-profile' },
+    ...(isPartner ? [{ icon: Store, label: t('profile.business_portal'), desc: t('profile.manage_listings'), route: '/partner' }] : []),
     { icon: Globe, label: t('profile.language'), desc: t('profile.lang_options'), route: '/settings' },
     { icon: Settings, label: t('profile.settings'), desc: t('profile.settings_desc'), route: '/settings' },
     { icon: HelpCircle, label: t('profile.help'), desc: t('profile.help_desc'), route: '/help' },
