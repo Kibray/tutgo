@@ -1,17 +1,22 @@
-import { Home, Tag, Calendar, User } from 'lucide-react';
+import { Home, Tag, Calendar, User, Briefcase } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
-
-const tabs = [
-  { id: '/', icon: Home, label: 'Главная' },
-  { id: '/deals', icon: Tag, label: 'Акции' },
-  { id: '/bookings', icon: Calendar, label: 'Записи' },
-  { id: '/profile', icon: User, label: 'Профиль' },
-];
+import { useAuth } from '@/hooks/useAuth';
+import { usePreferences } from '@/hooks/usePreferences';
 
 const BottomNav = () => {
   const navigate = useNavigate();
   const { pathname } = useLocation();
+  const { isPartner } = useAuth();
+  const { t } = usePreferences();
+
+  const tabs = [
+    { id: '/', icon: Home, label: t('nav.home') },
+    { id: '/deals', icon: Tag, label: t('nav.deals') },
+    { id: isPartner ? '/partner' : '/partner-landing', icon: Briefcase, label: t('nav.business') },
+    { id: '/bookings', icon: Calendar, label: t('nav.bookings') },
+    { id: '/profile', icon: User, label: t('nav.profile') },
+  ];
 
   const handleTap = (id: string) => {
     const tg = (window as any).Telegram?.WebApp;
@@ -29,7 +34,7 @@ const BottomNav = () => {
             <button
               key={tab.id}
               onClick={() => handleTap(tab.id)}
-              className="flex flex-col items-center gap-0.5 px-4 py-1.5 relative"
+              className="flex flex-col items-center gap-0.5 px-3 py-1.5 relative"
             >
               {isActive && (
                 <motion.div
