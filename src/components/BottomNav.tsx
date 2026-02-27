@@ -1,10 +1,10 @@
-import { Home, Map, Calendar, User } from 'lucide-react';
+import { Home, Tag, Calendar, User } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 
 const tabs = [
   { id: '/', icon: Home, label: 'Главная' },
-  { id: '/explore', icon: Map, label: 'Карта' },
+  { id: '/deals', icon: Tag, label: 'Акции' },
   { id: '/bookings', icon: Calendar, label: 'Записи' },
   { id: '/profile', icon: User, label: 'Профиль' },
 ];

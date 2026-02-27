@@ -114,4 +114,40 @@
   .safe-bottom {
     padding-bottom: max(1rem, env(safe-area-inset-bottom));
   }
+
+  .animate-pulse-green {
+    animation: pulse-green 2s infinite;
+  }
+}
+
+@keyframes pulse-green {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* Leaflet dark theme overrides */
+.leaflet-container {
+  background: hsl(220, 15%, 5%) !important;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+.leaflet-popup-content-wrapper {
+  background: hsla(220, 15%, 10%, 0.9) !important;
+  backdrop-filter: blur(20px);
+  border: 1px solid hsla(0, 0%, 100%, 0.08) !important;
+  border-radius: 12px !important;
+  color: hsl(0, 0%, 95%) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4) !important;
+}
+
+.leaflet-popup-tip {
+  background: hsla(220, 15%, 10%, 0.9) !important;
+}
+
+.leaflet-popup-close-button {
+  color: hsl(220, 10%, 55%) !important;
+}
+
+.leaflet-control-zoom {
+  display: none !important;
 }

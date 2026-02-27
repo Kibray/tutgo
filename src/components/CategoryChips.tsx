@@ -1,35 +1,62 @@
 import { useRef } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { categories } from '@/lib/mock-data';
 
 interface CategoryChipsProps {
   selected: string;
   onSelect: (id: string) => void;
+  selectedSub?: string;
+  onSubSelect?: (id: string) => void;
 }
 
-const CategoryChips = ({ selected, onSelect }: CategoryChipsProps) => {
-  const scrollRef = useRef<HTMLDivElement>(null);
+const CategoryChips = ({ selected, onSelect, selectedSub, onSubSelect }: CategoryChipsProps) => {
+  const activeCat = categories.find((c) => c.id === selected);
+  const subs = activeCat?.subcategories || [];
 
   return (
-    <div
-      ref={scrollRef}
-      className="flex gap-2 overflow-x-auto scrollbar-hide pb-1 -mx-4 px-4"
-    >
-      <ChipButton
-        label="Все"
-        icon="🔥"
-        active={selected === 'all'}
-        onClick={() => onSelect('all')}
-      />
-      {categories.map((cat) => (
+    <div className="space-y-2">
+      <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1 -mx-4 px-4">
         <ChipButton
-          key={cat.id}
-          label={cat.name}
-          icon={cat.icon}
-          active={selected === cat.id}
-          onClick={() => onSelect(cat.id)}
+          label="Все"
+          icon="🔥"
+          active={selected === 'all'}
+          onClick={() => onSelect('all')}
         />
-      ))}
+        {categories.map((cat) => (
+          <ChipButton
+            key={cat.id}
+            label={cat.name}
+            icon={cat.icon}
+            active={selected === cat.id}
+            onClick={() => onSelect(cat.id)}
+          />
+        ))}
+      </div>
+
+      <AnimatePresence>
+        {subs.length > 0 && onSubSelect && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            className="flex gap-1.5 overflow-x-auto scrollbar-hide pb-1 -mx-4 px-4"
+          >
+            <SubChip
+              label="Все"
+              active={!selectedSub || selectedSub === 'all'}
+              onClick={() => onSubSelect('all')}
+            />
+            {subs.map((sub) => (
+              <SubChip
+                key={sub.id}
+                label={sub.name}
+                active={selectedSub === sub.id}
+                onClick={() => onSubSelect(sub.id)}
+              />
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
@@ -56,6 +83,28 @@ const ChipButton = ({
   >
     <span>{icon}</span>
     <span>{label}</span>
+  </motion.button>
+);
+
+const SubChip = ({
+  label,
+  active,
+  onClick,
+}: {
+  label: string;
+  active: boolean;
+  onClick: () => void;
+}) => (
+  <motion.button
+    whileTap={{ scale: 0.95 }}
+    onClick={onClick}
+    className={`px-3 py-1.5 rounded-md text-xs font-medium whitespace-nowrap transition-colors ${
+      active
+        ? 'bg-primary/20 text-primary border border-primary/30'
+        : 'bg-secondary/50 text-muted-foreground hover:text-foreground'
+    }`}
+  >
+    {label}
   </motion.button>
 );
 
