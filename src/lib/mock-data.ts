@@ -14,8 +14,8 @@ export interface Service {
   businessName: string;
   address: string;
   city: string;
-  lat?: number;
-  lng?: number;
+  lat: number;
+  lng: number;
   maxCapacity?: number;
   seatsLeft?: number;
   meetingPoint?: { lat: number; lng: number; address: string };
@@ -26,6 +26,22 @@ export interface Service {
   phone?: string;
   website?: string;
   metadata?: Record<string, any>;
+  is_promoted?: boolean;
+  branded_icon_url?: string;
+}
+
+export interface Deal {
+  id: string;
+  serviceId: string;
+  title: string;
+  description: string;
+  discountPercent: number;
+  originalPrice: number;
+  dealPrice: number;
+  currency: string;
+  category: BusinessType;
+  validUntil: string;
+  image: string;
 }
 
 export interface Staff {
@@ -48,15 +64,61 @@ export interface Category {
   name: string;
   icon: string;
   count: number;
+  subcategories?: { id: string; name: string }[];
 }
 
 export const categories: Category[] = [
-  { id: 'tour', name: 'Туры', icon: '🏔️', count: 64 },
-  { id: 'beauty', name: 'Красота', icon: '✨', count: 342 },
-  { id: 'cafe', name: 'Кофейни', icon: '☕️', count: 128 },
-  { id: 'retail', name: 'Магазины', icon: '🛍️', count: 95 },
-  { id: 'service', name: 'Услуги', icon: '🛠️', count: 156 },
-  { id: 'medical', name: 'Медицина', icon: '🏥', count: 78 },
+  {
+    id: 'tour', name: 'Туры', icon: '🏔️', count: 64,
+    subcategories: [
+      { id: 'mountains', name: 'Горы' },
+      { id: 'cities', name: 'Города' },
+      { id: 'extreme', name: 'Экстрим' },
+      { id: 'resorts', name: 'Зоны отдыха' },
+    ],
+  },
+  {
+    id: 'beauty', name: 'Красота', icon: '✨', count: 342,
+    subcategories: [
+      { id: 'barbershop', name: 'Барбершопы' },
+      { id: 'salon', name: 'Салоны красоты' },
+      { id: 'nails', name: 'Маникюр' },
+      { id: 'spa', name: 'SPA' },
+    ],
+  },
+  {
+    id: 'cafe', name: 'Кофейни', icon: '☕️', count: 128,
+    subcategories: [
+      { id: 'coffee', name: 'Кофе' },
+      { id: 'restaurant', name: 'Рестораны' },
+      { id: 'fastfood', name: 'Фастфуд' },
+    ],
+  },
+  {
+    id: 'retail', name: 'Магазины', icon: '🛍️', count: 95,
+    subcategories: [
+      { id: 'clothes', name: 'Одежда' },
+      { id: 'electronics', name: 'Электроника' },
+      { id: 'grocery', name: 'Продукты' },
+    ],
+  },
+  {
+    id: 'service', name: 'Услуги', icon: '🛠️', count: 156,
+    subcategories: [
+      { id: 'repair', name: 'Ремонт' },
+      { id: 'cleaning', name: 'Уборка' },
+      { id: 'delivery', name: 'Доставка' },
+    ],
+  },
+  {
+    id: 'medical', name: 'Медицина', icon: '🏥', count: 78,
+    subcategories: [
+      { id: 'dental', name: 'Стоматология' },
+      { id: 'lab', name: 'Анализы' },
+      { id: 'clinic', name: 'Клиники' },
+      { id: 'pharmacy', name: 'Аптеки 24/7' },
+    ],
+  },
 ];
 
 export const services: Service[] = [
@@ -64,7 +126,7 @@ export const services: Service[] = [
     id: '1',
     name: 'Премиум стрижка и укладка',
     category: 'beauty',
-    subcategory: 'Haircut',
+    subcategory: 'barbershop',
     price: 150000,
     currency: 'сум',
     duration: 60,
@@ -76,12 +138,14 @@ export const services: Service[] = [
     city: 'Ташкент',
     lat: 41.3111,
     lng: 69.2797,
+    is_promoted: true,
+    verified: true,
   },
   {
     id: '2',
     name: 'Массаж всего тела',
     category: 'beauty',
-    subcategory: 'Massage',
+    subcategory: 'spa',
     price: 200000,
     currency: 'сум',
     duration: 90,
@@ -98,7 +162,7 @@ export const services: Service[] = [
     id: '3',
     name: 'Отбеливание зубов',
     category: 'medical',
-    subcategory: 'Dental',
+    subcategory: 'dental',
     price: 500000,
     currency: 'сум',
     duration: 45,
@@ -110,12 +174,14 @@ export const services: Service[] = [
     city: 'Ташкент',
     lat: 41.3200,
     lng: 69.2900,
+    is_promoted: true,
+    verified: true,
   },
   {
     id: '4',
     name: 'Тур по наследию Самарканда',
     category: 'tour',
-    subcategory: 'Cultural',
+    subcategory: 'cities',
     price: 350000,
     currency: 'сум',
     duration: 480,
@@ -136,7 +202,7 @@ export const services: Service[] = [
     id: '5',
     name: 'Поход на Чимган',
     category: 'tour',
-    subcategory: 'Adventure',
+    subcategory: 'mountains',
     price: 250000,
     currency: 'сум',
     duration: 600,
@@ -152,12 +218,13 @@ export const services: Service[] = [
     seatsLeft: 4,
     meetingPoint: { lat: 41.5178, lng: 70.0011, address: 'Парковка у озера Чарвак' },
     whatsIncluded: ['Транспорт', 'Профессиональный гид', 'Перекус', 'Снаряжение'],
+    is_promoted: true,
   },
   {
     id: '6',
     name: 'Гель-маникюр и педикюр',
     category: 'beauty',
-    subcategory: 'Nails',
+    subcategory: 'nails',
     price: 120000,
     currency: 'сум',
     duration: 75,
@@ -175,7 +242,7 @@ export const services: Service[] = [
     id: '7',
     name: 'Авторский кофе и десерты',
     category: 'cafe',
-    subcategory: 'Coffee',
+    subcategory: 'coffee',
     price: 25000,
     currency: 'сум',
     duration: 0,
@@ -197,7 +264,7 @@ export const services: Service[] = [
     id: '8',
     name: 'Канцелярия и товары для офиса',
     category: 'retail',
-    subcategory: 'Office Supplies',
+    subcategory: 'electronics',
     price: 0,
     currency: 'сум',
     duration: 0,
@@ -219,7 +286,7 @@ export const services: Service[] = [
     id: '9',
     name: 'Ремонт техники Apple',
     category: 'service',
-    subcategory: 'Repair',
+    subcategory: 'repair',
     price: 100000,
     currency: 'сум',
     duration: 60,
@@ -235,6 +302,74 @@ export const services: Service[] = [
     verified: true,
     phone: '+998933456789',
     metadata: { brands: ['Apple', 'Samsung'] },
+  },
+];
+
+export const deals: Deal[] = [
+  {
+    id: 'd1',
+    serviceId: '1',
+    title: 'Стрижка + укладка',
+    description: 'Премиум стрижка со скидкой в Luxe Beauty Studio',
+    discountPercent: 20,
+    originalPrice: 150000,
+    dealPrice: 120000,
+    currency: 'сум',
+    category: 'beauty',
+    validUntil: '2026-03-15',
+    image: '',
+  },
+  {
+    id: 'd2',
+    serviceId: '2',
+    title: 'Массаж 90 мин',
+    description: 'Полный массаж тела со скидкой',
+    discountPercent: 15,
+    originalPrice: 200000,
+    dealPrice: 170000,
+    currency: 'сум',
+    category: 'beauty',
+    validUntil: '2026-03-20',
+    image: '',
+  },
+  {
+    id: 'd3',
+    serviceId: '4',
+    title: 'Тур в Самарканд',
+    description: 'Групповой тур по Регистану и окрестностям',
+    discountPercent: 10,
+    originalPrice: 350000,
+    dealPrice: 315000,
+    currency: 'сум',
+    category: 'tour',
+    validUntil: '2026-04-01',
+    image: '',
+  },
+  {
+    id: 'd4',
+    serviceId: '3',
+    title: 'Отбеливание зубов',
+    description: 'Профессиональное отбеливание в Smile Dental',
+    discountPercent: 25,
+    originalPrice: 500000,
+    dealPrice: 375000,
+    currency: 'сум',
+    category: 'medical',
+    validUntil: '2026-03-10',
+    image: '',
+  },
+  {
+    id: 'd5',
+    serviceId: '7',
+    title: 'Кофе + десерт',
+    description: 'Комбо-предложение в Brew Lab',
+    discountPercent: 30,
+    originalPrice: 45000,
+    dealPrice: 31500,
+    currency: 'сум',
+    category: 'cafe',
+    validUntil: '2026-03-31',
+    image: '',
   },
 ];
 
@@ -263,16 +398,22 @@ export const formatPrice = (price: number): string => {
   return new Intl.NumberFormat('ru-RU').format(price);
 };
 
+export const categoryEmoji: Record<string, string> = {
+  tour: '🏔️',
+  beauty: '✨',
+  medical: '🏥',
+  cafe: '☕️',
+  retail: '🛍️',
+  service: '🛠️',
+  office: '🏢',
+};
+
 export const openDirections = (lat: number, lng: number, address: string) => {
   const tg = (window as any).Telegram?.WebApp;
   tg?.HapticFeedback?.impactOccurred('medium');
-
-  // Try Yandex Maps first (priority for UZ), then Google, then 2GIS
   const yandex = `https://yandex.uz/maps/?rtext=~${lat},${lng}&rtt=auto`;
   const google = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
   const twoGis = `https://2gis.uz/tashkent/directions/points/${lng},${lat}`;
-
-  // On mobile Telegram, these universal links will prompt native app chooser
   const popup = tg?.showPopup;
   if (popup) {
     tg.showPopup(
