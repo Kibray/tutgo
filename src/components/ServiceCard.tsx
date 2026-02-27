@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Star, Clock, MapPin, Users, BadgeCheck } from 'lucide-react';
+import { Star, Clock, MapPin, Users, BadgeCheck, Send } from 'lucide-react';
 import { Service, formatPrice } from '@/lib/mock-data';
 import { useNavigate } from 'react-router-dom';
 
@@ -74,19 +74,38 @@ const ServiceCard = ({ service, index, onClick }: ServiceCardProps) => {
         </div>
 
         <div className="flex items-center justify-between mt-2">
-          {service.price > 0 ? (
-            <span className="text-sm font-bold text-gradient-green">
-              {formatPrice(service.price)} {service.currency}
-            </span>
-          ) : (
-            <span className="text-xs text-muted-foreground">Посмотреть</span>
-          )}
-          {isTour && service.seatsLeft !== undefined && (
-            <span className="flex items-center gap-1 text-xs text-primary">
-              <Users className="w-3 h-3" />
-              {service.seatsLeft} мест
-            </span>
-          )}
+          <div className="flex items-center gap-2">
+            {service.price > 0 ? (
+              <span className="text-sm font-bold text-gradient-green">
+                {formatPrice(service.price)} {service.currency}
+              </span>
+            ) : (
+              <span className="text-xs text-muted-foreground">Посмотреть</span>
+            )}
+          </div>
+          <div className="flex items-center gap-1.5">
+            {isTour && service.seatsLeft !== undefined && (
+              <span className="flex items-center gap-1 text-xs text-primary">
+                <Users className="w-3 h-3" />
+                {service.seatsLeft} мест
+              </span>
+            )}
+            {service.telegram && (
+              <motion.button
+                whileTap={{ scale: 0.9 }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  const tg = (window as any).Telegram?.WebApp;
+                  tg?.HapticFeedback?.impactOccurred('light');
+                  window.open(`https://t.me/${service.telegram}`, '_blank');
+                }}
+                className="flex items-center gap-1 px-2 py-1 rounded-md bg-[#2AABEE]/15 text-[#2AABEE] text-[10px] font-medium hover:bg-[#2AABEE]/25 transition-colors"
+              >
+                <Send className="w-3 h-3" />
+                TG
+              </motion.button>
+            )}
+          </div>
         </div>
       </div>
     </motion.div>

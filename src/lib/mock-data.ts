@@ -25,6 +25,7 @@ export interface Service {
   verified?: boolean;
   phone?: string;
   website?: string;
+  telegram?: string;
   metadata?: Record<string, any>;
   is_promoted?: boolean;
   branded_icon_url?: string;
@@ -140,6 +141,7 @@ export const services: Service[] = [
     lng: 69.2797,
     is_promoted: true,
     verified: true,
+    telegram: 'luxebeauty_tashkent',
   },
   {
     id: '2',
@@ -176,6 +178,7 @@ export const services: Service[] = [
     lng: 69.2900,
     is_promoted: true,
     verified: true,
+    telegram: 'smiledental_uz',
   },
   {
     id: '4',
@@ -258,6 +261,7 @@ export const services: Service[] = [
     verified: true,
     phone: '+998901234567',
     website: 'https://instagram.com/brewlab',
+    telegram: 'brewlab_tashkent',
     metadata: { menu_url: 'https://brewlab.uz/menu', wifi: true },
   },
   {
@@ -301,6 +305,7 @@ export const services: Service[] = [
     bookable: true,
     verified: true,
     phone: '+998933456789',
+    telegram: 'ifix_tashkent',
     metadata: { brands: ['Apple', 'Samsung'] },
   },
 ];
