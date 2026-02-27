@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
-  ArrowLeft, Star, Clock, MapPin, Users, Check, ChevronRight, Navigation, Copy, Phone, Share2, MessageCircle,
+  ArrowLeft, Star, Clock, MapPin, Users, Check, ChevronRight, Navigation, Copy, Phone, Share2, MessageCircle, Send,
 } from 'lucide-react';
 import { services, staff, generateTimeSlots, formatPrice, openDirections, copyAddress } from '@/lib/mock-data';
 import BottomNav from '@/components/BottomNav';
@@ -138,6 +138,18 @@ const ServiceDetail = () => {
 
       {/* Quick Action Buttons */}
       <div className="px-4 mt-4 grid grid-cols-4 gap-2">
+        {/* Telegram — primary contact */}
+        {service.telegram && (
+          <motion.button whileTap={{ scale: 0.95 }} onClick={() => {
+            const tg = (window as any).Telegram?.WebApp;
+            tg?.HapticFeedback?.impactOccurred('light');
+            window.open(`https://t.me/${service.telegram}`, '_blank');
+          }}
+            className="glass rounded-xl py-3 flex flex-col items-center gap-1.5 ring-1 ring-[#2AABEE]/30">
+            <Send className="w-5 h-5 text-[#2AABEE]" />
+            <span className="text-[10px] font-medium text-foreground">Telegram</span>
+          </motion.button>
+        )}
         {service.phone && (
           <motion.button whileTap={{ scale: 0.95 }} onClick={() => window.open(`tel:${service.phone}`)}
             className="glass rounded-xl py-3 flex flex-col items-center gap-1.5">
