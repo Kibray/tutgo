@@ -11,9 +11,9 @@ const BookingConfirm = () => {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center text-muted-foreground">
         <div className="text-center">
-          <p>No booking data</p>
+          <p>Нет данных о бронировании</p>
           <button onClick={() => navigate('/')} className="text-primary mt-2 text-sm">
-            Go Home
+            На главную
           </button>
         </div>
       </div>
@@ -44,7 +44,7 @@ const BookingConfirm = () => {
         transition={{ delay: 0.2 }}
         className="text-xl font-bold font-display text-foreground text-center"
       >
-        Booking Confirmed!
+        Бронирование подтверждено!
       </motion.h1>
 
       <motion.div
@@ -57,15 +57,15 @@ const BookingConfirm = () => {
         <p className="text-xs text-muted-foreground">{service.businessName}</p>
 
         <div className="border-t border-border pt-3 space-y-2.5">
-          <Row icon={Calendar} label="Date" value={d.toLocaleDateString('en', { weekday: 'long', month: 'short', day: 'numeric' })} />
-          <Row icon={Clock} label="Time" value={time} />
-          <Row icon={MapPin} label="Location" value={`${service.address}, ${service.city}`} />
-          {staffMember && <Row icon={User} label="Specialist" value={staffMember.name} />}
-          {isTour && <Row icon={User} label="Seats" value={`${seats}`} />}
+          <Row icon={Calendar} label="Дата" value={d.toLocaleDateString('ru', { weekday: 'long', month: 'short', day: 'numeric' })} />
+          <Row icon={Clock} label="Время" value={time} />
+          <Row icon={MapPin} label="Адрес" value={`${service.address}, ${service.city}`} />
+          {staffMember && <Row icon={User} label="Специалист" value={staffMember.name} />}
+          {isTour && <Row icon={User} label="Места" value={`${seats}`} />}
         </div>
 
         <div className="border-t border-border pt-3 flex items-center justify-between">
-          <span className="text-sm text-muted-foreground">Total</span>
+          <span className="text-sm text-muted-foreground">Итого</span>
           <span className="text-lg font-bold text-gradient-green">
             {formatPrice(service.price * (seats || 1))} {service.currency}
           </span>
@@ -80,7 +80,7 @@ const BookingConfirm = () => {
         onClick={() => navigate('/')}
         className="mt-8 w-full max-w-sm py-3.5 bg-primary text-accent-foreground rounded-lg font-semibold text-sm glow-green"
       >
-        Back to Home
+        На главную
       </motion.button>
     </div>
   );

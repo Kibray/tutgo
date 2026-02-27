@@ -16,7 +16,7 @@ const CategoryChips = ({ selected, onSelect }: CategoryChipsProps) => {
       className="flex gap-2 overflow-x-auto scrollbar-hide pb-1 -mx-4 px-4"
     >
       <ChipButton
-        label="All"
+        label="Все"
         icon="🔥"
         active={selected === 'all'}
         onClick={() => onSelect('all')}
