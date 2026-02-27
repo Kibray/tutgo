@@ -22,6 +22,7 @@ const ServiceDetail = () => {
 
   const timeSlots = useMemo(() => generateTimeSlots(), []);
   const isTour = service?.category === 'tour';
+  const isBookable = service ? (service.bookable !== false && ['beauty', 'medical', 'tour', 'service'].includes(service.category)) : true;
 
   if (!service) {
     return (
@@ -64,7 +65,7 @@ const ServiceDetail = () => {
     <div className="min-h-screen bg-background pb-32">
       {/* Hero */}
       <div className="relative h-48 bg-secondary flex items-center justify-center text-5xl">
-        {isTour ? '🏔️' : '✂️'}
+        {{ tour: '🏔️', beauty: '✨', cafe: '☕️', retail: '🛍️', service: '🛠️', medical: '🏥' }[service.category] || '📍'}
         <button
           onClick={() => navigate(-1)}
           className="absolute top-4 left-4 w-9 h-9 glass rounded-full flex items-center justify-center"
@@ -76,9 +77,16 @@ const ServiceDetail = () => {
       {/* Info */}
       <div className="px-4 -mt-6 relative z-10">
         <div className="glass rounded-lg p-4">
-          <h1 className="text-lg font-bold font-display text-foreground">
-            {service.name}
-          </h1>
+          <div className="flex items-center gap-2">
+            <h1 className="text-lg font-bold font-display text-foreground">
+              {service.name}
+            </h1>
+            {service.verified && (
+              <span className="inline-flex items-center gap-0.5 text-xs text-primary bg-primary/10 px-2 py-0.5 rounded-full font-medium">
+                ✓ Verified
+              </span>
+            )}
+          </div>
           <p className="text-sm text-muted-foreground mt-1">
             {service.businessName}
           </p>
@@ -188,94 +196,133 @@ const ServiceDetail = () => {
         </div>
       )}
 
-      {/* Date Picker */}
-      <div className="px-4 mt-4">
-        <h3 className="text-sm font-semibold text-foreground mb-3">Выберите дату</h3>
-        <div className="flex gap-2 overflow-x-auto scrollbar-hide -mx-4 px-4 pb-1">
-          {dates.map((date, i) => (
-            <DateChip
-              key={i}
-              date={date}
-              active={selectedDate === i}
-              onClick={() => setSelectedDate(i)}
-            />
-          ))}
-        </div>
-      </div>
+      {/* Booking section - only for bookable businesses */}
+      {isBookable && (
+        <>
+          {/* Date Picker */}
+          <div className="px-4 mt-4">
+            <h3 className="text-sm font-semibold text-foreground mb-3">Выберите дату</h3>
+            <div className="flex gap-2 overflow-x-auto scrollbar-hide -mx-4 px-4 pb-1">
+              {dates.map((date, i) => (
+                <DateChip
+                  key={i}
+                  date={date}
+                  active={selectedDate === i}
+                  onClick={() => setSelectedDate(i)}
+                />
+              ))}
+            </div>
+          </div>
 
-      {/* Time Slots */}
-      <div className="px-4 mt-4">
-        <h3 className="text-sm font-semibold text-foreground mb-3">Выберите время</h3>
-        <div className="grid grid-cols-4 gap-2">
-          {timeSlots.map((slot) => (
+          {/* Time Slots */}
+          <div className="px-4 mt-4">
+            <h3 className="text-sm font-semibold text-foreground mb-3">Выберите время</h3>
+            <div className="grid grid-cols-4 gap-2">
+              {timeSlots.map((slot) => (
+                <motion.button
+                  key={slot.id}
+                  whileTap={{ scale: 0.95 }}
+                  disabled={!slot.available}
+                  onClick={() => setSelectedSlot(slot.time)}
+                  className={`py-2.5 rounded-md text-xs font-medium transition-colors ${
+                    selectedSlot === slot.time
+                      ? 'bg-primary text-accent-foreground glow-green-sm'
+                      : slot.available
+                      ? 'glass text-foreground hover:bg-secondary'
+                      : 'bg-muted text-muted-foreground/40 cursor-not-allowed'
+                  }`}
+                >
+                  {slot.time}
+                </motion.button>
+              ))}
+            </div>
+          </div>
+
+          {/* Staff */}
+          {!isTour && (
+            <div className="px-4 mt-4">
+              <h3 className="text-sm font-semibold text-foreground mb-3">Выберите специалиста</h3>
+              <div className="space-y-2">
+                {staff.map((s) => (
+                  <motion.button
+                    key={s.id}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => setSelectedStaff(s.id)}
+                    className={`w-full glass rounded-lg p-3 flex items-center gap-3 transition-colors ${
+                      selectedStaff === s.id ? 'ring-1 ring-primary glow-green-sm' : ''
+                    }`}
+                  >
+                    <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center text-sm font-medium text-foreground">
+                      {s.name.charAt(0)}
+                    </div>
+                    <div className="flex-1 text-left">
+                      <p className="text-sm font-medium text-foreground">{s.name}</p>
+                      <p className="text-xs text-muted-foreground">{s.role}</p>
+                    </div>
+                    <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                      <Star className="w-3 h-3 text-primary fill-primary" />
+                      {s.rating}
+                    </div>
+                    <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                  </motion.button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Book Button */}
+          <div className="fixed bottom-16 left-0 right-0 px-4 py-3 glass-strong z-40">
             <motion.button
-              key={slot.id}
-              whileTap={{ scale: 0.95 }}
-              disabled={!slot.available}
-              onClick={() => setSelectedSlot(slot.time)}
-              className={`py-2.5 rounded-md text-xs font-medium transition-colors ${
-                selectedSlot === slot.time
-                  ? 'bg-primary text-accent-foreground glow-green-sm'
-                  : slot.available
-                  ? 'glass text-foreground hover:bg-secondary'
-                  : 'bg-muted text-muted-foreground/40 cursor-not-allowed'
+              whileTap={{ scale: 0.98 }}
+              onClick={handleBook}
+              disabled={!selectedSlot}
+              className={`w-full py-3.5 rounded-lg font-semibold text-sm transition-all ${
+                selectedSlot
+                  ? 'bg-primary text-accent-foreground glow-green'
+                  : 'bg-muted text-muted-foreground cursor-not-allowed'
               }`}
             >
-              {slot.time}
+              {isTour
+                ? `Забронировать ${seats} ${seats === 1 ? 'место' : seats < 5 ? 'места' : 'мест'} · ${formatPrice(service.price * seats)} ${service.currency}`
+                : `Записаться · ${formatPrice(service.price)} ${service.currency}`}
             </motion.button>
-          ))}
-        </div>
-      </div>
-
-      {/* Staff */}
-      {!isTour && (
-        <div className="px-4 mt-4">
-          <h3 className="text-sm font-semibold text-foreground mb-3">Выберите специалиста</h3>
-          <div className="space-y-2">
-            {staff.map((s) => (
-              <motion.button
-                key={s.id}
-                whileTap={{ scale: 0.98 }}
-                onClick={() => setSelectedStaff(s.id)}
-                className={`w-full glass rounded-lg p-3 flex items-center gap-3 transition-colors ${
-                  selectedStaff === s.id ? 'ring-1 ring-primary glow-green-sm' : ''
-                }`}
-              >
-                <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center text-sm font-medium text-foreground">
-                  {s.name.charAt(0)}
-                </div>
-                <div className="flex-1 text-left">
-                  <p className="text-sm font-medium text-foreground">{s.name}</p>
-                  <p className="text-xs text-muted-foreground">{s.role}</p>
-                </div>
-                <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                  <Star className="w-3 h-3 text-primary fill-primary" />
-                  {s.rating}
-                </div>
-                <ChevronRight className="w-4 h-4 text-muted-foreground" />
-              </motion.button>
-            ))}
           </div>
-        </div>
+        </>
       )}
 
-      {/* Book Button */}
-      <div className="fixed bottom-16 left-0 right-0 px-4 py-3 glass-strong z-40">
-        <motion.button
-          whileTap={{ scale: 0.98 }}
-          onClick={handleBook}
-          disabled={!selectedSlot}
-          className={`w-full py-3.5 rounded-lg font-semibold text-sm transition-all ${
-            selectedSlot
-              ? 'bg-primary text-accent-foreground glow-green'
-              : 'bg-muted text-muted-foreground cursor-not-allowed'
-          }`}
-        >
-          {isTour
-            ? `Забронировать ${seats} ${seats === 1 ? 'место' : seats < 5 ? 'места' : 'мест'} · ${formatPrice(service.price * seats)} ${service.currency}`
-            : `Записаться · ${formatPrice(service.price)} ${service.currency}`}
-        </motion.button>
-      </div>
+      {/* Non-bookable: action buttons */}
+      {!isBookable && (
+        <div className="px-4 mt-4 flex gap-3">
+          {service.phone && (
+            <motion.button
+              whileTap={{ scale: 0.95 }}
+              onClick={() => window.open(`tel:${service.phone}`)}
+              className="flex-1 glass rounded-xl py-4 flex flex-col items-center gap-1.5"
+            >
+              <span className="text-lg">📞</span>
+              <span className="text-xs font-medium text-foreground">Позвонить</span>
+            </motion.button>
+          )}
+          <motion.button
+            whileTap={{ scale: 0.95 }}
+            onClick={() => openDirections(lat, lng, fullAddress)}
+            className="flex-1 bg-primary text-accent-foreground rounded-xl py-4 flex flex-col items-center gap-1.5"
+          >
+            <Navigation className="w-5 h-5" />
+            <span className="text-xs font-medium">Маршрут</span>
+          </motion.button>
+          {service.website && (
+            <motion.button
+              whileTap={{ scale: 0.95 }}
+              onClick={() => window.open(service.website, '_blank')}
+              className="flex-1 glass rounded-xl py-4 flex flex-col items-center gap-1.5"
+            >
+              <span className="text-lg">🌐</span>
+              <span className="text-xs font-medium text-foreground">Сайт</span>
+            </motion.button>
+          )}
+        </div>
+      )}
 
       <BottomNav />
     </div>
