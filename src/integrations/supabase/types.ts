@@ -102,8 +102,11 @@ export type Database = {
         Row: {
           avatar_url: string | null
           created_at: string
+          dark_mode: boolean
           display_name: string | null
           id: string
+          language: string
+          notifications_enabled: boolean
           phone: string | null
           telegram_username: string | null
           updated_at: string
@@ -112,8 +115,11 @@ export type Database = {
         Insert: {
           avatar_url?: string | null
           created_at?: string
+          dark_mode?: boolean
           display_name?: string | null
           id?: string
+          language?: string
+          notifications_enabled?: boolean
           phone?: string | null
           telegram_username?: string | null
           updated_at?: string
@@ -122,8 +128,11 @@ export type Database = {
         Update: {
           avatar_url?: string | null
           created_at?: string
+          dark_mode?: boolean
           display_name?: string | null
           id?: string
+          language?: string
+          notifications_enabled?: boolean
           phone?: string | null
           telegram_username?: string | null
           updated_at?: string
