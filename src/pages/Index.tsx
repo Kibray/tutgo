@@ -10,6 +10,7 @@ import BusinessSheet from '@/components/BusinessSheet';
 import { SkeletonList } from '@/components/SkeletonCard';
 import { services, Service } from '@/lib/mock-data';
 import MapView from '@/components/MapView';
+import AiAssistantFab from '@/components/AiAssistantFab';
 
 const Index = () => {
   const navigate = useNavigate();
@@ -94,7 +95,7 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background pb-20">
+    <div className="min-h-screen bg-background pb-20 overflow-y-auto">
       {/* Map Section */}
       <div className="relative">
         <motion.div
@@ -258,6 +259,7 @@ const Index = () => {
           }
         }}
       />
+      <AiAssistantFab />
       <BottomNav />
     </div>
   );

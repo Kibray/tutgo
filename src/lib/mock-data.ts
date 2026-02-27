@@ -64,10 +64,28 @@ export interface Category {
   name: string;
   icon: string;
   count: number;
-  subcategories?: { id: string; name: string }[];
+  subcategories?: { id: string; name: string; icon?: string }[];
 }
 
 export const categories: Category[] = [
+  {
+    id: 'medical', name: 'Медицина', icon: '🏥', count: 78,
+    subcategories: [
+      { id: 'dental', name: 'Стоматология', icon: '🦷' },
+      { id: 'lab', name: 'Анализы', icon: '🧪' },
+      { id: 'clinic', name: 'Клиники', icon: '🏥' },
+      { id: 'pharmacy', name: 'Аптеки 24/7', icon: '💊' },
+    ],
+  },
+  {
+    id: 'beauty', name: 'Красота', icon: '✨', count: 342,
+    subcategories: [
+      { id: 'barbershop', name: 'Барбершопы', icon: '💈' },
+      { id: 'salon', name: 'Салоны красоты', icon: '💅' },
+      { id: 'nails', name: 'Маникюр', icon: '💅' },
+      { id: 'spa', name: 'SPA', icon: '🧖' },
+    ],
+  },
   {
     id: 'tour', name: 'Туры', icon: '🏔️', count: 64,
     subcategories: [
@@ -75,15 +93,6 @@ export const categories: Category[] = [
       { id: 'cities', name: 'Города' },
       { id: 'extreme', name: 'Экстрим' },
       { id: 'resorts', name: 'Зоны отдыха' },
-    ],
-  },
-  {
-    id: 'beauty', name: 'Красота', icon: '✨', count: 342,
-    subcategories: [
-      { id: 'barbershop', name: 'Барбершопы' },
-      { id: 'salon', name: 'Салоны красоты' },
-      { id: 'nails', name: 'Маникюр' },
-      { id: 'spa', name: 'SPA' },
     ],
   },
   {
@@ -108,15 +117,6 @@ export const categories: Category[] = [
       { id: 'repair', name: 'Ремонт' },
       { id: 'cleaning', name: 'Уборка' },
       { id: 'delivery', name: 'Доставка' },
-    ],
-  },
-  {
-    id: 'medical', name: 'Медицина', icon: '🏥', count: 78,
-    subcategories: [
-      { id: 'dental', name: 'Стоматология' },
-      { id: 'lab', name: 'Анализы' },
-      { id: 'clinic', name: 'Клиники' },
-      { id: 'pharmacy', name: 'Аптеки 24/7' },
     ],
   },
 ];
