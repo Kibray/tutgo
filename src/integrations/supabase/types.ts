@@ -16,6 +16,7 @@ export type Database = {
     Tables: {
       appointments: {
         Row: {
+          client_name: string | null
           client_phone: string | null
           client_user_id: string | null
           created_at: string
@@ -29,6 +30,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          client_name?: string | null
           client_phone?: string | null
           client_user_id?: string | null
           created_at?: string
@@ -42,6 +44,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          client_name?: string | null
           client_phone?: string | null
           client_user_id?: string | null
           created_at?: string
@@ -244,8 +247,10 @@ export type Database = {
       }
       services: {
         Row: {
+          category_id: string | null
           created_at: string
           currency: string
+          description: string | null
           duration_minutes: number
           id: string
           location_id: string
@@ -254,8 +259,10 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          category_id?: string | null
           created_at?: string
           currency?: string
+          description?: string | null
           duration_minutes?: number
           id?: string
           location_id: string
@@ -264,8 +271,10 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          category_id?: string | null
           created_at?: string
           currency?: string
+          description?: string | null
           duration_minutes?: number
           id?: string
           location_id?: string
@@ -274,6 +283,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "services_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "services_location_id_fkey"
             columns: ["location_id"]
