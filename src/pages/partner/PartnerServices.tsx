@@ -6,7 +6,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { usePreferences } from '@/hooks/usePreferences';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { categories } from '@/lib/mock-data';
+import { useCategories } from '@/hooks/useCategories';
 import BottomNav from '@/components/BottomNav';
 
 const amenitiesList = [
@@ -21,6 +21,7 @@ const PartnerServices = () => {
   const { user } = useAuth();
   const { t } = usePreferences();
   const { toast } = useToast();
+  const { categories } = useCategories();
 
   const [businesses, setBusinesses] = useState<any[]>([]);
   const [showForm, setShowForm] = useState(false);
@@ -69,7 +70,23 @@ const PartnerServices = () => {
     }
   };
 
-  const selectedCat = categories.find(c => c.id === businessType);
+  // Map business_type to category for subcategories
+  const selectedCat = categories.find(c => {
+    const typeMap: Record<string, string> = {
+      'Медицина': 'medical', 'Красота': 'beauty', 'Туры': 'tour',
+      'Кофейни': 'cafe', 'Магазины': 'retail', 'Услуги': 'service',
+    };
+    return typeMap[c.name] === businessType;
+  });
+
+  // Build type options from categories
+  const typeOptions = categories.map(c => {
+    const typeMap: Record<string, string> = {
+      'Медицина': 'medical', 'Красота': 'beauty', 'Туры': 'tour',
+      'Кофейни': 'cafe', 'Магазины': 'retail', 'Услуги': 'service',
+    };
+    return { value: typeMap[c.name] || c.name.toLowerCase(), label: `${c.icon} ${c.name}` };
+  });
 
   return (
     <div className="min-h-screen bg-background pb-24 overflow-y-auto">
@@ -92,13 +109,13 @@ const PartnerServices = () => {
               className="w-full glass rounded-xl px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground outline-none border border-border focus:border-primary transition-colors" />
             <select value={businessType} onChange={e => { setBusinessType(e.target.value); setSubCategory(''); }}
               className="w-full glass rounded-xl px-3 py-2.5 text-sm text-foreground bg-background border border-border focus:border-primary outline-none">
-              {categories.map(c => <option key={c.id} value={c.id}>{c.icon} {c.name}</option>)}
+              {typeOptions.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
             </select>
-            {selectedCat?.subcategories && (
+            {selectedCat?.subcategories && selectedCat.subcategories.length > 0 && (
               <select value={subCategory} onChange={e => setSubCategory(e.target.value)}
                 className="w-full glass rounded-xl px-3 py-2.5 text-sm text-foreground bg-background border border-border focus:border-primary outline-none">
                 <option value="">Подкатегория</option>
-                {selectedCat.subcategories.map(sc => <option key={sc.id} value={sc.id}>{sc.icon || ''} {sc.name}</option>)}
+                {selectedCat.subcategories.map((sc: any) => <option key={sc.id} value={sc.id}>{sc.icon || ''} {sc.name}</option>)}
               </select>
             )}
             <textarea placeholder={t('partner.desc_placeholder')} value={description} onChange={e => setDescription(e.target.value)}
