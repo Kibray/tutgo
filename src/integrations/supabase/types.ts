@@ -309,6 +309,7 @@ export type Database = {
           specialties: string[] | null
           updated_at: string
           working_days: number[] | null
+          working_hours: Json | null
         }
         Insert: {
           created_at?: string
@@ -319,6 +320,7 @@ export type Database = {
           specialties?: string[] | null
           updated_at?: string
           working_days?: number[] | null
+          working_hours?: Json | null
         }
         Update: {
           created_at?: string
@@ -329,6 +331,7 @@ export type Database = {
           specialties?: string[] | null
           updated_at?: string
           working_days?: number[] | null
+          working_hours?: Json | null
         }
         Relationships: [
           {
