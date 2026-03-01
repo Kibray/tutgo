@@ -14,12 +14,104 @@ export type Database = {
   }
   public: {
     Tables: {
+      appointments: {
+        Row: {
+          client_phone: string | null
+          client_user_id: string | null
+          created_at: string
+          end_time: string
+          id: string
+          location_id: string
+          service_id: string | null
+          staff_id: string | null
+          start_time: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          client_phone?: string | null
+          client_user_id?: string | null
+          created_at?: string
+          end_time: string
+          id?: string
+          location_id: string
+          service_id?: string | null
+          staff_id?: string | null
+          start_time: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          client_phone?: string | null
+          client_user_id?: string | null
+          created_at?: string
+          end_time?: string
+          id?: string
+          location_id?: string
+          service_id?: string | null
+          staff_id?: string | null
+          start_time?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "appointments_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "appointments_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "appointments_staff_id_fkey"
+            columns: ["staff_id"]
+            isOneToOne: false
+            referencedRelation: "staff"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      categories: {
+        Row: {
+          created_at: string
+          icon: string | null
+          id: string
+          name: string
+          sort_order: number | null
+          subcategories: Json | null
+        }
+        Insert: {
+          created_at?: string
+          icon?: string | null
+          id?: string
+          name: string
+          sort_order?: number | null
+          subcategories?: Json | null
+        }
+        Update: {
+          created_at?: string
+          icon?: string | null
+          id?: string
+          name?: string
+          sort_order?: number | null
+          subcategories?: Json | null
+        }
+        Relationships: []
+      }
       locations: {
         Row: {
           address: string | null
           amenities: Json | null
           branded_icon_url: string | null
           business_type: string
+          category_id: string | null
           city: string | null
           created_at: string
           currency: string | null
@@ -47,6 +139,7 @@ export type Database = {
           amenities?: Json | null
           branded_icon_url?: string | null
           business_type?: string
+          category_id?: string | null
           city?: string | null
           created_at?: string
           currency?: string | null
@@ -74,6 +167,7 @@ export type Database = {
           amenities?: Json | null
           branded_icon_url?: string | null
           business_type?: string
+          category_id?: string | null
           city?: string | null
           created_at?: string
           currency?: string | null
@@ -96,7 +190,15 @@ export type Database = {
           verified?: boolean | null
           website?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "locations_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
@@ -139,6 +241,88 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      services: {
+        Row: {
+          created_at: string
+          currency: string
+          duration_minutes: number
+          id: string
+          location_id: string
+          name: string
+          price: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          currency?: string
+          duration_minutes?: number
+          id?: string
+          location_id: string
+          name: string
+          price?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          currency?: string
+          duration_minutes?: number
+          id?: string
+          location_id?: string
+          name?: string
+          price?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "services_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      staff: {
+        Row: {
+          created_at: string
+          full_name: string
+          id: string
+          location_id: string
+          photo_url: string | null
+          specialties: string[] | null
+          updated_at: string
+          working_days: number[] | null
+        }
+        Insert: {
+          created_at?: string
+          full_name: string
+          id?: string
+          location_id: string
+          photo_url?: string | null
+          specialties?: string[] | null
+          updated_at?: string
+          working_days?: number[] | null
+        }
+        Update: {
+          created_at?: string
+          full_name?: string
+          id?: string
+          location_id?: string
+          photo_url?: string | null
+          specialties?: string[] | null
+          updated_at?: string
+          working_days?: number[] | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "staff_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {

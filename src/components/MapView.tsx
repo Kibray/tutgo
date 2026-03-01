@@ -2,9 +2,9 @@ import { useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { Service, categoryEmoji } from '@/lib/mock-data';
+import { categoryEmoji } from '@/lib/types';
+import type { LocationItem } from '@/lib/types';
 
-// Fix default marker icons
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png',
@@ -26,21 +26,14 @@ const createCategoryIcon = (category: string, isPromoted: boolean) => {
 
 const CenterOnLocation = ({ center }: { center: [number, number] | null }) => {
   const map = useMap();
-  useEffect(() => {
-    if (center) {
-      map.flyTo(center, 13, { duration: 0.8 });
-    }
-  }, [center, map]);
+  useEffect(() => { if (center) map.flyTo(center, 13, { duration: 0.8 }); }, [center, map]);
   return null;
 };
 
-// Invalidate map size when container resizes
 const ResizeHandler = () => {
   const map = useMap();
   useEffect(() => {
-    const observer = new ResizeObserver(() => {
-      map.invalidateSize();
-    });
+    const observer = new ResizeObserver(() => map.invalidateSize());
     observer.observe(map.getContainer());
     return () => observer.disconnect();
   }, [map]);
@@ -48,41 +41,27 @@ const ResizeHandler = () => {
 };
 
 interface MapViewProps {
-  services: Service[];
-  onMarkerClick: (service: Service) => void;
+  services: LocationItem[];
+  onMarkerClick: (service: LocationItem) => void;
   center?: [number, number] | null;
   className?: string;
 }
 
 const MapView = ({ services, onMarkerClick, center, className = '' }: MapViewProps) => {
   const defaultCenter: [number, number] = [41.3111, 69.2797];
-
   return (
-    <MapContainer
-      center={defaultCenter}
-      zoom={12}
-      className={`w-full h-full ${className}`}
-      zoomControl={false}
-      attributionControl={false}
-      style={{ background: 'hsl(220, 15%, 5%)' }}
-    >
-      <TileLayer
-        url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-      />
+    <MapContainer center={defaultCenter} zoom={12} className={`w-full h-full ${className}`}
+      zoomControl={false} attributionControl={false} style={{ background: 'hsl(220, 15%, 5%)' }}>
+      <TileLayer url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png" />
       <CenterOnLocation center={center || null} />
       <ResizeHandler />
       {services.map((s) => (
-        <Marker
-          key={s.id}
-          position={[s.lat, s.lng]}
-          icon={createCategoryIcon(s.category, !!s.is_promoted)}
-          eventHandlers={{
-            click: () => onMarkerClick(s),
-          }}
-        >
+        <Marker key={s.id} position={[s.lat || 41.3111, s.lng || 69.2797]}
+          icon={createCategoryIcon(s.business_type, !!s.is_promoted)}
+          eventHandlers={{ click: () => onMarkerClick(s) }}>
           <Popup className="leaflet-popup-dark">
-            <div className="text-xs font-medium">{s.businessName}</div>
-            <div className="text-[10px] opacity-70">{s.name}</div>
+            <div className="text-xs font-medium">{s.name}</div>
+            <div className="text-[10px] opacity-70">{s.address}</div>
           </Popup>
         </Marker>
       ))}
