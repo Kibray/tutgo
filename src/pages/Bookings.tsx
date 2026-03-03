@@ -1,31 +1,81 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Calendar, Clock, MapPin, ChevronRight } from 'lucide-react';
+import { Calendar, Clock, MapPin, ChevronRight, Star, Loader2 } from 'lucide-react';
 import BottomNav from '@/components/BottomNav';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { formatPrice } from '@/lib/types';
+import { useToast } from '@/hooks/use-toast';
 
 const Bookings = () => {
   const { user } = useAuth();
+  const { toast } = useToast();
   const [appointments, setAppointments] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [reviewingId, setReviewingId] = useState<string | null>(null);
+  const [reviewRating, setReviewRating] = useState(5);
+  const [reviewComment, setReviewComment] = useState('');
+  const [submittingReview, setSubmittingReview] = useState(false);
+  const [reviewedIds, setReviewedIds] = useState<Set<string>>(new Set());
 
+  const fetchAppointments = async () => {
+    if (!user) { setLoading(false); return; }
+    const { data } = await supabase
+      .from('appointments')
+      .select('*, locations(*), services(*), staff(*)')
+      .eq('client_user_id', user.id)
+      .order('start_time', { ascending: true });
+    setAppointments(data || []);
+    setLoading(false);
+
+    // Check which appointments already have reviews
+    if (data && data.length > 0) {
+      const ids = data.map((a: any) => a.id);
+      const { data: reviews } = await supabase
+        .from('reviews')
+        .select('appointment_id')
+        .in('appointment_id', ids);
+      if (reviews) setReviewedIds(new Set(reviews.map((r: any) => r.appointment_id)));
+    }
+  };
+
+  useEffect(() => { fetchAppointments(); }, [user]);
+
+  // Realtime subscription
   useEffect(() => {
-    const fetch = async () => {
-      if (!user) { setLoading(false); return; }
-      const { data } = await supabase
-        .from('appointments')
-        .select('*, locations(*), services(*), staff(*)')
-        .eq('client_user_id', user.id)
-        .order('start_time', { ascending: true });
-      setAppointments(data || []);
-      setLoading(false);
-    };
-    fetch();
+    if (!user) return;
+    const channel = supabase
+      .channel('my-appointments')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'appointments', filter: `client_user_id=eq.${user.id}` },
+        () => fetchAppointments()
+      )
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
   }, [user]);
 
-  const upcoming = appointments.filter(a => new Date(a.start_time) >= new Date() && a.status !== 'cancelled');
+  const handleSubmitReview = async (appointmentId: string, locationId: string) => {
+    if (!user) return;
+    setSubmittingReview(true);
+    const { error } = await supabase.from('reviews').insert({
+      appointment_id: appointmentId,
+      location_id: locationId,
+      user_id: user.id,
+      rating: reviewRating,
+      comment: reviewComment || null,
+    });
+    setSubmittingReview(false);
+    if (error) {
+      toast({ title: 'Ошибка', description: error.message, variant: 'destructive' });
+    } else {
+      toast({ title: 'Спасибо за отзыв!' });
+      setReviewedIds(prev => new Set([...prev, appointmentId]));
+      setReviewingId(null);
+      setReviewComment('');
+      setReviewRating(5);
+    }
+  };
+
+  const upcoming = appointments.filter(a => new Date(a.start_time) >= new Date() && a.status !== 'cancelled' && a.status !== 'completed');
   const past = appointments.filter(a => new Date(a.start_time) < new Date() || a.status === 'completed');
 
   return (
@@ -77,9 +127,52 @@ const Bookings = () => {
         ) : (
           <div className="space-y-3">
             {past.map((b) => (
-              <div key={b.id} className="glass rounded-lg p-4 opacity-60">
-                <h3 className="text-sm font-semibold text-foreground">{b.services?.name || b.locations?.name}</h3>
-                <p className="text-xs text-muted-foreground mt-0.5">{new Date(b.start_time).toLocaleDateString('ru')}</p>
+              <div key={b.id} className="glass rounded-lg p-4">
+                <div className="flex items-start justify-between">
+                  <div>
+                    <h3 className="text-sm font-semibold text-foreground">{b.services?.name || b.locations?.name}</h3>
+                    <p className="text-xs text-muted-foreground mt-0.5">{new Date(b.start_time).toLocaleDateString('ru')}</p>
+                  </div>
+                  <span className="text-[10px] font-medium px-2 py-1 rounded-md bg-muted text-muted-foreground capitalize">{b.status}</span>
+                </div>
+
+                {/* Review button for completed appointments */}
+                {(b.status === 'completed' || new Date(b.end_time) < new Date()) && !reviewedIds.has(b.id) && (
+                  <>
+                    {reviewingId === b.id ? (
+                      <div className="mt-3 pt-3 border-t border-border space-y-3">
+                        <div className="flex items-center gap-1">
+                          {[1, 2, 3, 4, 5].map(star => (
+                            <button key={star} onClick={() => setReviewRating(star)}>
+                              <Star className={`w-6 h-6 ${star <= reviewRating ? 'text-primary fill-primary' : 'text-muted'}`} />
+                            </button>
+                          ))}
+                        </div>
+                        <textarea
+                          value={reviewComment}
+                          onChange={e => setReviewComment(e.target.value)}
+                          placeholder="Ваш отзыв (необязательно)"
+                          className="w-full bg-secondary rounded-lg p-3 text-xs text-foreground resize-none h-20 border border-border focus:border-primary outline-none"
+                        />
+                        <div className="flex gap-2">
+                          <button onClick={() => setReviewingId(null)} className="flex-1 py-2 text-xs glass rounded-lg text-muted-foreground">Отмена</button>
+                          <button onClick={() => handleSubmitReview(b.id, b.location_id)} disabled={submittingReview}
+                            className="flex-1 py-2 text-xs bg-primary text-accent-foreground rounded-lg font-medium flex items-center justify-center gap-1">
+                            {submittingReview ? <Loader2 className="w-3 h-3 animate-spin" /> : 'Отправить'}
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <button onClick={() => setReviewingId(b.id)}
+                        className="mt-3 pt-3 border-t border-border w-full flex items-center justify-center gap-2 text-xs text-primary font-medium">
+                        <Star className="w-3.5 h-3.5" />Оставить отзыв
+                      </button>
+                    )}
+                  </>
+                )}
+                {reviewedIds.has(b.id) && (
+                  <p className="mt-3 pt-3 border-t border-border text-xs text-muted-foreground text-center">✓ Отзыв оставлен</p>
+                )}
               </div>
             ))}
           </div>
