@@ -6,18 +6,28 @@ export const useLocations = (categoryName?: string, subcategory?: string, search
   const [locations, setLocations] = useState<LocationItem[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const fetchLocations = async () => {
+    setLoading(true);
+    const { data } = await supabase
+      .from('locations')
+      .select('*')
+      .order('is_promoted', { ascending: false })
+      .order('rating', { ascending: false });
+    setLocations((data as LocationItem[]) || []);
+    setLoading(false);
+  };
+
+  useEffect(() => { fetchLocations(); }, []);
+
+  // Realtime subscription for locations
   useEffect(() => {
-    const fetch = async () => {
-      setLoading(true);
-      const { data } = await supabase
-        .from('locations')
-        .select('*')
-        .order('is_promoted', { ascending: false })
-        .order('rating', { ascending: false });
-      setLocations((data as LocationItem[]) || []);
-      setLoading(false);
-    };
-    fetch();
+    const channel = supabase
+      .channel('locations-realtime')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'locations' },
+        () => fetchLocations()
+      )
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
   }, []);
 
   const filtered = useMemo(() => {

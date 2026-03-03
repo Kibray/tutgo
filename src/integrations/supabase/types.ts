@@ -245,6 +245,51 @@ export type Database = {
         }
         Relationships: []
       }
+      reviews: {
+        Row: {
+          appointment_id: string
+          comment: string | null
+          created_at: string
+          id: string
+          location_id: string
+          rating: number
+          user_id: string
+        }
+        Insert: {
+          appointment_id: string
+          comment?: string | null
+          created_at?: string
+          id?: string
+          location_id: string
+          rating: number
+          user_id: string
+        }
+        Update: {
+          appointment_id?: string
+          comment?: string | null
+          created_at?: string
+          id?: string
+          location_id?: string
+          rating?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reviews_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reviews_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       services: {
         Row: {
           category_id: string | null

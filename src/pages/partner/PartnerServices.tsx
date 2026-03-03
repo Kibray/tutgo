@@ -52,12 +52,28 @@ const PartnerServices = () => {
       return;
     }
     setSaving(true);
+
+    // Geocode address to get lat/lng
+    let lat: number | null = null;
+    let lng: number | null = null;
+    if (address.trim()) {
+      try {
+        const geoRes = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address + ', Ташкент, Узбекистан')}&limit=1`);
+        const geoData = await geoRes.json();
+        if (geoData.length > 0) {
+          lat = parseFloat(geoData[0].lat);
+          lng = parseFloat(geoData[0].lon);
+        }
+      } catch (e) { /* geocoding failed, use defaults */ }
+    }
+
     const { error } = await supabase.from('locations').insert({
       owner_id: user.id, name: name.trim(), business_type: businessType,
       sub_category: subCategory || null, description: description || null,
       address: address || null, phone: phone || null, telegram: telegram || null,
       website: website || null, price_from: priceFrom ? parseInt(priceFrom) : 0,
       amenities: amenities,
+      ...(lat !== null && lng !== null ? { lat, lng } : {}),
     });
     setSaving(false);
     if (error) {

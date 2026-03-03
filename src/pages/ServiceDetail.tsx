@@ -1,19 +1,13 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Star, Clock, MapPin, Users, Check, ChevronRight, Navigation, Copy, Phone, Share2, MessageCircle, Send } from 'lucide-react';
+import { ArrowLeft, Star, Clock, MapPin, ChevronRight, Navigation, Copy, Phone, Share2, Send } from 'lucide-react';
 import { formatPrice, openDirections, copyAddress, categoryEmoji } from '@/lib/types';
 import type { LocationItem } from '@/lib/types';
 import { supabase } from '@/integrations/supabase/client';
 import BottomNav from '@/components/BottomNav';
 import DateChip from '@/components/DateChip';
 import { useToast } from '@/hooks/use-toast';
-
-const mockReviews = [
-  { id: '1', author: 'Алишер М.', rating: 5, text: 'Отличный сервис! Очень доволен результатом.', date: '2 дня назад' },
-  { id: '2', author: 'Нигора К.', rating: 4, text: 'Хорошее место, рекомендую. Персонал вежливый.', date: '1 неделю назад' },
-  { id: '3', author: 'Тимур Р.', rating: 5, text: 'Быстро, качественно, буду обращаться снова.', date: '2 недели назад' },
-];
 
 const ServiceDetail = () => {
   const { id } = useParams();
@@ -23,12 +17,12 @@ const ServiceDetail = () => {
   const [location, setLocation] = useState<LocationItem | null>(null);
   const [services, setServices] = useState<any[]>([]);
   const [staffList, setStaffList] = useState<any[]>([]);
+  const [reviews, setReviews] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedDate, setSelectedDate] = useState(0);
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
   const [selectedStaff, setSelectedStaff] = useState<string | null>(null);
   const [selectedService, setSelectedService] = useState<string | null>(null);
-  const [showReviewForm, setShowReviewForm] = useState(false);
 
   useEffect(() => {
     const fetch = async () => {
@@ -36,12 +30,14 @@ const ServiceDetail = () => {
       const { data: loc } = await supabase.from('locations').select('*').eq('id', id).single();
       if (loc) {
         setLocation(loc as LocationItem);
-        const [svcRes, staffRes] = await Promise.all([
+        const [svcRes, staffRes, reviewsRes] = await Promise.all([
           supabase.from('services').select('*').eq('location_id', id),
           supabase.from('staff').select('*').eq('location_id', id),
+          supabase.from('reviews').select('*').eq('location_id', id).order('created_at', { ascending: false }).limit(20),
         ]);
         setServices(svcRes.data || []);
         setStaffList(staffRes.data || []);
+        setReviews(reviewsRes.data || []);
       }
       setLoading(false);
     };
@@ -53,13 +49,13 @@ const ServiceDetail = () => {
     for (let h = 9; h <= 20; h++) {
       for (const m of ['00', '30']) {
         const time = `${h.toString().padStart(2, '0')}:${m}`;
-        slots.push({ id: `slot-${time}`, time, available: Math.random() > 0.3 });
+        slots.push({ id: `slot-${time}`, time, available: true });
       }
     }
     return slots;
   }, []);
 
-  const isBookable = location ? ['beauty', 'medical', 'tour', 'service'].includes(location.business_type) : false;
+  const isBookable = location ? ['beauty', 'medical', 'tour', 'service', 'auto', 'sport', 'education'].includes(location.business_type) : false;
 
   if (loading) return <div className="min-h-screen bg-background flex items-center justify-center text-muted-foreground">Загрузка...</div>;
   if (!location) return <div className="min-h-screen bg-background flex items-center justify-center text-muted-foreground">Услуга не найдена</div>;
@@ -87,6 +83,7 @@ const ServiceDetail = () => {
 
   return (
     <div className="min-h-screen bg-background pb-32 overflow-y-auto">
+      {/* Hero */}
       <div className="relative h-56 bg-secondary flex items-center justify-center">
         <div className="flex gap-1 w-full h-full">
           <div className="flex-1 bg-secondary flex items-center justify-center text-5xl">{categoryEmoji[location.business_type] || '📍'}</div>
@@ -100,11 +97,12 @@ const ServiceDetail = () => {
         </button>
       </div>
 
+      {/* Info card */}
       <div className="px-4 -mt-6 relative z-10">
         <div className="glass rounded-lg p-4">
           <div className="flex items-center gap-2">
             <h1 className="text-lg font-bold font-display text-foreground">{location.name}</h1>
-            {location.verified && <span className="inline-flex items-center gap-0.5 text-xs text-primary bg-primary/10 px-2 py-0.5 rounded-full font-medium">✓ Verified</span>}
+            {location.verified && <span className="inline-flex items-center gap-0.5 text-xs text-primary bg-primary/10 px-2 py-0.5 rounded-full font-medium">✓</span>}
           </div>
           {location.description && <p className="text-sm text-muted-foreground mt-1">{location.description}</p>}
           <div className="flex items-center gap-4 mt-3 text-xs text-muted-foreground">
@@ -122,11 +120,12 @@ const ServiceDetail = () => {
         </div>
       </div>
 
+      {/* Actions */}
       <div className="px-4 mt-4 grid grid-cols-4 gap-2">
         {location.telegram && (
           <motion.button whileTap={{ scale: 0.95 }} onClick={() => window.open(`https://t.me/${location.telegram}`, '_blank')}
-            className="glass rounded-xl py-3 flex flex-col items-center gap-1.5 ring-1 ring-[#2AABEE]/30">
-            <Send className="w-5 h-5 text-[#2AABEE]" /><span className="text-[10px] font-medium text-foreground">Telegram</span>
+            className="glass rounded-xl py-3 flex flex-col items-center gap-1.5 ring-1 ring-[hsl(200,80%,55%)]/30">
+            <Send className="w-5 h-5 text-[hsl(200,80%,55%)]" /><span className="text-[10px] font-medium text-foreground">Telegram</span>
           </motion.button>
         )}
         {location.phone && (
@@ -145,7 +144,7 @@ const ServiceDetail = () => {
         </motion.button>
       </div>
 
-      {/* Services list */}
+      {/* Services */}
       {services.length > 0 && (
         <div className="px-4 mt-4">
           <div className="glass rounded-lg p-4">
@@ -166,7 +165,7 @@ const ServiceDetail = () => {
         </div>
       )}
 
-      {/* Reviews */}
+      {/* Real Reviews */}
       <div className="px-4 mt-4">
         <div className="glass rounded-lg p-4">
           <div className="flex items-center justify-between mb-3">
@@ -177,30 +176,27 @@ const ServiceDetail = () => {
               <span>· {location.review_count} отзывов</span>
             </div>
           </div>
-          <div className="space-y-3">
-            {mockReviews.map((review) => (
-              <div key={review.id} className="border-t border-border pt-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-medium text-foreground">{review.author}</span>
-                  <span className="text-[10px] text-muted-foreground">{review.date}</span>
+          {reviews.length === 0 ? (
+            <p className="text-xs text-muted-foreground text-center py-4">Пока нет отзывов</p>
+          ) : (
+            <div className="space-y-3">
+              {reviews.map((review) => (
+                <div key={review.id} className="border-t border-border pt-3">
+                  <div className="flex items-center gap-0.5 mt-1">
+                    {Array.from({ length: 5 }).map((_, i) => (
+                      <Star key={i} className={`w-3 h-3 ${i < review.rating ? 'text-primary fill-primary' : 'text-muted'}`} />
+                    ))}
+                    <span className="text-[10px] text-muted-foreground ml-2">{new Date(review.created_at).toLocaleDateString('ru')}</span>
+                  </div>
+                  {review.comment && <p className="text-xs text-muted-foreground mt-1">{review.comment}</p>}
                 </div>
-                <div className="flex items-center gap-0.5 mt-1">
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <Star key={i} className={`w-3 h-3 ${i < review.rating ? 'text-primary fill-primary' : 'text-muted'}`} />
-                  ))}
-                </div>
-                <p className="text-xs text-muted-foreground mt-1">{review.text}</p>
-              </div>
-            ))}
-          </div>
-          <motion.button whileTap={{ scale: 0.98 }} onClick={() => setShowReviewForm(!showReviewForm)}
-            className="w-full mt-4 py-3 rounded-lg glass text-sm font-medium text-foreground flex items-center justify-center gap-2">
-            <MessageCircle className="w-4 h-4 text-primary" />Написать отзыв
-          </motion.button>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Booking section */}
+      {/* Booking */}
       {isBookable && (
         <>
           <div className="px-4 mt-4">
@@ -213,11 +209,10 @@ const ServiceDetail = () => {
             <h3 className="text-sm font-semibold text-foreground mb-3">Выберите время</h3>
             <div className="grid grid-cols-4 gap-2">
               {timeSlots.map((slot) => (
-                <motion.button key={slot.id} whileTap={{ scale: 0.95 }} disabled={!slot.available} onClick={() => setSelectedSlot(slot.time)}
+                <motion.button key={slot.id} whileTap={{ scale: 0.95 }} onClick={() => setSelectedSlot(slot.time)}
                   className={`py-2.5 rounded-md text-xs font-medium transition-colors ${
                     selectedSlot === slot.time ? 'bg-primary text-accent-foreground glow-green-sm'
-                    : slot.available ? 'glass text-foreground hover:bg-secondary'
-                    : 'bg-muted text-muted-foreground/40 cursor-not-allowed'
+                    : 'glass text-foreground hover:bg-secondary'
                   }`}>{slot.time}</motion.button>
               ))}
             </div>
