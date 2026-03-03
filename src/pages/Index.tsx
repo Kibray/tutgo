@@ -161,7 +161,15 @@ const Index = () => {
 
       <BusinessSheet service={sheetService} open={!!sheetService} onClose={() => setSheetService(null)}
         onFullPage={() => { if (sheetService) { navigate(`/service/${sheetService.id}`); setSheetService(null); } }} />
-      <AiAssistantFab />
+      <AiAssistantFab onShowOnMap={(locs) => {
+        if (locs.length === 1 && locs[0].lat && locs[0].lng) {
+          setMapCenter([locs[0].lat, locs[0].lng]);
+        } else if (locs.length > 0) {
+          const first = locs.find(l => l.lat && l.lng);
+          if (first) setMapCenter([first.lat!, first.lng!]);
+        }
+        setListExpanded(false);
+      }} />
       <BottomNav />
     </div>
   );
