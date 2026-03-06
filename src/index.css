@@ -173,6 +173,27 @@
   font-family: 'Inter', system-ui, sans-serif;
 }
 
+.leaflet-popup-custom .leaflet-popup-content-wrapper {
+  background: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+}
+
+.leaflet-popup-custom .leaflet-popup-content {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.leaflet-popup-custom .leaflet-popup-tip-container {
+  display: none !important;
+}
+
+.leaflet-popup-custom .leaflet-popup-close-button {
+  display: none !important;
+}
+
 .leaflet-popup-content-wrapper {
   background: hsla(220, 15%, 10%, 0.9) !important;
   backdrop-filter: blur(20px);
