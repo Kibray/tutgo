@@ -1,14 +1,34 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Send } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
+import { useTelegram } from '@/hooks/useTelegram';
 import { useToast } from '@/hooks/use-toast';
 import { lovable } from '@/integrations/lovable/index';
 import { supabase } from '@/integrations/supabase/client';
 import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
 
 const Auth = () => {
+  const { isTelegram, ready: tgReady } = useTelegram();
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
+  // Auto-redirect if already authenticated via Telegram Mini App
+  useEffect(() => {
+    if (isTelegram && tgReady && user) {
+      navigate('/profile', { replace: true });
+    }
+  }, [isTelegram, tgReady, user, navigate]);
+
+  if (isTelegram && !tgReady) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="animate-pulse text-muted-foreground text-sm">Входим через Telegram...</div>
+      </div>
+    );
+  }
+
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
