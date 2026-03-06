@@ -2,7 +2,8 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { MapContainer, TileLayer, Marker, useMap, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { MapPin, Search, Loader2, X } from 'lucide-react';
+import { MapPin, Search, Loader2, X, Crosshair } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -25,7 +26,6 @@ interface AddressPickerProps {
 }
 
 const DEFAULT_CENTER: [number, number] = [41.2995, 69.2401];
-const DEFAULT_ZOOM = 12;
 
 const DraggableMarker = ({
   position,
@@ -57,6 +57,15 @@ const MapUpdater = ({ center, zoom }: { center: [number, number]; zoom?: number 
   return null;
 };
 
+const MapClickHandler = ({ onClick }: { onClick: (lat: number, lng: number) => void }) => {
+  useMapEvents({
+    click(e) {
+      onClick(e.latlng.lat, e.latlng.lng);
+    },
+  });
+  return null;
+};
+
 const ResizeHandler = () => {
   const map = useMap();
   useEffect(() => {
@@ -74,22 +83,8 @@ const AddressPicker = ({ address, lat, lng, onAddressChange }: AddressPickerProp
   const [markerPos, setMarkerPos] = useState<[number, number]>(
     lat && lng ? [lat, lng] : DEFAULT_CENTER
   );
+  const [geolocating, setGeolocating] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout>>();
-
-  // Geolocate user on mount
-  useEffect(() => {
-    if (lat && lng) return; // already have position
-    if ('geolocation' in navigator) {
-      navigator.geolocation.getCurrentPosition(
-        (pos) => {
-          const newPos: [number, number] = [pos.coords.latitude, pos.coords.longitude];
-          setMarkerPos(newPos);
-        },
-        () => {/* use default */},
-        { timeout: 5000 }
-      );
-    }
-  }, []);
 
   const searchAddress = useCallback(async (q: string) => {
     if (q.trim().length < 3) {
@@ -126,9 +121,9 @@ const AddressPicker = ({ address, lat, lng, onAddressChange }: AddressPickerProp
     onAddressChange(result.display_name, newLat, newLng);
   };
 
-  const handleMarkerDrag = async (newLat: number, newLng: number) => {
+  const reverseGeocode = async (newLat: number, newLng: number) => {
     setMarkerPos([newLat, newLng]);
-    // Reverse geocode
+    setShowMap(true);
     try {
       const res = await fetch(
         `https://nominatim.openstreetmap.org/reverse?format=json&lat=${newLat}&lon=${newLng}&zoom=18`
@@ -145,42 +140,78 @@ const AddressPicker = ({ address, lat, lng, onAddressChange }: AddressPickerProp
     }
   };
 
+  const handleGeolocate = () => {
+    if (!('geolocation' in navigator)) return;
+    setGeolocating(true);
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setGeolocating(false);
+        reverseGeocode(pos.coords.latitude, pos.coords.longitude);
+      },
+      () => {
+        setGeolocating(false);
+      },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+    );
+  };
+
+  const handleMapClick = (newLat: number, newLng: number) => {
+    reverseGeocode(newLat, newLng);
+  };
+
   return (
     <div className="space-y-2">
-      {/* Search input */}
-      <div className="relative">
-        <div className="flex items-center glass rounded-xl border border-border focus-within:border-primary transition-colors">
-          <Search className="w-4 h-4 text-muted-foreground ml-3 flex-shrink-0" />
-          <input
-            type="text"
-            placeholder="Введите адрес в Узбекистане..."
-            value={query}
-            onChange={(e) => handleInputChange(e.target.value)}
-            className="w-full px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground bg-transparent outline-none"
-          />
-          {searching && <Loader2 className="w-4 h-4 text-muted-foreground mr-3 animate-spin flex-shrink-0" />}
-          {query && !searching && (
-            <button onClick={() => { setQuery(''); setSuggestions([]); }} className="mr-3">
-              <X className="w-4 h-4 text-muted-foreground" />
-            </button>
+      {/* Search input + locate button */}
+      <div className="flex gap-2">
+        <div className="relative flex-1">
+          <div className="flex items-center glass rounded-xl border border-border focus-within:border-primary transition-colors">
+            <Search className="w-4 h-4 text-muted-foreground ml-3 flex-shrink-0" />
+            <input
+              type="text"
+              placeholder="Введите адрес..."
+              value={query}
+              onChange={(e) => handleInputChange(e.target.value)}
+              className="w-full px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground bg-transparent outline-none"
+            />
+            {searching && <Loader2 className="w-4 h-4 text-muted-foreground mr-3 animate-spin flex-shrink-0" />}
+            {query && !searching && (
+              <button onClick={() => { setQuery(''); setSuggestions([]); }} className="mr-3">
+                <X className="w-4 h-4 text-muted-foreground" />
+              </button>
+            )}
+          </div>
+
+          {/* Suggestions dropdown */}
+          {suggestions.length > 0 && (
+            <div className="absolute z-50 w-full mt-1 glass rounded-xl border border-border overflow-hidden shadow-lg">
+              {suggestions.map((s, i) => (
+                <button
+                  key={i}
+                  onClick={() => handleSelect(s)}
+                  className="w-full px-3 py-2.5 text-left text-xs text-foreground hover:bg-primary/10 transition-colors flex items-start gap-2 border-b border-border/50 last:border-0"
+                >
+                  <MapPin className="w-3.5 h-3.5 text-primary mt-0.5 flex-shrink-0" />
+                  <span className="line-clamp-2">{s.display_name}</span>
+                </button>
+              ))}
+            </div>
           )}
         </div>
 
-        {/* Suggestions dropdown */}
-        {suggestions.length > 0 && (
-          <div className="absolute z-50 w-full mt-1 glass rounded-xl border border-border overflow-hidden shadow-lg">
-            {suggestions.map((s, i) => (
-              <button
-                key={i}
-                onClick={() => handleSelect(s)}
-                className="w-full px-3 py-2.5 text-left text-xs text-foreground hover:bg-primary/10 transition-colors flex items-start gap-2 border-b border-border/50 last:border-0"
-              >
-                <MapPin className="w-3.5 h-3.5 text-primary mt-0.5 flex-shrink-0" />
-                <span className="line-clamp-2">{s.display_name}</span>
-              </button>
-            ))}
-          </div>
-        )}
+        {/* Geolocate button */}
+        <motion.button
+          whileTap={{ scale: 0.9 }}
+          onClick={handleGeolocate}
+          disabled={geolocating}
+          className="flex items-center justify-center w-11 h-11 glass rounded-xl border border-border hover:border-primary transition-colors flex-shrink-0 disabled:opacity-50"
+          title="Определить моё местоположение"
+        >
+          {geolocating ? (
+            <Loader2 className="w-4 h-4 text-primary animate-spin" />
+          ) : (
+            <Crosshair className="w-4 h-4 text-primary" />
+          )}
+        </motion.button>
       </div>
 
       {/* Mini map */}
@@ -188,15 +219,16 @@ const AddressPicker = ({ address, lat, lng, onAddressChange }: AddressPickerProp
         <div className="rounded-xl overflow-hidden border border-border" style={{ height: '200px' }}>
           <MapContainer
             center={markerPos}
-            zoom={15}
+            zoom={16}
             className="w-full h-full"
             zoomControl={false}
             attributionControl={false}
             style={{ background: 'hsl(220, 15%, 5%)' }}
           >
             <TileLayer url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png" />
-            <DraggableMarker position={markerPos} onDragEnd={handleMarkerDrag} />
-            <MapUpdater center={markerPos} zoom={15} />
+            <DraggableMarker position={markerPos} onDragEnd={(lat, lng) => reverseGeocode(lat, lng)} />
+            <MapUpdater center={markerPos} zoom={16} />
+            <MapClickHandler onClick={handleMapClick} />
             <ResizeHandler />
           </MapContainer>
         </div>
@@ -204,7 +236,13 @@ const AddressPicker = ({ address, lat, lng, onAddressChange }: AddressPickerProp
 
       {showMap && (
         <p className="text-[10px] text-muted-foreground flex items-center gap-1">
-          <MapPin className="w-3 h-3" /> Перетащите маркер для точной позиции
+          <MapPin className="w-3 h-3" /> Перетащите маркер или нажмите на карту для точной настройки
+        </p>
+      )}
+
+      {!showMap && (
+        <p className="text-[10px] text-muted-foreground flex items-center gap-1">
+          💡 Для точности — найдите своё здание на карте и поставьте маркер вручную
         </p>
       )}
     </div>
