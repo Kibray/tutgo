@@ -8,6 +8,7 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useCategories } from '@/hooks/useCategories';
 import BottomNav from '@/components/BottomNav';
+import AddressPicker from '@/components/AddressPicker';
 
 const amenitiesList = [
   { id: 'wifi', label: 'WiFi', icon: '📶' },
@@ -32,6 +33,8 @@ const PartnerServices = () => {
   const [subCategory, setSubCategory] = useState('');
   const [description, setDescription] = useState('');
   const [address, setAddress] = useState('');
+  const [formLat, setFormLat] = useState<number | null>(null);
+  const [formLng, setFormLng] = useState<number | null>(null);
   const [phone, setPhone] = useState('');
   const [telegram, setTelegram] = useState('');
   const [website, setWebsite] = useState('');
@@ -53,27 +56,13 @@ const PartnerServices = () => {
     }
     setSaving(true);
 
-    // Geocode address to get lat/lng
-    let lat: number | null = null;
-    let lng: number | null = null;
-    if (address.trim()) {
-      try {
-        const geoRes = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address + ', Ташкент, Узбекистан')}&limit=1`);
-        const geoData = await geoRes.json();
-        if (geoData.length > 0) {
-          lat = parseFloat(geoData[0].lat);
-          lng = parseFloat(geoData[0].lon);
-        }
-      } catch (e) { /* geocoding failed, use defaults */ }
-    }
-
     const { error } = await supabase.from('locations').insert({
       owner_id: user.id, name: name.trim(), business_type: businessType,
       sub_category: subCategory || null, description: description || null,
       address: address || null, phone: phone || null, telegram: telegram || null,
       website: website || null, price_from: priceFrom ? parseInt(priceFrom) : 0,
       amenities: amenities,
-      ...(lat !== null && lng !== null ? { lat, lng } : {}),
+      ...(formLat !== null && formLng !== null ? { lat: formLat, lng: formLng } : {}),
     });
     setSaving(false);
     if (error) {
@@ -81,7 +70,7 @@ const PartnerServices = () => {
     } else {
       toast({ title: t('partner.biz_added') });
       setShowForm(false);
-      setName(''); setDescription(''); setAddress(''); setPhone(''); setTelegram(''); setWebsite(''); setPriceFrom(''); setAmenities([]);
+      setName(''); setDescription(''); setAddress(''); setPhone(''); setTelegram(''); setWebsite(''); setPriceFrom(''); setAmenities([]); setFormLat(null); setFormLng(null);
       fetchBusinesses();
     }
   };
@@ -136,8 +125,12 @@ const PartnerServices = () => {
             )}
             <textarea placeholder={t('partner.desc_placeholder')} value={description} onChange={e => setDescription(e.target.value)}
               className="w-full glass rounded-xl px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground outline-none border border-border focus:border-primary transition-colors min-h-[60px] resize-none" />
-            <input placeholder={t('partner.address_placeholder')} value={address} onChange={e => setAddress(e.target.value)}
-              className="w-full glass rounded-xl px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground outline-none border border-border focus:border-primary transition-colors" />
+            <AddressPicker
+              address={address}
+              lat={formLat}
+              lng={formLng}
+              onAddressChange={(addr, lat, lng) => { setAddress(addr); setFormLat(lat); setFormLng(lng); }}
+            />
             <div className="grid grid-cols-2 gap-2">
               <input placeholder={t('edit.phone')} value={phone} onChange={e => setPhone(e.target.value)}
                 className="glass rounded-xl px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground outline-none border border-border focus:border-primary transition-colors" />
