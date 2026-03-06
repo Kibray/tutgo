@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Star, Clock, MapPin, ChevronRight, Navigation, Copy, Phone, Share2, Send, User } from 'lucide-react';
+import QueueStatus from '@/components/QueueStatus';
 import { formatPrice, openDirections, copyAddress, categoryEmoji } from '@/lib/types';
 import type { LocationItem } from '@/lib/types';
 import { supabase } from '@/integrations/supabase/client';
@@ -286,6 +287,13 @@ const ServiceDetail = () => {
           </TabsContent>
         </Tabs>
       </div>
+
+      {/* Live Queue */}
+      {location.queue_enabled && (
+        <div className="px-4 mt-4">
+          <QueueStatus locationId={location.id} locationName={location.name} />
+        </div>
+      )}
 
       {/* Booking */}
       {isBookable && (

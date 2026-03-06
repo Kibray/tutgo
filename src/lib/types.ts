@@ -27,6 +27,7 @@ export interface LocationItem {
   created_at: string;
   updated_at: string;
   description: string | null;
+  queue_enabled?: boolean;
 }
 
 export const categoryEmoji: Record<string, string> = {

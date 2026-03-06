@@ -47,7 +47,15 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { type, record, old_record } = await req.json();
+    const { type, record, old_record, chatId, text: directText } = await req.json();
+
+    // ---- DIRECT QUEUE NOTIFICATION ----
+    if (type === "queue.notify" && chatId && directText) {
+      await sendTelegram(chatId, directText);
+      return new Response(JSON.stringify({ ok: true }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
 
     // ---- APPOINTMENT EVENTS ----
     if (type === "appointment.created") {

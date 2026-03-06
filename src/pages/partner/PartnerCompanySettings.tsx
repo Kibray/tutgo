@@ -148,6 +148,24 @@ const PartnerCompanySettings = () => {
                   <p className="text-xs text-muted-foreground">{biz.description || t('partner.no_desc')}</p>
                   {biz.address && <p className="text-xs text-muted-foreground">📍 {biz.address}</p>}
                   {biz.phone && <p className="text-xs text-muted-foreground">📞 {biz.phone}</p>}
+                  {/* Queue toggle */}
+                  <div className="flex items-center justify-between pt-2 border-t border-border">
+                    <div>
+                      <p className="text-xs font-medium text-foreground">Живая очередь</p>
+                      <p className="text-[10px] text-muted-foreground">Клиенты смогут брать талон</p>
+                    </div>
+                    <button
+                      onClick={async () => {
+                        const newVal = !biz.queue_enabled;
+                        await supabase.from('locations').update({ queue_enabled: newVal }).eq('id', biz.id);
+                        setBusinesses(prev => prev.map(b => b.id === biz.id ? { ...b, queue_enabled: newVal } : b));
+                        toast.success(newVal ? 'Очередь включена' : 'Очередь выключена');
+                      }}
+                      className={`w-11 h-6 rounded-full transition-colors relative ${biz.queue_enabled ? 'bg-primary' : 'bg-muted'}`}
+                    >
+                      <span className={`absolute top-0.5 w-5 h-5 rounded-full bg-white transition-transform ${biz.queue_enabled ? 'left-[22px]' : 'left-0.5'}`} />
+                    </button>
+                  </div>
                 </div>
               ))
             )}
