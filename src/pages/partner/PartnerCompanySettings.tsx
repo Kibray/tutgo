@@ -1,14 +1,23 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Building2, Clock, Users, Plus, Trash2, X } from 'lucide-react';
+import { ArrowLeft, Building2, Clock, Users, Plus, Trash2, X, MapPin } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { usePreferences } from '@/hooks/usePreferences';
 import { supabase } from '@/integrations/supabase/client';
 import BottomNav from '@/components/BottomNav';
 import BusinessPhotoUpload from '@/components/BusinessPhotoUpload';
+import AddressPicker from '@/components/AddressPicker';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
+
+const tourInclusions = [
+  { id: 'transport', label: 'Транспорт', icon: '🚌' },
+  { id: 'food', label: 'Питание', icon: '🍽️' },
+  { id: 'hotel', label: 'Проживание', icon: '🏨' },
+  { id: 'tickets', label: 'Входные билеты', icon: '🎫' },
+  { id: 'photographer', label: 'Фотограф', icon: '📸' },
+];
 
 const tabs = [
   { id: 'about', labelKey: 'partner.tab_about', icon: Building2 },
@@ -30,6 +39,9 @@ const PartnerCompanySettings = () => {
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState({
     name: '', price: '', currency: 'сум', duration_minutes: '30', description: '', location_id: '',
+    // Tour-specific
+    max_seats: '', tour_program: '', inclusions: [] as string[], duration_days: '1',
+    meeting_point: '', meeting_point_lat: null as number | null, meeting_point_lng: null as number | null,
   });
   const [staffForm, setStaffForm] = useState({
     full_name: '', phone: '', specialties: '', location_id: '',
@@ -64,9 +76,23 @@ const PartnerCompanySettings = () => {
 
   useEffect(() => { if (activeTab === 'team' && businesses.length) loadStaff(); }, [activeTab, businesses]);
 
+  // Check if current location is a tour business
+  const currentBiz = businesses.find(b => b.id === form.location_id);
+  const isTourBiz = currentBiz?.business_type === 'tour';
+
   const handleSave = async () => {
     if (!form.name || !form.price || !form.location_id) { toast.error('Заполните обязательные поля'); return; }
     setSaving(true);
+
+    const tourMetadata = isTourBiz ? {
+      tour_program: form.tour_program || null,
+      inclusions: form.inclusions,
+      duration_days: Number(form.duration_days) || 1,
+      meeting_point: form.meeting_point || null,
+      meeting_point_lat: form.meeting_point_lat,
+      meeting_point_lng: form.meeting_point_lng,
+    } : {};
+
     const { error } = await supabase.from('services').insert({
       name: form.name,
       price: Number(form.price),
@@ -74,11 +100,14 @@ const PartnerCompanySettings = () => {
       duration_minutes: Number(form.duration_minutes) || 30,
       description: form.description || null,
       location_id: form.location_id,
-    });
+      max_seats: isTourBiz && form.max_seats ? Number(form.max_seats) : null,
+      metadata: tourMetadata,
+    } as any);
     setSaving(false);
     if (error) { toast.error(error.message); return; }
-    toast.success('Услуга добавлена');
-    setForm({ name: '', price: '', currency: 'сум', duration_minutes: '30', description: '', location_id: businesses[0]?.id || '' });
+    toast.success(isTourBiz ? 'Тур добавлен' : 'Услуга добавлена');
+    setForm({ name: '', price: '', currency: 'сум', duration_minutes: '30', description: '', location_id: businesses[0]?.id || '',
+      max_seats: '', tour_program: '', inclusions: [], duration_days: '1', meeting_point: '', meeting_point_lat: null, meeting_point_lng: null });
     setShowForm(false);
     loadServices();
   };
@@ -204,7 +233,7 @@ const PartnerCompanySettings = () => {
 
                 {showForm && (
                   <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} className="glass rounded-2xl p-4 space-y-3">
-                    <input placeholder="Название услуги *" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
+                    <input placeholder={isTourBiz ? "Название тура *" : "Название услуги *"} value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
                       className="w-full bg-secondary/50 rounded-xl px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground outline-none" />
                     <div className="flex gap-2">
                       <input placeholder="Цена *" type="number" value={form.price} onChange={e => setForm(f => ({ ...f, price: e.target.value }))}
@@ -215,8 +244,10 @@ const PartnerCompanySettings = () => {
                         <option value="USD">USD</option>
                       </select>
                     </div>
-                    <input placeholder="Длительность (мин)" type="number" value={form.duration_minutes} onChange={e => setForm(f => ({ ...f, duration_minutes: e.target.value }))}
-                      className="w-full bg-secondary/50 rounded-xl px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground outline-none" />
+                    {!isTourBiz && (
+                      <input placeholder="Длительность (мин)" type="number" value={form.duration_minutes} onChange={e => setForm(f => ({ ...f, duration_minutes: e.target.value }))}
+                        className="w-full bg-secondary/50 rounded-xl px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground outline-none" />
+                    )}
                     {businesses.length > 1 && (
                       <select value={form.location_id} onChange={e => setForm(f => ({ ...f, location_id: e.target.value }))}
                         className="w-full bg-secondary/50 rounded-xl px-3 py-2.5 text-sm text-foreground outline-none">
@@ -225,6 +256,59 @@ const PartnerCompanySettings = () => {
                     )}
                     <textarea placeholder="Описание (необязательно)" value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
                       className="w-full bg-secondary/50 rounded-xl px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground outline-none resize-none h-16" />
+
+                    {/* Tour-specific fields */}
+                    {isTourBiz && (
+                      <>
+                        <div className="border-t border-border pt-3">
+                          <p className="text-xs font-semibold text-foreground mb-2">🏔️ Параметры тура</p>
+                        </div>
+                        <div className="flex gap-2">
+                          <input placeholder="Мест в группе" type="number" value={form.max_seats} onChange={e => setForm(f => ({ ...f, max_seats: e.target.value }))}
+                            className="flex-1 bg-secondary/50 rounded-xl px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground outline-none" />
+                          <select value={form.duration_days} onChange={e => setForm(f => ({ ...f, duration_days: e.target.value }))}
+                            className="flex-1 bg-secondary/50 rounded-xl px-3 py-2.5 text-sm text-foreground outline-none">
+                            {[1,2,3,4,5,6,7,10,14].map(d => (
+                              <option key={d} value={String(d)}>{d} {d === 1 ? 'день' : d < 5 ? 'дня' : 'дней'}</option>
+                            ))}
+                          </select>
+                        </div>
+                        <div>
+                          <p className="text-xs font-medium text-muted-foreground mb-2">Программа тура</p>
+                          <textarea placeholder={"День 1: Выезд из Ташкента...\nДень 2: Осмотр достопримечательностей..."} value={form.tour_program}
+                            onChange={e => setForm(f => ({ ...f, tour_program: e.target.value }))}
+                            className="w-full bg-secondary/50 rounded-xl px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground outline-none resize-none h-24" />
+                        </div>
+                        <div>
+                          <p className="text-xs font-medium text-muted-foreground mb-2">Что включено</p>
+                          <div className="flex flex-wrap gap-2">
+                            {tourInclusions.map(inc => (
+                              <button key={inc.id} type="button"
+                                onClick={() => setForm(f => ({
+                                  ...f, inclusions: f.inclusions.includes(inc.id)
+                                    ? f.inclusions.filter(x => x !== inc.id)
+                                    : [...f.inclusions, inc.id]
+                                }))}
+                                className={`px-3 py-1.5 rounded-xl text-xs font-medium transition-colors ${
+                                  form.inclusions.includes(inc.id) ? 'bg-primary text-primary-foreground' : 'bg-secondary/50 text-muted-foreground'
+                                }`}>
+                                {inc.icon} {inc.label}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                        <div>
+                          <p className="text-xs font-medium text-muted-foreground mb-2">📍 Точка сбора</p>
+                          <AddressPicker
+                            address={form.meeting_point}
+                            lat={form.meeting_point_lat}
+                            lng={form.meeting_point_lng}
+                            onAddressChange={(addr, lat, lng) => setForm(f => ({ ...f, meeting_point: addr, meeting_point_lat: lat, meeting_point_lng: lng }))}
+                          />
+                        </div>
+                      </>
+                    )}
+
                     <Button onClick={handleSave} disabled={saving} className="w-full">{saving ? 'Сохранение...' : 'Сохранить'}</Button>
                   </motion.div>
                 )}
