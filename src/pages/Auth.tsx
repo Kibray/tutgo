@@ -11,6 +11,7 @@ const Auth = () => {
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
   const [loading, setLoading] = useState(false);
+  const [confirmationSent, setConfirmationSent] = useState(false);
   const { signUp, signIn } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -25,11 +26,42 @@ const Auth = () => {
     if (error) {
       toast({ title: 'Ошибка', description: error.message, variant: 'destructive' });
     } else {
-      toast({ title: isLogin ? 'Добро пожаловать!' : 'Аккаунт создан!' });
-      navigate('/profile');
+      if (isLogin) {
+        toast({ title: 'Добро пожаловать!' });
+        navigate('/profile');
+      } else {
+        const confirmMessage = 'Письмо отправлено! Проверьте почту и перейдите по ссылке для подтверждения аккаунта.';
+        toast({ title: 'Проверьте почту', description: confirmMessage });
+        setConfirmationSent(true);
+      }
     }
     setLoading(false);
   };
+
+  if (confirmationSent && !isLogin) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center px-6 relative">
+        <motion.button whileTap={{ scale: 0.9 }} onClick={() => navigate(-1 as any)}
+          className="absolute top-6 left-4 w-9 h-9 flex items-center justify-center rounded-full glass">
+          <ArrowLeft className="w-5 h-5 text-foreground" />
+        </motion.button>
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="w-full max-w-sm text-center">
+          <div className="glass rounded-2xl p-8 border border-border">
+            <h1 className="text-2xl font-bold font-display text-foreground mb-4">Проверьте почту</h1>
+            <p className="text-sm text-muted-foreground mb-6">
+              Письмо отправлено! Проверьте почту и перейдите по ссылке для подтверждения аккаунта.
+            </p>
+            <button
+              onClick={() => { setConfirmationSent(false); setEmail(''); setPassword(''); setName(''); }}
+              className="text-sm text-primary hover:underline"
+            >
+              Вернуться к регистрации
+            </button>
+          </div>
+        </motion.div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background flex flex-col items-center justify-center px-6 relative">
