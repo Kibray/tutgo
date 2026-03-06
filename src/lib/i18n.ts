@@ -107,6 +107,7 @@ const translations: Record<string, Record<Lang, string>> = {
   'partner.staff': { ru: 'Мастера / Персонал', uz: 'Ustalar / Xodimlar', en: 'Staff / Team' },
   'partner.company_settings': { ru: 'Настройки компании', uz: 'Kompaniya sozlamalari', en: 'Company Settings' },
   'partner.company_profile': { ru: 'Профиль компании', uz: 'Kompaniya profili', en: 'Company Profile' },
+  'partner.deals': { ru: 'Акции', uz: 'Aksiyalar', en: 'Deals' },
   'partner.tab_about': { ru: 'О компании', uz: 'Kompaniya haqida', en: 'About' },
   'partner.tab_pricelist': { ru: 'Прайс-лист', uz: 'Narxlar', en: 'Price List' },
   'partner.tab_team': { ru: 'Команда', uz: 'Jamoa', en: 'Team' },
