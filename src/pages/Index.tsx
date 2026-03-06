@@ -177,7 +177,7 @@ const Index = () => {
               <div className="w-9 h-9 rounded-full bg-secondary/80 backdrop-blur-sm flex items-center justify-center text-sm">🇺🇿</div>
             </div>
           </motion.div>
-          <SearchBar onSearch={handleSearch} onSubmit={handleSearchSubmit} />
+          <SearchBar onSearch={handleSearch} onSubmit={handleSearchSubmit} onLocationSelect={handleLocationSelect} onGeolocate={handleCenterOnMe} geolocating={geolocating} />
           <div className="mt-3">
             <CategoryChips selected={category} onSelect={handleCategorySelect} selectedSub={subcategory} onSubSelect={setSubcategory} />
           </div>
