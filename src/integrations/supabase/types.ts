@@ -565,6 +565,8 @@ export type Database = {
           duration_minutes: number
           id: string
           location_id: string
+          max_seats: number | null
+          metadata: Json | null
           name: string
           price: number
           updated_at: string
@@ -577,6 +579,8 @@ export type Database = {
           duration_minutes?: number
           id?: string
           location_id: string
+          max_seats?: number | null
+          metadata?: Json | null
           name: string
           price?: number
           updated_at?: string
@@ -589,6 +593,8 @@ export type Database = {
           duration_minutes?: number
           id?: string
           location_id?: string
+          max_seats?: number | null
+          metadata?: Json | null
           name?: string
           price?: number
           updated_at?: string

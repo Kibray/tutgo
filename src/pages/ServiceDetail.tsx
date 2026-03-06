@@ -1,7 +1,8 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Star, Clock, MapPin, ChevronRight, Navigation, Copy, Phone, Share2, Send, User } from 'lucide-react';
+import { ArrowLeft, Star, Clock, MapPin, ChevronRight, Navigation, Copy, Phone, Share2, Send, User, Users, CalendarDays } from 'lucide-react';
+import AddressPicker from '@/components/AddressPicker';
 import QueueStatus from '@/components/QueueStatus';
 import { formatPrice, openDirections, copyAddress, categoryEmoji } from '@/lib/types';
 import type { LocationItem } from '@/lib/types';
@@ -28,6 +29,7 @@ const ServiceDetail = () => {
   const [services, setServices] = useState<any[]>([]);
   const [staffList, setStaffList] = useState<any[]>([]);
   const [reviews, setReviews] = useState<any[]>([]);
+  const [bookedSeats, setBookedSeats] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
   const [selectedDate, setSelectedDate] = useState(0);
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
@@ -46,6 +48,17 @@ const ServiceDetail = () => {
           supabase.from('reviews').select('*').eq('location_id', id).order('created_at', { ascending: false }).limit(50),
         ]);
         setServices(svcRes.data || []);
+
+        // Count booked seats for tour services
+        if (loc.business_type === 'tour' && svcRes.data?.length) {
+          const svcIds = svcRes.data.map((s: any) => s.id);
+          const { data: appts } = await supabase.from('appointments').select('service_id')
+            .in('service_id', svcIds).in('status', ['confirmed', 'pending']);
+          const counts: Record<string, number> = {};
+          (appts || []).forEach((a: any) => { counts[a.service_id] = (counts[a.service_id] || 0) + 1; });
+          setBookedSeats(counts);
+        }
+
         setStaffList(staffRes.data || []);
         
         // Fetch profile data for reviewers
@@ -243,17 +256,80 @@ const ServiceDetail = () => {
             {services.length > 0 ? (
               <div className="glass rounded-lg p-4">
                 <div className="space-y-2">
-                  {services.map((svc) => (
-                    <motion.button key={svc.id} whileTap={{ scale: 0.98 }} onClick={() => setSelectedService(svc.id)}
-                      className={`w-full glass rounded-lg p-3 flex items-center justify-between transition-colors ${selectedService === svc.id ? 'ring-1 ring-primary' : ''}`}>
-                      <div className="text-left">
-                        <p className="text-sm font-medium text-foreground">{svc.name}</p>
-                        <p className="text-xs text-muted-foreground flex items-center gap-1 mt-0.5"><Clock className="w-3 h-3" />{svc.duration_minutes} мин</p>
-                      </div>
-                      <span className="text-sm font-bold text-gradient-green">{formatPrice(svc.price)} {svc.currency}</span>
-                    </motion.button>
-                  ))}
+                  {services.map((svc) => {
+                    const meta = svc.metadata || {};
+                    const isTour = location.business_type === 'tour';
+                    const maxSeats = svc.max_seats;
+                    const booked = bookedSeats[svc.id] || 0;
+                    const remaining = maxSeats ? maxSeats - booked : null;
+                    const inclusionLabels: Record<string, string> = {
+                      transport: '🚌', food: '🍽️', hotel: '🏨', tickets: '🎫', photographer: '📸',
+                    };
+
+                    return (
+                      <motion.button key={svc.id} whileTap={{ scale: 0.98 }} onClick={() => setSelectedService(svc.id)}
+                        className={`w-full glass rounded-lg p-3 text-left transition-colors ${selectedService === svc.id ? 'ring-1 ring-primary' : ''}`}>
+                        <div className="flex items-center justify-between">
+                          <p className="text-sm font-medium text-foreground">{svc.name}</p>
+                          <span className="text-sm font-bold text-gradient-green">{formatPrice(svc.price)} {svc.currency}</span>
+                        </div>
+                        {isTour ? (
+                          <div className="mt-2 space-y-1.5">
+                            <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                              {meta.duration_days && (
+                                <span className="flex items-center gap-1"><CalendarDays className="w-3 h-3" />{meta.duration_days} {meta.duration_days === 1 ? 'день' : meta.duration_days < 5 ? 'дня' : 'дней'}</span>
+                              )}
+                              {remaining !== null && (
+                                <span className={`flex items-center gap-1 font-medium ${remaining <= 3 ? 'text-destructive' : remaining <= 5 ? 'text-amber-500' : 'text-primary'}`}>
+                                  <Users className="w-3 h-3" />
+                                  {remaining > 0 ? `Осталось ${remaining} мест` : 'Мест нет'}
+                                </span>
+                              )}
+                            </div>
+                            {meta.inclusions?.length > 0 && (
+                              <div className="flex flex-wrap gap-1">
+                                {meta.inclusions.map((inc: string) => (
+                                  <span key={inc} className="text-[10px] bg-secondary px-1.5 py-0.5 rounded-md">{inclusionLabels[inc] || inc}</span>
+                                ))}
+                              </div>
+                            )}
+                            {remaining !== null && remaining <= 0 && (
+                              <button onClick={(e) => { e.stopPropagation(); toast({ title: 'Лист ожидания', description: 'Вы добавлены в лист ожидания. Мы уведомим вас, если место освободится.' }); }}
+                                className="w-full mt-1 py-2 rounded-lg bg-amber-500/15 text-amber-500 text-xs font-medium">
+                                📋 Записаться в лист ожидания
+                              </button>
+                            )}
+                          </div>
+                        ) : (
+                          <p className="text-xs text-muted-foreground flex items-center gap-1 mt-0.5"><Clock className="w-3 h-3" />{svc.duration_minutes} мин</p>
+                        )}
+                      </motion.button>
+                    );
+                  })}
                 </div>
+
+                {/* Tour program for selected service */}
+                {location.business_type === 'tour' && selectedService && (() => {
+                  const svc = services.find(s => s.id === selectedService);
+                  const meta = svc?.metadata || {};
+                  if (!meta.tour_program && !meta.meeting_point) return null;
+                  return (
+                    <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="mt-3 space-y-3 border-t border-border pt-3">
+                      {meta.tour_program && (
+                        <div>
+                          <p className="text-xs font-semibold text-foreground mb-1">📋 Программа тура</p>
+                          <p className="text-xs text-muted-foreground whitespace-pre-line leading-relaxed">{meta.tour_program}</p>
+                        </div>
+                      )}
+                      {meta.meeting_point && (
+                        <div>
+                          <p className="text-xs font-semibold text-foreground mb-1">📍 Точка сбора</p>
+                          <p className="text-xs text-muted-foreground">{meta.meeting_point}</p>
+                        </div>
+                      )}
+                    </motion.div>
+                  );
+                })()}
               </div>
             ) : (
               <div className="text-center py-8 text-xs text-muted-foreground">Услуги не добавлены</div>
