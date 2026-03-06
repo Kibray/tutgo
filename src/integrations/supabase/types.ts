@@ -522,6 +522,39 @@ export type Database = {
           },
         ]
       }
+      telegram_auth_codes: {
+        Row: {
+          code: string
+          created_at: string
+          expires_at: string
+          id: string
+          telegram_chat_id: number
+          telegram_first_name: string | null
+          telegram_username: string | null
+          used: boolean
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          expires_at: string
+          id?: string
+          telegram_chat_id: number
+          telegram_first_name?: string | null
+          telegram_username?: string | null
+          used?: boolean
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          expires_at?: string
+          id?: string
+          telegram_chat_id?: number
+          telegram_first_name?: string | null
+          telegram_username?: string | null
+          used?: boolean
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           id: string
