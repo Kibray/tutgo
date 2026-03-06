@@ -89,7 +89,7 @@ const Bookings = () => {
     } else {
       toast({ title: 'Спасибо за отзыв!' });
       setReviewedIds(prev => new Set([...prev, appointmentId]));
-      setReviewingId(null);
+      setReviewingAppointment(null);
       setReviewComment('');
       setReviewRating(5);
     }
