@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Locate, ChevronUp, ChevronDown } from 'lucide-react';
+import { Locate, ChevronUp, ChevronDown, Bell } from 'lucide-react';
 import SearchBar from '@/components/SearchBar';
 import CategoryChips from '@/components/CategoryChips';
 import ServiceCard from '@/components/ServiceCard';
@@ -13,6 +13,7 @@ import AiAssistantFab from '@/components/AiAssistantFab';
 import { useLocations } from '@/hooks/useLocations';
 import { useCategories } from '@/hooks/useCategories';
 import { useFavorites } from '@/hooks/useFavorites';
+import { useNotifications } from '@/hooks/useNotifications';
 import type { LocationItem } from '@/lib/types';
 
 const TASHKENT: [number, number] = [41.3111, 69.2797];
