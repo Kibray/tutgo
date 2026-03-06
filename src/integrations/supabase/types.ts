@@ -184,6 +184,85 @@ export type Database = {
           },
         ]
       }
+      inventory: {
+        Row: {
+          created_at: string
+          id: string
+          location_id: string
+          min_stock: number
+          name: string
+          quantity: number
+          unit: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          location_id: string
+          min_stock?: number
+          name: string
+          quantity?: number
+          unit?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          location_id?: string
+          min_stock?: number
+          name?: string
+          quantity?: number
+          unit?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "inventory_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      inventory_operations: {
+        Row: {
+          created_at: string
+          id: string
+          inventory_id: string
+          note: string | null
+          operation_type: string
+          performed_by: string | null
+          quantity: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          inventory_id: string
+          note?: string | null
+          operation_type?: string
+          performed_by?: string | null
+          quantity: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          inventory_id?: string
+          note?: string | null
+          operation_type?: string
+          performed_by?: string | null
+          quantity?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "inventory_operations_inventory_id_fkey"
+            columns: ["inventory_id"]
+            isOneToOne: false
+            referencedRelation: "inventory"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       locations: {
         Row: {
           address: string | null
