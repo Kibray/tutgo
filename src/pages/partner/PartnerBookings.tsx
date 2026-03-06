@@ -143,8 +143,7 @@ const PartnerBookings = () => {
       )
       .in("location_id", locIds)
       .gte("start_time", dayStart.toISOString())
-      .lte("start_time", dayEnd.toISOString())
-      .neq("status", "cancelled");
+      .lte("start_time", dayEnd.toISOString());
     setAppointments((appts as any[]) || []);
     setLoading(false);
   };
