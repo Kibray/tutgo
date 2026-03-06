@@ -94,6 +94,7 @@ const Index = () => {
   const handleCenterOnMe = useCallback(() => {
     const tg = (window as any).Telegram?.WebApp;
     tg?.HapticFeedback?.impactOccurred('light');
+    setGeolocating(true);
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (pos) => {
@@ -102,15 +103,24 @@ const Index = () => {
           setMapCenter(loc);
           setNearbyMode(true);
           setListExpanded(true);
+          setGeolocating(false);
         },
-        () => setMapCenter(TASHKENT)
+        () => { setMapCenter(TASHKENT); setGeolocating(false); },
+        { timeout: 5000 }
       );
+    } else {
+      setGeolocating(false);
     }
   }, []);
 
   const handleDisableNearby = useCallback(() => {
     setNearbyMode(false);
     setUserLocation(null);
+  }, []);
+
+  const handleLocationSelect = useCallback((lat: number, lng: number, _address: string) => {
+    setMapCenter([lat, lng]);
+    setListExpanded(false);
   }, []);
 
   const isBookable = (s: LocationItem) =>
