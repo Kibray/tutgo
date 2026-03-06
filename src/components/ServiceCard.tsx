@@ -12,6 +12,14 @@ interface ServiceCardProps {
   onToggleFavorite?: (id: string) => void;
 }
 
+const pluralReviews = (n: number) => {
+  const mod10 = n % 10;
+  const mod100 = n % 100;
+  if (mod10 === 1 && mod100 !== 11) return '';
+  if (mod10 >= 2 && mod10 <= 4 && (mod100 < 10 || mod100 >= 20)) return 'а';
+  return 'ов';
+};
+
 const ServiceCard = ({ service, index, onClick, isFavorite, onToggleFavorite }: ServiceCardProps) => {
   const navigate = useNavigate();
 
@@ -51,7 +59,10 @@ const ServiceCard = ({ service, index, onClick, isFavorite, onToggleFavorite }: 
         </div>
         <p className="text-xs text-muted-foreground mt-0.5">{service.address}</p>
         <div className="flex items-center gap-3 mt-2 text-xs text-muted-foreground">
-          <span className="flex items-center gap-1"><Star className="w-3 h-3 text-primary fill-primary" />{service.rating || 0}</span>
+          <span className="flex items-center gap-1">
+            <Star className="w-3 h-3 text-primary fill-primary" />{service.rating || 0}
+            {(service.review_count || 0) > 0 && <span className="text-muted-foreground/70">· {service.review_count} отзыв{pluralReviews(service.review_count || 0)}</span>}
+          </span>
           <span className="flex items-center gap-1"><MapPin className="w-3 h-3" />{service.city}</span>
         </div>
         <div className="flex items-center justify-between mt-2">
