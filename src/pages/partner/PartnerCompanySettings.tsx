@@ -89,6 +89,30 @@ const PartnerCompanySettings = () => {
     setServices(s => s.filter(x => x.id !== id));
   };
 
+  const handleSaveStaff = async () => {
+    if (!staffForm.full_name || !staffForm.location_id) { toast.error('Заполните обязательные поля'); return; }
+    setSaving(true);
+    const { error } = await supabase.from('staff').insert({
+      full_name: staffForm.full_name,
+      phone: staffForm.phone || null,
+      specialties: staffForm.specialties ? staffForm.specialties.split(',').map(s => s.trim()) : null,
+      location_id: staffForm.location_id,
+    });
+    setSaving(false);
+    if (error) { toast.error(error.message); return; }
+    toast.success('Сотрудник добавлен');
+    setStaffForm({ full_name: '', phone: '', specialties: '', location_id: businesses[0]?.id || '' });
+    setShowStaffForm(false);
+    loadStaff();
+  };
+
+  const handleDeleteStaff = async (id: string) => {
+    const { error } = await supabase.from('staff').delete().eq('id', id);
+    if (error) { toast.error(error.message); return; }
+    toast.success('Сотрудник удалён');
+    setStaff(s => s.filter(x => x.id !== id));
+  };
+
   return (
     <div className="min-h-screen bg-background pb-24">
       <div className="px-4 pt-6">
