@@ -1,7 +1,7 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Locate, ChevronUp, ChevronDown, Bell } from 'lucide-react';
+import { Locate, ChevronUp, ChevronDown, Bell, Navigation } from 'lucide-react';
 import SearchBar from '@/components/SearchBar';
 import CategoryChips from '@/components/CategoryChips';
 import ServiceCard from '@/components/ServiceCard';
@@ -17,6 +17,21 @@ import { useNotifications } from '@/hooks/useNotifications';
 import type { LocationItem } from '@/lib/types';
 
 const TASHKENT: [number, number] = [41.3111, 69.2797];
+const NEARBY_RADIUS_KM = 2;
+
+// Haversine distance in km
+const getDistanceKm = (lat1: number, lng1: number, lat2: number, lng2: number): number => {
+  const R = 6371;
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLng = (lng2 - lng1) * Math.PI / 180;
+  const a = Math.sin(dLat / 2) ** 2 + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLng / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+};
+
+const formatDistance = (km: number): string => {
+  if (km < 1) return `${Math.round(km * 1000)} м`;
+  return `${km.toFixed(1)} км`;
+};
 
 const Index = () => {
   const navigate = useNavigate();
@@ -26,29 +41,54 @@ const Index = () => {
   const [listExpanded, setListExpanded] = useState(true);
   const [mapCenter, setMapCenter] = useState<[number, number] | null>(null);
   const [sheetService, setSheetService] = useState<LocationItem | null>(null);
+  const [nearbyMode, setNearbyMode] = useState(false);
+  const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
   const { categories } = useCategories();
   const { isFavorite, toggleFavorite } = useFavorites();
   const { unreadCount } = useNotifications();
 
-  // Map category UUID to business_type name for filtering
   const selectedCat = categories.find(c => c.id === category);
-  const categoryName = selectedCat?.name;
-  // We filter by business_type string which matches the category name logic
   const { locations: filtered, loading } = useLocations(
     category === 'all' ? 'all' : (selectedCat ? getBizType(selectedCat.name) : 'all'),
     subcategory,
     search
   );
 
+  // Sort and filter by distance when in nearby mode
+  const displayLocations = useMemo(() => {
+    if (!nearbyMode || !userLocation) return filtered;
+    return filtered
+      .map(loc => ({
+        ...loc,
+        _distance: getDistanceKm(userLocation[0], userLocation[1], loc.lat || 0, loc.lng || 0),
+      }))
+      .filter(loc => loc._distance <= NEARBY_RADIUS_KM)
+      .sort((a, b) => a._distance - b._distance);
+  }, [filtered, nearbyMode, userLocation]);
+
+  // For map display: show all filtered when not nearby, or nearby-filtered
+  const mapLocations = nearbyMode ? displayLocations : filtered;
+
   const handleCenterOnMe = useCallback(() => {
     const tg = (window as any).Telegram?.WebApp;
     tg?.HapticFeedback?.impactOccurred('light');
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
-        (pos) => setMapCenter([pos.coords.latitude, pos.coords.longitude]),
+        (pos) => {
+          const loc: [number, number] = [pos.coords.latitude, pos.coords.longitude];
+          setUserLocation(loc);
+          setMapCenter(loc);
+          setNearbyMode(true);
+          setListExpanded(true);
+        },
         () => setMapCenter(TASHKENT)
       );
     }
+  }, []);
+
+  const handleDisableNearby = useCallback(() => {
+    setNearbyMode(false);
+    setUserLocation(null);
   }, []);
 
   const isBookable = (s: LocationItem) =>
@@ -78,7 +118,13 @@ const Index = () => {
   return (
     <div className="relative h-screen w-full overflow-hidden">
       <div className="absolute inset-0 z-0">
-        <MapView services={filtered} onMarkerClick={handleMarkerClick} center={mapCenter} />
+        <MapView
+          services={mapLocations}
+          onMarkerClick={handleMarkerClick}
+          center={mapCenter}
+          nearbyMode={nearbyMode}
+          userLocation={userLocation}
+        />
       </div>
 
       <div className="absolute top-0 left-0 right-0 z-[1000] px-4 pt-4 pointer-events-none">
@@ -91,7 +137,7 @@ const Index = () => {
               <button onClick={() => navigate('/notifications')} className="relative w-9 h-9 rounded-full bg-secondary/80 backdrop-blur-sm flex items-center justify-center">
                 <Bell className="w-4.5 h-4.5 text-foreground" />
                 {unreadCount > 0 && (
-                  <span className="absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full bg-red-500 text-white text-[9px] font-bold flex items-center justify-center">
+                  <span className="absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full bg-destructive text-destructive-foreground text-[9px] font-bold flex items-center justify-center">
                     {unreadCount > 9 ? '9+' : unreadCount}
                   </span>
                 )}
@@ -106,11 +152,24 @@ const Index = () => {
         </div>
       </div>
 
-      <button onClick={handleCenterOnMe}
-        className="absolute z-[1000] w-10 h-10 glass-strong rounded-full flex items-center justify-center shadow-lg"
+      {/* Nearby / Locate buttons */}
+      <div className="absolute z-[1000] flex flex-col gap-2"
         style={{ bottom: listExpanded ? 'calc(50% + 80px + 16px)' : 'calc(80px + 70px + 16px)', right: '16px', transition: 'bottom 0.3s ease' }}>
-        <Locate className="w-5 h-5 text-primary" />
-      </button>
+        {nearbyMode && (
+          <motion.button
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            onClick={handleDisableNearby}
+            className="w-10 h-10 glass-strong rounded-full flex items-center justify-center shadow-lg ring-1 ring-primary/30"
+          >
+            <span className="text-xs">✕</span>
+          </motion.button>
+        )}
+        <button onClick={handleCenterOnMe}
+          className={`w-10 h-10 glass-strong rounded-full flex items-center justify-center shadow-lg transition-colors ${nearbyMode ? 'ring-2 ring-primary bg-primary/20' : ''}`}>
+          <Locate className="w-5 h-5 text-primary" />
+        </button>
+      </div>
 
       <motion.div
         animate={{ height: listExpanded ? '50%' : '80px' }}
@@ -120,7 +179,7 @@ const Index = () => {
         <button onClick={toggleList} className="w-full flex flex-col items-center pt-2 pb-1">
           <div className="w-10 h-1 rounded-full bg-muted-foreground/30 mb-2" />
           <div className="flex items-center gap-1 text-xs text-muted-foreground">
-            {listExpanded ? (<><ChevronDown className="w-3.5 h-3.5" />Свернуть</>) : (<><ChevronUp className="w-3.5 h-3.5" />{filtered.length} мест найдено</>)}
+            {listExpanded ? (<><ChevronDown className="w-3.5 h-3.5" />Свернуть</>) : (<><ChevronUp className="w-3.5 h-3.5" />{displayLocations.length} мест найдено</>)}
           </div>
         </button>
 
@@ -130,18 +189,30 @@ const Index = () => {
               className="overflow-y-auto px-4 pb-4" style={{ height: 'calc(100% - 50px)' }}>
               <div className="flex items-center justify-between mb-3">
                 <h2 className="text-sm font-semibold text-foreground">
-                  {category === 'all' ? 'Популярное рядом' : (selectedCat?.name || '')}
+                  {nearbyMode ? 'Рядом со мной' : category === 'all' ? 'Популярное рядом' : (selectedCat?.name || '')}
                 </h2>
-                <span className="text-xs text-muted-foreground">{filtered.length} найдено</span>
+                <span className="text-xs text-muted-foreground">
+                  {displayLocations.length} найдено
+                  {nearbyMode && ' · до 2 км'}
+                </span>
               </div>
               {loading ? <SkeletonList count={4} /> : (
                 <div className="space-y-3">
-                  {filtered.map((loc, i) => (
-                    <ServiceCard key={loc.id} service={loc} index={i} onClick={() => handleMarkerClick(loc)}
-                      isFavorite={isFavorite(loc.id)} onToggleFavorite={toggleFavorite} />
+                  {displayLocations.map((loc: any, i: number) => (
+                    <div key={loc.id} className="relative">
+                      <ServiceCard service={loc} index={i} onClick={() => handleMarkerClick(loc)}
+                        isFavorite={isFavorite(loc.id)} onToggleFavorite={toggleFavorite} />
+                      {nearbyMode && loc._distance != null && (
+                        <div className="absolute top-3 left-3 bg-primary/90 text-primary-foreground text-[10px] font-bold px-2 py-0.5 rounded-md backdrop-blur-sm">
+                          {formatDistance(loc._distance)}
+                        </div>
+                      )}
+                    </div>
                   ))}
-                  {filtered.length === 0 && (
-                    <div className="text-center py-12 text-muted-foreground text-sm">Ничего не найдено. Попробуйте другой запрос.</div>
+                  {displayLocations.length === 0 && (
+                    <div className="text-center py-12 text-muted-foreground text-sm">
+                      {nearbyMode ? 'Нет мест в радиусе 2 км. Попробуйте расширить поиск.' : 'Ничего не найдено. Попробуйте другой запрос.'}
+                    </div>
                   )}
                 </div>
               )}
@@ -150,21 +221,28 @@ const Index = () => {
         </AnimatePresence>
 
         <AnimatePresence>
-          {!listExpanded && filtered.length > 0 && (
+          {!listExpanded && displayLocations.length > 0 && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="px-4 mt-1">
               <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-2">
-                {filtered.slice(0, 8).map((s) => (
+                {displayLocations.slice(0, 8).map((s: any) => (
                   <motion.div key={s.id} whileTap={{ scale: 0.97 }} onClick={() => handleMarkerClick(s)}
                     className="glass-strong rounded-lg p-3 min-w-[200px] flex-shrink-0 cursor-pointer">
                     <p className="text-xs font-semibold text-foreground truncate">{s.name}</p>
                     <p className="text-[10px] text-muted-foreground truncate mt-0.5">{s.address}</p>
                     <div className="flex items-center justify-between mt-2">
-                      {(s.price_from || 0) > 0 && (
-                        <span className="text-xs font-bold text-gradient-green">
-                          {new Intl.NumberFormat('ru-RU').format(s.price_from!)} {s.currency}
-                        </span>
-                      )}
-                      <span className="text-[10px] text-muted-foreground">⭐ {s.rating}</span>
+                      <div className="flex items-center gap-2">
+                        {(s.price_from || 0) > 0 && (
+                          <span className="text-xs font-bold text-gradient-green">
+                            {new Intl.NumberFormat('ru-RU').format(s.price_from!)} {s.currency}
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-[10px] text-muted-foreground">⭐ {s.rating}</span>
+                        {nearbyMode && s._distance != null && (
+                          <span className="text-[10px] text-primary font-medium">{formatDistance(s._distance)}</span>
+                        )}
+                      </div>
                     </div>
                   </motion.div>
                 ))}
