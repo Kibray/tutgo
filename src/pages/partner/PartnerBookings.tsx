@@ -227,6 +227,7 @@ const PartnerBookings = () => {
     total: appointments.length,
     pending: appointments.filter((a) => a.status === "pending").length,
     confirmed: appointments.filter((a) => a.status === "confirmed").length,
+    cancelled: appointments.filter((a) => a.status === "cancelled").length,
   }), [appointments]);
 
   const sortedAppointments = useMemo(
@@ -273,7 +274,7 @@ const PartnerBookings = () => {
           ))}
         </div>
 
-        <div className="grid grid-cols-3 gap-2 mb-4">
+        <div className="grid grid-cols-4 gap-2 mb-4">
           <div className="glass rounded-xl p-3 text-center">
             <p className="text-xl font-bold text-primary">{stats.total}</p>
             <p className="text-xs text-muted-foreground">Всего</p>
@@ -285,6 +286,10 @@ const PartnerBookings = () => {
           <div className="glass rounded-xl p-3 text-center">
             <p className="text-xl font-bold text-green-500">{stats.confirmed}</p>
             <p className="text-xs text-muted-foreground">Принято</p>
+          </div>
+          <div className="glass rounded-xl p-3 text-center">
+            <p className="text-xl font-bold text-red-500">{stats.cancelled}</p>
+            <p className="text-xs text-muted-foreground">Отклонённые</p>
           </div>
         </div>
 
