@@ -326,6 +326,7 @@ export type Database = {
           notify_deals: boolean
           notify_reminder: boolean
           phone: string | null
+          telegram_chat_id: number | null
           telegram_username: string | null
           updated_at: string
           user_id: string
@@ -343,6 +344,7 @@ export type Database = {
           notify_deals?: boolean
           notify_reminder?: boolean
           phone?: string | null
+          telegram_chat_id?: number | null
           telegram_username?: string | null
           updated_at?: string
           user_id: string
@@ -360,6 +362,7 @@ export type Database = {
           notify_deals?: boolean
           notify_reminder?: boolean
           phone?: string | null
+          telegram_chat_id?: number | null
           telegram_username?: string | null
           updated_at?: string
           user_id?: string

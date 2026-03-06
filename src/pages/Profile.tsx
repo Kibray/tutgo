@@ -1,9 +1,11 @@
 import { motion } from 'framer-motion';
-import { User, Settings, Globe, HelpCircle, ChevronRight, LogOut, Key, Briefcase, Store, BookOpen } from 'lucide-react';
+import { User, Settings, Globe, HelpCircle, ChevronRight, LogOut, Key, Briefcase, Store, BookOpen, Send } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { usePreferences } from '@/hooks/usePreferences';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
+import { useState, useEffect } from 'react';
 import BottomNav from '@/components/BottomNav';
 
 const Profile = () => {
@@ -11,6 +13,21 @@ const Profile = () => {
   const { t } = usePreferences();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [telegramConnected, setTelegramConnected] = useState(false);
+
+  useEffect(() => {
+    if (!user) return;
+    supabase.from('profiles').select('telegram_chat_id').eq('user_id', user.id).single()
+      .then(({ data }: any) => {
+        if (data?.telegram_chat_id) setTelegramConnected(true);
+      });
+  }, [user]);
+
+  const handleConnectTelegram = () => {
+    if (!user) { navigate('/auth'); return; }
+    window.open(`https://t.me/TutGoUzBot?start=${user.id}`, '_blank');
+    toast({ title: 'Откройте бота и нажмите Start', description: 'После подключения уведомления будут приходить в Telegram' });
+  };
 
   const handleSignOut = async () => {
     await signOut();
@@ -56,6 +73,28 @@ const Profile = () => {
             )}
           </div>
         </motion.div>
+
+        {/* Telegram connect */}
+        {user && (
+          <motion.div
+            initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.02 }}
+            onClick={telegramConnected ? undefined : handleConnectTelegram}
+            className={`glass rounded-xl p-3.5 flex items-center gap-3 mb-4 ${telegramConnected ? '' : 'cursor-pointer active:scale-[0.98]'} transition-transform`}
+          >
+            <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${telegramConnected ? 'bg-primary/15' : 'bg-blue-500/15'}`}>
+              <Send className={`w-4 h-4 ${telegramConnected ? 'text-primary' : 'text-blue-500'}`} />
+            </div>
+            <div className="flex-1">
+              <p className="text-sm font-medium text-foreground">
+                {telegramConnected ? 'Telegram подключён ✓' : 'Подключить Telegram'}
+              </p>
+              <p className="text-[10px] text-muted-foreground">
+                {telegramConnected ? 'Уведомления приходят в бот' : 'Получайте уведомления в Telegram'}
+              </p>
+            </div>
+            {!telegramConnected && <ChevronRight className="w-4 h-4 text-muted-foreground" />}
+          </motion.div>
+        )}
 
         {/* Two main cards */}
         <div className="grid grid-cols-2 gap-3 mb-6">
