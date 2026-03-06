@@ -320,15 +320,32 @@ const PartnerCompanySettings = () => {
                     <p className="text-xs mt-1">Добавьте первую услугу</p>
                   </div>
                 ) : (
-                  services.map(svc => (
+                  services.map(svc => {
+                    const meta = svc.metadata || {};
+                    const svcBiz = businesses.find((b: any) => b.id === svc.location_id);
+                    const svcIsTour = svcBiz?.business_type === 'tour';
+                    return (
                     <motion.div key={svc.id} layout className="glass rounded-2xl p-4 flex justify-between items-start gap-3">
                       <div className="flex-1 min-w-0">
                         <h3 className="text-sm font-semibold text-foreground truncate">{svc.name}</h3>
                         {svc.description && <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">{svc.description}</p>}
-                        <div className="flex gap-3 mt-1.5">
+                        <div className="flex gap-3 mt-1.5 flex-wrap">
                           <span className="text-xs font-medium text-primary">{svc.price.toLocaleString()} {svc.currency}</span>
-                          <span className="text-xs text-muted-foreground">{svc.duration_minutes} мин</span>
+                          {svcIsTour && meta.duration_days ? (
+                            <span className="text-xs text-muted-foreground">🏔️ {meta.duration_days} {meta.duration_days === 1 ? 'день' : meta.duration_days < 5 ? 'дня' : 'дней'}</span>
+                          ) : (
+                            <span className="text-xs text-muted-foreground">{svc.duration_minutes} мин</span>
+                          )}
+                          {svcIsTour && svc.max_seats && <span className="text-xs text-muted-foreground">👥 {svc.max_seats} мест</span>}
                         </div>
+                        {svcIsTour && meta.inclusions?.length > 0 && (
+                          <div className="flex flex-wrap gap-1 mt-1.5">
+                            {meta.inclusions.map((inc: string) => {
+                              const icons: Record<string, string> = { transport: '🚌', food: '🍽️', hotel: '🏨', tickets: '🎫', photographer: '📸' };
+                              return <span key={inc} className="text-[10px] bg-secondary px-1.5 py-0.5 rounded-md">{icons[inc] || inc}</span>;
+                            })}
+                          </div>
+                        )}
                         {svc.locations?.name && <p className="text-[10px] text-muted-foreground mt-1">📍 {svc.locations.name}</p>}
                       </div>
                       <motion.button whileTap={{ scale: 0.9 }} onClick={() => handleDelete(svc.id)}
@@ -336,7 +353,8 @@ const PartnerCompanySettings = () => {
                         <Trash2 className="w-4 h-4" />
                       </motion.button>
                     </motion.div>
-                  ))
+                    );
+                  })
                 )}
               </>
             )}
