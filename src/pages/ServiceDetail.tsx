@@ -46,7 +46,18 @@ const ServiceDetail = () => {
         ]);
         setServices(svcRes.data || []);
         setStaffList(staffRes.data || []);
-        setReviews(reviewsRes.data || []);
+        
+        // Fetch profile data for reviewers
+        const rawReviews = reviewsRes.data || [];
+        if (rawReviews.length > 0) {
+          const userIds = [...new Set(rawReviews.map((r: any) => r.user_id))];
+          const { data: profiles } = await supabase.from('profiles').select('user_id, display_name, avatar_url').in('user_id', userIds);
+          const profileMap: Record<string, any> = {};
+          (profiles || []).forEach((p: any) => { profileMap[p.user_id] = p; });
+          setReviews(rawReviews.map((r: any) => ({ ...r, profiles: profileMap[r.user_id] || null })));
+        } else {
+          setReviews([]);
+        }
       }
       setLoading(false);
     };
