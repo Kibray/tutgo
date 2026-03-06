@@ -10,9 +10,20 @@ import { supabase } from '@/integrations/supabase/client';
 import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
 
 const Auth = () => {
+  const [isLogin, setIsLogin] = useState(true);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [name, setName] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
+  const [confirmationSent, setConfirmationSent] = useState(false);
+  const [telegramStep, setTelegramStep] = useState<'idle' | 'waiting_code'>('idle');
+  const [telegramCode, setTelegramCode] = useState('');
+  const [telegramLoading, setTelegramLoading] = useState(false);
+  const { signUp, signIn, user } = useAuth();
   const { isTelegram, ready: tgReady } = useTelegram();
-  const { user } = useAuth();
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   // Auto-redirect if already authenticated via Telegram Mini App
   useEffect(() => {
@@ -28,20 +39,6 @@ const Auth = () => {
       </div>
     );
   }
-
-  const [isLogin, setIsLogin] = useState(true);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [name, setName] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [googleLoading, setGoogleLoading] = useState(false);
-  const [confirmationSent, setConfirmationSent] = useState(false);
-  const [telegramStep, setTelegramStep] = useState<'idle' | 'waiting_code'>('idle');
-  const [telegramCode, setTelegramCode] = useState('');
-  const [telegramLoading, setTelegramLoading] = useState(false);
-  const { signUp, signIn } = useAuth();
-  const navigate = useNavigate();
-  const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
