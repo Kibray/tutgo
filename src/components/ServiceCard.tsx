@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Star, Clock, MapPin, BadgeCheck, Send } from 'lucide-react';
+import { Star, MapPin, BadgeCheck, Send, Heart } from 'lucide-react';
 import { formatPrice, categoryEmoji } from '@/lib/types';
 import type { LocationItem } from '@/lib/types';
 import { useNavigate } from 'react-router-dom';
@@ -8,11 +8,12 @@ interface ServiceCardProps {
   service: LocationItem;
   index: number;
   onClick?: () => void;
+  isFavorite?: boolean;
+  onToggleFavorite?: (id: string) => void;
 }
 
-const ServiceCard = ({ service, index, onClick }: ServiceCardProps) => {
+const ServiceCard = ({ service, index, onClick, isFavorite, onToggleFavorite }: ServiceCardProps) => {
   const navigate = useNavigate();
-  const isBookable = ['beauty', 'medical', 'tour', 'service'].includes(service.business_type);
 
   const handleClick = () => {
     if (onClick) return onClick();
@@ -25,13 +26,26 @@ const ServiceCard = ({ service, index, onClick }: ServiceCardProps) => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.06, duration: 0.35 }}
       onClick={handleClick}
-      className="glass rounded-lg p-4 flex gap-3 cursor-pointer active:scale-[0.98] transition-transform"
+      className="glass rounded-lg p-4 flex gap-3 cursor-pointer active:scale-[0.98] transition-transform relative"
     >
+      {onToggleFavorite && (
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            const tg = (window as any).Telegram?.WebApp;
+            tg?.HapticFeedback?.impactOccurred('light');
+            onToggleFavorite(service.id);
+          }}
+          className="absolute top-3 right-3 z-10 w-8 h-8 flex items-center justify-center rounded-full bg-background/60 backdrop-blur-sm"
+        >
+          <Heart className={`w-4 h-4 transition-colors ${isFavorite ? 'text-red-500 fill-red-500' : 'text-muted-foreground'}`} />
+        </button>
+      )}
       <div className="w-20 h-20 rounded-md bg-secondary flex-shrink-0 flex items-center justify-center text-2xl">
         {categoryEmoji[service.business_type] || '📍'}
       </div>
       <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-1.5 pr-8">
           <h3 className="text-sm font-semibold text-foreground truncate">{service.name}</h3>
           {service.verified && <BadgeCheck className="w-4 h-4 text-primary flex-shrink-0" />}
         </div>
