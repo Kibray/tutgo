@@ -54,7 +54,8 @@
     --sidebar-ring: 142 72% 29%;
   }
 
-  .light {
+  .light,
+  .tg-light {
     --background: 0 0% 98%;
     --foreground: 220 15% 10%;
 
