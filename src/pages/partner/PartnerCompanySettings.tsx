@@ -229,10 +229,77 @@ const PartnerCompanySettings = () => {
 
         {/* Team */}
         {activeTab === 'team' && (
-          <div className="text-center py-12 text-muted-foreground">
-            <Users className="w-10 h-10 mx-auto mb-3 opacity-50" />
-            <p className="text-sm">{t('partner.no_staff')}</p>
-            <p className="text-xs mt-1">{t('partner.staff_hint')}</p>
+          <div className="space-y-3">
+            {businesses.length === 0 ? (
+              <div className="text-center py-12 text-muted-foreground">
+                <Users className="w-10 h-10 mx-auto mb-3 opacity-50" />
+                <p className="text-sm">Сначала добавьте бизнес во вкладке «О компании»</p>
+              </div>
+            ) : (
+              <>
+                <div className="flex justify-between items-center">
+                  <p className="text-xs text-muted-foreground">{staff.length} сотрудников</p>
+                  <Button size="sm" onClick={() => setShowStaffForm(!showStaffForm)} variant={showStaffForm ? 'secondary' : 'default'} className="gap-1 text-xs">
+                    {showStaffForm ? <><X className="w-3.5 h-3.5" /> Отмена</> : <><Plus className="w-3.5 h-3.5" /> Добавить</>}
+                  </Button>
+                </div>
+
+                {showStaffForm && (
+                  <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} className="glass rounded-2xl p-4 space-y-3">
+                    <input placeholder="Имя и фамилия *" value={staffForm.full_name} onChange={e => setStaffForm(f => ({ ...f, full_name: e.target.value }))}
+                      className="w-full bg-secondary/50 rounded-xl px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground outline-none" />
+                    <input placeholder="Телефон" type="tel" value={staffForm.phone} onChange={e => setStaffForm(f => ({ ...f, phone: e.target.value }))}
+                      className="w-full bg-secondary/50 rounded-xl px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground outline-none" />
+                    <input placeholder="Специальности (через запятую)" value={staffForm.specialties} onChange={e => setStaffForm(f => ({ ...f, specialties: e.target.value }))}
+                      className="w-full bg-secondary/50 rounded-xl px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground outline-none" />
+                    {businesses.length > 1 && (
+                      <select value={staffForm.location_id} onChange={e => setStaffForm(f => ({ ...f, location_id: e.target.value }))}
+                        className="w-full bg-secondary/50 rounded-xl px-3 py-2.5 text-sm text-foreground outline-none">
+                        <option value="">Выберите бизнес</option>
+                        {businesses.map(b => <option key={b.id} value={b.id}>{b.name}</option>)}
+                      </select>
+                    )}
+                    {businesses.length === 1 && (
+                      <input type="hidden" value={staffForm.location_id || businesses[0]?.id || ''} onChange={e => setStaffForm(f => ({ ...f, location_id: e.target.value }))} />
+                    )}
+                    <Button onClick={() => {
+                      if (businesses.length === 1 && !staffForm.location_id) {
+                        setStaffForm(f => ({ ...f, location_id: businesses[0].id }));
+                      }
+                      handleSaveStaff();
+                    }} disabled={saving} className="w-full">{saving ? 'Сохранение...' : 'Сохранить'}</Button>
+                  </motion.div>
+                )}
+
+                {staff.length === 0 && !showStaffForm ? (
+                  <div className="text-center py-12 text-muted-foreground">
+                    <Users className="w-10 h-10 mx-auto mb-3 opacity-50" />
+                    <p className="text-sm">Нет сотрудников</p>
+                    <p className="text-xs mt-1">Добавьте первого сотрудника</p>
+                  </div>
+                ) : (
+                  staff.map(member => (
+                    <motion.div key={member.id} layout className="glass rounded-2xl p-4 flex justify-between items-start gap-3">
+                      <div className="flex-1 min-w-0">
+                        <h3 className="text-sm font-semibold text-foreground">{member.full_name}</h3>
+                        {member.phone && <p className="text-xs text-muted-foreground mt-0.5">📞 {member.phone}</p>}
+                        {member.specialties && member.specialties.length > 0 && (
+                          <div className="flex flex-wrap gap-1 mt-1.5">
+                            {member.specialties.map((spec: string, i: number) => (
+                              <span key={i} className="text-[10px] bg-primary/20 text-primary px-2 py-0.5 rounded-full">{spec}</span>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                      <motion.button whileTap={{ scale: 0.9 }} onClick={() => handleDeleteStaff(member.id)}
+                        className="p-2 rounded-xl bg-destructive/10 text-destructive hover:bg-destructive/20 transition-colors">
+                        <Trash2 className="w-4 h-4" />
+                      </motion.button>
+                    </motion.div>
+                  ))
+                )}
+              </>
+            )}
           </div>
         )}
 
