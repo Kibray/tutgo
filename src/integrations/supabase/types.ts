@@ -232,6 +232,39 @@ export type Database = {
           },
         ]
       }
+      notifications: {
+        Row: {
+          body: string
+          created_at: string
+          id: string
+          read: boolean
+          related_id: string | null
+          title: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          id?: string
+          read?: boolean
+          related_id?: string | null
+          title: string
+          type?: string
+          user_id: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          id?: string
+          read?: boolean
+          related_id?: string | null
+          title?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -241,6 +274,10 @@ export type Database = {
           id: string
           language: string
           notifications_enabled: boolean
+          notify_cancelled: boolean
+          notify_confirmed: boolean
+          notify_deals: boolean
+          notify_reminder: boolean
           phone: string | null
           telegram_username: string | null
           updated_at: string
@@ -254,6 +291,10 @@ export type Database = {
           id?: string
           language?: string
           notifications_enabled?: boolean
+          notify_cancelled?: boolean
+          notify_confirmed?: boolean
+          notify_deals?: boolean
+          notify_reminder?: boolean
           phone?: string | null
           telegram_username?: string | null
           updated_at?: string
@@ -267,6 +308,10 @@ export type Database = {
           id?: string
           language?: string
           notifications_enabled?: boolean
+          notify_cancelled?: boolean
+          notify_confirmed?: boolean
+          notify_deals?: boolean
+          notify_reminder?: boolean
           phone?: string | null
           telegram_username?: string | null
           updated_at?: string
