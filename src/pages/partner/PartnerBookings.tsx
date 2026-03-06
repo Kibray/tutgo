@@ -457,123 +457,93 @@ const PartnerBookings = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-end justify-center"
+            className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center"
             onClick={() => setSelectedAppointment(null)}
           >
             <motion.div
-              initial={{ y: "100%" }}
-              animate={{ y: 0 }}
-              exit={{ y: "100%" }}
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
               transition={{ type: "spring", damping: 25, stiffness: 300 }}
               onClick={(e) => e.stopPropagation()}
-              className="glass rounded-t-2xl w-full max-w-md max-h-[85vh] flex flex-col border-t border-border"
+              className="bg-background rounded-2xl p-5 mx-4 w-full max-w-sm shadow-xl border border-border"
             >
-              <div className="flex-1 overflow-y-auto p-5">
-                <div className="w-10 h-1 bg-border rounded-full mx-auto mb-4" />
-                <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-base font-bold font-display text-foreground">Детали записи</h2>
-                  <button onClick={() => setSelectedAppointment(null)} className="p-1.5 rounded-full hover:bg-secondary">
-                    <X className="w-4 h-4 text-muted-foreground" />
-                  </button>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-base font-bold font-display text-foreground">Детали записи</h2>
+                <button onClick={() => setSelectedAppointment(null)} className="p-1.5 rounded-full hover:bg-secondary">
+                  <X className="w-4 h-4 text-muted-foreground" />
+                </button>
+              </div>
+
+              <div className="flex items-center gap-3 mb-3">
+                <div className={`w-11 h-11 rounded-full flex items-center justify-center text-sm font-bold ${STATUS_AVATAR_COLORS[selectedAppointment.status] || "bg-muted text-muted-foreground"}`}>
+                  {getInitials(selectedAppointment.client_name)}
                 </div>
-
-                <div className="flex items-center gap-3 mb-4">
-                  <div className={`w-12 h-12 rounded-full flex items-center justify-center text-sm font-bold ${STATUS_AVATAR_COLORS[selectedAppointment.status] || "bg-muted text-muted-foreground"}`}>
-                    {getInitials(selectedAppointment.client_name)}
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-foreground">{selectedAppointment.client_name || "Не указано"}</p>
-                    {selectedAppointment.client_phone && (
-                      <a href={`tel:${selectedAppointment.client_phone}`} className="text-xs text-primary font-medium">
-                        {selectedAppointment.client_phone} · Позвонить
-                      </a>
-                    )}
-                  </div>
-                </div>
-
-                <span
-                  className={`text-[10px] font-medium px-2.5 py-1 rounded-md ${STATUS_COLORS[selectedAppointment.status] || "text-muted-foreground bg-muted"}`}
-                >
-                  {STATUS_LABELS[selectedAppointment.status] || selectedAppointment.status}
-                </span>
-
-                <div className="mt-4 space-y-2">
-                  {selectedAppointment.service && (
-                    <div className="flex items-center gap-3 p-3 rounded-lg bg-secondary/50">
-                      <Scissors className="w-3.5 h-3.5 text-primary flex-shrink-0" />
-                      <div>
-                        <p className="text-[9px] text-muted-foreground uppercase tracking-wide">Услуга</p>
-                        <p className="text-sm font-semibold text-foreground">{(selectedAppointment.service as any).name}</p>
-                      </div>
-                    </div>
+                <div>
+                  <p className="text-sm font-semibold text-foreground">{selectedAppointment.client_name || "Не указано"}</p>
+                  {selectedAppointment.client_phone && (
+                    <a href={`tel:${selectedAppointment.client_phone}`} className="text-xs text-primary font-medium">
+                      {selectedAppointment.client_phone} · Позвонить
+                    </a>
                   )}
+                </div>
+              </div>
 
-                  <div className="flex items-center gap-3 p-3 rounded-lg bg-secondary/50">
-                    <Clock className="w-3.5 h-3.5 text-primary flex-shrink-0" />
+              <span className={`text-[10px] font-medium px-2.5 py-1 rounded-md ${STATUS_COLORS[selectedAppointment.status] || "text-muted-foreground bg-muted"}`}>
+                {STATUS_LABELS[selectedAppointment.status] || selectedAppointment.status}
+              </span>
+
+              <div className="mt-3 space-y-2">
+                {selectedAppointment.service && (
+                  <div className="flex items-center gap-3 p-2.5 rounded-lg bg-secondary/50">
+                    <Scissors className="w-3.5 h-3.5 text-primary flex-shrink-0" />
                     <div>
-                      <p className="text-[9px] text-muted-foreground uppercase tracking-wide">Время</p>
-                      <p className="text-sm font-semibold text-foreground">
-                        {new Date(selectedAppointment.start_time).toLocaleTimeString("ru", {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}{" "}
-                        —{" "}
-                        {new Date(selectedAppointment.end_time).toLocaleTimeString("ru", { hour: "2-digit", minute: "2-digit" })}
-                      </p>
+                      <p className="text-[9px] text-muted-foreground uppercase tracking-wide">Услуга</p>
+                      <p className="text-sm font-semibold text-foreground">{(selectedAppointment.service as any).name}</p>
                     </div>
+                  </div>
+                )}
+                <div className="flex items-center gap-3 p-2.5 rounded-lg bg-secondary/50">
+                  <Clock className="w-3.5 h-3.5 text-primary flex-shrink-0" />
+                  <div>
+                    <p className="text-[9px] text-muted-foreground uppercase tracking-wide">Время</p>
+                    <p className="text-sm font-semibold text-foreground">
+                      {new Date(selectedAppointment.start_time).toLocaleTimeString("ru", { hour: "2-digit", minute: "2-digit" })}
+                      {" — "}
+                      {new Date(selectedAppointment.end_time).toLocaleTimeString("ru", { hour: "2-digit", minute: "2-digit" })}
+                    </p>
                   </div>
                 </div>
               </div>
 
-              <div className="flex-shrink-0 px-5 pb-8 pt-3 border-t border-border">
+              <div className="mt-4">
                 {selectedAppointment.status === "pending" && (
                   <div className="flex gap-3">
-                    <motion.button
-                      whileTap={{ scale: 0.97 }}
-                      disabled={updating}
-                      onClick={() => updateStatus(selectedAppointment.id, "cancelled")}
-                      className="flex-1 py-3 rounded-lg glass border border-destructive/30 text-destructive text-sm font-semibold flex items-center justify-center gap-1.5 disabled:opacity-50"
-                    >
+                    <motion.button whileTap={{ scale: 0.97 }} disabled={updating} onClick={() => updateStatus(selectedAppointment.id, "cancelled")}
+                      className="flex-1 py-2.5 rounded-lg border border-destructive/30 text-destructive text-sm font-semibold flex items-center justify-center gap-1.5 disabled:opacity-50">
                       <XCircle className="w-4 h-4" /> Отклонить
                     </motion.button>
-                    <motion.button
-                      whileTap={{ scale: 0.97 }}
-                      disabled={updating}
-                      onClick={() => updateStatus(selectedAppointment.id, "confirmed")}
-                      className="flex-1 py-3 rounded-lg bg-primary text-primary-foreground text-sm font-semibold flex items-center justify-center gap-1.5 disabled:opacity-50"
-                    >
+                    <motion.button whileTap={{ scale: 0.97 }} disabled={updating} onClick={() => updateStatus(selectedAppointment.id, "confirmed")}
+                      className="flex-1 py-2.5 rounded-lg bg-primary text-primary-foreground text-sm font-semibold flex items-center justify-center gap-1.5 disabled:opacity-50">
                       <Check className="w-4 h-4" /> Принять
                     </motion.button>
                   </div>
                 )}
-
                 {selectedAppointment.status === "confirmed" && (
                   <div className="flex gap-3">
-                    <motion.button
-                      whileTap={{ scale: 0.97 }}
-                      disabled={updating}
-                      onClick={() => updateStatus(selectedAppointment.id, "cancelled")}
-                      className="flex-1 py-3 rounded-lg glass border border-destructive/30 text-destructive text-sm font-semibold flex items-center justify-center gap-1.5 disabled:opacity-50"
-                    >
+                    <motion.button whileTap={{ scale: 0.97 }} disabled={updating} onClick={() => updateStatus(selectedAppointment.id, "cancelled")}
+                      className="flex-1 py-2.5 rounded-lg border border-destructive/30 text-destructive text-sm font-semibold flex items-center justify-center gap-1.5 disabled:opacity-50">
                       <XCircle className="w-4 h-4" /> Отменить
                     </motion.button>
-                    <motion.button
-                      whileTap={{ scale: 0.97 }}
-                      disabled={updating}
-                      onClick={() => updateStatus(selectedAppointment.id, "completed")}
-                      className="flex-1 py-3 rounded-lg bg-primary text-primary-foreground text-sm font-semibold flex items-center justify-center gap-1.5 disabled:opacity-50"
-                    >
+                    <motion.button whileTap={{ scale: 0.97 }} disabled={updating} onClick={() => updateStatus(selectedAppointment.id, "completed")}
+                      className="flex-1 py-2.5 rounded-lg bg-primary text-primary-foreground text-sm font-semibold flex items-center justify-center gap-1.5 disabled:opacity-50">
                       <CheckCircle2 className="w-4 h-4" /> Выполнено
                     </motion.button>
                   </div>
                 )}
-
                 {(selectedAppointment.status === "cancelled" || selectedAppointment.status === "completed") && (
-                  <motion.button
-                    whileTap={{ scale: 0.97 }}
-                    onClick={() => setSelectedAppointment(null)}
-                    className="w-full py-3 rounded-lg bg-secondary text-foreground text-sm font-semibold flex items-center justify-center gap-1.5"
-                  >
+                  <motion.button whileTap={{ scale: 0.97 }} onClick={() => setSelectedAppointment(null)}
+                    className="w-full py-2.5 rounded-lg bg-secondary text-foreground text-sm font-semibold flex items-center justify-center gap-1.5">
                     <X className="w-4 h-4" /> Закрыть
                   </motion.button>
                 )}
