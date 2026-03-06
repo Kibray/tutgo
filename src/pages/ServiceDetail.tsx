@@ -129,18 +129,58 @@ const ServiceDetail = () => {
   return (
     <div className="min-h-screen bg-background pb-32 overflow-y-auto">
       {/* Hero */}
-      <div className="relative h-56 bg-secondary flex items-center justify-center">
-        <div className="flex gap-1 w-full h-full">
-          <div className="flex-1 bg-secondary flex items-center justify-center text-5xl">{categoryEmoji[location.business_type] || '📍'}</div>
-          <div className="w-1/3 flex flex-col gap-1">
-            <div className="flex-1 bg-muted flex items-center justify-center text-2xl opacity-60">📷</div>
-            <div className="flex-1 bg-muted flex items-center justify-center text-2xl opacity-60">📷</div>
+      <div className="relative h-56 bg-secondary">
+        {location.gallery && location.gallery.length > 0 ? (
+          <div className="flex gap-1 w-full h-full">
+            <div className="flex-1 overflow-hidden">
+              <img src={location.gallery[0]} alt={location.name} className="w-full h-full object-cover" />
+            </div>
+            {location.gallery.length > 1 && (
+              <div className="w-1/3 flex flex-col gap-1">
+                {location.gallery.slice(1, 3).map((url, i) => (
+                  <div key={i} className="flex-1 overflow-hidden">
+                    <img src={url} alt="" className="w-full h-full object-cover" />
+                  </div>
+                ))}
+                {location.gallery.length <= 2 && (
+                  <div className="flex-1 bg-muted flex items-center justify-center text-2xl opacity-60">📷</div>
+                )}
+              </div>
+            )}
           </div>
-        </div>
+        ) : (
+          <div className={`w-full h-full flex items-center justify-center bg-gradient-to-br ${
+            location.business_type === 'beauty' ? 'from-pink-500/30 to-purple-500/30' :
+            location.business_type === 'medical' ? 'from-blue-500/30 to-cyan-500/30' :
+            location.business_type === 'cafe' ? 'from-amber-500/30 to-orange-500/30' :
+            location.business_type === 'tour' ? 'from-emerald-500/30 to-teal-500/30' :
+            'from-primary/20 to-primary/40'
+          }`}>
+            <span className="text-6xl font-bold text-foreground/30">{location.name?.charAt(0)?.toUpperCase()}</span>
+          </div>
+        )}
         <button onClick={() => navigate(-1)} className="absolute top-4 left-4 w-9 h-9 glass rounded-full flex items-center justify-center">
           <ArrowLeft className="w-4 h-4 text-foreground" />
         </button>
+        {location.branded_icon_url && (
+          <div className="absolute -bottom-5 left-4 w-12 h-12 rounded-full border-2 border-background overflow-hidden bg-secondary">
+            <img src={location.branded_icon_url} alt="" className="w-full h-full object-cover" />
+          </div>
+        )}
       </div>
+
+      {/* Gallery scroll */}
+      {location.gallery && location.gallery.length > 3 && (
+        <div className="px-4 mt-3">
+          <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
+            {location.gallery.slice(3).map((url, i) => (
+              <div key={i} className="w-20 h-20 rounded-lg overflow-hidden flex-shrink-0 bg-secondary">
+                <img src={url} alt="" className="w-full h-full object-cover" />
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Info card */}
       <div className="px-4 -mt-6 relative z-10">
