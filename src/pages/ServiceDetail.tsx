@@ -1,7 +1,8 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Star, Clock, MapPin, ChevronRight, Navigation, Copy, Phone, Share2, Send, User } from 'lucide-react';
+import { ArrowLeft, Star, Clock, MapPin, ChevronRight, Navigation, Copy, Phone, Share2, Send, User, Users, CalendarDays } from 'lucide-react';
+import AddressPicker from '@/components/AddressPicker';
 import QueueStatus from '@/components/QueueStatus';
 import { formatPrice, openDirections, copyAddress, categoryEmoji } from '@/lib/types';
 import type { LocationItem } from '@/lib/types';
@@ -28,6 +29,7 @@ const ServiceDetail = () => {
   const [services, setServices] = useState<any[]>([]);
   const [staffList, setStaffList] = useState<any[]>([]);
   const [reviews, setReviews] = useState<any[]>([]);
+  const [bookedSeats, setBookedSeats] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
   const [selectedDate, setSelectedDate] = useState(0);
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
@@ -46,6 +48,17 @@ const ServiceDetail = () => {
           supabase.from('reviews').select('*').eq('location_id', id).order('created_at', { ascending: false }).limit(50),
         ]);
         setServices(svcRes.data || []);
+
+        // Count booked seats for tour services
+        if (loc.business_type === 'tour' && svcRes.data?.length) {
+          const svcIds = svcRes.data.map((s: any) => s.id);
+          const { data: appts } = await supabase.from('appointments').select('service_id')
+            .in('service_id', svcIds).in('status', ['confirmed', 'pending']);
+          const counts: Record<string, number> = {};
+          (appts || []).forEach((a: any) => { counts[a.service_id] = (counts[a.service_id] || 0) + 1; });
+          setBookedSeats(counts);
+        }
+
         setStaffList(staffRes.data || []);
         
         // Fetch profile data for reviewers
