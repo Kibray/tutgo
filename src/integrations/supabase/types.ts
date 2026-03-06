@@ -327,6 +327,7 @@ export type Database = {
           id: string
           location_id: string
           rating: number
+          staff_id: string | null
           user_id: string
         }
         Insert: {
@@ -336,6 +337,7 @@ export type Database = {
           id?: string
           location_id: string
           rating: number
+          staff_id?: string | null
           user_id: string
         }
         Update: {
@@ -345,6 +347,7 @@ export type Database = {
           id?: string
           location_id?: string
           rating?: number
+          staff_id?: string | null
           user_id?: string
         }
         Relationships: [
@@ -360,6 +363,13 @@ export type Database = {
             columns: ["location_id"]
             isOneToOne: false
             referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reviews_staff_id_fkey"
+            columns: ["staff_id"]
+            isOneToOne: false
+            referencedRelation: "staff"
             referencedColumns: ["id"]
           },
         ]
