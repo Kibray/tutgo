@@ -205,6 +205,67 @@ const Bookings = () => {
           </TabsContent>
         </Tabs>
       </div>
+
+      {/* Review Modal */}
+      <AnimatePresence>
+        {reviewingAppointment && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[3000] flex items-center justify-center bg-black/70 backdrop-blur-sm"
+            onClick={() => setReviewingAppointment(null)}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-background rounded-2xl p-5 mx-4 w-full max-w-sm shadow-xl"
+            >
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-sm font-bold text-foreground">Оставить отзыв</h3>
+                <button onClick={() => setReviewingAppointment(null)} className="w-7 h-7 rounded-full bg-muted flex items-center justify-center">
+                  <X className="w-4 h-4 text-muted-foreground" />
+                </button>
+              </div>
+
+              <p className="text-xs text-muted-foreground mb-4">
+                {reviewingAppointment.services?.name || reviewingAppointment.locations?.name}
+                {' · '}
+                {new Date(reviewingAppointment.start_time).toLocaleDateString('ru', { day: 'numeric', month: 'short' })}
+              </p>
+
+              <div className="flex items-center justify-center gap-2 mb-4">
+                {[1, 2, 3, 4, 5].map(star => (
+                  <button key={star} onClick={() => setReviewRating(star)} className="p-1">
+                    <Star className={`w-8 h-8 transition-colors ${star <= reviewRating ? 'text-primary fill-primary' : 'text-muted'}`} />
+                  </button>
+                ))}
+              </div>
+
+              <textarea
+                value={reviewComment}
+                onChange={e => setReviewComment(e.target.value)}
+                placeholder="Расскажите о вашем опыте (необязательно)"
+                className="w-full bg-secondary rounded-xl p-3 text-sm text-foreground resize-none h-24 border border-border focus:border-primary outline-none mb-4"
+              />
+
+              <div className="flex gap-2">
+                <button onClick={() => setReviewingAppointment(null)} className="flex-1 py-2.5 text-sm glass rounded-xl text-muted-foreground font-medium">Отмена</button>
+                <button
+                  onClick={() => handleSubmitReview(reviewingAppointment.id, reviewingAppointment.location_id)}
+                  disabled={submittingReview}
+                  className="flex-1 py-2.5 text-sm bg-primary text-accent-foreground rounded-xl font-semibold flex items-center justify-center gap-1"
+                >
+                  {submittingReview ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Отправить'}
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <BottomNav />
     </div>
   );
