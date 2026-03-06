@@ -43,9 +43,31 @@ const Index = () => {
   const [sheetService, setSheetService] = useState<LocationItem | null>(null);
   const [nearbyMode, setNearbyMode] = useState(false);
   const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
+  const [geolocating, setGeolocating] = useState(false);
   const { categories } = useCategories();
   const { isFavorite, toggleFavorite } = useFavorites();
   const { unreadCount } = useNotifications();
+
+  // Auto-detect geolocation on mount
+  const autoGeolocated = useRef(false);
+  useEffect(() => {
+    if (autoGeolocated.current) return;
+    autoGeolocated.current = true;
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const loc: [number, number] = [pos.coords.latitude, pos.coords.longitude];
+          setUserLocation(loc);
+          setMapCenter(loc);
+          setNearbyMode(true);
+        },
+        () => setMapCenter(TASHKENT),
+        { timeout: 5000 }
+      );
+    } else {
+      setMapCenter(TASHKENT);
+    }
+  }, []);
 
   const selectedCat = categories.find(c => c.id === category);
   const { locations: filtered, loading } = useLocations(
