@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Locate, ChevronUp, ChevronDown, Bell, Navigation } from 'lucide-react';
@@ -43,9 +43,31 @@ const Index = () => {
   const [sheetService, setSheetService] = useState<LocationItem | null>(null);
   const [nearbyMode, setNearbyMode] = useState(false);
   const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
+  const [geolocating, setGeolocating] = useState(false);
   const { categories } = useCategories();
   const { isFavorite, toggleFavorite } = useFavorites();
   const { unreadCount } = useNotifications();
+
+  // Auto-detect geolocation on mount
+  const autoGeolocated = useRef(false);
+  useEffect(() => {
+    if (autoGeolocated.current) return;
+    autoGeolocated.current = true;
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const loc: [number, number] = [pos.coords.latitude, pos.coords.longitude];
+          setUserLocation(loc);
+          setMapCenter(loc);
+          setNearbyMode(true);
+        },
+        () => setMapCenter(TASHKENT),
+        { timeout: 5000 }
+      );
+    } else {
+      setMapCenter(TASHKENT);
+    }
+  }, []);
 
   const selectedCat = categories.find(c => c.id === category);
   const { locations: filtered, loading } = useLocations(
@@ -72,6 +94,7 @@ const Index = () => {
   const handleCenterOnMe = useCallback(() => {
     const tg = (window as any).Telegram?.WebApp;
     tg?.HapticFeedback?.impactOccurred('light');
+    setGeolocating(true);
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (pos) => {
@@ -80,15 +103,24 @@ const Index = () => {
           setMapCenter(loc);
           setNearbyMode(true);
           setListExpanded(true);
+          setGeolocating(false);
         },
-        () => setMapCenter(TASHKENT)
+        () => { setMapCenter(TASHKENT); setGeolocating(false); },
+        { timeout: 5000 }
       );
+    } else {
+      setGeolocating(false);
     }
   }, []);
 
   const handleDisableNearby = useCallback(() => {
     setNearbyMode(false);
     setUserLocation(null);
+  }, []);
+
+  const handleLocationSelect = useCallback((lat: number, lng: number, _address: string) => {
+    setMapCenter([lat, lng]);
+    setListExpanded(false);
   }, []);
 
   const isBookable = (s: LocationItem) =>
@@ -145,7 +177,7 @@ const Index = () => {
               <div className="w-9 h-9 rounded-full bg-secondary/80 backdrop-blur-sm flex items-center justify-center text-sm">🇺🇿</div>
             </div>
           </motion.div>
-          <SearchBar onSearch={handleSearch} onSubmit={handleSearchSubmit} />
+          <SearchBar onSearch={handleSearch} onSubmit={handleSearchSubmit} onLocationSelect={handleLocationSelect} onGeolocate={handleCenterOnMe} geolocating={geolocating} />
           <div className="mt-3">
             <CategoryChips selected={category} onSelect={handleCategorySelect} selectedSub={subcategory} onSubSelect={setSubcategory} />
           </div>
