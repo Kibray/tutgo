@@ -1,0 +1,1 @@
+ALTER TABLE public.reviews ADD COLUMN IF NOT EXISTS staff_id uuid REFERENCES public.staff(id) ON DELETE SET NULL;

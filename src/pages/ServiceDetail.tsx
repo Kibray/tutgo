@@ -1,13 +1,22 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { ArrowLeft, Star, Clock, MapPin, ChevronRight, Navigation, Copy, Phone, Share2, Send } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ArrowLeft, Star, Clock, MapPin, ChevronRight, Navigation, Copy, Phone, Share2, Send, User } from 'lucide-react';
 import { formatPrice, openDirections, copyAddress, categoryEmoji } from '@/lib/types';
 import type { LocationItem } from '@/lib/types';
 import { supabase } from '@/integrations/supabase/client';
 import BottomNav from '@/components/BottomNav';
 import DateChip from '@/components/DateChip';
 import { useToast } from '@/hooks/use-toast';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+
+const pluralReviews = (n: number) => {
+  const mod10 = n % 10;
+  const mod100 = n % 100;
+  if (mod10 === 1 && mod100 !== 11) return 'отзыв';
+  if (mod10 >= 2 && mod10 <= 4 && (mod100 < 10 || mod100 >= 20)) return 'отзыва';
+  return 'отзывов';
+};
 
 const ServiceDetail = () => {
   const { id } = useParams();
@@ -33,16 +42,44 @@ const ServiceDetail = () => {
         const [svcRes, staffRes, reviewsRes] = await Promise.all([
           supabase.from('services').select('*').eq('location_id', id),
           supabase.from('staff').select('*').eq('location_id', id),
-          supabase.from('reviews').select('*').eq('location_id', id).order('created_at', { ascending: false }).limit(20),
+          supabase.from('reviews').select('*').eq('location_id', id).order('created_at', { ascending: false }).limit(50),
         ]);
         setServices(svcRes.data || []);
         setStaffList(staffRes.data || []);
-        setReviews(reviewsRes.data || []);
+        
+        // Fetch profile data for reviewers
+        const rawReviews = reviewsRes.data || [];
+        if (rawReviews.length > 0) {
+          const userIds = [...new Set(rawReviews.map((r: any) => r.user_id))];
+          const { data: profiles } = await supabase.from('profiles').select('user_id, display_name, avatar_url').in('user_id', userIds);
+          const profileMap: Record<string, any> = {};
+          (profiles || []).forEach((p: any) => { profileMap[p.user_id] = p; });
+          setReviews(rawReviews.map((r: any) => ({ ...r, profiles: profileMap[r.user_id] || null })));
+        } else {
+          setReviews([]);
+        }
       }
       setLoading(false);
     };
     fetch();
   }, [id]);
+
+  // Compute per-staff ratings
+  const staffRatings = useMemo(() => {
+    const map: Record<string, { sum: number; count: number }> = {};
+    reviews.forEach((r: any) => {
+      if (r.staff_id) {
+        if (!map[r.staff_id]) map[r.staff_id] = { sum: 0, count: 0 };
+        map[r.staff_id].sum += r.rating;
+        map[r.staff_id].count += 1;
+      }
+    });
+    const result: Record<string, number> = {};
+    Object.entries(map).forEach(([sid, { sum, count }]) => {
+      result[sid] = Math.round((sum / count) * 10) / 10;
+    });
+    return result;
+  }, [reviews]);
 
   const timeSlots = useMemo(() => {
     const slots: { id: string; time: string; available: boolean }[] = [];
@@ -81,6 +118,13 @@ const ServiceDetail = () => {
     else { navigator.clipboard.writeText(text); toast({ title: 'Скопировано для отправки' }); }
   };
 
+  // Rating distribution
+  const ratingDist = [5, 4, 3, 2, 1].map(star => ({
+    star,
+    count: reviews.filter((r: any) => r.rating === star).length,
+  }));
+  const maxRatingCount = Math.max(...ratingDist.map(d => d.count), 1);
+
   return (
     <div className="min-h-screen bg-background pb-32 overflow-y-auto">
       {/* Hero */}
@@ -106,7 +150,7 @@ const ServiceDetail = () => {
           </div>
           {location.description && <p className="text-sm text-muted-foreground mt-1">{location.description}</p>}
           <div className="flex items-center gap-4 mt-3 text-xs text-muted-foreground">
-            <span className="flex items-center gap-1"><Star className="w-3.5 h-3.5 text-primary fill-primary" />{location.rating} ({location.review_count})</span>
+            <span className="flex items-center gap-1"><Star className="w-3.5 h-3.5 text-primary fill-primary" /><span className="font-semibold text-foreground">{location.rating}</span> · {location.review_count} {pluralReviews(location.review_count || 0)}</span>
             <span className="flex items-center gap-1"><MapPin className="w-3.5 h-3.5" />{location.city}</span>
           </div>
           <div className="flex items-center gap-2 mt-3 text-xs text-muted-foreground">
@@ -144,56 +188,103 @@ const ServiceDetail = () => {
         </motion.button>
       </div>
 
-      {/* Services */}
-      {services.length > 0 && (
-        <div className="px-4 mt-4">
-          <div className="glass rounded-lg p-4">
-            <h3 className="text-sm font-semibold text-foreground mb-3">Услуги</h3>
-            <div className="space-y-2">
-              {services.map((svc) => (
-                <motion.button key={svc.id} whileTap={{ scale: 0.98 }} onClick={() => setSelectedService(svc.id)}
-                  className={`w-full glass rounded-lg p-3 flex items-center justify-between transition-colors ${selectedService === svc.id ? 'ring-1 ring-primary' : ''}`}>
-                  <div className="text-left">
-                    <p className="text-sm font-medium text-foreground">{svc.name}</p>
-                    <p className="text-xs text-muted-foreground flex items-center gap-1 mt-0.5"><Clock className="w-3 h-3" />{svc.duration_minutes} мин</p>
-                  </div>
-                  <span className="text-sm font-bold text-gradient-green">{formatPrice(svc.price)} {svc.currency}</span>
-                </motion.button>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Real Reviews */}
+      {/* Tabs: Services / Reviews */}
       <div className="px-4 mt-4">
-        <div className="glass rounded-lg p-4">
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="text-sm font-semibold text-foreground">Отзывы</h3>
-            <div className="flex items-center gap-1 text-xs text-muted-foreground">
-              <Star className="w-3.5 h-3.5 text-primary fill-primary" />
-              <span className="font-medium text-foreground">{location.rating}</span>
-              <span>· {location.review_count} отзывов</span>
-            </div>
-          </div>
-          {reviews.length === 0 ? (
-            <p className="text-xs text-muted-foreground text-center py-4">Пока нет отзывов</p>
-          ) : (
-            <div className="space-y-3">
-              {reviews.map((review) => (
-                <div key={review.id} className="border-t border-border pt-3">
+        <Tabs defaultValue="services" className="w-full">
+          <TabsList className="w-full">
+            <TabsTrigger value="services" className="flex-1 text-xs">Услуги</TabsTrigger>
+            <TabsTrigger value="reviews" className="flex-1 text-xs">
+              Отзывы {(location.review_count || 0) > 0 && <span className="ml-1 text-[10px] text-muted-foreground">({location.review_count})</span>}
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="services">
+            {services.length > 0 ? (
+              <div className="glass rounded-lg p-4">
+                <div className="space-y-2">
+                  {services.map((svc) => (
+                    <motion.button key={svc.id} whileTap={{ scale: 0.98 }} onClick={() => setSelectedService(svc.id)}
+                      className={`w-full glass rounded-lg p-3 flex items-center justify-between transition-colors ${selectedService === svc.id ? 'ring-1 ring-primary' : ''}`}>
+                      <div className="text-left">
+                        <p className="text-sm font-medium text-foreground">{svc.name}</p>
+                        <p className="text-xs text-muted-foreground flex items-center gap-1 mt-0.5"><Clock className="w-3 h-3" />{svc.duration_minutes} мин</p>
+                      </div>
+                      <span className="text-sm font-bold text-gradient-green">{formatPrice(svc.price)} {svc.currency}</span>
+                    </motion.button>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <div className="text-center py-8 text-xs text-muted-foreground">Услуги не добавлены</div>
+            )}
+          </TabsContent>
+
+          <TabsContent value="reviews">
+            <div className="glass rounded-lg p-4">
+              {/* Rating summary */}
+              <div className="flex gap-4 mb-4">
+                <div className="flex flex-col items-center justify-center">
+                  <span className="text-3xl font-bold text-foreground">{location.rating || 0}</span>
                   <div className="flex items-center gap-0.5 mt-1">
                     {Array.from({ length: 5 }).map((_, i) => (
-                      <Star key={i} className={`w-3 h-3 ${i < review.rating ? 'text-primary fill-primary' : 'text-muted'}`} />
+                      <Star key={i} className={`w-3 h-3 ${i < Math.round(location.rating || 0) ? 'text-primary fill-primary' : 'text-muted'}`} />
                     ))}
-                    <span className="text-[10px] text-muted-foreground ml-2">{new Date(review.created_at).toLocaleDateString('ru')}</span>
                   </div>
-                  {review.comment && <p className="text-xs text-muted-foreground mt-1">{review.comment}</p>}
+                  <span className="text-[10px] text-muted-foreground mt-1">{location.review_count || 0} {pluralReviews(location.review_count || 0)}</span>
                 </div>
-              ))}
+                <div className="flex-1 space-y-1">
+                  {ratingDist.map(({ star, count }) => (
+                    <div key={star} className="flex items-center gap-2">
+                      <span className="text-[10px] text-muted-foreground w-3">{star}</span>
+                      <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
+                        <div className="h-full bg-primary rounded-full transition-all" style={{ width: `${(count / maxRatingCount) * 100}%` }} />
+                      </div>
+                      <span className="text-[10px] text-muted-foreground w-4 text-right">{count}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Review list */}
+              {reviews.length === 0 ? (
+                <p className="text-xs text-muted-foreground text-center py-4">Пока нет отзывов</p>
+              ) : (
+                <div className="space-y-3">
+                  {reviews.map((review: any) => {
+                    const profile = review.profiles;
+                    const displayName = profile?.display_name || 'Пользователь';
+                    const initials = displayName.charAt(0).toUpperCase();
+                    return (
+                      <div key={review.id} className="border-t border-border pt-3">
+                        <div className="flex items-start gap-3">
+                          <div className="w-9 h-9 rounded-full bg-primary/15 flex items-center justify-center flex-shrink-0">
+                            {profile?.avatar_url ? (
+                              <img src={profile.avatar_url} className="w-9 h-9 rounded-full object-cover" alt="" />
+                            ) : (
+                              <span className="text-xs font-bold text-primary">{initials}</span>
+                            )}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center justify-between">
+                              <p className="text-xs font-semibold text-foreground">{displayName}</p>
+                              <span className="text-[10px] text-muted-foreground">{new Date(review.created_at).toLocaleDateString('ru', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+                            </div>
+                            <div className="flex items-center gap-0.5 mt-0.5">
+                              {Array.from({ length: 5 }).map((_, i) => (
+                                <Star key={i} className={`w-3 h-3 ${i < review.rating ? 'text-primary fill-primary' : 'text-muted'}`} />
+                              ))}
+                            </div>
+                            {review.comment && <p className="text-xs text-muted-foreground mt-1.5 leading-relaxed">{review.comment}</p>}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
             </div>
-          )}
-        </div>
+          </TabsContent>
+        </Tabs>
       </div>
 
       {/* Booking */}
@@ -227,7 +318,14 @@ const ServiceDetail = () => {
                     <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center text-sm font-medium text-foreground">{s.full_name?.charAt(0)}</div>
                     <div className="flex-1 text-left">
                       <p className="text-sm font-medium text-foreground">{s.full_name}</p>
-                      <p className="text-xs text-muted-foreground">{(s.specialties || []).join(', ')}</p>
+                      <div className="flex items-center gap-2">
+                        <p className="text-xs text-muted-foreground">{(s.specialties || []).join(', ')}</p>
+                        {staffRatings[s.id] && (
+                          <span className="flex items-center gap-0.5 text-[10px] text-muted-foreground">
+                            <Star className="w-3 h-3 text-primary fill-primary" />{staffRatings[s.id]}
+                          </span>
+                        )}
+                      </div>
                     </div>
                     <ChevronRight className="w-4 h-4 text-muted-foreground" />
                   </motion.button>
