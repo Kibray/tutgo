@@ -25,27 +25,27 @@ export const InviteEmail = ({
   siteUrl,
   confirmationUrl,
 }: InviteEmailProps) => (
-  <Html lang="en" dir="ltr">
+  <Html lang="ru" dir="ltr">
     <Head />
-    <Preview>You've been invited to join {siteName}</Preview>
+    <Preview>Вас пригласили в TUTGO</Preview>
     <Body style={main}>
       <Container style={container}>
-        <Heading style={h1}>You've been invited</Heading>
+        <Text style={logo}>TUTGO</Text>
+        <Heading style={h1}>Вас пригласили! 🎉</Heading>
         <Text style={text}>
-          You've been invited to join{' '}
+          Вы получили приглашение в{' '}
           <Link href={siteUrl} style={link}>
-            <strong>{siteName}</strong>
+            <strong>TUTGO</strong>
           </Link>
-          . Click the button below to accept the invitation and create your
-          account.
+          . Нажмите кнопку ниже, чтобы принять приглашение и создать аккаунт.
         </Text>
         <Button style={button} href={confirmationUrl}>
-          Accept Invitation
+          Принять приглашение
         </Button>
         <Text style={footer}>
-          If you weren't expecting this invitation, you can safely ignore this
-          email.
+          Если вы не ожидали это приглашение, просто проигнорируйте письмо.
         </Text>
+        <Text style={brand}>TUTGO · Сделано в Узбекистане 🇺🇿</Text>
       </Container>
     </Body>
   </Html>
@@ -53,27 +53,36 @@ export const InviteEmail = ({
 
 export default InviteEmail
 
-const main = { backgroundColor: '#ffffff', fontFamily: 'Arial, sans-serif' }
-const container = { padding: '20px 25px' }
+const main = { backgroundColor: '#ffffff', fontFamily: "'Inter', Arial, sans-serif" }
+const container = { padding: '32px 28px' }
+const logo = {
+  fontSize: '28px',
+  fontWeight: 'bold' as const,
+  color: 'hsl(142, 72%, 29%)',
+  margin: '0 0 24px',
+  letterSpacing: '-0.5px',
+}
 const h1 = {
   fontSize: '22px',
   fontWeight: 'bold' as const,
-  color: '#000000',
-  margin: '0 0 20px',
+  color: 'hsl(220, 15%, 10%)',
+  margin: '0 0 16px',
 }
 const text = {
-  fontSize: '14px',
-  color: '#55575d',
-  lineHeight: '1.5',
-  margin: '0 0 25px',
+  fontSize: '15px',
+  color: 'hsl(220, 10%, 40%)',
+  lineHeight: '1.6',
+  margin: '0 0 28px',
 }
-const link = { color: 'inherit', textDecoration: 'underline' }
+const link = { color: 'hsl(142, 72%, 29%)', textDecoration: 'underline' }
 const button = {
-  backgroundColor: '#000000',
+  backgroundColor: 'hsl(142, 72%, 29%)',
   color: '#ffffff',
-  fontSize: '14px',
-  borderRadius: '8px',
-  padding: '12px 20px',
+  fontSize: '15px',
+  fontWeight: '600' as const,
+  borderRadius: '24px',
+  padding: '14px 28px',
   textDecoration: 'none',
 }
-const footer = { fontSize: '12px', color: '#999999', margin: '30px 0 0' }
+const footer = { fontSize: '13px', color: 'hsl(220, 10%, 55%)', margin: '32px 0 0' }
+const brand = { fontSize: '12px', color: 'hsl(220, 10%, 65%)', margin: '16px 0 0' }
