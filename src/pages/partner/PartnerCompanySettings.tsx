@@ -6,6 +6,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { usePreferences } from '@/hooks/usePreferences';
 import { supabase } from '@/integrations/supabase/client';
 import BottomNav from '@/components/BottomNav';
+import BusinessPhotoUpload from '@/components/BusinessPhotoUpload';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 
@@ -143,11 +144,24 @@ const PartnerCompanySettings = () => {
               </div>
             ) : (
               businesses.map(biz => (
-                <div key={biz.id} className="glass rounded-2xl p-4 space-y-2">
+                <div key={biz.id} className="glass rounded-2xl p-4 space-y-3">
                   <h3 className="text-sm font-semibold text-foreground">{biz.name}</h3>
                   <p className="text-xs text-muted-foreground">{biz.description || t('partner.no_desc')}</p>
                   {biz.address && <p className="text-xs text-muted-foreground">📍 {biz.address}</p>}
                   {biz.phone && <p className="text-xs text-muted-foreground">📞 {biz.phone}</p>}
+
+                  {/* Photo Upload Section */}
+                  <div className="pt-2 border-t border-border">
+                    <BusinessPhotoUpload
+                      locationId={biz.id}
+                      brandedIconUrl={biz.branded_icon_url}
+                      gallery={biz.gallery}
+                      onUpdate={(fields) => {
+                        setBusinesses(prev => prev.map(b => b.id === biz.id ? { ...b, ...fields } : b));
+                      }}
+                    />
+                  </div>
+
                   {/* Queue toggle */}
                   <div className="flex items-center justify-between pt-2 border-t border-border">
                     <div>

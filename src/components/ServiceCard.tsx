@@ -49,8 +49,22 @@ const ServiceCard = ({ service, index, onClick, isFavorite, onToggleFavorite }: 
           <Heart className={`w-4 h-4 transition-colors ${isFavorite ? 'text-red-500 fill-red-500' : 'text-muted-foreground'}`} />
         </button>
       )}
-      <div className="w-20 h-20 rounded-md bg-secondary flex-shrink-0 flex items-center justify-center text-2xl">
-        {categoryEmoji[service.business_type] || '📍'}
+      <div className="w-20 h-20 rounded-md bg-secondary flex-shrink-0 flex items-center justify-center overflow-hidden">
+        {service.gallery && service.gallery.length > 0 ? (
+          <img src={service.gallery[0]} alt={service.name} className="w-full h-full object-cover" />
+        ) : service.branded_icon_url ? (
+          <img src={service.branded_icon_url} alt={service.name} className="w-full h-full object-cover" />
+        ) : (
+          <div className={`w-full h-full flex items-center justify-center bg-gradient-to-br ${
+            service.business_type === 'beauty' ? 'from-pink-500/30 to-purple-500/30' :
+            service.business_type === 'medical' ? 'from-blue-500/30 to-cyan-500/30' :
+            service.business_type === 'cafe' ? 'from-amber-500/30 to-orange-500/30' :
+            service.business_type === 'tour' ? 'from-emerald-500/30 to-teal-500/30' :
+            'from-primary/20 to-primary/40'
+          }`}>
+            <span className="text-2xl font-bold text-foreground/60">{service.name?.charAt(0)?.toUpperCase()}</span>
+          </div>
+        )}
       </div>
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-1.5 pr-8">
