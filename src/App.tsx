@@ -23,6 +23,7 @@ import PartnerCompanySettings from "./pages/partner/PartnerCompanySettings";
 import PartnerDeals from "./pages/partner/PartnerDeals";
 import PartnerQueue from "./pages/partner/PartnerQueue";
 import PartnerFinance from "./pages/partner/PartnerFinance";
+import PartnerInventory from "./pages/partner/PartnerInventory";
 import Settings from "./pages/Settings";
 import EditProfile from "./pages/EditProfile";
 import Help from "./pages/Help";
@@ -61,6 +62,7 @@ const App = () => (
                 <Route path="/partner/deals" element={<PartnerDeals />} />
                 <Route path="/partner/queue" element={<PartnerQueue />} />
                 <Route path="/partner/finance" element={<PartnerFinance />} />
+                <Route path="/partner/inventory" element={<PartnerInventory />} />
                 <Route path="/partner-landing" element={<PartnerLanding />} />
                 <Route path="/notifications" element={<Notifications />} />
                 <Route path="*" element={<NotFound />} />
