@@ -108,6 +108,53 @@ export type Database = {
         }
         Relationships: []
       }
+      deals: {
+        Row: {
+          created_at: string
+          description: string | null
+          discount_percent: number
+          expires_at: string | null
+          id: string
+          image_url: string | null
+          is_active: boolean
+          location_id: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          discount_percent?: number
+          expires_at?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          location_id: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          discount_percent?: number
+          expires_at?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          location_id?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "deals_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       favorites: {
         Row: {
           created_at: string
