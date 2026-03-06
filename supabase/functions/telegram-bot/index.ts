@@ -41,6 +41,10 @@ async function editMessageReplyMarkup(chatId: number, messageId: number) {
   });
 }
 
+function generateCode(): string {
+  return String(Math.floor(100000 + Math.random() * 900000));
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -53,10 +57,35 @@ Deno.serve(async (req) => {
     if (update.message?.text?.startsWith("/start")) {
       const chatId = update.message.chat.id;
       const args = update.message.text.split(" ");
-      const userId = args[1]; // /start <user_id>
+      const param = args[1]; // /start <param>
 
-      if (userId) {
-        // Save telegram_chat_id to profiles
+      // Auth flow: /start auth
+      if (param === "auth") {
+        const code = generateCode();
+        const expiresAt = new Date(Date.now() + 5 * 60 * 1000).toISOString(); // 5 min
+
+        // Clean up old codes for this chat
+        await supabase
+          .from("telegram_auth_codes")
+          .delete()
+          .eq("telegram_chat_id", chatId);
+
+        // Store the code
+        await supabase.from("telegram_auth_codes").insert({
+          code,
+          telegram_chat_id: chatId,
+          telegram_username: update.message.from?.username || null,
+          telegram_first_name: update.message.from?.first_name || null,
+          expires_at: expiresAt,
+        });
+
+        await sendTelegramMessage(
+          chatId,
+          `🔐 <b>Ваш код для входа в TUTGO:</b>\n\n<code>${code}</code>\n\nВведите этот код на сайте. Код действителен 5 минут.`
+        );
+      } else if (param) {
+        // Profile linking flow: /start <user_id>
+        const userId = param;
         const { error } = await supabase
           .from("profiles")
           .update({ telegram_chat_id: chatId })
@@ -91,7 +120,6 @@ Deno.serve(async (req) => {
         const action = callbackData.startsWith("confirm_") ? "confirmed" : "cancelled";
         const appointmentId = callbackData.replace("confirm_", "").replace("cancel_", "");
 
-        // Update appointment status
         const { data: appointment, error } = await supabase
           .from("appointments")
           .update({ status: action })
@@ -100,14 +128,11 @@ Deno.serve(async (req) => {
           .single();
 
         if (!error && appointment) {
-          // Remove inline buttons
           await editMessageReplyMarkup(chatId, messageId);
 
           const statusText = action === "confirmed" ? "✅ Запись подтверждена" : "❌ Запись отменена";
           await answerCallbackQuery(update.callback_query.id, statusText);
 
-          // Send notification to client via telegram-notify
-          // The DB trigger will handle in-app notification; we need to send Telegram to client
           if (appointment.client_user_id) {
             const { data: clientProfile } = await supabase
               .from("profiles")
@@ -129,7 +154,7 @@ Deno.serve(async (req) => {
               });
 
               if (action === "confirmed") {
-                await sendTelegramMessage(clientProfile.telegram_chat_id, 
+                await sendTelegramMessage(clientProfile.telegram_chat_id,
                   `✅ <b>Ваша запись подтверждена!</b>\n📍 ${location?.name || ""}\n📅 ${dateStr}\n📞 ${location?.phone || "—"}`
                 );
               } else {
@@ -140,10 +165,7 @@ Deno.serve(async (req) => {
             }
           }
 
-          // Send confirmation message to business owner
-          await sendTelegramMessage(chatId,
-            `${statusText} ✔️`
-          );
+          await sendTelegramMessage(chatId, `${statusText} ✔️`);
         } else {
           await answerCallbackQuery(update.callback_query.id, "Ошибка обновления записи");
         }
@@ -156,7 +178,7 @@ Deno.serve(async (req) => {
   } catch (err) {
     console.error("Telegram bot error:", err);
     return new Response(JSON.stringify({ error: String(err) }), {
-      status: 200, // Always return 200 to Telegram
+      status: 200,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
