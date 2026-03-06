@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Calendar, Users, BarChart3, List, UserCog, Building2, ArrowLeft, Store, Percent } from 'lucide-react';
+import { Calendar, Users, BarChart3, List, UserCog, Building2, ArrowLeft, Store, Percent, Hash } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { usePreferences } from '@/hooks/usePreferences';
 import { useNavigate } from 'react-router-dom';
@@ -13,6 +13,7 @@ const dashboardItems = [
   { id: 'staff', icon: UserCog, labelKey: 'partner.staff', route: '/partner/staff' },
   { id: 'company', icon: Building2, labelKey: 'partner.company_profile', route: '/partner/settings' },
   { id: 'deals', icon: Percent, labelKey: 'partner.deals', route: '/partner/deals' },
+  { id: 'queue', icon: Hash, labelKey: 'Живая очередь', route: '/partner/queue' },
 ];
 
 const Partner = () => {
