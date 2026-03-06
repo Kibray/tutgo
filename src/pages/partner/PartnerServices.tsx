@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Plus, Save, List } from 'lucide-react';
+import { ArrowLeft, Plus, Save, List, Pencil, Trash2, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { usePreferences } from '@/hooks/usePreferences';
@@ -27,6 +27,8 @@ const PartnerServices = () => {
   const [businesses, setBusinesses] = useState<any[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
 
   const [name, setName] = useState('');
   const [businessType, setBusinessType] = useState('service');
@@ -49,6 +51,29 @@ const PartnerServices = () => {
     setBusinesses(data || []);
   };
 
+  const resetForm = () => {
+    setName(''); setBusinessType('service'); setSubCategory(''); setDescription('');
+    setAddress(''); setFormLat(null); setFormLng(null); setPhone(''); setTelegram('');
+    setWebsite(''); setPriceFrom(''); setAmenities([]); setEditingId(null);
+  };
+
+  const openEditForm = (biz: any) => {
+    setEditingId(biz.id);
+    setName(biz.name || '');
+    setBusinessType(biz.business_type || 'service');
+    setSubCategory(biz.sub_category || '');
+    setDescription(biz.description || '');
+    setAddress(biz.address || '');
+    setFormLat(biz.lat ?? null);
+    setFormLng(biz.lng ?? null);
+    setPhone(biz.phone || '');
+    setTelegram(biz.telegram || '');
+    setWebsite(biz.website || '');
+    setPriceFrom(biz.price_from ? String(biz.price_from) : '');
+    setAmenities(Array.isArray(biz.amenities) ? biz.amenities : []);
+    setShowForm(true);
+  };
+
   const handleSave = async () => {
     if (!user || !name.trim()) {
       toast({ title: t('partner.enter_name'), variant: 'destructive' });
@@ -56,26 +81,44 @@ const PartnerServices = () => {
     }
     setSaving(true);
 
-    const { error } = await supabase.from('locations').insert({
-      owner_id: user.id, name: name.trim(), business_type: businessType,
+    const payload = {
+      name: name.trim(), business_type: businessType,
       sub_category: subCategory || null, description: description || null,
       address: address || null, phone: phone || null, telegram: telegram || null,
       website: website || null, price_from: priceFrom ? parseInt(priceFrom) : 0,
       amenities: amenities,
       ...(formLat !== null && formLng !== null ? { lat: formLat, lng: formLng } : {}),
-    });
+    };
+
+    let error;
+    if (editingId) {
+      ({ error } = await supabase.from('locations').update(payload).eq('id', editingId));
+    } else {
+      ({ error } = await supabase.from('locations').insert({ ...payload, owner_id: user.id }));
+    }
+
     setSaving(false);
     if (error) {
       toast({ title: t('common.error'), description: error.message, variant: 'destructive' });
     } else {
-      toast({ title: t('partner.biz_added') });
+      toast({ title: editingId ? 'Данные обновлены' : t('partner.biz_added') });
       setShowForm(false);
-      setName(''); setDescription(''); setAddress(''); setPhone(''); setTelegram(''); setWebsite(''); setPriceFrom(''); setAmenities([]); setFormLat(null); setFormLng(null);
+      resetForm();
       fetchBusinesses();
     }
   };
 
-  // Map business_type to category for subcategories
+  const handleDelete = async (id: string) => {
+    const { error } = await supabase.from('locations').delete().eq('id', id);
+    if (error) {
+      toast({ title: t('common.error'), description: error.message, variant: 'destructive' });
+    } else {
+      toast({ title: 'Компания удалена' });
+      setBusinesses(prev => prev.filter(b => b.id !== id));
+      setDeleteConfirmId(null);
+    }
+  };
+
   const selectedCat = categories.find(c => {
     const typeMap: Record<string, string> = {
       'Медицина': 'medical', 'Красота': 'beauty', 'Туры': 'tour',
@@ -84,7 +127,6 @@ const PartnerServices = () => {
     return typeMap[c.name] === businessType;
   });
 
-  // Build type options from categories
   const typeOptions = categories.map(c => {
     const typeMap: Record<string, string> = {
       'Медицина': 'medical', 'Красота': 'beauty', 'Туры': 'tour',
@@ -101,15 +143,15 @@ const PartnerServices = () => {
             <ArrowLeft className="w-5 h-5 text-foreground" />
           </motion.button>
           <h1 className="text-lg font-bold font-display text-foreground flex-1">{t('partner.services')}</h1>
-          <motion.button whileTap={{ scale: 0.95 }} onClick={() => setShowForm(!showForm)}
+          <motion.button whileTap={{ scale: 0.95 }} onClick={() => { if (showForm && editingId) { setShowForm(false); resetForm(); } else { resetForm(); setShowForm(!showForm); } }}
             className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-primary text-primary-foreground text-xs font-medium">
-            <Plus className="w-4 h-4" /> {t('partner.add')}
+            {showForm ? <><X className="w-4 h-4" /> Отмена</> : <><Plus className="w-4 h-4" /> {t('partner.add')}</>}
           </motion.button>
         </div>
 
         {showForm && (
           <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="glass rounded-2xl p-4 mb-6 space-y-3">
-            <h3 className="text-sm font-semibold text-foreground">{t('partner.new_biz')}</h3>
+            <h3 className="text-sm font-semibold text-foreground">{editingId ? 'Редактирование' : t('partner.new_biz')}</h3>
             <input placeholder={t('partner.name_placeholder')} value={name} onChange={e => setName(e.target.value)}
               className="w-full glass rounded-xl px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground outline-none border border-border focus:border-primary transition-colors" />
             <select value={businessType} onChange={e => { setBusinessType(e.target.value); setSubCategory(''); }}
@@ -180,6 +222,37 @@ const PartnerServices = () => {
                 {biz.phone && <span>📞 {biz.phone}</span>}
                 {biz.telegram && <span>✈️ @{biz.telegram}</span>}
               </div>
+
+              {/* Edit / Delete buttons */}
+              <div className="flex items-center gap-2 mt-3 pt-3 border-t border-border">
+                <motion.button whileTap={{ scale: 0.95 }} onClick={() => openEditForm(biz)}
+                  className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl bg-secondary text-foreground text-xs font-medium hover:bg-secondary/80 transition-colors">
+                  <Pencil className="w-3.5 h-3.5" /> Редактировать
+                </motion.button>
+                <motion.button whileTap={{ scale: 0.95 }} onClick={() => setDeleteConfirmId(biz.id)}
+                  className="flex items-center justify-center gap-1.5 py-2 px-4 rounded-xl bg-destructive/10 text-destructive text-xs font-medium hover:bg-destructive/20 transition-colors">
+                  <Trash2 className="w-3.5 h-3.5" /> Удалить
+                </motion.button>
+              </div>
+
+              {/* Delete confirmation */}
+              {deleteConfirmId === biz.id && (
+                <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}
+                  className="mt-3 p-3 rounded-xl bg-destructive/10 border border-destructive/20">
+                  <p className="text-xs text-foreground font-medium mb-2">Вы уверены что хотите удалить «{biz.name}»?</p>
+                  <p className="text-[10px] text-muted-foreground mb-3">Все связанные услуги, записи и данные будут потеряны.</p>
+                  <div className="flex gap-2">
+                    <button onClick={() => handleDelete(biz.id)}
+                      className="flex-1 py-2 rounded-lg bg-destructive text-destructive-foreground text-xs font-semibold">
+                      Да, удалить
+                    </button>
+                    <button onClick={() => setDeleteConfirmId(null)}
+                      className="flex-1 py-2 rounded-lg bg-secondary text-foreground text-xs font-medium">
+                      Отмена
+                    </button>
+                  </div>
+                </motion.div>
+              )}
             </motion.div>
           ))}
         </div>
