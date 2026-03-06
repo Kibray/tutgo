@@ -42,7 +42,7 @@ const ServiceDetail = () => {
         const [svcRes, staffRes, reviewsRes] = await Promise.all([
           supabase.from('services').select('*').eq('location_id', id),
           supabase.from('staff').select('*').eq('location_id', id),
-          supabase.from('reviews').select('*, profiles!reviews_user_id_fkey(display_name, avatar_url)').eq('location_id', id).order('created_at', { ascending: false }).limit(50),
+          supabase.from('reviews').select('*').eq('location_id', id).order('created_at', { ascending: false }).limit(50),
         ]);
         setServices(svcRes.data || []);
         setStaffList(staffRes.data || []);
