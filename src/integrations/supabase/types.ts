@@ -205,6 +205,7 @@ export type Database = {
           owner_id: string
           phone: string | null
           price_from: number | null
+          queue_enabled: boolean
           rating: number | null
           review_count: number | null
           sub_category: string | null
@@ -233,6 +234,7 @@ export type Database = {
           owner_id: string
           phone?: string | null
           price_from?: number | null
+          queue_enabled?: boolean
           rating?: number | null
           review_count?: number | null
           sub_category?: string | null
@@ -261,6 +263,7 @@ export type Database = {
           owner_id?: string
           phone?: string | null
           price_from?: number | null
+          queue_enabled?: boolean
           rating?: number | null
           review_count?: number | null
           sub_category?: string | null
@@ -368,6 +371,56 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      queue_tickets: {
+        Row: {
+          called_at: string | null
+          client_name: string | null
+          completed_at: string | null
+          created_at: string
+          expires_at: string
+          id: string
+          location_id: string
+          queue_date: string
+          status: string
+          ticket_number: number
+          user_id: string | null
+        }
+        Insert: {
+          called_at?: string | null
+          client_name?: string | null
+          completed_at?: string | null
+          created_at?: string
+          expires_at?: string
+          id?: string
+          location_id: string
+          queue_date?: string
+          status?: string
+          ticket_number: number
+          user_id?: string | null
+        }
+        Update: {
+          called_at?: string | null
+          client_name?: string | null
+          completed_at?: string | null
+          created_at?: string
+          expires_at?: string
+          id?: string
+          location_id?: string
+          queue_date?: string
+          status?: string
+          ticket_number?: number
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "queue_tickets_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       reviews: {
         Row: {
