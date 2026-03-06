@@ -54,6 +54,15 @@ const PartnerCompanySettings = () => {
 
   useEffect(() => { if (activeTab === 'pricelist' && businesses.length) loadServices(); }, [activeTab, businesses]);
 
+  const loadStaff = async () => {
+    if (!businesses.length) return;
+    const ids = businesses.map(b => b.id);
+    const { data } = await supabase.from('staff').select('*').in('location_id', ids).order('created_at', { ascending: false });
+    setStaff(data || []);
+  };
+
+  useEffect(() => { if (activeTab === 'team' && businesses.length) loadStaff(); }, [activeTab, businesses]);
+
   const handleSave = async () => {
     if (!form.name || !form.price || !form.location_id) { toast.error('Заполните обязательные поля'); return; }
     setSaving(true);
