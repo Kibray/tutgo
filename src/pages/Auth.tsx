@@ -11,6 +11,7 @@ const Auth = () => {
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
   const [loading, setLoading] = useState(false);
+  const [confirmationSent, setConfirmationSent] = useState(false);
   const { signUp, signIn } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -25,8 +26,14 @@ const Auth = () => {
     if (error) {
       toast({ title: 'Ошибка', description: error.message, variant: 'destructive' });
     } else {
-      toast({ title: isLogin ? 'Добро пожаловать!' : 'Аккаунт создан!' });
-      navigate('/profile');
+      if (isLogin) {
+        toast({ title: 'Добро пожаловать!' });
+        navigate('/profile');
+      } else {
+        const confirmMessage = 'Письмо отправлено! Проверьте почту и перейдите по ссылке для подтверждения аккаунта.';
+        toast({ title: 'Проверьте почту', description: confirmMessage });
+        setConfirmationSent(true);
+      }
     }
     setLoading(false);
   };
