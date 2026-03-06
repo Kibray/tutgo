@@ -1,8 +1,11 @@
 import { motion } from 'framer-motion';
-import { Star, MapPin, BadgeCheck, Send, Heart } from 'lucide-react';
+import { Star, MapPin, BadgeCheck, Send, Heart, Users, CalendarDays } from 'lucide-react';
+import { useState, useEffect } from 'react';
 import { formatPrice, categoryEmoji } from '@/lib/types';
 import type { LocationItem } from '@/lib/types';
 import { useNavigate } from 'react-router-dom';
+
+import { supabase } from '@/integrations/supabase/client';
 
 interface ServiceCardProps {
   service: LocationItem;
@@ -22,6 +25,26 @@ const pluralReviews = (n: number) => {
 
 const ServiceCard = ({ service, index, onClick, isFavorite, onToggleFavorite }: ServiceCardProps) => {
   const navigate = useNavigate();
+  const isTour = service.business_type === 'tour';
+  const [tourInfo, setTourInfo] = useState<{ remaining: number | null; durationDays: number | null } | null>(null);
+
+  useEffect(() => {
+    if (!isTour) return;
+    const fetchTourInfo = async () => {
+      const { data: svcs } = await supabase.from('services').select('id, max_seats, metadata').eq('location_id', service.id).limit(1);
+      if (!svcs?.length) return;
+      const svc = svcs[0] as any;
+      const meta = svc.metadata || {};
+      let remaining: number | null = null;
+      if (svc.max_seats) {
+        const { count } = await supabase.from('appointments').select('*', { count: 'exact', head: true })
+          .eq('service_id', svc.id).in('status', ['confirmed', 'pending']);
+        remaining = svc.max_seats - (count || 0);
+      }
+      setTourInfo({ remaining, durationDays: meta.duration_days || null });
+    };
+    fetchTourInfo();
+  }, [service.id, isTour]);
 
   const handleClick = () => {
     if (onClick) return onClick();
@@ -88,6 +111,22 @@ const ServiceCard = ({ service, index, onClick, isFavorite, onToggleFavorite }: 
             )}
           </div>
           <div className="flex items-center gap-1.5">
+            {isTour && tourInfo?.durationDays && (
+              <span className="flex items-center gap-0.5 px-2 py-1 rounded-md bg-secondary text-[10px] font-medium text-muted-foreground">
+                <CalendarDays className="w-3 h-3" />{tourInfo.durationDays}д
+              </span>
+            )}
+            {isTour && tourInfo?.remaining !== null && tourInfo?.remaining !== undefined && (
+              <span className={`flex items-center gap-0.5 px-2 py-1 rounded-md text-[10px] font-medium ${
+                tourInfo.remaining <= 0 ? 'bg-destructive/15 text-destructive' :
+                tourInfo.remaining <= 3 ? 'bg-destructive/15 text-destructive' :
+                tourInfo.remaining <= 5 ? 'bg-amber-500/15 text-amber-500' :
+                'bg-primary/15 text-primary'
+              }`}>
+                <Users className="w-3 h-3" />
+                {tourInfo.remaining > 0 ? `${tourInfo.remaining} мест` : 'Нет мест'}
+              </span>
+            )}
             {service.telegram && (
               <motion.button whileTap={{ scale: 0.9 }} onClick={(e) => {
                 e.stopPropagation();
