@@ -12,6 +12,7 @@ import MapView from '@/components/MapView';
 import AiAssistantFab from '@/components/AiAssistantFab';
 import { useLocations } from '@/hooks/useLocations';
 import { useCategories } from '@/hooks/useCategories';
+import { useFavorites } from '@/hooks/useFavorites';
 import type { LocationItem } from '@/lib/types';
 
 const TASHKENT: [number, number] = [41.3111, 69.2797];
@@ -25,6 +26,7 @@ const Index = () => {
   const [mapCenter, setMapCenter] = useState<[number, number] | null>(null);
   const [sheetService, setSheetService] = useState<LocationItem | null>(null);
   const { categories } = useCategories();
+  const { isFavorite, toggleFavorite } = useFavorites();
 
   // Map category UUID to business_type name for filtering
   const selectedCat = categories.find(c => c.id === category);
@@ -123,7 +125,8 @@ const Index = () => {
               {loading ? <SkeletonList count={4} /> : (
                 <div className="space-y-3">
                   {filtered.map((loc, i) => (
-                    <ServiceCard key={loc.id} service={loc} index={i} onClick={() => handleMarkerClick(loc)} />
+                    <ServiceCard key={loc.id} service={loc} index={i} onClick={() => handleMarkerClick(loc)}
+                      isFavorite={isFavorite(loc.id)} onToggleFavorite={toggleFavorite} />
                   ))}
                   {filtered.length === 0 && (
                     <div className="text-center py-12 text-muted-foreground text-sm">Ничего не найдено. Попробуйте другой запрос.</div>
