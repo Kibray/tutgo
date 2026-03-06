@@ -12,6 +12,7 @@ import MapView from '@/components/MapView';
 import AiAssistantFab from '@/components/AiAssistantFab';
 import { useLocations } from '@/hooks/useLocations';
 import { useCategories } from '@/hooks/useCategories';
+import { useFavorites } from '@/hooks/useFavorites';
 import type { LocationItem } from '@/lib/types';
 
 const TASHKENT: [number, number] = [41.3111, 69.2797];
