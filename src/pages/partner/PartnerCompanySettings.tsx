@@ -23,10 +23,15 @@ const PartnerCompanySettings = () => {
   const [activeTab, setActiveTab] = useState('about');
   const [businesses, setBusinesses] = useState<any[]>([]);
   const [services, setServices] = useState<any[]>([]);
+  const [staff, setStaff] = useState<any[]>([]);
   const [showForm, setShowForm] = useState(false);
+  const [showStaffForm, setShowStaffForm] = useState(false);
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState({
     name: '', price: '', currency: 'сум', duration_minutes: '30', description: '', location_id: '',
+  });
+  const [staffForm, setStaffForm] = useState({
+    full_name: '', phone: '', specialties: '', location_id: '',
   });
 
   useEffect(() => {
