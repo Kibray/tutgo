@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { Calendar, Clock, MapPin, ChevronRight, Star, Loader2, Heart } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Calendar, Clock, MapPin, ChevronRight, Star, Loader2, Heart, X } from 'lucide-react';
 import BottomNav from '@/components/BottomNav';
 import ServiceCard from '@/components/ServiceCard';
 import { supabase } from '@/integrations/supabase/client';
@@ -19,7 +19,7 @@ const Bookings = () => {
   const [favoriteLocations, setFavoriteLocations] = useState<LocationItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [favLoading, setFavLoading] = useState(false);
-  const [reviewingId, setReviewingId] = useState<string | null>(null);
+  const [reviewingAppointment, setReviewingAppointment] = useState<any | null>(null);
   const [reviewRating, setReviewRating] = useState(5);
   const [reviewComment, setReviewComment] = useState('');
   const [submittingReview, setSubmittingReview] = useState(false);
@@ -165,37 +165,10 @@ const Bookings = () => {
                       <span className="text-[10px] font-medium px-2 py-1 rounded-md bg-muted text-muted-foreground capitalize">{b.status}</span>
                     </div>
                     {(b.status === 'completed' || new Date(b.end_time) < new Date()) && !reviewedIds.has(b.id) && (
-                      <>
-                        {reviewingId === b.id ? (
-                          <div className="mt-3 pt-3 border-t border-border space-y-3">
-                            <div className="flex items-center gap-1">
-                              {[1, 2, 3, 4, 5].map(star => (
-                                <button key={star} onClick={() => setReviewRating(star)}>
-                                  <Star className={`w-6 h-6 ${star <= reviewRating ? 'text-primary fill-primary' : 'text-muted'}`} />
-                                </button>
-                              ))}
-                            </div>
-                            <textarea
-                              value={reviewComment}
-                              onChange={e => setReviewComment(e.target.value)}
-                              placeholder="Ваш отзыв (необязательно)"
-                              className="w-full bg-secondary rounded-lg p-3 text-xs text-foreground resize-none h-20 border border-border focus:border-primary outline-none"
-                            />
-                            <div className="flex gap-2">
-                              <button onClick={() => setReviewingId(null)} className="flex-1 py-2 text-xs glass rounded-lg text-muted-foreground">Отмена</button>
-                              <button onClick={() => handleSubmitReview(b.id, b.location_id)} disabled={submittingReview}
-                                className="flex-1 py-2 text-xs bg-primary text-accent-foreground rounded-lg font-medium flex items-center justify-center gap-1">
-                                {submittingReview ? <Loader2 className="w-3 h-3 animate-spin" /> : 'Отправить'}
-                              </button>
-                            </div>
-                          </div>
-                        ) : (
-                          <button onClick={() => setReviewingId(b.id)}
-                            className="mt-3 pt-3 border-t border-border w-full flex items-center justify-center gap-2 text-xs text-primary font-medium">
-                            <Star className="w-3.5 h-3.5" />Оставить отзыв
-                          </button>
-                        )}
-                      </>
+                      <button onClick={() => { setReviewingAppointment(b); setReviewRating(5); setReviewComment(''); }}
+                        className="mt-3 pt-3 border-t border-border w-full flex items-center justify-center gap-2 text-xs text-primary font-medium">
+                        <Star className="w-3.5 h-3.5" />Оставить отзыв
+                      </button>
                     )}
                     {reviewedIds.has(b.id) && (
                       <p className="mt-3 pt-3 border-t border-border text-xs text-muted-foreground text-center">✓ Отзыв оставлен</p>
