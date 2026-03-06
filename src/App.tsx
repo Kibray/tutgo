@@ -24,6 +24,7 @@ import Settings from "./pages/Settings";
 import EditProfile from "./pages/EditProfile";
 import Help from "./pages/Help";
 import NotFound from "./pages/NotFound";
+import Notifications from "./pages/Notifications";
 
 const queryClient = new QueryClient();
 
@@ -55,6 +56,7 @@ const App = () => (
                 <Route path="/partner/staff" element={<PartnerStaff />} />
                 <Route path="/partner/settings" element={<PartnerCompanySettings />} />
                 <Route path="/partner-landing" element={<PartnerLanding />} />
+                <Route path="/notifications" element={<Notifications />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </div>

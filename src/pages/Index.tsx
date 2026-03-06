@@ -28,6 +28,7 @@ const Index = () => {
   const [sheetService, setSheetService] = useState<LocationItem | null>(null);
   const { categories } = useCategories();
   const { isFavorite, toggleFavorite } = useFavorites();
+  const { unreadCount } = useNotifications();
 
   // Map category UUID to business_type name for filtering
   const selectedCat = categories.find(c => c.id === category);
@@ -86,7 +87,17 @@ const Index = () => {
             <h1 className="text-xl font-bold font-display text-foreground drop-shadow-lg">
               TUT<span className="text-gradient-green">GO</span>
             </h1>
-            <div className="w-9 h-9 rounded-full bg-secondary/80 backdrop-blur-sm flex items-center justify-center text-sm">🇺🇿</div>
+            <div className="flex items-center gap-2">
+              <button onClick={() => navigate('/notifications')} className="relative w-9 h-9 rounded-full bg-secondary/80 backdrop-blur-sm flex items-center justify-center">
+                <Bell className="w-4.5 h-4.5 text-foreground" />
+                {unreadCount > 0 && (
+                  <span className="absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full bg-red-500 text-white text-[9px] font-bold flex items-center justify-center">
+                    {unreadCount > 9 ? '9+' : unreadCount}
+                  </span>
+                )}
+              </button>
+              <div className="w-9 h-9 rounded-full bg-secondary/80 backdrop-blur-sm flex items-center justify-center text-sm">🇺🇿</div>
+            </div>
           </motion.div>
           <SearchBar onSearch={handleSearch} onSubmit={handleSearchSubmit} />
           <div className="mt-3">
