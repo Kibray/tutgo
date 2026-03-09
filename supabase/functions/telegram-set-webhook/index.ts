@@ -11,7 +11,7 @@ Deno.serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
-  const webhookUrl = "https://dynahgglwvxaoqqozpkb.supabase.co/functions/v1/telegram-bot";
+  const webhookUrl = "https://ivnczarwkkeyncwrovio.supabase.co/functions/v1/telegram-bot";
 
   const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/setWebhook`, {
     method: "POST",
