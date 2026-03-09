@@ -40,7 +40,7 @@ const App = () => (
       <BrowserRouter>
         <AuthProvider>
           <PreferencesProvider>
-            <div className="max-w-lg mx-auto min-h-screen">
+            <div className="lg:max-w-none max-w-lg mx-auto min-h-screen">
               <Routes>
                 <Route path="/" element={<Index />} />
                 <Route path="/service/:id" element={<ServiceDetail />} />

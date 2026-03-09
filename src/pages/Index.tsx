@@ -1,7 +1,7 @@
 import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Locate, ChevronUp, ChevronDown, Bell, Navigation } from 'lucide-react';
+import { Locate, ChevronUp, ChevronDown, Bell } from 'lucide-react';
 import SearchBar from '@/components/SearchBar';
 import CategoryChips from '@/components/CategoryChips';
 import ServiceCard from '@/components/ServiceCard';
@@ -14,12 +14,13 @@ import { useLocations } from '@/hooks/useLocations';
 import { useCategories } from '@/hooks/useCategories';
 import { useFavorites } from '@/hooks/useFavorites';
 import { useNotifications } from '@/hooks/useNotifications';
+import { useIsDesktop } from '@/hooks/useIsDesktop';
+import DesktopIndex from '@/components/desktop/DesktopIndex';
 import type { LocationItem } from '@/lib/types';
 
 const TASHKENT: [number, number] = [41.3111, 69.2797];
 const NEARBY_RADIUS_KM = 2;
 
-// Haversine distance in km
 const getDistanceKm = (lat1: number, lng1: number, lat2: number, lng2: number): number => {
   const R = 6371;
   const dLat = (lat2 - lat1) * Math.PI / 180;
@@ -34,6 +35,14 @@ const formatDistance = (km: number): string => {
 };
 
 const Index = () => {
+  const isDesktop = useIsDesktop();
+
+  if (isDesktop) return <DesktopIndex />;
+
+  return <MobileIndex />;
+};
+
+const MobileIndex = () => {
   const navigate = useNavigate();
   const [category, setCategory] = useState('all');
   const [subcategory, setSubcategory] = useState('all');
@@ -48,7 +57,6 @@ const Index = () => {
   const { isFavorite, toggleFavorite } = useFavorites();
   const { unreadCount } = useNotifications();
 
-  // Auto-detect geolocation on mount
   const autoGeolocated = useRef(false);
   useEffect(() => {
     if (autoGeolocated.current) return;
@@ -76,7 +84,6 @@ const Index = () => {
     search
   );
 
-  // Sort and filter by distance when in nearby mode
   const displayLocations = useMemo(() => {
     if (!nearbyMode || !userLocation) return filtered;
     return filtered
@@ -88,7 +95,6 @@ const Index = () => {
       .sort((a, b) => a._distance - b._distance);
   }, [filtered, nearbyMode, userLocation]);
 
-  // For map display: show all filtered when not nearby, or nearby-filtered
   const mapLocations = nearbyMode ? displayLocations : filtered;
 
   const handleCenterOnMe = useCallback(() => {
@@ -184,7 +190,6 @@ const Index = () => {
         </div>
       </div>
 
-      {/* Nearby / Locate buttons */}
       <div className="absolute z-[1000] flex flex-col gap-2"
         style={{ bottom: listExpanded ? 'calc(50% + 80px + 16px)' : 'calc(80px + 70px + 16px)', right: '16px', transition: 'bottom 0.3s ease' }}>
         {nearbyMode && (
