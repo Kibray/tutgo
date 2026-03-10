@@ -5,7 +5,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { usePreferences } from '@/hooks/usePreferences';
 import { useNavigate } from 'react-router-dom';
 import BottomNav from '@/components/BottomNav';
-import PartnerBottomNav from '@/components/partner/PartnerBottomNav';
+import PartnerLayout from '@/components/partner/PartnerLayout';
 import PartnerMobileStats from '@/components/partner/PartnerMobileStats';
 import { useIsDesktop } from '@/hooks/useIsDesktop';
 import PartnerDashboardDesktop from '@/components/partner/PartnerDashboardDesktop';
