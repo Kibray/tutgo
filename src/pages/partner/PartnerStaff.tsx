@@ -137,7 +137,7 @@ const PartnerStaff = () => {
         </motion.button>
       ) : undefined
     }>
-      <div className="px-4">
+      <div className="px-4 pt-2">
 
         {/* Add form */}
         {showAdd && (

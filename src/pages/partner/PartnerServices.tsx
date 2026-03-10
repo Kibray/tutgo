@@ -142,7 +142,7 @@ const PartnerServices = () => {
         {showForm ? <><X className="w-4 h-4" /> Отмена</> : <><Plus className="w-4 h-4" /> {t('partner.add')}</>}
       </motion.button>
     }>
-      <div className="px-4">
+      <div className="px-4 pt-2">
 
         {showForm && (
           <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="glass rounded-2xl p-4 mb-6 space-y-3">

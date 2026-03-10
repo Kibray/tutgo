@@ -95,8 +95,6 @@ const PartnerTables = () => {
 
   return (
     <PartnerLayout title="🪑 Столики">
-      <div className="px-4">
-
       <div className="px-4 mt-3 space-y-3">
         <button onClick={() => setShowForm(true)}
           className="w-full glass rounded-lg p-3 flex items-center gap-2 text-primary text-sm font-medium">

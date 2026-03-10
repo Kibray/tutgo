@@ -89,8 +89,6 @@ const PartnerOrders = () => {
         {soundEnabled ? <Volume2 className="w-4 h-4 text-primary" /> : <VolumeX className="w-4 h-4 text-muted-foreground" />}
       </button>
     }>
-      <div className="px-4">
-
       <div className="px-4 mt-3 space-y-3">
         {activeOrders.length === 0 && (
           <div className="text-center py-16 space-y-2">

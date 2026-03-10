@@ -146,7 +146,7 @@ const PartnerCompanySettings = () => {
 
   return (
     <PartnerLayout title={t('partner.company_profile')}>
-      <div className="px-4">
+      <div className="px-4 pt-2">
 
         <div className="flex gap-1 bg-secondary/50 rounded-xl p-1 mb-6 overflow-x-auto scrollbar-hide">
           {tabs.map(tab => (

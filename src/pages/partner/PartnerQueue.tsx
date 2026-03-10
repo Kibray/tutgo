@@ -121,7 +121,7 @@ const PartnerQueue = () => {
 
   return (
     <PartnerLayout title="Живая очередь">
-      <div className="px-4">
+      <div className="px-4 pt-2">
 
         {businesses.length === 0 ? (
           <div className="text-center py-16 text-muted-foreground">

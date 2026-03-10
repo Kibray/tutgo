@@ -162,8 +162,6 @@ const PartnerMenu = () => {
 
   return (
     <PartnerLayout title="Управление меню">
-      <div className="px-4">
-
       <Tabs defaultValue="items" className="px-4 mt-3">
         <TabsList className="w-full">
           <TabsTrigger value="items" className="flex-1 text-xs">🍽️ Блюда</TabsTrigger>
