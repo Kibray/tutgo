@@ -204,33 +204,19 @@ const OnboardingFlow = ({ onComplete, forceRole, isPreview }: Props) => {
 
   const businessSlides = [
     {
-      illustration: <DashboardIllustration />,
+      illustration: <DashboardSlide />,
       title: 'Управляй бизнесом с телефона',
       text: 'Доход, записи, очередь и рейтинг — всё в одном месте!',
     },
     {
-      illustration: <TelegramIllustration message={"🔔 Новая запись!\n👤 Алишер К.\n📅 12 марта · 14:00\n🔧 Стрижка\n💰 150 000 сум"} />,
-      title: 'Записи прямо в Telegram',
-      text: 'Новая запись — мгновенное уведомление. Подтверди одним нажатием!',
-    },
-    {
-      illustration: (
-        <div className="space-y-3">
-          <FeaturesGrid items={[
-            { emoji: '👥', title: 'CRM', sub: '340 клиентов', color: ACCENT_BLUE },
-            { emoji: '📦', title: 'Склад', sub: '48 товаров', color: '#f59e0b' },
-            { emoji: '🍽️', title: 'QR Меню', sub: '42 блюда', color: '#a78bfa' },
-            { emoji: '🎟️', title: 'Очередь', sub: '0 мин', color: ACCENT_GREEN },
-          ]} />
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1 }}
-            className="mx-auto max-w-[300px] py-2 rounded-xl text-center text-[12px] font-bold text-black"
-            style={{ background: ACCENT_GREEN }}>
-            🎉 Всё бесплатно для вашего бизнеса!
-          </motion.div>
-        </div>
-      ),
+      illustration: <FeaturesSlide />,
       title: 'Полный бизнес инструмент бесплатно!',
       text: 'CRM, склад, QR меню, живая очередь, аналитика — всё включено!',
+    },
+    {
+      illustration: <TelegramSlide />,
+      title: 'Записи прямо в Telegram',
+      text: 'Новая запись — мгновенное уведомление. Подтверди одним нажатием!',
       isFinal: true,
     },
   ];
