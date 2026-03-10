@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import LegalFooter from '@/components/LegalFooter';
-import { User, Settings, Globe, HelpCircle, ChevronRight, LogOut, Key, Briefcase, Store, BookOpen, Send, Lightbulb } from 'lucide-react';
+import { User, Settings, Globe, HelpCircle, ChevronRight, LogOut, Key, Briefcase, Store, BookOpen, Lightbulb } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { usePreferences } from '@/hooks/usePreferences';
@@ -8,6 +8,7 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useState, useEffect } from 'react';
 import BottomNav from '@/components/BottomNav';
+import TelegramLinkBlock from '@/components/TelegramLinkBlock';
 import ReferralSection from '@/components/ReferralSection';
 
 const Profile = () => {
