@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { usePreferences } from '@/hooks/usePreferences';
+import { DashboardSlide, FeaturesSlide, TelegramSlide } from './BusinessSlides';
 
 type Role = 'client' | 'business' | null;
 
