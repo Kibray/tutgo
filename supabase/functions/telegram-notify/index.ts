@@ -376,6 +376,57 @@ Deno.serve(async (req) => {
       }
     }
 
+    // ---- CAFE ORDER CREATED ----
+    if (type === "cafe_order.created") {
+      const { data: location } = await supabase
+        .from("locations")
+        .select("name, owner_id")
+        .eq("id", record.location_id)
+        .single();
+
+      if (!location) return new Response("ok");
+
+      const { data: ownerProfile } = await supabase
+        .from("profiles")
+        .select("telegram_chat_id")
+        .eq("user_id", location.owner_id)
+        .single();
+
+      if (ownerProfile?.telegram_chat_id) {
+        const orderItems = (record.items || []).map((item: any) => {
+          const mods = (item.modifiers || []).map((m: any) => m.option).join(', ');
+          return `  • ${item.name}${mods ? ` (${mods})` : ''} x${item.quantity} — ${formatPrice(item.price * item.quantity, record.currency || 'сум')}`;
+        }).join('\n');
+
+        const text = `━━━━━━━━━━━━━━━━━━━━\n🆕 <b>Новый заказ!</b>\n\n🪑 Столик №${record.table_number}\n\n🛒 Заказ:\n${orderItems}\n\n💰 Итого: ${formatPrice(record.final_amount || record.total_amount, record.currency || 'сум')}${record.notes ? `\n\n💬 ${record.notes}` : ''}\n━━━━━━━━━━━━━━━━━━━━`;
+
+        await sendTelegram(ownerProfile.telegram_chat_id, text);
+      }
+    }
+
+    // ---- CAFE WAITER CALL ----
+    if (type === "cafe.waiter_call") {
+      const { data: location } = await supabase
+        .from("locations")
+        .select("name, owner_id")
+        .eq("id", record.location_id)
+        .single();
+
+      if (!location) return new Response("ok");
+
+      const { data: ownerProfile } = await supabase
+        .from("profiles")
+        .select("telegram_chat_id")
+        .eq("user_id", location.owner_id)
+        .single();
+
+      if (ownerProfile?.telegram_chat_id) {
+        await sendTelegram(ownerProfile.telegram_chat_id,
+          `🔔 <b>Столик №${record.table_number} зовёт!</b>\n\n🏢 ${location.name}\n📲 Клиент вызвал официанта`
+        );
+      }
+    }
+
     return new Response(JSON.stringify({ ok: true }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
