@@ -224,7 +224,7 @@ const PartnerQueue = () => {
           </>
         )}
       </div>
-      <BottomNav />
+      <PartnerBottomNav />
     </div>
   );
 };
