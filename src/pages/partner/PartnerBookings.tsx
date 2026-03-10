@@ -546,12 +546,12 @@ const PartnerBookings = () => {
                     <X className="w-4 h-4" /> Закрыть
                   </motion.button>
                 )}
-    </PartnerLayout>
+              </div>
             </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
+    </PartnerLayout>
   );
 };
 
