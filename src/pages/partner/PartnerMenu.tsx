@@ -161,13 +161,8 @@ const PartnerMenu = () => {
   const inputCls = "w-full bg-secondary rounded-lg p-3 text-sm text-foreground placeholder:text-muted-foreground border-none outline-none";
 
   return (
-    <div className="min-h-screen bg-background pb-24">
-      <div className="sticky top-0 z-20 glass-strong px-4 py-3 flex items-center gap-3">
-        <button onClick={() => navigate('/partner')} className="w-8 h-8 glass rounded-full flex items-center justify-center">
-          <ArrowLeft className="w-4 h-4 text-foreground" />
-        </button>
-        <h1 className="text-base font-bold text-foreground">Управление меню</h1>
-      </div>
+    <PartnerLayout title="Управление меню">
+      <div className="px-4">
 
       <Tabs defaultValue="items" className="px-4 mt-3">
         <TabsList className="w-full">
