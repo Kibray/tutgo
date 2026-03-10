@@ -13,8 +13,7 @@ const ReferralSection = () => {
 
   useEffect(() => {
     if (!user) return;
-    supabase
-      .from('profiles')
+    (supabase.from('profiles') as any)
       .select('referral_code, referral_count')
       .eq('user_id', user.id)
       .single()

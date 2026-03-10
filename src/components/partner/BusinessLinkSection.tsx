@@ -33,8 +33,7 @@ const BusinessLinkSection = ({ locationId, locationName, businessType, rating, r
   const [showStats, setShowStats] = useState(false);
 
   useEffect(() => {
-    supabase
-      .from('locations')
+    (supabase.from('locations') as any)
       .select('slug')
       .eq('id', locationId)
       .single()
