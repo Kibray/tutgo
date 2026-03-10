@@ -240,6 +240,7 @@ const PartnerFinance = () => {
               ))}
             </div>
           )}
+        </motion.div>
       </div>
     </PartnerLayout>
   );

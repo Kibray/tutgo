@@ -275,7 +275,7 @@ const PartnerMenu = () => {
         <TabsContent value="combos" className="space-y-3">
           <p className="text-center py-8 text-xs text-muted-foreground">Комбо-сеты в разработке</p>
         </TabsContent>
-      </div>
+      </Tabs>
     </PartnerLayout>
   );
 };

@@ -216,6 +216,7 @@ const PartnerQueue = () => {
               ))}
             </div>
           </>
+        )}
       </div>
     </PartnerLayout>
   );

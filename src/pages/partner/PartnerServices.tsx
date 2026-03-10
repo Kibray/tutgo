@@ -250,6 +250,7 @@ const PartnerServices = () => {
               )}
             </motion.div>
           ))}
+        </div>
       </div>
     </PartnerLayout>
   );
