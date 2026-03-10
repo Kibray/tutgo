@@ -1,5 +1,6 @@
 import { Search, MapPin, Loader2, X } from 'lucide-react';
 import { useState, useRef, useCallback } from 'react';
+import { usePreferences } from '@/hooks/usePreferences';
 
 interface NominatimResult {
   display_name: string;
@@ -16,6 +17,7 @@ interface SearchBarProps {
 }
 
 const SearchBar = ({ onSearch, onSubmit, onLocationSelect, onGeolocate, geolocating }: SearchBarProps) => {
+  const { t } = usePreferences();
   const [query, setQuery] = useState('');
   const [suggestions, setSuggestions] = useState<NominatimResult[]>([]);
   const [searching, setSearching] = useState(false);
@@ -71,7 +73,7 @@ const SearchBar = ({ onSearch, onSubmit, onLocationSelect, onGeolocate, geolocat
         <Search className="w-5 h-5 text-muted-foreground flex-shrink-0" />
         <input
           type="text"
-          placeholder="Поиск услуг, адресов, мест..."
+          placeholder={t('index.search_placeholder')}
           value={query}
           onChange={(e) => handleChange(e.target.value)}
           onKeyDown={handleKeyDown}

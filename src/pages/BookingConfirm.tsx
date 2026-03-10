@@ -5,22 +5,26 @@ import { Check, Calendar, Clock, MapPin, User, Loader2 } from 'lucide-react';
 import { formatPrice } from '@/lib/types';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
+import { usePreferences } from '@/hooks/usePreferences';
 import { useToast } from '@/hooks/use-toast';
 
 const BookingConfirm = () => {
   const navigate = useNavigate();
   const { state } = useLocation() as any;
   const { user } = useAuth();
+  const { t, lang } = usePreferences();
   const { toast } = useToast();
   const [saving, setSaving] = useState(false);
   const [confirmed, setConfirmed] = useState(false);
+
+  const locale = lang === 'uz' ? 'uz' : lang === 'en' ? 'en' : 'ru';
 
   if (!state?.location) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center text-muted-foreground">
         <div className="text-center">
-          <p>Нет данных о бронировании</p>
-          <button onClick={() => navigate('/')} className="text-primary mt-2 text-sm">На главную</button>
+          <p>{t('booking.no_data')}</p>
+          <button onClick={() => navigate('/')} className="text-primary mt-2 text-sm">{t('booking.to_home')}</button>
         </div>
       </div>
     );
@@ -53,10 +57,10 @@ const BookingConfirm = () => {
 
     setSaving(false);
     if (error) {
-      toast({ title: 'Ошибка', description: error.message.includes('Double booking') ? 'Это время уже занято' : error.message, variant: 'destructive' });
+      toast({ title: t('common.error'), description: error.message.includes('Double booking') ? t('booking.time_taken') : error.message, variant: 'destructive' });
     } else {
       setConfirmed(true);
-      toast({ title: 'Запись создана!' });
+      toast({ title: t('booking.created') });
     }
   };
 
@@ -70,21 +74,21 @@ const BookingConfirm = () => {
           </div>
         </motion.div>
         <motion.h1 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
-          className="text-xl font-bold font-display text-foreground text-center">Запись подтверждена!</motion.h1>
+          className="text-xl font-bold font-display text-foreground text-center">{t('booking.confirmed')}</motion.h1>
 
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }}
           className="glass rounded-lg p-5 mt-6 w-full max-w-sm space-y-3">
           <h3 className="font-semibold text-foreground text-sm">{service?.name || location.name}</h3>
           <p className="text-xs text-muted-foreground">{location.name}</p>
           <div className="border-t border-border pt-3 space-y-2.5">
-            <Row icon={Calendar} label="Дата" value={d.toLocaleDateString('ru', { weekday: 'long', month: 'short', day: 'numeric' })} />
-            <Row icon={Clock} label="Время" value={time} />
-            <Row icon={MapPin} label="Адрес" value={`${location.address || ''}, ${location.city || ''}`} />
-            {staffMember && <Row icon={User} label="Специалист" value={staffMember.full_name} />}
+            <Row icon={Calendar} label={t('booking.date')} value={d.toLocaleDateString(locale, { weekday: 'long', month: 'short', day: 'numeric' })} />
+            <Row icon={Clock} label={t('booking.time')} value={time} />
+            <Row icon={MapPin} label={t('booking.address')} value={`${location.address || ''}, ${location.city || ''}`} />
+            {staffMember && <Row icon={User} label={t('booking.specialist')} value={staffMember.full_name} />}
           </div>
           {service?.price > 0 && (
             <div className="border-t border-border pt-3 flex items-center justify-between">
-              <span className="text-sm text-muted-foreground">Итого</span>
+              <span className="text-sm text-muted-foreground">{t('booking.total')}</span>
               <span className="text-lg font-bold text-gradient-green">{formatPrice(service.price)} {service.currency}</span>
             </div>
           )}
@@ -92,9 +96,9 @@ const BookingConfirm = () => {
 
         <div className="flex gap-3 mt-8 w-full max-w-sm">
           <motion.button whileTap={{ scale: 0.98 }} onClick={() => navigate('/bookings')}
-            className="flex-1 py-3.5 glass rounded-lg font-semibold text-sm text-foreground">Мои записи</motion.button>
+            className="flex-1 py-3.5 glass rounded-lg font-semibold text-sm text-foreground">{t('booking.my_bookings')}</motion.button>
           <motion.button whileTap={{ scale: 0.98 }} onClick={() => navigate('/')}
-            className="flex-1 py-3.5 bg-primary text-accent-foreground rounded-lg font-semibold text-sm glow-green">На главную</motion.button>
+            className="flex-1 py-3.5 bg-primary text-accent-foreground rounded-lg font-semibold text-sm glow-green">{t('booking.to_home')}</motion.button>
         </div>
       </div>
     );
@@ -102,20 +106,20 @@ const BookingConfirm = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col items-center justify-center px-6">
-      <h1 className="text-xl font-bold font-display text-foreground text-center mb-6">Подтвердите запись</h1>
+      <h1 className="text-xl font-bold font-display text-foreground text-center mb-6">{t('booking.confirm_booking')}</h1>
 
       <div className="glass rounded-lg p-5 w-full max-w-sm space-y-3">
         <h3 className="font-semibold text-foreground text-sm">{service?.name || location.name}</h3>
         <p className="text-xs text-muted-foreground">{location.name}</p>
         <div className="border-t border-border pt-3 space-y-2.5">
-          <Row icon={Calendar} label="Дата" value={d.toLocaleDateString('ru', { weekday: 'long', month: 'short', day: 'numeric' })} />
-          <Row icon={Clock} label="Время" value={time} />
-          <Row icon={MapPin} label="Адрес" value={`${location.address || ''}, ${location.city || ''}`} />
-          {staffMember && <Row icon={User} label="Специалист" value={staffMember.full_name} />}
+          <Row icon={Calendar} label={t('booking.date')} value={d.toLocaleDateString(locale, { weekday: 'long', month: 'short', day: 'numeric' })} />
+          <Row icon={Clock} label={t('booking.time')} value={time} />
+          <Row icon={MapPin} label={t('booking.address')} value={`${location.address || ''}, ${location.city || ''}`} />
+          {staffMember && <Row icon={User} label={t('booking.specialist')} value={staffMember.full_name} />}
         </div>
         {service?.price > 0 && (
           <div className="border-t border-border pt-3 flex items-center justify-between">
-            <span className="text-sm text-muted-foreground">Итого</span>
+            <span className="text-sm text-muted-foreground">{t('booking.total')}</span>
             <span className="text-lg font-bold text-gradient-green">{formatPrice(service.price)} {service.currency}</span>
           </div>
         )}
@@ -123,10 +127,10 @@ const BookingConfirm = () => {
 
       <motion.button whileTap={{ scale: 0.98 }} onClick={handleConfirm} disabled={saving || !user}
         className="mt-8 w-full max-w-sm py-3.5 bg-primary text-accent-foreground rounded-lg font-semibold text-sm glow-green disabled:opacity-50 flex items-center justify-center gap-2">
-        {saving ? <><Loader2 className="w-4 h-4 animate-spin" />Сохраняем...</> : 'Подтвердить запись'}
+        {saving ? <><Loader2 className="w-4 h-4 animate-spin" />{t('booking.saving')}</> : t('booking.confirm_booking')}
       </motion.button>
 
-      {!user && <p className="text-xs text-destructive mt-3">Войдите в аккаунт для записи</p>}
+      {!user && <p className="text-xs text-destructive mt-3">{t('booking.login_required')}</p>}
     </div>
   );
 };
