@@ -84,19 +84,12 @@ const PartnerOrders = () => {
   const activeOrders = orders.filter(o => ['new', 'preparing', 'ready', 'served'].includes(o.status));
 
   return (
-    <div className="min-h-screen bg-background pb-24">
-      <div className="sticky top-0 z-20 glass-strong px-4 py-3 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <button onClick={() => navigate('/partner')} className="w-8 h-8 glass rounded-full flex items-center justify-center">
-            <ArrowLeft className="w-4 h-4 text-foreground" />
-          </button>
-          <h1 className="text-base font-bold text-foreground">🍳 Кухня</h1>
-          <span className="text-xs text-muted-foreground">{activeOrders.length} активных</span>
-        </div>
-        <button onClick={() => setSoundEnabled(!soundEnabled)} className="p-2 glass rounded-lg">
-          {soundEnabled ? <Volume2 className="w-4 h-4 text-primary" /> : <VolumeX className="w-4 h-4 text-muted-foreground" />}
-        </button>
-      </div>
+    <PartnerLayout title="🍳 Кухня" headerRight={
+      <button onClick={() => setSoundEnabled(!soundEnabled)} className="p-2 glass rounded-lg">
+        {soundEnabled ? <Volume2 className="w-4 h-4 text-primary" /> : <VolumeX className="w-4 h-4 text-muted-foreground" />}
+      </button>
+    }>
+      <div className="px-4">
 
       <div className="px-4 mt-3 space-y-3">
         {activeOrders.length === 0 && (
