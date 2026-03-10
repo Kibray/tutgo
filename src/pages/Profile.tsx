@@ -169,6 +169,7 @@ const Profile = () => {
         )}
 
         <p className="text-center text-[10px] text-muted-foreground/50 mt-8">{t('profile.version')}</p>
+        <LegalFooter />
       </div>
       <BottomNav />
     </div>
