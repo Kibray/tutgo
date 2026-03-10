@@ -13,41 +13,46 @@ interface QueueStatusProps {
 
 const QueueStatus = ({ locationId, locationName }: QueueStatusProps) => {
   const { user } = useAuth();
-  const [tickets, setTickets] = useState<any[]>([]);
   const [myTicket, setMyTicket] = useState<any>(null);
+  const [stats, setStats] = useState<{ waiting_count: number; current_serving: number | null; last_ticket: number }>({ waiting_count: 0, current_serving: null, last_ticket: 0 });
   const [taking, setTaking] = useState(false);
   const today = new Date().toISOString().split('T')[0];
 
-  const loadTickets = async () => {
+  const loadStats = async () => {
+    const { data } = await supabase.rpc('get_queue_stats', { p_location_id: locationId, p_date: today });
+    if (data) setStats(data as any);
+  };
+
+  const loadMyTicket = async () => {
+    if (!user) { setMyTicket(null); return; }
     const { data } = await supabase.from('queue_tickets')
       .select('*')
       .eq('location_id', locationId)
       .eq('queue_date', today)
-      .order('ticket_number', { ascending: true });
-    const all = data || [];
-    setTickets(all);
-    if (user) {
-      const mine = all.find(t => t.user_id === user.id && ['waiting', 'serving'].includes(t.status));
-      setMyTicket(mine || null);
-    }
+      .eq('user_id', user.id)
+      .in('status', ['waiting', 'serving'])
+      .limit(1)
+      .maybeSingle();
+    setMyTicket(data);
   };
 
-  useEffect(() => { loadTickets(); }, [locationId, user]);
+  const reload = () => { loadStats(); loadMyTicket(); };
 
-  // Realtime
+  useEffect(() => { reload(); }, [locationId, user]);
+
   useEffect(() => {
     const channel = supabase.channel(`queue-client-${locationId}`)
       .on('postgres_changes', {
         event: '*', schema: 'public', table: 'queue_tickets',
         filter: `location_id=eq.${locationId}`,
-      }, () => loadTickets())
+      }, () => reload())
       .subscribe();
     return () => { supabase.removeChannel(channel); };
   }, [locationId]);
 
-  const waiting = tickets.filter(t => t.status === 'waiting');
-  const currentServing = tickets.find(t => t.status === 'serving');
-  const lastTicketNum = tickets.length > 0 ? Math.max(...tickets.map(t => t.ticket_number)) : 0;
+  const waitingCount = stats.waiting_count;
+  const currentServingNum = stats.current_serving;
+  const lastTicketNum = stats.last_ticket;
 
   const handleTakeTicket = async () => {
     if (!user) { toast.error('Войдите чтобы взять талон'); return; }
