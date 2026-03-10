@@ -22,10 +22,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const [isPartner, setIsPartner] = useState(false);
+  const [termsAccepted, setTermsAccepted] = useState(true); // default true to avoid flash
 
   const checkPartnerRole = async (userId: string) => {
     const { data } = await supabase.rpc('has_role', { _user_id: userId, _role: 'partner' });
     setIsPartner(!!data);
+  };
+
+  const checkTermsAccepted = async (userId: string) => {
+    const { data } = await supabase.from('profiles').select('terms_accepted').eq('user_id', userId).single();
+    setTermsAccepted(data?.terms_accepted ?? false);
   };
 
   useEffect(() => {
