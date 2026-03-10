@@ -1,13 +1,14 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Send } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useTelegram } from '@/hooks/useTelegram';
 import { useToast } from '@/hooks/use-toast';
 import { lovable } from '@/integrations/lovable/index';
 import { supabase } from '@/integrations/supabase/client';
 import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
+import { Checkbox } from '@/components/ui/checkbox';
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
