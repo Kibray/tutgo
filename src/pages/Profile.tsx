@@ -16,21 +16,6 @@ const Profile = () => {
   const { t } = usePreferences();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [telegramConnected, setTelegramConnected] = useState(false);
-
-  useEffect(() => {
-    if (!user) return;
-    supabase.from('profiles').select('telegram_chat_id').eq('user_id', user.id).single()
-      .then(({ data }: any) => {
-        if (data?.telegram_chat_id) setTelegramConnected(true);
-      });
-  }, [user]);
-
-  const handleConnectTelegram = () => {
-    if (!user) { navigate('/auth'); return; }
-    window.open(`https://t.me/TutGoUzBot?start=${user.id}`, '_blank');
-    toast({ title: 'Откройте бота и нажмите Start', description: t('profile.tg_connect_desc') });
-  };
 
   const handleSignOut = async () => {
     await signOut();
