@@ -62,11 +62,18 @@ const AiAssistantFab = ({ onShowOnMap }: { onShowOnMap?: (locations: ResultCard[
     const apiMessages = [...messages, userMsg].map(m => ({ role: m.role, content: m.content }));
 
     try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.access_token) {
+        setMessages(prev => [...prev, { role: 'assistant', content: 'Пожалуйста, войдите в аккаунт для использования AI ассистента.' }]);
+        setLoading(false);
+        return;
+      }
+
       const resp = await fetch(CHAT_URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          Authorization: `Bearer ${session.access_token}`,
         },
         body: JSON.stringify({ messages: apiMessages }),
       });
