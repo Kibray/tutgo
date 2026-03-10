@@ -271,9 +271,7 @@ const PartnerDeals = () => {
           </motion.div>
         )}
       </AnimatePresence>
-
-      <PartnerBottomNav />
-    </div>
+    </PartnerLayout>
   );
 };
 

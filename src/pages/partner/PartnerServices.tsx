@@ -250,10 +250,8 @@ const PartnerServices = () => {
               )}
             </motion.div>
           ))}
-        </div>
       </div>
-      <PartnerBottomNav />
-    </div>
+    </PartnerLayout>
   );
 };
 

@@ -155,9 +155,7 @@ const PartnerTables = () => {
           </div>
         )}
       </div>
-
-      <PartnerBottomNav />
-    </div>
+    </PartnerLayout>
   );
 };
 

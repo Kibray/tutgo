@@ -279,9 +279,7 @@ const PartnerInventory = () => {
           </motion.div>
         )}
       </AnimatePresence>
-
-      <PartnerBottomNav />
-    </div>
+    </PartnerLayout>
   );
 };
 

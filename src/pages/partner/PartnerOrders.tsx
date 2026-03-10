@@ -155,9 +155,7 @@ const PartnerOrders = () => {
           );
         })}
       </div>
-
-      <PartnerBottomNav />
-    </div>
+    </PartnerLayout>
   );
 };
 

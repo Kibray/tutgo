@@ -299,10 +299,8 @@ const PartnerStaff = () => {
               );
             })}
           </div>
-        )}
       </div>
-      <PartnerBottomNav />
-    </div>
+    </PartnerLayout>
   );
 };
 

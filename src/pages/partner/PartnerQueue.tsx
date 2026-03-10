@@ -216,10 +216,8 @@ const PartnerQueue = () => {
               ))}
             </div>
           </>
-        )}
       </div>
-      <PartnerBottomNav />
-    </div>
+    </PartnerLayout>
   );
 };
 

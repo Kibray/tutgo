@@ -448,10 +448,8 @@ const PartnerCompanySettings = () => {
             <p className="text-sm">{t('partner.hours_coming')}</p>
             <p className="text-xs mt-1">{t('partner.hours_hint')}</p>
           </div>
-        )}
       </div>
-      <PartnerBottomNav />
-    </div>
+    </PartnerLayout>
   );
 };
 
