@@ -32,6 +32,72 @@ const Partner = () => {
   const navigate = useNavigate();
   const isDesktop = useIsDesktop();
 
+  const [badges, setBadges] = useState<Record<string, number>>({});
+  const [todayRevenue, setTodayRevenue] = useState(0);
+  const [todayBookings, setTodayBookings] = useState(0);
+  const [queueWaiting, setQueueWaiting] = useState(0);
+  const [avgRating, setAvgRating] = useState(0);
+
+  const today = useMemo(() => new Date(), []);
+  const todayStr = format(today, 'yyyy-MM-dd');
+
+  useEffect(() => {
+    if (!user || !isPartner || isDesktop) return;
+    const uid = user.id;
+    const dayStart = startOfDay(today).toISOString();
+    const dayEnd = endOfDay(today).toISOString();
+
+    supabase.from('locations').select('id, rating').eq('owner_id', uid).then(({ data }) => {
+      const locs = data || [];
+      const avg = locs.reduce((s, l) => s + (l.rating || 0), 0) / (locs.length || 1);
+      setAvgRating(Math.round(avg * 10) / 10);
+    });
+
+    supabase.from('appointments').select('id, services(price), locations!inner(owner_id)')
+      .eq('locations.owner_id', uid)
+      .gte('start_time', dayStart).lte('start_time', dayEnd)
+      .then(({ data }) => {
+        const d = data || [];
+        setTodayBookings(d.length);
+        setTodayRevenue(d.reduce((s, a: any) => s + (a.services?.price || 0), 0));
+        setBadges(prev => ({ ...prev, bookings: d.length }));
+      });
+
+    supabase.from('queue_tickets').select('id, status, locations!inner(owner_id)')
+      .eq('locations.owner_id', uid).eq('queue_date', todayStr).eq('status', 'waiting')
+      .then(({ data }) => {
+        const count = (data || []).length;
+        setQueueWaiting(count);
+        setBadges(prev => ({ ...prev, queue: count }));
+      });
+
+    supabase.from('appointments').select('client_user_id, locations!inner(owner_id)')
+      .eq('locations.owner_id', uid).not('client_user_id', 'is', null)
+      .then(({ data }) => {
+        const unique = new Set((data || []).map((a: any) => a.client_user_id)).size;
+        setBadges(prev => ({ ...prev, clients: unique }));
+      });
+
+    supabase.from('services').select('id, locations!inner(owner_id)')
+      .eq('locations.owner_id', uid)
+      .then(({ data }) => setBadges(prev => ({ ...prev, services: (data || []).length })));
+
+    supabase.from('staff').select('id, locations!inner(owner_id)')
+      .eq('locations.owner_id', uid)
+      .then(({ data }) => setBadges(prev => ({ ...prev, staff: (data || []).length })));
+
+    supabase.from('deals').select('id, locations!inner(owner_id)')
+      .eq('locations.owner_id', uid).eq('is_active', true)
+      .then(({ data }) => setBadges(prev => ({ ...prev, deals: (data || []).length })));
+
+    supabase.from('inventory').select('id, quantity, min_stock, locations!inner(owner_id)')
+      .eq('locations.owner_id', uid)
+      .then(({ data }) => {
+        const low = (data || []).filter((i: any) => i.quantity <= i.min_stock).length;
+        setBadges(prev => ({ ...prev, lowStock: low }));
+      });
+  }, [user, isPartner, isDesktop]);
+
   if (authLoading) return <div className="min-h-screen bg-background flex items-center justify-center text-muted-foreground">{t('common.loading')}</div>;
 
   if (!user) {
@@ -69,32 +135,53 @@ const Partner = () => {
   return (
     <div className="min-h-screen bg-background pb-24">
       <div className="px-4 pt-6">
-        <div className="flex items-center gap-3 mb-6">
+        <div className="flex items-center gap-3 mb-4">
           <motion.button whileTap={{ scale: 0.9 }} onClick={() => navigate('/profile')}>
             <ArrowLeft className="w-5 h-5 text-foreground" />
           </motion.button>
           <h1 className="text-lg font-bold font-display text-foreground flex-1">{t('partner.dashboard')}</h1>
         </div>
 
+        {/* Mini stats */}
+        <div className="mb-5">
+          <PartnerMobileStats
+            todayRevenue={todayRevenue}
+            todayBookings={todayBookings}
+            queueWaiting={queueWaiting}
+            avgRating={avgRating}
+          />
+        </div>
+
         <div className="grid grid-cols-2 gap-3">
-          {dashboardItems.map((item, i) => (
-            <motion.div
-              key={item.id}
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.06 }}
-              onClick={() => navigate(item.route)}
-              className="glass rounded-2xl p-5 flex flex-col items-center gap-3 cursor-pointer active:scale-[0.97] transition-transform"
-            >
-              <div className="w-12 h-12 rounded-xl bg-primary/15 flex items-center justify-center">
-                <item.icon className="w-6 h-6 text-primary" />
-              </div>
-              <p className="text-xs font-semibold text-foreground text-center leading-tight">{t(item.labelKey)}</p>
-            </motion.div>
-          ))}
+          {dashboardItems.map((item, i) => {
+            const badgeValue = item.badgeKey ? badges[item.badgeKey] : undefined;
+            return (
+              <motion.div
+                key={item.id}
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.06 }}
+                onClick={() => navigate(item.route)}
+                className="glass rounded-2xl p-5 flex flex-col items-center gap-3 cursor-pointer active:scale-[0.97] transition-transform relative"
+              >
+                {badgeValue !== undefined && badgeValue > 0 && (
+                  <Badge
+                    variant={item.badgeKey === 'lowStock' ? 'destructive' : 'default'}
+                    className="absolute top-2.5 right-2.5 text-[10px] min-w-[20px] h-5 flex items-center justify-center px-1.5"
+                  >
+                    {badgeValue}
+                  </Badge>
+                )}
+                <div className="w-12 h-12 rounded-xl bg-primary/15 flex items-center justify-center">
+                  <item.icon className="w-6 h-6 text-primary" />
+                </div>
+                <p className="text-xs font-semibold text-foreground text-center leading-tight">{t(item.labelKey)}</p>
+              </motion.div>
+            );
+          })}
         </div>
       </div>
-      <BottomNav />
+      <PartnerBottomNav />
     </div>
   );
 };
