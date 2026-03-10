@@ -3,6 +3,13 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { usePreferences } from '@/hooks/usePreferences';
 import { DashboardSlide, FeaturesSlide, TelegramSlide } from './BusinessSlides';
+import {
+  ToursSlide, ToursText,
+  BarberSlide, BarberText,
+  DentalSlide, DentalText,
+  CafeSlide, CafeText,
+  TelegramClientSlide, TelegramClientText,
+} from './ClientSlides';
 
 type Role = 'client' | 'business' | null;
 
@@ -24,119 +31,7 @@ const slideVariants = {
   exit: (dir: number) => ({ x: dir > 0 ? -300 : 300, opacity: 0 }),
 };
 
-/* ─── Illustrations (inline SVG) ─── */
-const MapIllustration = () => (
-  <div className="relative w-full max-w-[320px] h-[220px] mx-auto">
-    <svg viewBox="0 0 320 220" fill="none" className="w-full h-full">
-      <rect width="320" height="220" rx="16" fill="#0d1520" />
-      <path d="M0 80 Q80 60 160 90 T320 70 V220 H0Z" fill="#111b2a" opacity="0.6" />
-      <path d="M40 140 Q120 110 200 130 T320 120 V220 H0Z" fill="#0f1825" opacity="0.4" />
-      {/* Roads */}
-      <line x1="60" y1="40" x2="260" y2="180" stroke="#1a2940" strokeWidth="2" />
-      <line x1="30" y1="140" x2="290" y2="60" stroke="#1a2940" strokeWidth="2" />
-      <line x1="160" y1="20" x2="160" y2="200" stroke="#1a2940" strokeWidth="1.5" />
-    </svg>
-    {/* Pins */}
-    {[
-      { x: '25%', y: '30%', color: ACCENT_GREEN, label: '💇' },
-      { x: '55%', y: '50%', color: ACCENT_BLUE, label: '☕' },
-      { x: '75%', y: '35%', color: '#ff6b6b', label: '🏥' },
-    ].map((pin, i) => (
-      <motion.div key={i} className="absolute flex flex-col items-center"
-        style={{ left: pin.x, top: pin.y, transform: 'translate(-50%,-100%)' }}
-        animate={{ scale: [1, 1.15, 1] }}
-        transition={{ repeat: Infinity, duration: 2, delay: i * 0.4 }}>
-        <div className="w-8 h-8 rounded-full flex items-center justify-center text-sm shadow-lg"
-          style={{ background: pin.color }}>{pin.label}</div>
-        <div className="w-2 h-2 rounded-full mt-0.5" style={{ background: pin.color, opacity: 0.5 }} />
-      </motion.div>
-    ))}
-    {/* Badge */}
-    <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}
-      className="absolute bottom-3 left-1/2 -translate-x-1/2 px-3 py-1.5 rounded-full text-[11px] font-semibold text-black"
-      style={{ background: ACCENT_GREEN }}>
-      🟢 247 компаний онлайн
-    </motion.div>
-    {/* Search bar */}
-    <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 w-[85%] h-9 rounded-xl bg-[#111b2a] border border-[#1a2940] flex items-center px-3 gap-2 text-[11px] text-gray-400">
-      🔍 Услуги рядом со мной <span className="ml-auto text-[10px]">📍 Ташкент</span>
-    </div>
-  </div>
-);
-
-const BookingIllustration = () => {
-  const [selectedSlot, setSelectedSlot] = useState(2);
-  return (
-    <div className="w-full max-w-[280px] mx-auto rounded-2xl p-4" style={{ background: '#0d1520', border: '1px solid #1a2940' }}>
-      <div className="flex items-center gap-3 mb-3">
-        <div className="w-10 h-10 rounded-full" style={{ background: GRADIENT }} />
-        <div>
-          <p className="text-white text-sm font-semibold">Студия Silk</p>
-          <p className="text-gray-400 text-[11px]">⭐ 4.9 · 128 отзывов</p>
-        </div>
-      </div>
-      <div className="flex gap-2 mb-3">
-        {['09:00', '10:00', '11:00', '13:00'].map((t, i) => (
-          <motion.button key={t}
-            animate={i === selectedSlot ? { scale: [1, 1.05, 1] } : {}}
-            transition={{ repeat: Infinity, duration: 2 }}
-            onClick={() => setSelectedSlot(i)}
-            className="px-2.5 py-1.5 rounded-lg text-[11px] font-medium transition-all"
-            style={{
-              background: i === selectedSlot ? ACCENT_GREEN : '#111b2a',
-              color: i === selectedSlot ? '#000' : '#9ca3af',
-              border: `1px solid ${i === selectedSlot ? ACCENT_GREEN : '#1a2940'}`,
-            }}>
-            {t} {i === selectedSlot && '✅'}
-          </motion.button>
-        ))}
-      </div>
-      <div className="flex items-center justify-between">
-        <span className="text-[12px] font-bold" style={{ color: ACCENT_GREEN }}>80 000 сум</span>
-        <div className="px-3 py-1.5 rounded-lg text-[11px] font-semibold text-black" style={{ background: ACCENT_GREEN }}>
-          ✅ Записаться на 11:00
-        </div>
-      </div>
-    </div>
-  );
-};
-
-const TelegramIllustration = ({ message }: { message: string }) => (
-  <div className="w-full max-w-[280px] mx-auto">
-    <div className="rounded-2xl p-4 relative" style={{ background: '#0d1520', border: '1px solid #1a2940' }}>
-      <div className="absolute -top-2 -right-2 w-8 h-8 rounded-full flex items-center justify-center text-sm" style={{ background: '#2AABEE' }}>
-        ✈️
-      </div>
-      <p className="text-[10px] text-gray-500 mb-2">@TutGoUzBot</p>
-      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }}
-        className="rounded-xl p-3 text-[12px] text-white leading-relaxed whitespace-pre-line"
-        style={{ background: '#111b2a' }}>
-        {message}
-      </motion.div>
-      <div className="flex gap-2 mt-3">
-        <div className="flex-1 py-1.5 rounded-lg text-[10px] font-medium text-center" style={{ background: '#111b2a', color: ACCENT_BLUE, border: '1px solid #1a2940' }}>
-          🗺️ Маршрут
-        </div>
-        <div className="flex-1 py-1.5 rounded-lg text-[10px] font-medium text-center" style={{ background: '#111b2a', color: '#ff6b6b', border: '1px solid #1a2940' }}>
-          ❌ Отменить
-        </div>
-      </div>
-    </div>
-  </div>
-);
-
-const FeaturesGrid = ({ items }: { items: { emoji: string; title: string; sub: string; color: string }[] }) => (
-  <div className="grid grid-cols-2 gap-3 w-full max-w-[300px] mx-auto">
-    {items.map((item, i) => (
-      <motion.div key={i} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 + i * 0.15 }}
-        className="rounded-xl p-3 text-center" style={{ background: `${item.color}15`, border: `1px solid ${item.color}30` }}>
-        <div className="text-2xl mb-1">{item.emoji}</div>
-        <p className="text-white text-[11px] font-semibold">{item.title}</p>
-        <p className="text-[10px]" style={{ color: item.color }}>{item.sub}</p>
-      </motion.div>
-    ))}
-  </div>
-);
+/* (Client illustrations moved to ClientSlides.tsx) */
 
 /* ─── Main component ─── */
 const OnboardingFlow = ({ onComplete, forceRole, isPreview }: Props) => {
@@ -147,32 +42,11 @@ const OnboardingFlow = ({ onComplete, forceRole, isPreview }: Props) => {
   const [direction, setDirection] = useState(1);
 
   const clientSlides = [
-    {
-      illustration: <MapIllustration />,
-      title: 'Найди всё рядом с тобой',
-      text: 'Красота, медицина, кафе, туры — всё на одной карте!',
-    },
-    {
-      illustration: <BookingIllustration />,
-      title: 'Запись онлайн за 30 секунд',
-      text: 'Выбери мастера, удобное время и нажми записаться. Никаких звонков!',
-    },
-    {
-      illustration: <TelegramIllustration message={"✅ Запись подтверждена!\n✂️ Студия Silk\n📅 12 марта · 11:00\n💰 80 000 сум"} />,
-      title: 'Уведомления в Telegram',
-      text: 'Подтверждение записи и напоминание за час приходят прямо в Telegram!',
-    },
-    {
-      illustration: <FeaturesGrid items={[
-        { emoji: '☕', title: 'Меню кафе', sub: '42 блюда', color: '#f59e0b' },
-        { emoji: '🎟️', title: 'Живая очередь', sub: '~15 мин', color: ACCENT_BLUE },
-        { emoji: '🎁', title: 'Акции', sub: 'до -50%', color: '#f43f5e' },
-        { emoji: '⭐', title: 'Отзывы', sub: '1 240+', color: '#a78bfa' },
-      ]} />,
-      title: 'И это ещё не всё!',
-      text: 'Меню кафе, живая очередь, акции, отзывы — TutGo твой помощник в Ташкенте!',
-      isFinal: true,
-    },
+    { phone: <ToursSlide />, text: <ToursText />, isFinal: false },
+    { phone: <BarberSlide />, text: <BarberText />, isFinal: false },
+    { phone: <DentalSlide />, text: <DentalText />, isFinal: false },
+    { phone: <CafeSlide />, text: <CafeText />, isFinal: false },
+    { phone: <TelegramClientSlide />, text: <TelegramClientText />, isFinal: true },
   ];
 
   const businessSlides = [
@@ -194,7 +68,8 @@ const OnboardingFlow = ({ onComplete, forceRole, isPreview }: Props) => {
     },
   ];
 
-  const slides = role === 'business' ? businessSlides : clientSlides;
+  const isClient = role === 'client';
+  const slides = isClient ? clientSlides : businessSlides;
   const totalSteps = slides.length;
 
   const next = useCallback(() => {
@@ -291,9 +166,24 @@ const OnboardingFlow = ({ onComplete, forceRole, isPreview }: Props) => {
             variants={slideVariants} initial="enter" animate="center" exit="exit"
             transition={{ duration: 0.35, ease: 'easeInOut' }}
             className="w-full flex flex-col items-center">
-            <div className="mb-8">{currentSlide.illustration}</div>
-            <h2 className="text-xl font-bold text-white text-center mb-2">{currentSlide.title}</h2>
-            <p className="text-gray-400 text-sm text-center max-w-xs">{currentSlide.text}</p>
+            {isClient ? (
+              /* Client: phone + text side by side on desktop, stacked on mobile */
+              <div className="w-full max-w-3xl flex flex-col lg:flex-row items-center gap-6 lg:gap-12">
+                <div className="flex-shrink-0">
+                  {(currentSlide as any).phone}
+                </div>
+                <div className="flex-1 text-center lg:text-left">
+                  {(currentSlide as any).text}
+                </div>
+              </div>
+            ) : (
+              /* Business: centered illustration + title + text */
+              <>
+                <div className="mb-8">{'illustration' in currentSlide && (currentSlide as any).illustration}</div>
+                <h2 className="text-xl font-bold text-white text-center mb-2">{'title' in currentSlide && (currentSlide as any).title}</h2>
+                <p className="text-gray-400 text-sm text-center max-w-xs">{'text' in currentSlide && typeof (currentSlide as any).text === 'string' && (currentSlide as any).text}</p>
+              </>
+            )}
           </motion.div>
         </AnimatePresence>
       </div>
