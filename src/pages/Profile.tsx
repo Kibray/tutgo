@@ -6,7 +6,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { usePreferences } from '@/hooks/usePreferences';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import BottomNav from '@/components/BottomNav';
 import TelegramLinkBlock from '@/components/TelegramLinkBlock';
 import ReferralSection from '@/components/ReferralSection';
