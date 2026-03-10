@@ -17,7 +17,7 @@ const ReferralRedirect = () => {
     localStorage.setItem('tutgo_referral', code);
 
     // Track click
-    supabase.from('referral_clicks' as any).insert({
+    (supabase.from as any)('referral_clicks').insert({
       referral_type: 'user',
       referral_code: code,
     }).then(() => {});

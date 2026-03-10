@@ -13,7 +13,7 @@ const BusinessBySlug = () => {
 
     const resolve = async () => {
       // Track click
-      supabase.from('referral_clicks' as any).insert({
+      (supabase.from as any)('referral_clicks').insert({
         referral_type: 'business',
         referral_code: slug,
         location_slug: slug,
