@@ -101,8 +101,7 @@ const QueueStatus = ({ locationId, locationName }: QueueStatusProps) => {
     toast('Талон отменён');
   };
 
-  const myPosition = myTicket ? waiting.findIndex(t => t.id === myTicket.id) : -1;
-  const peopleAhead = myPosition >= 0 ? myPosition : waiting.length;
+  const peopleAhead = myTicket && currentServingNum ? myTicket.ticket_number - currentServingNum - 1 : waitingCount;
 
   return (
     <div className="glass rounded-2xl p-4 space-y-4">
