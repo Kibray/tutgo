@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { usePreferences } from '@/hooks/usePreferences';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
-import BottomNav from '@/components/BottomNav';
+import PartnerBottomNav from '@/components/partner/PartnerBottomNav';
 import { useToast } from '@/hooks/use-toast';
 import { Switch } from '@/components/ui/switch';
 
@@ -309,7 +309,7 @@ const PartnerStaff = () => {
           </div>
         )}
       </div>
-      <BottomNav />
+      <PartnerBottomNav />
     </div>
   );
 };

@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 import { ArrowLeft, Users } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { usePreferences } from '@/hooks/usePreferences';
-import BottomNav from '@/components/BottomNav';
+import PartnerBottomNav from '@/components/partner/PartnerBottomNav';
 
 const PartnerClients = () => {
   const navigate = useNavigate();
@@ -24,7 +24,7 @@ const PartnerClients = () => {
           <p className="text-xs mt-1">{t('partner.clients_hint')}</p>
         </div>
       </div>
-      <BottomNav />
+      <PartnerBottomNav />
     </div>
   );
 };

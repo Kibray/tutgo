@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { usePreferences } from '@/hooks/usePreferences';
 import { supabase } from '@/integrations/supabase/client';
-import BottomNav from '@/components/BottomNav';
+import PartnerBottomNav from '@/components/partner/PartnerBottomNav';
 import BusinessPhotoUpload from '@/components/BusinessPhotoUpload';
 import AddressPicker from '@/components/AddressPicker';
 import { Button } from '@/components/ui/button';
@@ -445,7 +445,7 @@ const PartnerCompanySettings = () => {
           </div>
         )}
       </div>
-      <BottomNav />
+      <PartnerBottomNav />
     </div>
   );
 };

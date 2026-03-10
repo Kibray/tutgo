@@ -4,7 +4,7 @@ import { ArrowLeft, SkipForward, Play, Trash2, Users, Hash, RefreshCw } from 'lu
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
-import BottomNav from '@/components/BottomNav';
+import PartnerBottomNav from '@/components/partner/PartnerBottomNav';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 
@@ -224,7 +224,7 @@ const PartnerQueue = () => {
           </>
         )}
       </div>
-      <BottomNav />
+      <PartnerBottomNav />
     </div>
   );
 };
