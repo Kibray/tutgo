@@ -1,23 +1,29 @@
+import { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Calendar, Users, BarChart3, List, UserCog, Building2, ArrowLeft, Store, Percent, Hash, Wallet, Package } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { usePreferences } from '@/hooks/usePreferences';
 import { useNavigate } from 'react-router-dom';
 import BottomNav from '@/components/BottomNav';
+import PartnerBottomNav from '@/components/partner/PartnerBottomNav';
+import PartnerMobileStats from '@/components/partner/PartnerMobileStats';
 import { useIsDesktop } from '@/hooks/useIsDesktop';
 import PartnerDashboardDesktop from '@/components/partner/PartnerDashboardDesktop';
+import { supabase } from '@/integrations/supabase/client';
+import { Badge } from '@/components/ui/badge';
+import { startOfDay, endOfDay, format } from 'date-fns';
 
 const dashboardItems = [
-  { id: 'bookings', icon: Calendar, labelKey: 'partner.journal', route: '/partner/bookings' },
-  { id: 'clients', icon: Users, labelKey: 'partner.clients', route: '/partner/clients' },
-  { id: 'analytics', icon: BarChart3, labelKey: 'partner.analytics', route: '/partner/analytics' },
-  { id: 'services', icon: List, labelKey: 'partner.services', route: '/partner/services' },
-  { id: 'staff', icon: UserCog, labelKey: 'partner.staff', route: '/partner/staff' },
-  { id: 'company', icon: Building2, labelKey: 'partner.company_profile', route: '/partner/settings' },
-  { id: 'deals', icon: Percent, labelKey: 'partner.deals', route: '/partner/deals' },
-  { id: 'finance', icon: Wallet, labelKey: 'Финансы', route: '/partner/finance' },
-  { id: 'inventory', icon: Package, labelKey: 'Склад', route: '/partner/inventory' },
-  { id: 'queue', icon: Hash, labelKey: 'Живая очередь', route: '/partner/queue' },
+  { id: 'bookings', icon: Calendar, labelKey: 'partner.journal', route: '/partner/bookings', badgeKey: 'bookings' },
+  { id: 'clients', icon: Users, labelKey: 'partner.clients', route: '/partner/clients', badgeKey: 'clients' },
+  { id: 'analytics', icon: BarChart3, labelKey: 'partner.analytics', route: '/partner/analytics', badgeKey: '' },
+  { id: 'services', icon: List, labelKey: 'partner.services', route: '/partner/services', badgeKey: 'services' },
+  { id: 'staff', icon: UserCog, labelKey: 'partner.staff', route: '/partner/staff', badgeKey: 'staff' },
+  { id: 'company', icon: Building2, labelKey: 'partner.company_profile', route: '/partner/settings', badgeKey: '' },
+  { id: 'deals', icon: Percent, labelKey: 'partner.deals', route: '/partner/deals', badgeKey: 'deals' },
+  { id: 'finance', icon: Wallet, labelKey: 'Финансы', route: '/partner/finance', badgeKey: '' },
+  { id: 'inventory', icon: Package, labelKey: 'Склад', route: '/partner/inventory', badgeKey: 'lowStock' },
+  { id: 'queue', icon: Hash, labelKey: 'Живая очередь', route: '/partner/queue', badgeKey: 'queue' },
 ];
 
 const Partner = () => {
