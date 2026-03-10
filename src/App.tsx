@@ -92,6 +92,7 @@ const App = () => (
                 <Route path="/partner/tables" element={<PartnerTables />} />
                 <Route path="/cafe/:slug/table/:tableNum" element={<CafeTable />} />
                 <Route path="/partner-landing" element={<PartnerLanding />} />
+                <Route path="/admin" element={<Admin />} />
                 <Route path="/notifications" element={<Notifications />} />
                 <Route path="/b/:slug" element={<BusinessBySlug />} />
                 <Route path="/ref/:code" element={<ReferralRedirect />} />
