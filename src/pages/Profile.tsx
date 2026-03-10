@@ -134,6 +134,13 @@ const Profile = () => {
           </motion.div>
         </div>
 
+        {/* Referral section */}
+        {user && (
+          <div className="mt-4">
+            <ReferralSection />
+          </div>
+        )}
+
         {/* System menu */}
         <div className="space-y-2">
           {systemItems.map((item, i) => (
