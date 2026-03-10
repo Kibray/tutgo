@@ -81,6 +81,167 @@ export type Database = {
           },
         ]
       }
+      cafe_order_ratings: {
+        Row: {
+          comment: string | null
+          created_at: string
+          id: string
+          item_id: string | null
+          item_name: string | null
+          order_id: string
+          rating: number
+        }
+        Insert: {
+          comment?: string | null
+          created_at?: string
+          id?: string
+          item_id?: string | null
+          item_name?: string | null
+          order_id: string
+          rating: number
+        }
+        Update: {
+          comment?: string | null
+          created_at?: string
+          id?: string
+          item_id?: string | null
+          item_name?: string | null
+          order_id?: string
+          rating?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cafe_order_ratings_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "menu_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cafe_order_ratings_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "cafe_orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cafe_orders: {
+        Row: {
+          client_id: string | null
+          created_at: string
+          currency: string | null
+          discount: number | null
+          final_amount: number | null
+          id: string
+          items: Json
+          location_id: string
+          notes: string | null
+          paid_at: string | null
+          payment_method: string | null
+          served_at: string | null
+          status: string
+          table_id: string | null
+          table_number: number | null
+          total_amount: number | null
+          updated_at: string
+        }
+        Insert: {
+          client_id?: string | null
+          created_at?: string
+          currency?: string | null
+          discount?: number | null
+          final_amount?: number | null
+          id?: string
+          items?: Json
+          location_id: string
+          notes?: string | null
+          paid_at?: string | null
+          payment_method?: string | null
+          served_at?: string | null
+          status?: string
+          table_id?: string | null
+          table_number?: number | null
+          total_amount?: number | null
+          updated_at?: string
+        }
+        Update: {
+          client_id?: string | null
+          created_at?: string
+          currency?: string | null
+          discount?: number | null
+          final_amount?: number | null
+          id?: string
+          items?: Json
+          location_id?: string
+          notes?: string | null
+          paid_at?: string | null
+          payment_method?: string | null
+          served_at?: string | null
+          status?: string
+          table_id?: string | null
+          table_number?: number | null
+          total_amount?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cafe_orders_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cafe_orders_table_id_fkey"
+            columns: ["table_id"]
+            isOneToOne: false
+            referencedRelation: "cafe_tables"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cafe_tables: {
+        Row: {
+          capacity: number | null
+          created_at: string
+          id: string
+          is_active: boolean | null
+          location_id: string
+          qr_code: string | null
+          status: string | null
+          table_number: number
+        }
+        Insert: {
+          capacity?: number | null
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          location_id: string
+          qr_code?: string | null
+          status?: string | null
+          table_number: number
+        }
+        Update: {
+          capacity?: number | null
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          location_id?: string
+          qr_code?: string | null
+          status?: string | null
+          table_number?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cafe_tables_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       categories: {
         Row: {
           created_at: string

@@ -24,6 +24,10 @@ import PartnerDeals from "./pages/partner/PartnerDeals";
 import PartnerQueue from "./pages/partner/PartnerQueue";
 import PartnerFinance from "./pages/partner/PartnerFinance";
 import PartnerInventory from "./pages/partner/PartnerInventory";
+import PartnerMenu from "./pages/partner/PartnerMenu";
+import PartnerOrders from "./pages/partner/PartnerOrders";
+import PartnerTables from "./pages/partner/PartnerTables";
+import CafeTable from "./pages/CafeTable";
 import Settings from "./pages/Settings";
 import EditProfile from "./pages/EditProfile";
 import Help from "./pages/Help";
@@ -82,6 +86,10 @@ const App = () => (
                 <Route path="/partner/queue" element={<PartnerQueue />} />
                 <Route path="/partner/finance" element={<PartnerFinance />} />
                 <Route path="/partner/inventory" element={<PartnerInventory />} />
+                <Route path="/partner/menu" element={<PartnerMenu />} />
+                <Route path="/partner/orders" element={<PartnerOrders />} />
+                <Route path="/partner/tables" element={<PartnerTables />} />
+                <Route path="/cafe/:slug/table/:tableNum" element={<CafeTable />} />
                 <Route path="/partner-landing" element={<PartnerLanding />} />
                 <Route path="/notifications" element={<Notifications />} />
                 <Route path="/b/:slug" element={<BusinessBySlug />} />
