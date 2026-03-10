@@ -59,26 +59,7 @@ const Profile = () => {
           </div>
         </motion.div>
 
-        {user && (
-          <motion.div
-            initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.02 }}
-            onClick={telegramConnected ? undefined : handleConnectTelegram}
-            className={`glass rounded-xl p-3.5 flex items-center gap-3 mb-4 ${telegramConnected ? '' : 'cursor-pointer active:scale-[0.98]'} transition-transform`}
-          >
-            <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${telegramConnected ? 'bg-primary/15' : 'bg-blue-500/15'}`}>
-              <Send className={`w-4 h-4 ${telegramConnected ? 'text-primary' : 'text-blue-500'}`} />
-            </div>
-            <div className="flex-1">
-              <p className="text-sm font-medium text-foreground">
-                {telegramConnected ? t('profile.telegram_connected') : t('profile.connect_telegram')}
-              </p>
-              <p className="text-[10px] text-muted-foreground">
-                {telegramConnected ? t('profile.tg_connected_desc') : t('profile.tg_connect_desc')}
-              </p>
-            </div>
-            {!telegramConnected && <ChevronRight className="w-4 h-4 text-muted-foreground" />}
-          </motion.div>
-        )}
+        {user && <TelegramLinkBlock />}
 
         <div className="grid grid-cols-2 gap-3 mb-6">
           <motion.div
