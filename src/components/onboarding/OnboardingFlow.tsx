@@ -138,33 +138,6 @@ const FeaturesGrid = ({ items }: { items: { emoji: string; title: string; sub: s
   </div>
 );
 
-const DashboardIllustration = () => (
-  <div className="w-full max-w-[300px] mx-auto rounded-2xl p-4" style={{ background: '#0d1520', border: '1px solid #1a2940' }}>
-    <div className="grid grid-cols-2 gap-2 mb-3">
-      {[
-        { icon: '💰', val: '1 250 000', label: 'Доход', color: ACCENT_GREEN },
-        { icon: '📅', val: '12', label: 'Записей', color: ACCENT_BLUE },
-        { icon: '🎟️', val: '5', label: 'В очереди', color: '#f59e0b' },
-        { icon: '⭐', val: '4.9', label: 'Рейтинг', color: '#a78bfa' },
-      ].map((s, i) => (
-        <motion.div key={i} className="rounded-lg p-2 text-center" style={{ background: '#111b2a' }}
-          initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 + i * 0.1 }}>
-          <div className="text-lg">{s.icon}</div>
-          <p className="text-sm font-bold" style={{ color: s.color }}>{s.val}</p>
-          <p className="text-[9px] text-gray-500">{s.label}</p>
-        </motion.div>
-      ))}
-    </div>
-    <div className="flex items-end gap-1 h-12">
-      {[30, 45, 35, 55, 40, 60, 80].map((h, i) => (
-        <motion.div key={i} className="flex-1 rounded-sm" initial={{ height: 0 }} animate={{ height: `${h}%` }}
-          transition={{ delay: 0.5 + i * 0.08 }}
-          style={{ background: i === 6 ? ACCENT_GREEN : '#1a2940' }} />
-      ))}
-    </div>
-  </div>
-);
-
 /* ─── Main component ─── */
 const OnboardingFlow = ({ onComplete, forceRole, isPreview }: Props) => {
   const navigate = useNavigate();
