@@ -319,5 +319,15 @@
   "partner_landing.benefit3": "Управляйте ценами и фото",
   "partner_landing.benefit4": "Аналитика просмотров и кликов",
   "partner_landing.cta": "Стать партнёром",
-  "partner_landing.login_first": "Сначала войдите в аккаунт"
+  "partner_landing.login_first": "Сначала войдите в аккаунт",
+  "partner_landing.company_name": "Название компании",
+  "partner_landing.category": "Категория",
+  "partner_landing.phone": "Телефон",
+  "partner_landing.address": "Адрес",
+  "partner_landing.description_optional": "Описание (опционально)",
+  "partner_landing.fill_required": "Заполните обязательные поля",
+  "partner_landing.phone_taken": "Этот номер телефона уже зарегистрирован",
+  "partner_landing.fake_warning": "Указывайте реальные данные. Фейковые компании блокируются!",
+  "partner_landing.submit": "Отправить заявку",
+  "partner_landing.app_submitted": "Заявка отправлена! Компания видна в поиске с пометкой «На проверке»"
 }

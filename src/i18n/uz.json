@@ -319,5 +319,15 @@
   "partner_landing.benefit3": "Narxlar va rasmlarni boshqaring",
   "partner_landing.benefit4": "Ko'rishlar va kliklar analitikasi",
   "partner_landing.cta": "Hamkor bo'lish",
-  "partner_landing.login_first": "Avval akkauntga kiring"
+  "partner_landing.login_first": "Avval akkauntga kiring",
+  "partner_landing.company_name": "Kompaniya nomi",
+  "partner_landing.category": "Kategoriya",
+  "partner_landing.phone": "Telefon",
+  "partner_landing.address": "Manzil",
+  "partner_landing.description_optional": "Tavsif (ixtiyoriy)",
+  "partner_landing.fill_required": "Majburiy maydonlarni to'ldiring",
+  "partner_landing.phone_taken": "Bu telefon raqami allaqachon ro'yxatdan o'tgan",
+  "partner_landing.fake_warning": "Haqiqiy ma'lumotlarni kiriting. Soxta kompaniyalar bloklanadi!",
+  "partner_landing.submit": "Arizani yuborish",
+  "partner_landing.app_submitted": "Ariza yuborildi! Kompaniyangiz qidiruvda «Tekshiruvda» belgisi bilan ko'rinadi"
 }
