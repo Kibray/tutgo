@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { usePreferences } from '@/hooks/usePreferences';
+import { DashboardSlide, FeaturesSlide, TelegramSlide } from './BusinessSlides';
 
 type Role = 'client' | 'business' | null;
 
@@ -11,7 +12,7 @@ interface Props {
   isPreview?: boolean;
 }
 
-const ONBOARDING_BG = '#080c14';
+const ONBOARDING_BG = '#060810';
 const ACCENT_GREEN = '#00ff87';
 const ACCENT_BLUE = '#00c6ff';
 const GRADIENT = `linear-gradient(135deg, ${ACCENT_GREEN}, ${ACCENT_BLUE})`;
@@ -137,33 +138,6 @@ const FeaturesGrid = ({ items }: { items: { emoji: string; title: string; sub: s
   </div>
 );
 
-const DashboardIllustration = () => (
-  <div className="w-full max-w-[300px] mx-auto rounded-2xl p-4" style={{ background: '#0d1520', border: '1px solid #1a2940' }}>
-    <div className="grid grid-cols-2 gap-2 mb-3">
-      {[
-        { icon: '💰', val: '1 250 000', label: 'Доход', color: ACCENT_GREEN },
-        { icon: '📅', val: '12', label: 'Записей', color: ACCENT_BLUE },
-        { icon: '🎟️', val: '5', label: 'В очереди', color: '#f59e0b' },
-        { icon: '⭐', val: '4.9', label: 'Рейтинг', color: '#a78bfa' },
-      ].map((s, i) => (
-        <motion.div key={i} className="rounded-lg p-2 text-center" style={{ background: '#111b2a' }}
-          initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 + i * 0.1 }}>
-          <div className="text-lg">{s.icon}</div>
-          <p className="text-sm font-bold" style={{ color: s.color }}>{s.val}</p>
-          <p className="text-[9px] text-gray-500">{s.label}</p>
-        </motion.div>
-      ))}
-    </div>
-    <div className="flex items-end gap-1 h-12">
-      {[30, 45, 35, 55, 40, 60, 80].map((h, i) => (
-        <motion.div key={i} className="flex-1 rounded-sm" initial={{ height: 0 }} animate={{ height: `${h}%` }}
-          transition={{ delay: 0.5 + i * 0.08 }}
-          style={{ background: i === 6 ? ACCENT_GREEN : '#1a2940' }} />
-      ))}
-    </div>
-  </div>
-);
-
 /* ─── Main component ─── */
 const OnboardingFlow = ({ onComplete, forceRole, isPreview }: Props) => {
   const navigate = useNavigate();
@@ -203,33 +177,19 @@ const OnboardingFlow = ({ onComplete, forceRole, isPreview }: Props) => {
 
   const businessSlides = [
     {
-      illustration: <DashboardIllustration />,
+      illustration: <DashboardSlide />,
       title: 'Управляй бизнесом с телефона',
       text: 'Доход, записи, очередь и рейтинг — всё в одном месте!',
     },
     {
-      illustration: <TelegramIllustration message={"🔔 Новая запись!\n👤 Алишер К.\n📅 12 марта · 14:00\n🔧 Стрижка\n💰 150 000 сум"} />,
-      title: 'Записи прямо в Telegram',
-      text: 'Новая запись — мгновенное уведомление. Подтверди одним нажатием!',
-    },
-    {
-      illustration: (
-        <div className="space-y-3">
-          <FeaturesGrid items={[
-            { emoji: '👥', title: 'CRM', sub: '340 клиентов', color: ACCENT_BLUE },
-            { emoji: '📦', title: 'Склад', sub: '48 товаров', color: '#f59e0b' },
-            { emoji: '🍽️', title: 'QR Меню', sub: '42 блюда', color: '#a78bfa' },
-            { emoji: '🎟️', title: 'Очередь', sub: '0 мин', color: ACCENT_GREEN },
-          ]} />
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1 }}
-            className="mx-auto max-w-[300px] py-2 rounded-xl text-center text-[12px] font-bold text-black"
-            style={{ background: ACCENT_GREEN }}>
-            🎉 Всё бесплатно для вашего бизнеса!
-          </motion.div>
-        </div>
-      ),
+      illustration: <FeaturesSlide />,
       title: 'Полный бизнес инструмент бесплатно!',
       text: 'CRM, склад, QR меню, живая очередь, аналитика — всё включено!',
+    },
+    {
+      illustration: <TelegramSlide />,
+      title: 'Записи прямо в Telegram',
+      text: 'Новая запись — мгновенное уведомление. Подтверди одним нажатием!',
       isFinal: true,
     },
   ];
