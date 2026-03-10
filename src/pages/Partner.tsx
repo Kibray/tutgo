@@ -58,6 +58,8 @@ const Partner = () => {
     );
   }
 
+  if (isDesktop) return <PartnerDashboardDesktop />;
+
   return (
     <div className="min-h-screen bg-background pb-24">
       <div className="px-4 pt-6">
