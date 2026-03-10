@@ -525,6 +525,7 @@ export type Database = {
           converted: boolean
           converted_user_id: string | null
           id: string
+          ip_address: string | null
           location_slug: string | null
           referral_code: string
           referral_type: string
@@ -534,6 +535,7 @@ export type Database = {
           converted?: boolean
           converted_user_id?: string | null
           id?: string
+          ip_address?: string | null
           location_slug?: string | null
           referral_code: string
           referral_type?: string
@@ -543,6 +545,7 @@ export type Database = {
           converted?: boolean
           converted_user_id?: string | null
           id?: string
+          ip_address?: string | null
           location_slug?: string | null
           referral_code?: string
           referral_type?: string
