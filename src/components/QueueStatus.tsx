@@ -87,7 +87,7 @@ const QueueStatus = ({ locationId, locationName }: QueueStatusProps) => {
           body: {
             type: 'queue.notify',
             chatId: prof.telegram_chat_id,
-            text: `🎫 <b>Вы взяли талон №${newNum}</b>\n📍 ${locationName}\n👥 Перед вами: ${waiting.length} чел.\n⏰ Примерное ожидание: ~${waiting.length * 10} мин`,
+            text: `🎫 <b>Вы взяли талон №${newNum}</b>\n📍 ${locationName}\n👥 Перед вами: ${waitingCount} чел.\n⏰ Примерное ожидание: ~${waitingCount * 10} мин`,
           },
         });
       }
