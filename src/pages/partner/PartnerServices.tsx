@@ -136,18 +136,13 @@ const PartnerServices = () => {
   });
 
   return (
-    <div className="min-h-screen bg-background pb-24 overflow-y-auto">
-      <div className="px-4 pt-6">
-        <div className="flex items-center gap-3 mb-6">
-          <motion.button whileTap={{ scale: 0.9 }} onClick={() => navigate('/partner')}>
-            <ArrowLeft className="w-5 h-5 text-foreground" />
-          </motion.button>
-          <h1 className="text-lg font-bold font-display text-foreground flex-1">{t('partner.services')}</h1>
-          <motion.button whileTap={{ scale: 0.95 }} onClick={() => { if (showForm && editingId) { setShowForm(false); resetForm(); } else { resetForm(); setShowForm(!showForm); } }}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-primary text-primary-foreground text-xs font-medium">
-            {showForm ? <><X className="w-4 h-4" /> Отмена</> : <><Plus className="w-4 h-4" /> {t('partner.add')}</>}
-          </motion.button>
-        </div>
+    <PartnerLayout title={t('partner.services')} headerRight={
+      <motion.button whileTap={{ scale: 0.95 }} onClick={() => { if (showForm && editingId) { setShowForm(false); resetForm(); } else { resetForm(); setShowForm(!showForm); } }}
+        className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-primary text-primary-foreground text-xs font-medium">
+        {showForm ? <><X className="w-4 h-4" /> Отмена</> : <><Plus className="w-4 h-4" /> {t('partner.add')}</>}
+      </motion.button>
+    }>
+      <div className="px-4">
 
         {showForm && (
           <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="glass rounded-2xl p-4 mb-6 space-y-3">
