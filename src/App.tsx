@@ -14,6 +14,7 @@ import Profile from "./pages/Profile";
 import Auth from "./pages/Auth";
 import Partner from "./pages/Partner";
 import PartnerLanding from "./pages/PartnerLanding";
+import Admin from "./pages/Admin";
 import PartnerBookings from "./pages/partner/PartnerBookings";
 import PartnerClients from "./pages/partner/PartnerClients";
 import PartnerAnalytics from "./pages/partner/PartnerAnalytics";
@@ -91,6 +92,7 @@ const App = () => (
                 <Route path="/partner/tables" element={<PartnerTables />} />
                 <Route path="/cafe/:slug/table/:tableNum" element={<CafeTable />} />
                 <Route path="/partner-landing" element={<PartnerLanding />} />
+                <Route path="/admin" element={<Admin />} />
                 <Route path="/notifications" element={<Notifications />} />
                 <Route path="/b/:slug" element={<BusinessBySlug />} />
                 <Route path="/ref/:code" element={<ReferralRedirect />} />

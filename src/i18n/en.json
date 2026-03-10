@@ -319,5 +319,15 @@
   "partner_landing.benefit3": "Manage prices and photos",
   "partner_landing.benefit4": "Views and clicks analytics",
   "partner_landing.cta": "Become Partner",
-  "partner_landing.login_first": "Sign in first"
+  "partner_landing.login_first": "Sign in first",
+  "partner_landing.company_name": "Company name",
+  "partner_landing.category": "Category",
+  "partner_landing.phone": "Phone",
+  "partner_landing.address": "Address",
+  "partner_landing.description_optional": "Description (optional)",
+  "partner_landing.fill_required": "Fill in required fields",
+  "partner_landing.phone_taken": "This phone number is already registered",
+  "partner_landing.fake_warning": "Provide real data. Fake companies will be blocked!",
+  "partner_landing.submit": "Submit application",
+  "partner_landing.app_submitted": "Application submitted! Your company is visible in search with a 'Pending' badge"
 }

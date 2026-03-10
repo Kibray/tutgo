@@ -116,18 +116,8 @@ const Partner = () => {
   }
 
   if (!isPartner) {
-    return (
-      <div className="min-h-screen bg-background flex flex-col items-center justify-center px-6 pb-24">
-        <Store className="w-12 h-12 text-primary mb-4" />
-        <h1 className="text-lg font-bold text-foreground mb-2">{t('partner.not_partner')}</h1>
-        <p className="text-sm text-muted-foreground text-center mb-6">{t('partner.become_in_profile')}</p>
-        <motion.button whileTap={{ scale: 0.98 }} onClick={() => navigate('/profile')}
-          className="px-8 py-3 rounded-xl bg-primary text-primary-foreground font-semibold text-sm">
-          {t('partner.go_profile')}
-        </motion.button>
-        <BottomNav />
-      </div>
-    );
+    navigate('/partner-landing');
+    return null;
   }
 
   if (isDesktop) return <PartnerDashboardDesktop />;

@@ -12,6 +12,32 @@ const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
+// Admin chat ID — will be populated from DB
+const ADMIN_EMAIL = "tugelbayev.94@gmail.com";
+
+async function getAdminChatId(): Promise<number | null> {
+  const { data } = await supabase
+    .from("profiles")
+    .select("telegram_chat_id, user_id")
+    .not("telegram_chat_id", "is", null);
+
+  if (!data) return null;
+
+  // Find admin by checking auth.users email via user_roles
+  for (const p of data) {
+    const { data: roles } = await supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", p.user_id)
+      .eq("role", "admin");
+
+    if (roles && roles.length > 0 && p.telegram_chat_id) {
+      return p.telegram_chat_id;
+    }
+  }
+  return null;
+}
+
 async function sendTelegram(chatId: number, text: string, opts?: { reply_markup?: any }) {
   try {
     const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
@@ -99,6 +125,29 @@ Deno.serve(async (req) => {
     // ---- DIRECT QUEUE NOTIFICATION ----
     if (type === "queue.notify" && chatId && directText) {
       await sendTelegram(chatId, directText);
+      return new Response(JSON.stringify({ ok: true }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // ---- PARTNER APPLICATION ----
+    if (type === "partner.application") {
+      const adminChatId = await getAdminChatId();
+      if (adminChatId) {
+        const text = `━━━━━━━━━━━━━━━━━━━━\n🆕 <b>Новый партнёр!</b>\n\n🏢 ${record.company_name}\n📂 ${record.category}\n📞 ${record.phone}\n📍 ${record.address}${record.description ? `\n📝 ${record.description}` : ''}${record.instagram ? `\n📸 ${record.instagram}` : ''}\n━━━━━━━━━━━━━━━━━━━━`;
+
+        await sendTelegram(adminChatId, text, {
+          reply_markup: {
+            inline_keyboard: [
+              [
+                { text: "✅ Одобрить", callback_data: `approve_partner_${record.id}` },
+                { text: "❌ Заблокировать", callback_data: `reject_partner_${record.id}` },
+              ],
+            ],
+          },
+        });
+      }
+
       return new Response(JSON.stringify({ ok: true }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -330,7 +379,6 @@ Deno.serve(async (req) => {
 
       if (!location) return new Response("ok");
 
-      // Notify business owner
       const { data: ownerProfile } = await supabase
         .from("profiles")
         .select("telegram_chat_id")
@@ -356,7 +404,6 @@ Deno.serve(async (req) => {
         });
       }
 
-      // Notify client
       if (record.client_id) {
         const { data: clientProfile } = await supabase
           .from("profiles")

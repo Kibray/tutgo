@@ -113,7 +113,7 @@ const Profile = () => {
             onClick={() => {
               if (!user) { navigate('/auth'); return; }
               if (isPartner) { navigate('/partner'); return; }
-              handleBecomePartner();
+              navigate('/partner-landing');
             }}
             className="glass rounded-2xl p-5 flex flex-col items-center gap-3 cursor-pointer active:scale-[0.97] transition-transform ring-1 ring-primary/10"
           >
