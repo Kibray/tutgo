@@ -7,7 +7,6 @@ import { supabase } from '@/integrations/supabase/client';
 import PartnerLayout from '@/components/partner/PartnerLayout';
 
 const PartnerAnalytics = () => {
-  const navigate = useNavigate();
   const { user } = useAuth();
   const { t } = usePreferences();
   const [bizCount, setBizCount] = useState(0);
