@@ -546,7 +546,7 @@ const PartnerBookings = () => {
                     <X className="w-4 h-4" /> Закрыть
                   </motion.button>
                 )}
-              </div>
+    </PartnerLayout>
             </motion.div>
           </motion.div>
         )}
