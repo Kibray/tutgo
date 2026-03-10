@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import LegalFooter from '@/components/LegalFooter';
-import { User, Settings, Globe, HelpCircle, ChevronRight, LogOut, Key, Briefcase, Store, BookOpen, Lightbulb } from 'lucide-react';
+import { User, Settings, Globe, HelpCircle, ChevronRight, LogOut, Briefcase, Store, BookOpen, Lightbulb } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { usePreferences } from '@/hooks/usePreferences';
