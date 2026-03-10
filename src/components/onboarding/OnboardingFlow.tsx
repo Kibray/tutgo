@@ -12,7 +12,7 @@ interface Props {
   isPreview?: boolean;
 }
 
-const ONBOARDING_BG = '#080c14';
+const ONBOARDING_BG = '#060810';
 const ACCENT_GREEN = '#00ff87';
 const ACCENT_BLUE = '#00c6ff';
 const GRADIENT = `linear-gradient(135deg, ${ACCENT_GREEN}, ${ACCENT_BLUE})`;
