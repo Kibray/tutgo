@@ -13,7 +13,15 @@ interface PreferencesContextType {
   t: (key: string) => string;
 }
 
-const PreferencesContext = createContext<PreferencesContextType>({} as PreferencesContextType);
+const PreferencesContext = createContext<PreferencesContextType>({
+  lang: 'ru',
+  darkMode: true,
+  notifications: true,
+  setLang: () => {},
+  setDarkMode: () => {},
+  setNotifications: () => {},
+  t: (key: string) => translate(key, 'ru'),
+});
 
 function getInitialLang(): Lang {
   const stored = localStorage.getItem('tutgo_lang') as Lang;
