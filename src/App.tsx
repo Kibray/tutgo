@@ -67,6 +67,9 @@ const App = () => (
                 <Route path="/partner/inventory" element={<PartnerInventory />} />
                 <Route path="/partner-landing" element={<PartnerLanding />} />
                 <Route path="/notifications" element={<Notifications />} />
+                <Route path="/b/:slug" element={<BusinessBySlug />} />
+                <Route path="/ref/:code" element={<ReferralRedirect />} />
+                <Route path="*" element={<NotFound />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </div>
