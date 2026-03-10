@@ -4,6 +4,8 @@ import { useAuth } from '@/hooks/useAuth';
 import { usePreferences } from '@/hooks/usePreferences';
 import { useNavigate } from 'react-router-dom';
 import BottomNav from '@/components/BottomNav';
+import { useIsDesktop } from '@/hooks/useIsDesktop';
+import PartnerDashboardDesktop from '@/components/partner/PartnerDashboardDesktop';
 
 const dashboardItems = [
   { id: 'bookings', icon: Calendar, labelKey: 'partner.journal', route: '/partner/bookings' },
@@ -22,6 +24,7 @@ const Partner = () => {
   const { user, isPartner, loading: authLoading } = useAuth();
   const { t } = usePreferences();
   const navigate = useNavigate();
+  const isDesktop = useIsDesktop();
 
   if (authLoading) return <div className="min-h-screen bg-background flex items-center justify-center text-muted-foreground">{t('common.loading')}</div>;
 
