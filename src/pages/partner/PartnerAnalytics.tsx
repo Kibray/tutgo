@@ -1,11 +1,10 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Eye, MousePointerClick, CalendarCheck, TrendingUp } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { Eye, MousePointerClick, CalendarCheck, TrendingUp } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { usePreferences } from '@/hooks/usePreferences';
 import { supabase } from '@/integrations/supabase/client';
-import PartnerBottomNav from '@/components/partner/PartnerBottomNav';
+import PartnerLayout from '@/components/partner/PartnerLayout';
 
 const PartnerAnalytics = () => {
   const navigate = useNavigate();
