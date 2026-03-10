@@ -13,6 +13,13 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
   auth: { autoRefreshToken: false, persistSession: false },
 });
 
+// Generate cryptographically strong random password
+function generateSecurePassword(): string {
+  const bytes = new Uint8Array(32);
+  crypto.getRandomValues(bytes);
+  return Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -21,7 +28,7 @@ Deno.serve(async (req) => {
   try {
     const { code } = await req.json();
 
-    if (!code || code.length !== 6) {
+    if (!code || typeof code !== 'string' || code.length !== 6 || !/^\d{6}$/.test(code)) {
       return new Response(JSON.stringify({ error: "Введите 6-значный код" }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -54,15 +61,28 @@ Deno.serve(async (req) => {
 
     // Create a deterministic email from telegram_chat_id
     const email = `tg_${authCode.telegram_chat_id}@telegram.tutgo.app`;
-    const password = `tg_${authCode.telegram_chat_id}_${SUPABASE_SERVICE_ROLE_KEY.slice(-12)}`;
 
-    // Try to sign in first
-    const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    // Check if user already exists by looking up via admin API
+    const { data: existingUsers } = await supabase.auth.admin.listUsers();
+    const existingUser = existingUsers?.users?.find(u => u.email === email);
 
-    if (signInData?.session) {
+    if (existingUser) {
+      // User exists — generate a new random password and update it
+      const newPassword = generateSecurePassword();
+      await supabase.auth.admin.updateUserById(existingUser.id, { password: newPassword });
+
+      const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+        email,
+        password: newPassword,
+      });
+
+      if (signInError || !signInData?.session) {
+        return new Response(JSON.stringify({ error: "Ошибка входа" }), {
+          status: 500,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
       // Update profile with telegram info
       await supabase
         .from("profiles")
@@ -81,7 +101,8 @@ Deno.serve(async (req) => {
       });
     }
 
-    // User doesn't exist — create account
+    // User doesn't exist — create account with random password
+    const password = generateSecurePassword();
     const { data: signUpData, error: signUpError } = await supabase.auth.admin.createUser({
       email,
       password,
@@ -130,7 +151,7 @@ Deno.serve(async (req) => {
     });
   } catch (err) {
     console.error("Verify error:", err);
-    return new Response(JSON.stringify({ error: String(err) }), {
+    return new Response(JSON.stringify({ error: "Внутренняя ошибка сервера" }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });

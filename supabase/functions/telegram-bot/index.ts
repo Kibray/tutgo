@@ -13,32 +13,44 @@ const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
 async function sendTelegramMessage(chatId: number, text: string, opts?: { reply_markup?: any }) {
-  await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      chat_id: chatId,
-      text,
-      parse_mode: "HTML",
-      ...opts,
-    }),
-  });
+  try {
+    await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        chat_id: chatId,
+        text,
+        parse_mode: "HTML",
+        ...opts,
+      }),
+    });
+  } catch (e) {
+    console.error("Failed to send telegram message");
+  }
 }
 
 async function answerCallbackQuery(callbackQueryId: string, text?: string) {
-  await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/answerCallbackQuery`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ callback_query_id: callbackQueryId, text }),
-  });
+  try {
+    await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/answerCallbackQuery`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ callback_query_id: callbackQueryId, text }),
+    });
+  } catch (e) {
+    console.error("Failed to answer callback query");
+  }
 }
 
 async function editMessageReplyMarkup(chatId: number, messageId: number) {
-  await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/editMessageReplyMarkup`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ chat_id: chatId, message_id: messageId, reply_markup: { inline_keyboard: [] } }),
-  });
+  try {
+    await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/editMessageReplyMarkup`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ chat_id: chatId, message_id: messageId, reply_markup: { inline_keyboard: [] } }),
+    });
+  } catch (e) {
+    console.error("Failed to edit message markup");
+  }
 }
 
 function generateCode(): string {
@@ -57,20 +69,18 @@ Deno.serve(async (req) => {
     if (update.message?.text?.startsWith("/start")) {
       const chatId = update.message.chat.id;
       const args = update.message.text.split(" ");
-      const param = args[1]; // /start <param>
+      const param = args[1];
 
       // Auth flow: /start auth
       if (param === "auth") {
         const code = generateCode();
-        const expiresAt = new Date(Date.now() + 5 * 60 * 1000).toISOString(); // 5 min
+        const expiresAt = new Date(Date.now() + 5 * 60 * 1000).toISOString();
 
-        // Clean up old codes for this chat
         await supabase
           .from("telegram_auth_codes")
           .delete()
           .eq("telegram_chat_id", chatId);
 
-        // Store the code
         await supabase.from("telegram_auth_codes").insert({
           code,
           telegram_chat_id: chatId,
@@ -83,8 +93,8 @@ Deno.serve(async (req) => {
           chatId,
           `🔐 <b>Ваш код для входа в TUTGO:</b>\n\n<code>${code}</code>\n\nВведите этот код на сайте. Код действителен 5 минут.`
         );
-      } else if (param) {
-        // Profile linking flow: /start <user_id>
+      } else if (param && /^[0-9a-f-]{36}$/i.test(param)) {
+        // Profile linking flow: /start <user_id> — validate UUID format
         const userId = param;
         const { error } = await supabase
           .from("profiles")
@@ -119,6 +129,14 @@ Deno.serve(async (req) => {
       if (callbackData.startsWith("confirm_") || callbackData.startsWith("cancel_")) {
         const action = callbackData.startsWith("confirm_") ? "confirmed" : "cancelled";
         const appointmentId = callbackData.replace("confirm_", "").replace("cancel_", "");
+
+        // Validate UUID format
+        if (!/^[0-9a-f-]{36}$/i.test(appointmentId)) {
+          await answerCallbackQuery(update.callback_query.id, "Ошибка");
+          return new Response(JSON.stringify({ ok: true }), {
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
 
         const { data: appointment, error } = await supabase
           .from("appointments")
@@ -176,8 +194,8 @@ Deno.serve(async (req) => {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (err) {
-    console.error("Telegram bot error:", err);
-    return new Response(JSON.stringify({ error: String(err) }), {
+    console.error("Telegram bot error");
+    return new Response(JSON.stringify({ ok: true }), {
       status: 200,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });

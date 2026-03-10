@@ -11,16 +11,34 @@ const ReferralRedirect = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!code) { navigate('/', { replace: true }); return; }
+    if (!code || !/^[a-z0-9]{6,16}$/i.test(code)) { 
+      navigate('/', { replace: true }); 
+      return; 
+    }
 
     // Save referral code
     localStorage.setItem('tutgo_referral', code);
 
-    // Track click
-    (supabase.from as any)('referral_clicks').insert({
-      referral_type: 'user',
-      referral_code: code,
-    }).then(() => {});
+    // Track click with rate limiting (unique index on ip+code prevents duplicates)
+    const trackClick = async () => {
+      try {
+        // Get approximate IP for rate limiting via public API
+        let ipAddress: string | null = null;
+        try {
+          const ipRes = await fetch('https://api.ipify.org?format=json');
+          const ipData = await ipRes.json();
+          ipAddress = ipData.ip;
+        } catch { /* ignore IP fetch failure */ }
+
+        await (supabase.from as any)('referral_clicks').insert({
+          referral_type: 'user',
+          referral_code: code,
+          ip_address: ipAddress,
+        });
+      } catch { /* duplicate IP+code will be rejected by unique index */ }
+    };
+
+    trackClick();
 
     // Get referrer name
     const fetchReferrer = async () => {
@@ -34,7 +52,6 @@ const ReferralRedirect = () => {
       }
       setLoading(false);
 
-      // Redirect after delay
       setTimeout(() => navigate('/', { replace: true }), 3000);
     };
 

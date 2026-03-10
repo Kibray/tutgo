@@ -14,6 +14,13 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
   auth: { autoRefreshToken: false, persistSession: false },
 });
 
+// Generate cryptographically strong random password
+function generateSecurePassword(): string {
+  const bytes = new Uint8Array(32);
+  crypto.getRandomValues(bytes);
+  return Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
 async function validateInitData(initData: string): Promise<Record<string, string> | null> {
   const params = new URLSearchParams(initData);
   const hash = params.get("hash");
@@ -24,7 +31,6 @@ async function validateInitData(initData: string): Promise<Record<string, string
   entries.sort(([a], [b]) => a.localeCompare(b));
   const dataCheckString = entries.map(([k, v]) => `${k}=${v}`).join("\n");
 
-  // HMAC-SHA256 validation per Telegram docs
   const encoder = new TextEncoder();
   const secretKey = await crypto.subtle.importKey(
     "raw",
@@ -93,36 +99,43 @@ Deno.serve(async (req) => {
     const firstName = tgUser.first_name || "Telegram User";
     const username = tgUser.username || null;
 
-    // Deterministic email & password (same scheme as OTP flow)
     const email = `tg_${chatId}@telegram.tutgo.app`;
-    const password = `tg_${chatId}_${SUPABASE_SERVICE_ROLE_KEY.slice(-12)}`;
 
-    // Try sign in first
-    const { data: signInData } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    // Check if user exists
+    const { data: existingUsers } = await supabase.auth.admin.listUsers();
+    const existingUser = existingUsers?.users?.find(u => u.email === email);
 
-    if (signInData?.session) {
-      // Update profile
-      await supabase
-        .from("profiles")
-        .update({
-          telegram_chat_id: chatId,
-          telegram_username: username,
-          display_name: firstName,
-        })
-        .eq("user_id", signInData.user.id);
+    if (existingUser) {
+      // Update password to a new random one and sign in
+      const newPassword = generateSecurePassword();
+      await supabase.auth.admin.updateUserById(existingUser.id, { password: newPassword });
 
-      return new Response(JSON.stringify({
-        session: signInData.session,
-        user: signInData.user,
-      }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      const { data: signInData } = await supabase.auth.signInWithPassword({
+        email,
+        password: newPassword,
       });
+
+      if (signInData?.session) {
+        await supabase
+          .from("profiles")
+          .update({
+            telegram_chat_id: chatId,
+            telegram_username: username,
+            display_name: firstName,
+          })
+          .eq("user_id", signInData.user.id);
+
+        return new Response(JSON.stringify({
+          session: signInData.session,
+          user: signInData.user,
+        }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
     }
 
-    // Create new user
+    // Create new user with random password
+    const password = generateSecurePassword();
     const { data: signUpData, error: signUpError } = await supabase.auth.admin.createUser({
       email,
       password,
@@ -134,13 +147,12 @@ Deno.serve(async (req) => {
     });
 
     if (signUpError || !signUpData.user) {
-      return new Response(JSON.stringify({ error: "Account creation failed" }), {
+      return new Response(JSON.stringify({ error: "Ошибка создания аккаунта" }), {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    // Update profile
     await supabase
       .from("profiles")
       .update({
@@ -156,7 +168,7 @@ Deno.serve(async (req) => {
     });
 
     if (!newSession?.session) {
-      return new Response(JSON.stringify({ error: "Login after signup failed" }), {
+      return new Response(JSON.stringify({ error: "Ошибка входа" }), {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -170,7 +182,7 @@ Deno.serve(async (req) => {
     });
   } catch (err) {
     console.error("MiniApp auth error:", err);
-    return new Response(JSON.stringify({ error: String(err) }), {
+    return new Response(JSON.stringify({ error: "Внутренняя ошибка сервера" }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
