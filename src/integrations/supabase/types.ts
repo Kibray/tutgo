@@ -416,6 +416,8 @@ export type Database = {
           referred_by: string | null
           telegram_chat_id: number | null
           telegram_username: string | null
+          terms_accepted: boolean
+          terms_accepted_at: string | null
           updated_at: string
           user_id: string
         }
@@ -437,6 +439,8 @@ export type Database = {
           referred_by?: string | null
           telegram_chat_id?: number | null
           telegram_username?: string | null
+          terms_accepted?: boolean
+          terms_accepted_at?: string | null
           updated_at?: string
           user_id: string
         }
@@ -458,6 +462,8 @@ export type Database = {
           referred_by?: string | null
           telegram_chat_id?: number | null
           telegram_username?: string | null
+          terms_accepted?: boolean
+          terms_accepted_at?: string | null
           updated_at?: string
           user_id?: string
         }
