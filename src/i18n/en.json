@@ -305,6 +305,10 @@
 
   "legal.terms": "Terms of Service",
   "legal.privacy": "Privacy Policy",
+  "legal.how_it_works": "How it works",
+
+  "profile.how_it_works": "How to use TutGo",
+  "profile.how_it_works_desc": "Overview of service features",
 
   "common.error": "Error",
   "common.loading": "Loading...",
