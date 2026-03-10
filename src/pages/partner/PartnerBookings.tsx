@@ -237,12 +237,7 @@ const PartnerBookings = () => {
   return (
     <PartnerLayout title={t("partner.journal")}>
       <div className="px-4 pt-6">
-        <div className="flex items-center gap-3 mb-4">
-          <motion.button whileTap={{ scale: 0.9 }} onClick={() => navigate("/partner")}>
-            <ArrowLeft className="w-5 h-5 text-foreground" />
-          </motion.button>
-          <h1 className="text-lg font-bold font-display text-foreground">{t("partner.journal")}</h1>
-        </div>
+      <div className="px-4 pt-2">
 
         <div className="flex items-center justify-between mb-3">
           <motion.button whileTap={{ scale: 0.9 }} onClick={() => goDay(-7)} className="p-1">
