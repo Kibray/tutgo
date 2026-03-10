@@ -13,18 +13,23 @@ const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
 async function sendTelegram(chatId: number, text: string, opts?: { reply_markup?: any }) {
-  const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      chat_id: chatId,
-      text,
-      parse_mode: "HTML",
-      disable_web_page_preview: true,
-      ...opts,
-    }),
-  });
-  return res.json();
+  try {
+    const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        chat_id: chatId,
+        text,
+        parse_mode: "HTML",
+        disable_web_page_preview: true,
+        ...opts,
+      }),
+    });
+    return res.json();
+  } catch (e) {
+    console.error("Failed to send telegram message");
+    return null;
+  }
 }
 
 function formatDate(isoDate: string) {
@@ -47,7 +52,6 @@ function formatPrice(price: number, currency: string) {
 const FOOTER = `\n━━━━━━━━━━━━━━━━━━━━\n💡 <i>Найдено через TutGo — маркетплейс\nуслуг Узбекистана</i>\n🌐 tutgo.uz | @TutGoUzBot`;
 const FOOTER_SHORT = `\n━━━━━━━━━━━━━━━━━━━━\n🌐 tutgo.uz`;
 
-// Helper to fetch full appointment context
 async function getAppointmentContext(record: any) {
   const { data: location } = await supabase
     .from("locations")
@@ -129,7 +133,6 @@ Deno.serve(async (req) => {
         },
       });
 
-      // Also notify client if they have telegram
       if (record.client_user_id) {
         const { data: clientProfile } = await supabase
           .from("profiles")
@@ -260,7 +263,6 @@ Deno.serve(async (req) => {
           ? `https://maps.google.com?q=${location.lat},${location.lng}`
           : "";
 
-        // Notify client
         if (apt.client_user_id) {
           const { data: clientProfile } = await supabase
             .from("profiles")
@@ -275,7 +277,6 @@ Deno.serve(async (req) => {
           }
         }
 
-        // Notify business owner
         const { data: ownerProfile } = await supabase
           .from("profiles")
           .select("telegram_chat_id")
@@ -324,7 +325,7 @@ Deno.serve(async (req) => {
     });
   } catch (err) {
     console.error("telegram-notify error:", err);
-    return new Response(JSON.stringify({ error: String(err) }), {
+    return new Response(JSON.stringify({ error: "Внутренняя ошибка сервера" }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });

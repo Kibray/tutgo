@@ -6,6 +6,16 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
+// Sanitize user input: remove PostgREST special chars to prevent filter injection
+function sanitizeSearchInput(input: string): string {
+  // Remove PostgREST operators and SQL-dangerous chars
+  return input
+    .replace(/[%_\\'";\(\)\{\}\[\]]/g, '')
+    .replace(/\.\./g, '')
+    .trim()
+    .slice(0, 200); // Limit length
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
@@ -35,24 +45,30 @@ serve(async (req) => {
     const { messages } = await req.json();
     const lastUserMessage = messages.filter((m: any) => m.role === "user").pop()?.content || "";
 
+    // Sanitize the search term before using in DB queries
+    const sanitized = sanitizeSearchInput(lastUserMessage);
+
     // Search DB for relevant results using service role
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL")!,
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
+    // Use sanitized input in ilike filters
+    const searchPattern = `%${sanitized}%`;
+
     // Search locations
     const { data: locations } = await supabase
       .from("locations")
       .select("id, name, business_type, sub_category, address, lat, lng, phone, rating, review_count, price_from, currency, description")
-      .or(`name.ilike.%${lastUserMessage}%,address.ilike.%${lastUserMessage}%,sub_category.ilike.%${lastUserMessage}%,business_type.ilike.%${lastUserMessage}%,description.ilike.%${lastUserMessage}%`)
+      .or(`name.ilike.${searchPattern},address.ilike.${searchPattern},sub_category.ilike.${searchPattern},business_type.ilike.${searchPattern},description.ilike.${searchPattern}`)
       .limit(10);
 
     // Search services
     const { data: services } = await supabase
       .from("services")
       .select("id, name, price, currency, duration_minutes, location_id, description")
-      .or(`name.ilike.%${lastUserMessage}%,description.ilike.%${lastUserMessage}%`)
+      .or(`name.ilike.${searchPattern},description.ilike.${searchPattern}`)
       .limit(10);
 
     // Get categories for context
@@ -68,7 +84,7 @@ serve(async (req) => {
     };
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY not configured");
+    if (!LOVABLE_API_KEY) throw new Error("AI service unavailable");
 
     const systemPrompt = `You are TUTGO AI Assistant — a smart concierge for finding services and businesses in Tashkent, Uzbekistan.
 
@@ -120,9 +136,8 @@ If the user asks something unrelated to services/businesses, politely redirect t
           status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
-      const t = await response.text();
-      console.error("AI error:", status, t);
-      return new Response(JSON.stringify({ error: "AI gateway error" }), {
+      console.error("AI gateway error:", status);
+      return new Response(JSON.stringify({ error: "Ошибка AI сервиса" }), {
         status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
@@ -132,7 +147,7 @@ If the user asks something unrelated to services/businesses, politely redirect t
     });
   } catch (e) {
     console.error("chat error:", e);
-    return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Unknown error" }), {
+    return new Response(JSON.stringify({ error: "Внутренняя ошибка сервера" }), {
       status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
