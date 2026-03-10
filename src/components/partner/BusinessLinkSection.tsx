@@ -50,8 +50,8 @@ const BusinessLinkSection = ({ locationId, locationName, businessType, rating, r
     const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000).toISOString();
 
     Promise.all([
-      supabase.from('referral_clicks' as any).select('id', { count: 'exact', head: true }).eq('location_slug', slug).gte('clicked_at', weekAgo),
-      supabase.from('referral_clicks' as any).select('id', { count: 'exact', head: true }).eq('location_slug', slug).gte('clicked_at', monthAgo),
+      (supabase.from as any)('referral_clicks').select('id', { count: 'exact', head: true }).eq('location_slug', slug).gte('clicked_at', weekAgo),
+      (supabase.from as any)('referral_clicks').select('id', { count: 'exact', head: true }).eq('location_slug', slug).gte('clicked_at', monthAgo),
     ]).then(([weekRes, monthRes]) => {
       setStats({ week: weekRes.count || 0, month: monthRes.count || 0 });
     });
