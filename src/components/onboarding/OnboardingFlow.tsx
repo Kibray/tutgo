@@ -154,32 +154,11 @@ const OnboardingFlow = ({ onComplete, forceRole, isPreview }: Props) => {
   const [direction, setDirection] = useState(1);
 
   const clientSlides = [
-    {
-      illustration: <MapIllustration />,
-      title: 'Найди всё рядом с тобой',
-      text: 'Красота, медицина, кафе, туры — всё на одной карте!',
-    },
-    {
-      illustration: <BookingIllustration />,
-      title: 'Запись онлайн за 30 секунд',
-      text: 'Выбери мастера, удобное время и нажми записаться. Никаких звонков!',
-    },
-    {
-      illustration: <TelegramIllustration message={"✅ Запись подтверждена!\n✂️ Студия Silk\n📅 12 марта · 11:00\n💰 80 000 сум"} />,
-      title: 'Уведомления в Telegram',
-      text: 'Подтверждение записи и напоминание за час приходят прямо в Telegram!',
-    },
-    {
-      illustration: <FeaturesGrid items={[
-        { emoji: '☕', title: 'Меню кафе', sub: '42 блюда', color: '#f59e0b' },
-        { emoji: '🎟️', title: 'Живая очередь', sub: '~15 мин', color: ACCENT_BLUE },
-        { emoji: '🎁', title: 'Акции', sub: 'до -50%', color: '#f43f5e' },
-        { emoji: '⭐', title: 'Отзывы', sub: '1 240+', color: '#a78bfa' },
-      ]} />,
-      title: 'И это ещё не всё!',
-      text: 'Меню кафе, живая очередь, акции, отзывы — TutGo твой помощник в Ташкенте!',
-      isFinal: true,
-    },
+    { phone: <ToursSlide />, text: <ToursText />, isFinal: false },
+    { phone: <BarberSlide />, text: <BarberText />, isFinal: false },
+    { phone: <DentalSlide />, text: <DentalText />, isFinal: false },
+    { phone: <CafeSlide />, text: <CafeText />, isFinal: false },
+    { phone: <TelegramClientSlide />, text: <TelegramClientText />, isFinal: true },
   ];
 
   const businessSlides = [
