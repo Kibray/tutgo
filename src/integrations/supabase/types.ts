@@ -364,6 +364,234 @@ export type Database = {
           },
         ]
       }
+      menu_categories: {
+        Row: {
+          created_at: string
+          emoji: string | null
+          id: string
+          location_id: string
+          name: string
+          sort_order: number | null
+        }
+        Insert: {
+          created_at?: string
+          emoji?: string | null
+          id?: string
+          location_id: string
+          name: string
+          sort_order?: number | null
+        }
+        Update: {
+          created_at?: string
+          emoji?: string | null
+          id?: string
+          location_id?: string
+          name?: string
+          sort_order?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "menu_categories_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      menu_combos: {
+        Row: {
+          available_from: string | null
+          available_until: string | null
+          combo_price: number
+          created_at: string
+          currency: string
+          description: string | null
+          id: string
+          is_active: boolean | null
+          items: Json
+          location_id: string
+          name: string
+          original_price: number
+          photo_url: string | null
+          updated_at: string
+        }
+        Insert: {
+          available_from?: string | null
+          available_until?: string | null
+          combo_price?: number
+          created_at?: string
+          currency?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          items?: Json
+          location_id: string
+          name: string
+          original_price?: number
+          photo_url?: string | null
+          updated_at?: string
+        }
+        Update: {
+          available_from?: string | null
+          available_until?: string | null
+          combo_price?: number
+          created_at?: string
+          currency?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          items?: Json
+          location_id?: string
+          name?: string
+          original_price?: number
+          photo_url?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "menu_combos_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      menu_items: {
+        Row: {
+          allergens: Json | null
+          available_from: string | null
+          available_until: string | null
+          calories: number | null
+          category_id: string | null
+          chef_note: string | null
+          cook_time_minutes: number | null
+          created_at: string
+          currency: string
+          description: string | null
+          id: string
+          ingredients: Json | null
+          is_available: boolean | null
+          is_spicy: boolean | null
+          is_vegetarian: boolean | null
+          location_id: string
+          name: string
+          origin_country: string | null
+          photo_url: string | null
+          preparation_steps: Json | null
+          price: number
+          recipe_visible: boolean | null
+          sort_order: number | null
+          story: string | null
+          updated_at: string
+          weight: string | null
+        }
+        Insert: {
+          allergens?: Json | null
+          available_from?: string | null
+          available_until?: string | null
+          calories?: number | null
+          category_id?: string | null
+          chef_note?: string | null
+          cook_time_minutes?: number | null
+          created_at?: string
+          currency?: string
+          description?: string | null
+          id?: string
+          ingredients?: Json | null
+          is_available?: boolean | null
+          is_spicy?: boolean | null
+          is_vegetarian?: boolean | null
+          location_id: string
+          name: string
+          origin_country?: string | null
+          photo_url?: string | null
+          preparation_steps?: Json | null
+          price?: number
+          recipe_visible?: boolean | null
+          sort_order?: number | null
+          story?: string | null
+          updated_at?: string
+          weight?: string | null
+        }
+        Update: {
+          allergens?: Json | null
+          available_from?: string | null
+          available_until?: string | null
+          calories?: number | null
+          category_id?: string | null
+          chef_note?: string | null
+          cook_time_minutes?: number | null
+          created_at?: string
+          currency?: string
+          description?: string | null
+          id?: string
+          ingredients?: Json | null
+          is_available?: boolean | null
+          is_spicy?: boolean | null
+          is_vegetarian?: boolean | null
+          location_id?: string
+          name?: string
+          origin_country?: string | null
+          photo_url?: string | null
+          preparation_steps?: Json | null
+          price?: number
+          recipe_visible?: boolean | null
+          sort_order?: number | null
+          story?: string | null
+          updated_at?: string
+          weight?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "menu_items_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "menu_categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "menu_items_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      menu_modifiers: {
+        Row: {
+          created_at: string
+          id: string
+          item_id: string
+          name: string
+          options: Json
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          item_id: string
+          name: string
+          options?: Json
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          item_id?: string
+          name?: string
+          options?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "menu_modifiers_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "menu_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notifications: {
         Row: {
           body: string
@@ -704,6 +932,68 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "staff_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      table_reservations: {
+        Row: {
+          client_id: string | null
+          client_name: string | null
+          client_phone: string | null
+          created_at: string
+          currency: string
+          date: string
+          guests_count: number
+          id: string
+          location_id: string
+          notes: string | null
+          pre_order: Json | null
+          status: string
+          time: string
+          total_amount: number | null
+          updated_at: string
+        }
+        Insert: {
+          client_id?: string | null
+          client_name?: string | null
+          client_phone?: string | null
+          created_at?: string
+          currency?: string
+          date: string
+          guests_count?: number
+          id?: string
+          location_id: string
+          notes?: string | null
+          pre_order?: Json | null
+          status?: string
+          time: string
+          total_amount?: number | null
+          updated_at?: string
+        }
+        Update: {
+          client_id?: string | null
+          client_name?: string | null
+          client_phone?: string | null
+          created_at?: string
+          currency?: string
+          date?: string
+          guests_count?: number
+          id?: string
+          location_id?: string
+          notes?: string | null
+          pre_order?: Json | null
+          status?: string
+          time?: string
+          total_amount?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "table_reservations_location_id_fkey"
             columns: ["location_id"]
             isOneToOne: false
             referencedRelation: "locations"

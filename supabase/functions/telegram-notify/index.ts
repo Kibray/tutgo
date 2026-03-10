@@ -320,6 +320,62 @@ Deno.serve(async (req) => {
       });
     }
 
+    // ---- TABLE RESERVATION CREATED ----
+    if (type === "reservation.created") {
+      const { data: location } = await supabase
+        .from("locations")
+        .select("name, owner_id, address, city, phone, lat, lng")
+        .eq("id", record.location_id)
+        .single();
+
+      if (!location) return new Response("ok");
+
+      // Notify business owner
+      const { data: ownerProfile } = await supabase
+        .from("profiles")
+        .select("telegram_chat_id")
+        .eq("user_id", location.owner_id)
+        .single();
+
+      if (ownerProfile?.telegram_chat_id) {
+        const preOrderLines = (record.pre_order || []).map((item: any) =>
+          `  • ${item.name} x${item.quantity} — ${formatPrice(item.price * item.quantity, record.currency || 'сум')}`
+        ).join('\n');
+
+        const ownerText = `━━━━━━━━━━━━━━━━━━━━\n🍽️ <b>Новая бронь!</b>\n\n👤 Клиент: ${record.client_name || 'Гость'}${record.client_phone ? `\n📞 ${record.client_phone}` : ''}\n📅 ${record.date} · ${record.time}\n👥 Гостей: ${record.guests_count}${preOrderLines ? `\n\n🛒 Предзаказ:\n${preOrderLines}` : ''}${record.total_amount > 0 ? `\n\n💰 Итого: ${formatPrice(record.total_amount, record.currency || 'сум')}` : ''}${record.notes ? `\n\n💬 ${record.notes}` : ''}\n━━━━━━━━━━━━━━━━━━━━`;
+
+        await sendTelegram(ownerProfile.telegram_chat_id, ownerText, {
+          reply_markup: {
+            inline_keyboard: [
+              [
+                { text: "✅ Подтвердить", callback_data: `confirm_res_${record.id}` },
+                { text: "❌ Отменить", callback_data: `cancel_res_${record.id}` },
+              ],
+            ],
+          },
+        });
+      }
+
+      // Notify client
+      if (record.client_id) {
+        const { data: clientProfile } = await supabase
+          .from("profiles")
+          .select("telegram_chat_id")
+          .eq("user_id", record.client_id)
+          .single();
+
+        if (clientProfile?.telegram_chat_id) {
+          const mapsLink = location.lat && location.lng
+            ? `https://maps.google.com?q=${location.lat},${location.lng}`
+            : "";
+
+          const clientText = `━━━━━━━━━━━━━━━━━━━━\n✅ <b>Бронь оформлена!</b>\n\n🏪 ${location.name}${location.address ? `\n📍 ${location.address}` : ''}${location.city ? `, ${location.city}` : ''}\n📅 ${record.date} · ${record.time}\n👥 Гостей: ${record.guests_count}${record.total_amount > 0 ? `\n\n🛒 Ваш предзаказ принят\n💰 Итого: ${formatPrice(record.total_amount, record.currency || 'сум')}` : ''}${location.phone ? `\n\n📞 ${location.phone}` : ''}${mapsLink ? `\n🗺️ <a href="${mapsLink}">Показать на карте</a>` : ''}${FOOTER}`;
+
+          await sendTelegram(clientProfile.telegram_chat_id, clientText);
+        }
+      }
+    }
+
     return new Response(JSON.stringify({ ok: true }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
