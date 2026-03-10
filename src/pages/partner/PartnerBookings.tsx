@@ -20,7 +20,7 @@ import { useNavigate } from "react-router-dom";
 import { usePreferences } from "@/hooks/usePreferences";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import PartnerBottomNav from "@/components/partner/PartnerBottomNav";
+import PartnerLayout from '@/components/partner/PartnerLayout';
 import { format, addDays, startOfWeek, isSameDay } from "date-fns";
 import { ru } from "date-fns/locale";
 import { useToast } from "@/hooks/use-toast";
@@ -235,14 +235,9 @@ const PartnerBookings = () => {
   );
 
   return (
-    <div className="min-h-screen bg-background pb-24">
+    <PartnerLayout title={t("partner.journal")}>
       <div className="px-4 pt-6">
-        <div className="flex items-center gap-3 mb-4">
-          <motion.button whileTap={{ scale: 0.9 }} onClick={() => navigate("/partner")}>
-            <ArrowLeft className="w-5 h-5 text-foreground" />
-          </motion.button>
-          <h1 className="text-lg font-bold font-display text-foreground">{t("partner.journal")}</h1>
-        </div>
+      <div className="px-4 pt-2">
 
         <div className="flex items-center justify-between mb-3">
           <motion.button whileTap={{ scale: 0.9 }} onClick={() => goDay(-7)} className="p-1">
@@ -453,7 +448,7 @@ const PartnerBookings = () => {
           )
         )}
       </div>
-      <PartnerBottomNav />
+      </div>
 
       <AnimatePresence>
         {selectedAppointment && (
@@ -556,7 +551,7 @@ const PartnerBookings = () => {
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
+    </PartnerLayout>
   );
 };
 

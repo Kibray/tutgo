@@ -1,14 +1,12 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Eye, MousePointerClick, CalendarCheck, TrendingUp } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { Eye, MousePointerClick, CalendarCheck, TrendingUp } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { usePreferences } from '@/hooks/usePreferences';
 import { supabase } from '@/integrations/supabase/client';
-import PartnerBottomNav from '@/components/partner/PartnerBottomNav';
+import PartnerLayout from '@/components/partner/PartnerLayout';
 
 const PartnerAnalytics = () => {
-  const navigate = useNavigate();
   const { user } = useAuth();
   const { t } = usePreferences();
   const [bizCount, setBizCount] = useState(0);
@@ -27,15 +25,8 @@ const PartnerAnalytics = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background pb-24">
-      <div className="px-4 pt-6">
-        <div className="flex items-center gap-3 mb-6">
-          <motion.button whileTap={{ scale: 0.9 }} onClick={() => navigate('/partner')}>
-            <ArrowLeft className="w-5 h-5 text-foreground" />
-          </motion.button>
-          <h1 className="text-lg font-bold font-display text-foreground">{t('partner.analytics')}</h1>
-        </div>
-
+    <PartnerLayout title={t('partner.analytics')}>
+      <div className="px-4">
         <div className="grid grid-cols-2 gap-3">
           {stats.map((s, i) => (
             <motion.div key={i} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.06 }}
@@ -49,8 +40,7 @@ const PartnerAnalytics = () => {
 
         <p className="text-center text-xs text-muted-foreground mt-6">{t('partner.analytics_coming')}</p>
       </div>
-      <PartnerBottomNav />
-    </div>
+    </PartnerLayout>
   );
 };
 

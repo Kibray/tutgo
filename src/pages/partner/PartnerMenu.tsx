@@ -6,7 +6,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import { formatPrice } from '@/lib/types';
-import PartnerBottomNav from '@/components/partner/PartnerBottomNav';
+import PartnerLayout from '@/components/partner/PartnerLayout';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 
 const PartnerMenu = () => {
@@ -148,26 +148,20 @@ const PartnerMenu = () => {
 
   if (loading) return <div className="min-h-screen bg-background flex items-center justify-center text-muted-foreground">Загрузка...</div>;
   if (!locationId) return (
-    <div className="min-h-screen bg-background flex items-center justify-center px-4">
-      <div className="text-center space-y-2">
-        <p className="text-muted-foreground text-sm">Создайте кафе/ресторан чтобы управлять меню</p>
-        <button onClick={() => navigate('/partner/settings')} className="text-primary text-sm font-medium">Настройки компании →</button>
+    <PartnerLayout title="Управление меню">
+      <div className="flex items-center justify-center px-4 py-16">
+        <div className="text-center space-y-2">
+          <p className="text-muted-foreground text-sm">Создайте кафе/ресторан чтобы управлять меню</p>
+          <button onClick={() => navigate('/partner/settings')} className="text-primary text-sm font-medium">Настройки компании →</button>
+        </div>
       </div>
-      <PartnerBottomNav />
-    </div>
+    </PartnerLayout>
   );
 
   const inputCls = "w-full bg-secondary rounded-lg p-3 text-sm text-foreground placeholder:text-muted-foreground border-none outline-none";
 
   return (
-    <div className="min-h-screen bg-background pb-24">
-      <div className="sticky top-0 z-20 glass-strong px-4 py-3 flex items-center gap-3">
-        <button onClick={() => navigate('/partner')} className="w-8 h-8 glass rounded-full flex items-center justify-center">
-          <ArrowLeft className="w-4 h-4 text-foreground" />
-        </button>
-        <h1 className="text-base font-bold text-foreground">Управление меню</h1>
-      </div>
-
+    <PartnerLayout title="Управление меню">
       <Tabs defaultValue="items" className="px-4 mt-3">
         <TabsList className="w-full">
           <TabsTrigger value="items" className="flex-1 text-xs">🍽️ Блюда</TabsTrigger>
@@ -282,9 +276,7 @@ const PartnerMenu = () => {
           <p className="text-center py-8 text-xs text-muted-foreground">Комбо-сеты в разработке</p>
         </TabsContent>
       </Tabs>
-
-      <PartnerBottomNav />
-    </div>
+    </PartnerLayout>
   );
 };
 

@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { usePreferences } from '@/hooks/usePreferences';
 import { supabase } from '@/integrations/supabase/client';
-import PartnerBottomNav from '@/components/partner/PartnerBottomNav';
+import PartnerLayout from '@/components/partner/PartnerLayout';
 import BusinessPhotoUpload from '@/components/BusinessPhotoUpload';
 import AddressPicker from '@/components/AddressPicker';
 import BusinessLinkSection from '@/components/partner/BusinessLinkSection';
@@ -145,14 +145,8 @@ const PartnerCompanySettings = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background pb-24">
-      <div className="px-4 pt-6">
-        <div className="flex items-center gap-3 mb-4">
-          <motion.button whileTap={{ scale: 0.9 }} onClick={() => navigate('/partner')}>
-            <ArrowLeft className="w-5 h-5 text-foreground" />
-          </motion.button>
-          <h1 className="text-lg font-bold font-display text-foreground">{t('partner.company_profile')}</h1>
-        </div>
+    <PartnerLayout title={t('partner.company_profile')}>
+      <div className="px-4 pt-2">
 
         <div className="flex gap-1 bg-secondary/50 rounded-xl p-1 mb-6 overflow-x-auto scrollbar-hide">
           {tabs.map(tab => (
@@ -456,8 +450,7 @@ const PartnerCompanySettings = () => {
           </div>
         )}
       </div>
-      <PartnerBottomNav />
-    </div>
+    </PartnerLayout>
   );
 };
 

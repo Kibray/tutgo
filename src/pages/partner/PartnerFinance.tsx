@@ -4,7 +4,7 @@ import { ArrowLeft, DollarSign, CalendarDays, CalendarRange, TrendingUp, Crown, 
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
-import PartnerBottomNav from '@/components/partner/PartnerBottomNav';
+import PartnerLayout from '@/components/partner/PartnerLayout';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, Area, AreaChart } from 'recharts';
 import { formatPrice } from '@/lib/types';
 
@@ -137,14 +137,8 @@ const PartnerFinance = () => {
   );
 
   return (
-    <div className="min-h-screen bg-background pb-24 overflow-y-auto">
-      <div className="px-4 pt-6">
-        <div className="flex items-center gap-3 mb-6">
-          <motion.button whileTap={{ scale: 0.9 }} onClick={() => navigate('/partner')}>
-            <ArrowLeft className="w-5 h-5 text-foreground" />
-          </motion.button>
-          <h1 className="text-lg font-bold font-display text-foreground">Финансы</h1>
-        </div>
+    <PartnerLayout title="Финансы">
+      <div className="px-4 overflow-y-auto">
 
         {/* Stats Cards */}
         <div className="grid grid-cols-2 gap-3 mb-6">
@@ -248,8 +242,7 @@ const PartnerFinance = () => {
           )}
         </motion.div>
       </div>
-      <PartnerBottomNav />
-    </div>
+    </PartnerLayout>
   );
 };
 
