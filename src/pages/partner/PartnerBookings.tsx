@@ -453,7 +453,7 @@ const PartnerBookings = () => {
           )
         )}
       </div>
-      <BottomNav />
+      <PartnerBottomNav />
 
       <AnimatePresence>
         {selectedAppointment && (

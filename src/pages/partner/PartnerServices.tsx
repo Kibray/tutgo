@@ -257,7 +257,7 @@ const PartnerServices = () => {
           ))}
         </div>
       </div>
-      <BottomNav />
+      <PartnerBottomNav />
     </div>
   );
 };

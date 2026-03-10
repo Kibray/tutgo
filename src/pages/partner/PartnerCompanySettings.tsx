@@ -445,7 +445,7 @@ const PartnerCompanySettings = () => {
           </div>
         )}
       </div>
-      <BottomNav />
+      <PartnerBottomNav />
     </div>
   );
 };

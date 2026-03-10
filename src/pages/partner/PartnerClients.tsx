@@ -24,7 +24,7 @@ const PartnerClients = () => {
           <p className="text-xs mt-1">{t('partner.clients_hint')}</p>
         </div>
       </div>
-      <BottomNav />
+      <PartnerBottomNav />
     </div>
   );
 };

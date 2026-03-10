@@ -309,7 +309,7 @@ const PartnerStaff = () => {
           </div>
         )}
       </div>
-      <BottomNav />
+      <PartnerBottomNav />
     </div>
   );
 };

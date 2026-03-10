@@ -248,7 +248,7 @@ const PartnerFinance = () => {
           )}
         </motion.div>
       </div>
-      <BottomNav />
+      <PartnerBottomNav />
     </div>
   );
 };

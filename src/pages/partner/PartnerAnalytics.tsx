@@ -49,7 +49,7 @@ const PartnerAnalytics = () => {
 
         <p className="text-center text-xs text-muted-foreground mt-6">{t('partner.analytics_coming')}</p>
       </div>
-      <BottomNav />
+      <PartnerBottomNav />
     </div>
   );
 };

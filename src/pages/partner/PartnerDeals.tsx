@@ -279,7 +279,7 @@ const PartnerDeals = () => {
         )}
       </AnimatePresence>
 
-      <BottomNav />
+      <PartnerBottomNav />
     </div>
   );
 };
