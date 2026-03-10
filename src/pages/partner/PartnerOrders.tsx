@@ -6,7 +6,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import { formatPrice } from '@/lib/types';
-import PartnerBottomNav from '@/components/partner/PartnerBottomNav';
+import PartnerLayout from '@/components/partner/PartnerLayout';
 
 const statusConfig: Record<string, { label: string; color: string; next: string | null; nextLabel: string }> = {
   new: { label: '🆕 Новый', color: 'bg-blue-500/15 text-blue-400 ring-blue-500/30', next: 'preparing', nextLabel: '🔄 Готовим' },

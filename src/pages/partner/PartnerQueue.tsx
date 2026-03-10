@@ -4,7 +4,7 @@ import { ArrowLeft, SkipForward, Play, Trash2, Users, Hash, RefreshCw } from 'lu
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
-import PartnerBottomNav from '@/components/partner/PartnerBottomNav';
+import PartnerLayout from '@/components/partner/PartnerLayout';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 

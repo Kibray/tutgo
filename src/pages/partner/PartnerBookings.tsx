@@ -20,7 +20,7 @@ import { useNavigate } from "react-router-dom";
 import { usePreferences } from "@/hooks/usePreferences";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import PartnerBottomNav from "@/components/partner/PartnerBottomNav";
+import PartnerLayout from '@/components/partner/PartnerLayout';
 import { format, addDays, startOfWeek, isSameDay } from "date-fns";
 import { ru } from "date-fns/locale";
 import { useToast } from "@/hooks/use-toast";
