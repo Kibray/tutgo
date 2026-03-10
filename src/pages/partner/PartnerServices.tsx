@@ -7,7 +7,7 @@ import { usePreferences } from '@/hooks/usePreferences';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useCategories } from '@/hooks/useCategories';
-import BottomNav from '@/components/BottomNav';
+import PartnerBottomNav from '@/components/partner/PartnerBottomNav';
 import AddressPicker from '@/components/AddressPicker';
 
 const amenitiesList = [

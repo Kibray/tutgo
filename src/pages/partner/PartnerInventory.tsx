@@ -4,7 +4,7 @@ import { ArrowLeft, Plus, Minus, Package, X, History, AlertTriangle, Trash2 } fr
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
-import BottomNav from '@/components/BottomNav';
+import PartnerBottomNav from '@/components/partner/PartnerBottomNav';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 

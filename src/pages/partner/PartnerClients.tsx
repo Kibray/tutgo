@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 import { ArrowLeft, Users } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { usePreferences } from '@/hooks/usePreferences';
-import BottomNav from '@/components/BottomNav';
+import PartnerBottomNav from '@/components/partner/PartnerBottomNav';
 
 const PartnerClients = () => {
   const navigate = useNavigate();
