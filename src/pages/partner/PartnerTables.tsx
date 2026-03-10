@@ -94,14 +94,8 @@ const PartnerTables = () => {
   if (loading) return <div className="min-h-screen bg-background flex items-center justify-center text-muted-foreground">Загрузка...</div>;
 
   return (
-    <div className="min-h-screen bg-background pb-24">
-      <div className="sticky top-0 z-20 glass-strong px-4 py-3 flex items-center gap-3">
-        <button onClick={() => navigate('/partner')} className="w-8 h-8 glass rounded-full flex items-center justify-center">
-          <ArrowLeft className="w-4 h-4 text-foreground" />
-        </button>
-        <h1 className="text-base font-bold text-foreground">🪑 Столики</h1>
-        <span className="text-xs text-muted-foreground">{tables.length} столиков</span>
-      </div>
+    <PartnerLayout title="🪑 Столики">
+      <div className="px-4">
 
       <div className="px-4 mt-3 space-y-3">
         <button onClick={() => setShowForm(true)}
