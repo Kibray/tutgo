@@ -308,7 +308,7 @@ const MobileIndex = () => {
 const getBizType = (categoryName: string): string => {
   const map: Record<string, string> = {
     'Медицина': 'medical', 'Красота': 'beauty', 'Туры': 'tour',
-    'Кофейни': 'cafe', 'Магазины': 'retail', 'Услуги': 'service',
+    'Еда и напитки': 'cafe', 'Магазины': 'retail', 'Услуги': 'service',
   };
   return map[categoryName] || 'service';
 };
