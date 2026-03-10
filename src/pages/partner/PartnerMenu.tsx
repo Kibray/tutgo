@@ -148,13 +148,14 @@ const PartnerMenu = () => {
 
   if (loading) return <div className="min-h-screen bg-background flex items-center justify-center text-muted-foreground">Загрузка...</div>;
   if (!locationId) return (
-    <div className="min-h-screen bg-background flex items-center justify-center px-4">
-      <div className="text-center space-y-2">
-        <p className="text-muted-foreground text-sm">Создайте кафе/ресторан чтобы управлять меню</p>
-        <button onClick={() => navigate('/partner/settings')} className="text-primary text-sm font-medium">Настройки компании →</button>
+    <PartnerLayout title="Управление меню">
+      <div className="flex items-center justify-center px-4 py-16">
+        <div className="text-center space-y-2">
+          <p className="text-muted-foreground text-sm">Создайте кафе/ресторан чтобы управлять меню</p>
+          <button onClick={() => navigate('/partner/settings')} className="text-primary text-sm font-medium">Настройки компании →</button>
+        </div>
       </div>
-      <PartnerBottomNav />
-    </div>
+    </PartnerLayout>
   );
 
   const inputCls = "w-full bg-secondary rounded-lg p-3 text-sm text-foreground placeholder:text-muted-foreground border-none outline-none";
