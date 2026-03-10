@@ -21,7 +21,6 @@ const Settings = () => {
   const [notifyCancelled, setNotifyCancelled] = useState(true);
   const [notifyDeals, setNotifyDeals] = useState(true);
 
-  // Load granular prefs
   useEffect(() => {
     if (!user) return;
     supabase.from('profiles')
@@ -54,29 +53,29 @@ const Settings = () => {
   const notificationItems = [
     {
       icon: CheckCircle,
-      label: 'Запись подтверждена',
-      desc: 'Когда бизнес подтвердил запись',
+      label: t('settings.notif_confirmed'),
+      desc: t('settings.notif_confirmed_desc'),
       checked: notifyConfirmed,
       onChange: (v: boolean) => { setNotifyConfirmed(v); saveNotifyPref('notify_confirmed', v); },
     },
     {
       icon: Clock,
-      label: 'Напоминание за 1 час',
-      desc: 'Напоминание о предстоящей записи',
+      label: t('settings.notif_reminder'),
+      desc: t('settings.notif_reminder_desc'),
       checked: notifyReminder,
       onChange: (v: boolean) => { setNotifyReminder(v); saveNotifyPref('notify_reminder', v); },
     },
     {
       icon: XCircle,
-      label: 'Запись отменена',
-      desc: 'Уведомление об отмене записи',
+      label: t('settings.notif_cancelled'),
+      desc: t('settings.notif_cancelled_desc'),
       checked: notifyCancelled,
       onChange: (v: boolean) => { setNotifyCancelled(v); saveNotifyPref('notify_cancelled', v); },
     },
     {
       icon: Sparkles,
-      label: 'Новые акции рядом',
-      desc: 'Акции от компаний поблизости',
+      label: t('settings.notif_deals'),
+      desc: t('settings.notif_deals_desc'),
       checked: notifyDeals,
       onChange: (v: boolean) => { setNotifyDeals(v); saveNotifyPref('notify_deals', v); },
     },
@@ -93,7 +92,6 @@ const Settings = () => {
         </div>
 
         <div className="space-y-3">
-          {/* Dark Mode */}
           <div className="glass rounded-lg p-4 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <Moon className="w-5 h-5 text-muted-foreground" />
@@ -105,7 +103,6 @@ const Settings = () => {
             <Switch checked={darkMode} onCheckedChange={(v) => { setDarkMode(v); toast({ title: t('settings.saved') }); }} />
           </div>
 
-          {/* Master Notifications Toggle */}
           <div className="glass rounded-lg p-4 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <Bell className="w-5 h-5 text-muted-foreground" />
@@ -117,7 +114,6 @@ const Settings = () => {
             <Switch checked={notifications} onCheckedChange={(v) => { setNotifications(v); toast({ title: t('settings.saved') }); }} />
           </div>
 
-          {/* Granular Notification Settings */}
           {notifications && (
             <motion.div
               initial={{ opacity: 0, height: 0 }}
@@ -126,7 +122,7 @@ const Settings = () => {
               className="glass rounded-lg overflow-hidden"
             >
               <div className="px-4 pt-3 pb-1">
-                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Типы уведомлений</p>
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t('settings.notif_types')}</p>
               </div>
               {notificationItems.map((item, i) => (
                 <div key={i} className={`px-4 py-3 flex items-center justify-between ${i < notificationItems.length - 1 ? 'border-b border-border/50' : ''}`}>
@@ -143,7 +139,6 @@ const Settings = () => {
             </motion.div>
           )}
 
-          {/* Language */}
           <div className="glass rounded-lg p-4">
             <p className="text-sm font-medium text-foreground mb-3">{t('settings.language')}</p>
             <div className="flex gap-2">

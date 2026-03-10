@@ -3,34 +3,18 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   LayoutDashboard, Calendar, Users, Wallet, List, UserCog, Package, Percent,
-  Hash, Building2, ExternalLink, ArrowLeft, Globe, UtensilsCrossed, ShoppingBag, ClipboardList
+  Hash, Building2, ArrowLeft, Globe, UtensilsCrossed, ShoppingBag, ClipboardList
 } from 'lucide-react';
 import { useIsDesktop } from '@/hooks/useIsDesktop';
+import { usePreferences } from '@/hooks/usePreferences';
 import { Button } from '@/components/ui/button';
+import LanguageSwitcher from '@/components/LanguageSwitcher';
 import PartnerBottomNav from './PartnerBottomNav';
-
-const sidebarItems = [
-  { id: '/partner', icon: LayoutDashboard, label: 'Дашборд' },
-  { id: '/partner/bookings', icon: Calendar, label: 'Журнал записей' },
-  { id: '/partner/clients', icon: Users, label: 'Клиентская база' },
-  { id: '/partner/finance', icon: Wallet, label: 'Финансы' },
-  { id: '/partner/services', icon: List, label: 'Мои услуги' },
-  { id: '/partner/staff', icon: UserCog, label: 'Мастера' },
-  { id: '/partner/inventory', icon: Package, label: 'Склад' },
-  { id: '/partner/deals', icon: Percent, label: 'Акции' },
-  { id: '/partner/queue', icon: Hash, label: 'Живая очередь' },
-  { id: '/partner/menu', icon: UtensilsCrossed, label: 'Меню' },
-  { id: '/partner/orders', icon: ClipboardList, label: 'Заказы кухни' },
-  { id: '/partner/tables', icon: ShoppingBag, label: 'Столики' },
-  { id: '/partner/settings', icon: Building2, label: 'Профиль компании' },
-];
 
 interface PartnerLayoutProps {
   children: ReactNode;
   title?: string;
-  /** Show back arrow on mobile header (default: true for sub-pages) */
   showBackToPartner?: boolean;
-  /** Custom right-side header content on mobile */
   headerRight?: ReactNode;
 }
 
@@ -38,11 +22,27 @@ const PartnerLayout = ({ children, title, showBackToPartner = true, headerRight 
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const isDesktop = useIsDesktop();
+  const { t } = usePreferences();
+
+  const sidebarItems = [
+    { id: '/partner', icon: LayoutDashboard, label: t('partner.dashboard') },
+    { id: '/partner/bookings', icon: Calendar, label: t('partner.journal') },
+    { id: '/partner/clients', icon: Users, label: t('partner.clients') },
+    { id: '/partner/finance', icon: Wallet, label: t('partner.finance') },
+    { id: '/partner/services', icon: List, label: t('partner.services') },
+    { id: '/partner/staff', icon: UserCog, label: t('partner.staff') },
+    { id: '/partner/inventory', icon: Package, label: t('partner.warehouse') },
+    { id: '/partner/deals', icon: Percent, label: t('partner.deals') },
+    { id: '/partner/queue', icon: Hash, label: t('partner.live_queue') },
+    { id: '/partner/menu', icon: UtensilsCrossed, label: t('partner.menu') },
+    { id: '/partner/orders', icon: ClipboardList, label: t('partner.orders') },
+    { id: '/partner/tables', icon: ShoppingBag, label: t('partner.tables') },
+    { id: '/partner/settings', icon: Building2, label: t('partner.company_profile') },
+  ];
 
   if (isDesktop) {
     return (
       <div className="flex h-screen bg-background overflow-hidden">
-        {/* Sidebar */}
         <aside className="w-[240px] flex-shrink-0 bg-card border-r border-border flex flex-col">
           <div className="p-5 border-b border-border">
             <div className="flex items-center gap-2 mb-1">
@@ -72,7 +72,10 @@ const PartnerLayout = ({ children, title, showBackToPartner = true, headerRight 
             })}
           </nav>
 
-          <div className="p-3 border-t border-border">
+          <div className="p-3 border-t border-border space-y-2">
+            <div className="flex justify-center">
+              <LanguageSwitcher />
+            </div>
             <Button
               variant="outline"
               size="sm"
@@ -80,12 +83,11 @@ const PartnerLayout = ({ children, title, showBackToPartner = true, headerRight 
               onClick={() => navigate('/')}
             >
               <Globe className="w-3.5 h-3.5" />
-              Смотреть сайт
+              {t('partner.view_site')}
             </Button>
           </div>
         </aside>
 
-        {/* Main content */}
         <div className="flex-1 flex flex-col overflow-hidden">
           <main className="flex-1 overflow-y-auto">
             {children}
@@ -112,6 +114,7 @@ const PartnerLayout = ({ children, title, showBackToPartner = true, headerRight 
               </motion.button>
             )}
             <h1 className="text-lg font-bold font-display text-foreground flex-1">{title}</h1>
+            <LanguageSwitcher />
             {headerRight}
           </div>
         </div>

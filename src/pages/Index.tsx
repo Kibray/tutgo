@@ -10,11 +10,13 @@ import BusinessSheet from '@/components/BusinessSheet';
 import { SkeletonList } from '@/components/SkeletonCard';
 import MapView from '@/components/MapView';
 import AiAssistantFab from '@/components/AiAssistantFab';
+import LanguageSwitcher from '@/components/LanguageSwitcher';
 import { useLocations } from '@/hooks/useLocations';
 import { useCategories } from '@/hooks/useCategories';
 import { useFavorites } from '@/hooks/useFavorites';
 import { useNotifications } from '@/hooks/useNotifications';
 import { useIsDesktop } from '@/hooks/useIsDesktop';
+import { usePreferences } from '@/hooks/usePreferences';
 import DesktopIndex from '@/components/desktop/DesktopIndex';
 import type { LocationItem } from '@/lib/types';
 
@@ -44,6 +46,7 @@ const Index = () => {
 
 const MobileIndex = () => {
   const navigate = useNavigate();
+  const { t } = usePreferences();
   const [category, setCategory] = useState('all');
   const [subcategory, setSubcategory] = useState('all');
   const [search, setSearch] = useState('');
@@ -172,6 +175,7 @@ const MobileIndex = () => {
               TUT<span className="text-gradient-green">GO</span>
             </h1>
             <div className="flex items-center gap-2">
+              <LanguageSwitcher />
               <button onClick={() => navigate('/notifications')} className="relative w-9 h-9 rounded-full bg-secondary/80 backdrop-blur-sm flex items-center justify-center">
                 <Bell className="w-4.5 h-4.5 text-foreground" />
                 {unreadCount > 0 && (
@@ -180,7 +184,6 @@ const MobileIndex = () => {
                   </span>
                 )}
               </button>
-              <div className="w-9 h-9 rounded-full bg-secondary/80 backdrop-blur-sm flex items-center justify-center text-sm">🇺🇿</div>
             </div>
           </motion.div>
           <SearchBar onSearch={handleSearch} onSubmit={handleSearchSubmit} onLocationSelect={handleLocationSelect} onGeolocate={handleCenterOnMe} geolocating={geolocating} />
@@ -216,7 +219,7 @@ const MobileIndex = () => {
         <button onClick={toggleList} className="w-full flex flex-col items-center pt-2 pb-1">
           <div className="w-10 h-1 rounded-full bg-muted-foreground/30 mb-2" />
           <div className="flex items-center gap-1 text-xs text-muted-foreground">
-            {listExpanded ? (<><ChevronDown className="w-3.5 h-3.5" />Свернуть</>) : (<><ChevronUp className="w-3.5 h-3.5" />{displayLocations.length} мест найдено</>)}
+            {listExpanded ? (<><ChevronDown className="w-3.5 h-3.5" />{t('index.collapse')}</>) : (<><ChevronUp className="w-3.5 h-3.5" />{displayLocations.length} {t('index.places_found')}</>)}
           </div>
         </button>
 
@@ -226,10 +229,10 @@ const MobileIndex = () => {
               className="overflow-y-auto px-4 pb-4" style={{ height: 'calc(100% - 50px)' }}>
               <div className="flex items-center justify-between mb-3">
                 <h2 className="text-sm font-semibold text-foreground">
-                  {nearbyMode ? 'Рядом со мной' : category === 'all' ? 'Популярное рядом' : (selectedCat?.name || '')}
+                  {nearbyMode ? t('index.nearby_me') : category === 'all' ? t('index.popular_nearby') : (selectedCat?.name || '')}
                 </h2>
                 <span className="text-xs text-muted-foreground">
-                  {displayLocations.length} найдено
+                  {displayLocations.length} {t('index.found')}
                   {nearbyMode && ' · до 2 км'}
                 </span>
               </div>
@@ -248,7 +251,7 @@ const MobileIndex = () => {
                   ))}
                   {displayLocations.length === 0 && (
                     <div className="text-center py-12 text-muted-foreground text-sm">
-                      {nearbyMode ? 'Нет мест в радиусе 2 км. Попробуйте расширить поиск.' : 'Ничего не найдено. Попробуйте другой запрос.'}
+                      {nearbyMode ? t('index.nothing_nearby') : t('index.nothing_found')}
                     </div>
                   )}
                 </div>

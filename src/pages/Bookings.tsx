@@ -6,6 +6,7 @@ import ServiceCard from '@/components/ServiceCard';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useFavorites } from '@/hooks/useFavorites';
+import { usePreferences } from '@/hooks/usePreferences';
 import { formatPrice } from '@/lib/types';
 import type { LocationItem } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
@@ -14,6 +15,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 const Bookings = () => {
   const { user } = useAuth();
   const { toast } = useToast();
+  const { t, lang } = usePreferences();
   const { favoriteIds, isFavorite, toggleFavorite } = useFavorites();
   const [appointments, setAppointments] = useState<any[]>([]);
   const [favoriteLocations, setFavoriteLocations] = useState<LocationItem[]>([]);
@@ -45,7 +47,6 @@ const Bookings = () => {
     }
   };
 
-  // Fetch favorite locations
   useEffect(() => {
     const fetchFavLocations = async () => {
       if (favoriteIds.size === 0) { setFavoriteLocations([]); return; }
@@ -85,9 +86,9 @@ const Bookings = () => {
     });
     setSubmittingReview(false);
     if (error) {
-      toast({ title: 'Ошибка', description: error.message, variant: 'destructive' });
+      toast({ title: t('common.error'), description: error.message, variant: 'destructive' });
     } else {
-      toast({ title: 'Спасибо за отзыв!' });
+      toast({ title: t('bookings.thanks_review') });
       setReviewedIds(prev => new Set([...prev, appointmentId]));
       setReviewingAppointment(null);
       setReviewComment('');
@@ -95,30 +96,35 @@ const Bookings = () => {
     }
   };
 
+  const dateFmt = (d: string, opts: Intl.DateTimeFormatOptions) =>
+    new Date(d).toLocaleDateString(lang === 'uz' ? 'uz' : lang === 'en' ? 'en' : 'ru', opts);
+  const timeFmt = (d: string) =>
+    new Date(d).toLocaleTimeString(lang === 'uz' ? 'uz' : lang === 'en' ? 'en' : 'ru', { hour: '2-digit', minute: '2-digit' });
+
   const upcoming = appointments.filter(a => new Date(a.start_time) >= new Date() && a.status !== 'cancelled' && a.status !== 'completed');
   const past = appointments.filter(a => new Date(a.start_time) < new Date() || a.status === 'completed');
 
   return (
     <div className="min-h-screen bg-background pb-24">
       <div className="px-4 pt-6">
-        <h1 className="text-lg font-bold font-display text-foreground mb-1">Личный кабинет</h1>
-        <p className="text-xs text-muted-foreground mb-4">Записи и избранное</p>
+        <h1 className="text-lg font-bold font-display text-foreground mb-1">{t('bookings.title')}</h1>
+        <p className="text-xs text-muted-foreground mb-4">{t('bookings.subtitle')}</p>
 
         <Tabs defaultValue="bookings" className="w-full">
           <TabsList className="w-full mb-4">
-            <TabsTrigger value="bookings" className="flex-1 text-xs">Мои записи</TabsTrigger>
+            <TabsTrigger value="bookings" className="flex-1 text-xs">{t('bookings.my_bookings')}</TabsTrigger>
             <TabsTrigger value="favorites" className="flex-1 text-xs">
-              <Heart className="w-3.5 h-3.5 mr-1" />Избранное
+              <Heart className="w-3.5 h-3.5 mr-1" />{t('nav.favorites')}
             </TabsTrigger>
           </TabsList>
 
           <TabsContent value="bookings">
-            <h2 className="text-sm font-semibold text-foreground mb-3">Предстоящие</h2>
+            <h2 className="text-sm font-semibold text-foreground mb-3">{t('bookings.upcoming')}</h2>
             {loading ? (
-              <div className="text-center py-8 text-muted-foreground text-sm">Загрузка...</div>
+              <div className="text-center py-8 text-muted-foreground text-sm">{t('common.loading')}</div>
             ) : upcoming.length === 0 ? (
               <div className="glass rounded-lg p-6 text-center mb-6">
-                <p className="text-xs text-muted-foreground">Нет предстоящих записей</p>
+                <p className="text-xs text-muted-foreground">{t('bookings.no_upcoming')}</p>
               </div>
             ) : (
               <div className="space-y-3 mb-6">
@@ -133,8 +139,8 @@ const Bookings = () => {
                       <span className="text-[10px] font-medium px-2 py-1 rounded-md bg-primary/15 text-primary capitalize">{b.status}</span>
                     </div>
                     <div className="flex items-center gap-4 mt-3 text-xs text-muted-foreground">
-                      <span className="flex items-center gap-1"><Calendar className="w-3 h-3" />{new Date(b.start_time).toLocaleDateString('ru', { month: 'short', day: 'numeric' })}</span>
-                      <span className="flex items-center gap-1"><Clock className="w-3 h-3" />{new Date(b.start_time).toLocaleTimeString('ru', { hour: '2-digit', minute: '2-digit' })}</span>
+                      <span className="flex items-center gap-1"><Calendar className="w-3 h-3" />{dateFmt(b.start_time, { month: 'short', day: 'numeric' })}</span>
+                      <span className="flex items-center gap-1"><Clock className="w-3 h-3" />{timeFmt(b.start_time)}</span>
                       <span className="flex items-center gap-1"><MapPin className="w-3 h-3" />{b.locations?.city}</span>
                     </div>
                     {b.services?.price > 0 && (
@@ -148,10 +154,10 @@ const Bookings = () => {
               </div>
             )}
 
-            <h2 className="text-sm font-semibold text-foreground mb-3">Прошедшие</h2>
+            <h2 className="text-sm font-semibold text-foreground mb-3">{t('bookings.past')}</h2>
             {past.length === 0 ? (
               <div className="glass rounded-lg p-6 text-center">
-                <p className="text-xs text-muted-foreground">Прошедших записей пока нет</p>
+                <p className="text-xs text-muted-foreground">{t('bookings.no_past')}</p>
               </div>
             ) : (
               <div className="space-y-3">
@@ -160,18 +166,18 @@ const Bookings = () => {
                     <div className="flex items-start justify-between">
                       <div>
                         <h3 className="text-sm font-semibold text-foreground">{b.services?.name || b.locations?.name}</h3>
-                        <p className="text-xs text-muted-foreground mt-0.5">{new Date(b.start_time).toLocaleDateString('ru')}</p>
+                        <p className="text-xs text-muted-foreground mt-0.5">{dateFmt(b.start_time, { year: 'numeric', month: 'short', day: 'numeric' })}</p>
                       </div>
                       <span className="text-[10px] font-medium px-2 py-1 rounded-md bg-muted text-muted-foreground capitalize">{b.status}</span>
                     </div>
                     {(b.status === 'completed' || new Date(b.end_time) < new Date()) && !reviewedIds.has(b.id) && (
                       <button onClick={() => { setReviewingAppointment(b); setReviewRating(5); setReviewComment(''); }}
                         className="mt-3 pt-3 border-t border-border w-full flex items-center justify-center gap-2 text-xs text-primary font-medium">
-                        <Star className="w-3.5 h-3.5" />Оставить отзыв
+                        <Star className="w-3.5 h-3.5" />{t('detail.leave_review')}
                       </button>
                     )}
                     {reviewedIds.has(b.id) && (
-                      <p className="mt-3 pt-3 border-t border-border text-xs text-muted-foreground text-center">✓ Отзыв оставлен</p>
+                      <p className="mt-3 pt-3 border-t border-border text-xs text-muted-foreground text-center">{t('bookings.review_sent')}</p>
                     )}
                   </div>
                 ))}
@@ -181,12 +187,12 @@ const Bookings = () => {
 
           <TabsContent value="favorites">
             {favLoading ? (
-              <div className="text-center py-8 text-muted-foreground text-sm">Загрузка...</div>
+              <div className="text-center py-8 text-muted-foreground text-sm">{t('common.loading')}</div>
             ) : favoriteLocations.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-16 text-center">
                 <div className="text-5xl mb-4">❤️</div>
                 <p className="text-sm text-muted-foreground max-w-[240px] leading-relaxed">
-                  Сохраняй понравившиеся места чтобы быстро найти их снова
+                  {t('bookings.fav_empty')}
                 </p>
               </div>
             ) : (
@@ -224,7 +230,7 @@ const Bookings = () => {
               className="bg-background rounded-2xl p-5 mx-4 w-full max-w-sm shadow-xl"
             >
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-sm font-bold text-foreground">Оставить отзыв</h3>
+                <h3 className="text-sm font-bold text-foreground">{t('detail.leave_review')}</h3>
                 <button onClick={() => setReviewingAppointment(null)} className="w-7 h-7 rounded-full bg-muted flex items-center justify-center">
                   <X className="w-4 h-4 text-muted-foreground" />
                 </button>
@@ -233,7 +239,7 @@ const Bookings = () => {
               <p className="text-xs text-muted-foreground mb-4">
                 {reviewingAppointment.services?.name || reviewingAppointment.locations?.name}
                 {' · '}
-                {new Date(reviewingAppointment.start_time).toLocaleDateString('ru', { day: 'numeric', month: 'short' })}
+                {dateFmt(reviewingAppointment.start_time, { day: 'numeric', month: 'short' })}
               </p>
 
               <div className="flex items-center justify-center gap-2 mb-4">
@@ -247,18 +253,18 @@ const Bookings = () => {
               <textarea
                 value={reviewComment}
                 onChange={e => setReviewComment(e.target.value)}
-                placeholder="Расскажите о вашем опыте (необязательно)"
+                placeholder={t('bookings.review_placeholder')}
                 className="w-full bg-secondary rounded-xl p-3 text-sm text-foreground resize-none h-24 border border-border focus:border-primary outline-none mb-4"
               />
 
               <div className="flex gap-2">
-                <button onClick={() => setReviewingAppointment(null)} className="flex-1 py-2.5 text-sm glass rounded-xl text-muted-foreground font-medium">Отмена</button>
+                <button onClick={() => setReviewingAppointment(null)} className="flex-1 py-2.5 text-sm glass rounded-xl text-muted-foreground font-medium">{t('common.cancel')}</button>
                 <button
                   onClick={() => handleSubmitReview(reviewingAppointment.id, reviewingAppointment.location_id)}
                   disabled={submittingReview}
                   className="flex-1 py-2.5 text-sm bg-primary text-accent-foreground rounded-xl font-semibold flex items-center justify-center gap-1"
                 >
-                  {submittingReview ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Отправить'}
+                  {submittingReview ? <Loader2 className="w-4 h-4 animate-spin" /> : t('bookings.send')}
                 </button>
               </div>
             </motion.div>

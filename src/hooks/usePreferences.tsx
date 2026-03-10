@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
-import { t as translate, type Lang } from '@/lib/i18n';
+import { t as translate, type Lang, detectBrowserLang } from '@/lib/i18n';
 
 interface PreferencesContextType {
   lang: Lang;
@@ -15,9 +15,17 @@ interface PreferencesContextType {
 
 const PreferencesContext = createContext<PreferencesContextType>({} as PreferencesContextType);
 
+function getInitialLang(): Lang {
+  const stored = localStorage.getItem('tutgo_lang') as Lang;
+  if (stored && ['ru', 'uz', 'en'].includes(stored)) return stored;
+  const detected = detectBrowserLang();
+  localStorage.setItem('tutgo_lang', detected);
+  return detected;
+}
+
 export const PreferencesProvider = ({ children }: { children: ReactNode }) => {
   const { user } = useAuth();
-  const [lang, setLangState] = useState<Lang>(() => (localStorage.getItem('tutgo_lang') as Lang) || 'ru');
+  const [lang, setLangState] = useState<Lang>(getInitialLang);
   const [darkMode, setDarkModeState] = useState(() => localStorage.getItem('tutgo_dark') !== 'false');
   const [notifications, setNotificationsState] = useState(true);
 

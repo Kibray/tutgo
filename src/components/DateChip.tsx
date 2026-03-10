@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { usePreferences } from '@/hooks/usePreferences';
 
 interface DateChipProps {
   date: Date;
@@ -7,7 +8,9 @@ interface DateChipProps {
 }
 
 const DateChip = ({ date, active, onClick }: DateChipProps) => {
-  const day = date.toLocaleDateString('ru', { weekday: 'short' });
+  const { t, lang } = usePreferences();
+  const locale = lang === 'uz' ? 'uz' : lang === 'en' ? 'en' : 'ru';
+  const day = date.toLocaleDateString(locale, { weekday: 'short' });
   const num = date.getDate();
   const isToday = new Date().toDateString() === date.toDateString();
 
@@ -21,7 +24,7 @@ const DateChip = ({ date, active, onClick }: DateChipProps) => {
           : 'glass text-muted-foreground'
       }`}
     >
-      <span className="text-[10px] font-medium">{isToday ? 'Сегодня' : day}</span>
+      <span className="text-[10px] font-medium">{isToday ? t('common.today') : day}</span>
       <span className="text-base font-bold mt-0.5">{num}</span>
     </motion.button>
   );

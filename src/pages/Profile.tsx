@@ -28,7 +28,7 @@ const Profile = () => {
   const handleConnectTelegram = () => {
     if (!user) { navigate('/auth'); return; }
     window.open(`https://t.me/TutGoUzBot?start=${user.id}`, '_blank');
-    toast({ title: 'Откройте бота и нажмите Start', description: 'После подключения уведомления будут приходить в Telegram' });
+    toast({ title: 'Откройте бота и нажмите Start', description: t('profile.tg_connect_desc') });
   };
 
   const handleSignOut = async () => {
@@ -37,10 +37,7 @@ const Profile = () => {
   };
 
   const handleBecomePartner = async () => {
-    if (!user) {
-      navigate('/auth');
-      return;
-    }
+    if (!user) { navigate('/auth'); return; }
     const { error } = await becomePartner();
     if (!error) {
       toast({ title: t('profile.partner_success'), description: t('profile.partner_welcome') });
@@ -56,7 +53,6 @@ const Profile = () => {
   return (
     <div className="min-h-screen bg-background pb-24">
       <div className="px-4 pt-6">
-        {/* Avatar & name */}
         <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="flex items-center gap-4 mb-6">
           <div className="w-14 h-14 rounded-full bg-primary/20 flex items-center justify-center">
             <User className="w-6 h-6 text-primary" />
@@ -76,7 +72,6 @@ const Profile = () => {
           </div>
         </motion.div>
 
-        {/* Telegram connect */}
         {user && (
           <motion.div
             initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.02 }}
@@ -88,19 +83,17 @@ const Profile = () => {
             </div>
             <div className="flex-1">
               <p className="text-sm font-medium text-foreground">
-                {telegramConnected ? 'Telegram подключён ✓' : 'Подключить Telegram'}
+                {telegramConnected ? t('profile.telegram_connected') : t('profile.connect_telegram')}
               </p>
               <p className="text-[10px] text-muted-foreground">
-                {telegramConnected ? 'Уведомления приходят в бот' : 'Получайте уведомления в Telegram'}
+                {telegramConnected ? t('profile.tg_connected_desc') : t('profile.tg_connect_desc')}
               </p>
             </div>
             {!telegramConnected && <ChevronRight className="w-4 h-4 text-muted-foreground" />}
           </motion.div>
         )}
 
-        {/* Two main cards */}
         <div className="grid grid-cols-2 gap-3 mb-6">
-          {/* Card 1 — Personal Cabinet */}
           <motion.div
             initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}
             onClick={() => user ? navigate('/bookings') : navigate('/auth')}
@@ -115,7 +108,6 @@ const Profile = () => {
             </div>
           </motion.div>
 
-          {/* Card 2 — Business Portal */}
           <motion.div
             initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
             onClick={() => {
@@ -135,14 +127,12 @@ const Profile = () => {
           </motion.div>
         </div>
 
-        {/* Referral section */}
         {user && (
           <div className="mt-4">
             <ReferralSection />
           </div>
         )}
 
-        {/* System menu */}
         <div className="space-y-2">
           {systemItems.map((item, i) => (
             <motion.div key={item.label} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.15 + i * 0.04 }}
@@ -158,7 +148,6 @@ const Profile = () => {
           ))}
         </div>
 
-        {/* Sign out */}
         {user && (
           <motion.button initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }} whileTap={{ scale: 0.98 }}
             onClick={handleSignOut}

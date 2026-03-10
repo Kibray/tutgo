@@ -1,160 +1,13 @@
+import ru from '@/i18n/ru.json';
+import uz from '@/i18n/uz.json';
+import en from '@/i18n/en.json';
+
 export type Lang = 'ru' | 'uz' | 'en';
 
-const translations: Record<string, Record<Lang, string>> = {
-  // Bottom Nav
-  'nav.home': { ru: 'Главная', uz: 'Bosh sahifa', en: 'Home' },
-  'nav.deals': { ru: 'Акции', uz: 'Aksiyalar', en: 'Deals' },
-  'nav.bookings': { ru: 'Записи', uz: 'Bandlovlar', en: 'Bookings' },
-  'nav.business': { ru: 'Бизнес', uz: 'Biznes', en: 'Business' },
-  'nav.profile': { ru: 'Профиль', uz: 'Profil', en: 'Profile' },
-
-  // Profile
-  'profile.title': { ru: 'Мой профиль', uz: 'Mening profilim', en: 'My Profile' },
-  'profile.guest': { ru: 'Гость', uz: 'Mehmon', en: 'Guest' },
-  'profile.login_full': { ru: 'Войдите для полного доступа', uz: "To'liq kirish uchun tizimga kiring", en: 'Sign in for full access' },
-'profile.login': { ru: 'Войти / Регистрация', uz: 'Kirish / Roʻyxatdan oʻtish', en: 'Sign In / Sign Up' },
-  'profile.login_desc': { ru: 'Email и пароль', uz: 'Email va parol', en: 'Email & password' },
-  'profile.business_login': { ru: 'Вход для бизнеса', uz: 'Biznes uchun kirish', en: 'Business Login' },
-  'profile.business_login_desc': { ru: 'Панель управления партнёра', uz: 'Hamkor boshqaruv paneli', en: 'Partner management panel' },
-  'profile.become_partner': { ru: 'Стать партнёром', uz: 'Hamkor boʻlish', en: 'Become Partner' },
-  'profile.add_business': { ru: 'Добавьте свой бизнес в TUTGO', uz: 'Biznesingizni TUTGO ga qoʻshing', en: 'Add your business to TUTGO' },
-  'profile.personal_cabinet': { ru: 'ЛИЧНЫЙ КАБИНЕТ', uz: 'SHAXSIY KABINET', en: 'MY ACCOUNT' },
-  'profile.personal_cabinet_desc': { ru: 'Записи и история', uz: 'Bandlovlar va tarix', en: 'Bookings & history' },
-  'profile.business_portal': { ru: 'БИЗНЕС-ПОРТАЛ', uz: 'BIZNES PORTAL', en: 'BUSINESS PORTAL' },
-  'profile.business_portal_desc': { ru: 'Управление компанией', uz: 'Kompaniyani boshqarish', en: 'Manage your company' },
-  'profile.manage_listings': { ru: 'Управление листингами', uz: 'Listinglarni boshqarish', en: 'Manage listings' },
-  'profile.partner_badge': { ru: 'Партнёр', uz: 'Hamkor', en: 'Partner' },
-  'profile.my_profile': { ru: 'Мой профиль', uz: 'Mening profilim', en: 'My Profile' },
-  'profile.personal_info': { ru: 'Личная информация', uz: 'Shaxsiy maʼlumotlar', en: 'Personal information' },
-  'profile.language': { ru: 'Язык', uz: 'Til', en: 'Language' },
-  'profile.lang_options': { ru: "Русский, O'zbek, English", uz: "Ruscha, Oʻzbekcha, English", en: "Russian, Uzbek, English" },
-  'profile.settings': { ru: 'Настройки', uz: 'Sozlamalar', en: 'Settings' },
-  'profile.settings_desc': { ru: 'Уведомления, приватность', uz: 'Bildirishnomalar, maxfiylik', en: 'Notifications, privacy' },
-  'profile.help': { ru: 'Помощь', uz: 'Yordam', en: 'Help' },
-  'profile.help_desc': { ru: 'FAQ, связаться с нами', uz: 'FAQ, biz bilan bogʻlanish', en: 'FAQ, contact us' },
-  'profile.sign_out': { ru: 'Выйти', uz: 'Chiqish', en: 'Sign Out' },
-  'profile.signed_out': { ru: 'Вы вышли из аккаунта', uz: 'Siz akkauntdan chiqdingiz', en: 'Signed out' },
-  'profile.partner_success': { ru: '🎉 Вы теперь партнёр!', uz: '🎉 Siz endi hamkorsiz!', en: '🎉 You are now a partner!' },
-  'profile.partner_welcome': { ru: 'Добро пожаловать в бизнес-портал', uz: 'Biznes portalga xush kelibsiz', en: 'Welcome to the business portal' },
-  'profile.version': { ru: 'TUTGO v1.0 · Сделано в Узбекистане 🇺🇿', uz: "TUTGO v1.0 · Oʻzbekistonda yaratilgan 🇺🇿", en: 'TUTGO v1.0 · Made in Uzbekistan 🇺🇿' },
-
-  // Settings
-  'settings.title': { ru: 'Настройки', uz: 'Sozlamalar', en: 'Settings' },
-  'settings.dark_mode': { ru: 'Тёмная тема', uz: 'Qorong\'i rejim', en: 'Dark Mode' },
-  'settings.dark_mode_desc': { ru: 'Тёмный интерфейс приложения', uz: 'Ilovaning qorongʻi interfeysi', en: 'Dark app interface' },
-  'settings.notifications': { ru: 'Уведомления', uz: 'Bildirishnomalar', en: 'Notifications' },
-  'settings.notifications_desc': { ru: 'Push-уведомления о записях', uz: 'Bandlovlar haqida bildirishnomalar', en: 'Push notifications for bookings' },
-  'settings.language': { ru: 'Язык приложения', uz: 'Ilova tili', en: 'App Language' },
-  'settings.saved': { ru: 'Настройки сохранены', uz: 'Sozlamalar saqlandi', en: 'Settings saved' },
-
-  // Edit Profile
-  'edit.title': { ru: 'Редактировать профиль', uz: 'Profilni tahrirlash', en: 'Edit Profile' },
-  'edit.name': { ru: 'Имя', uz: 'Ism', en: 'Name' },
-  'edit.phone': { ru: 'Телефон', uz: 'Telefon', en: 'Phone' },
-  'edit.telegram': { ru: 'Telegram username', uz: 'Telegram username', en: 'Telegram username' },
-  'edit.save': { ru: 'Сохранить', uz: 'Saqlash', en: 'Save' },
-  'edit.saved': { ru: 'Профиль обновлён', uz: 'Profil yangilandi', en: 'Profile updated' },
-  'edit.upload_avatar': { ru: 'Загрузить фото', uz: 'Rasm yuklash', en: 'Upload photo' },
-
-  // Help
-  'help.title': { ru: 'Помощь и FAQ', uz: 'Yordam va FAQ', en: 'Help & FAQ' },
-  'help.q1': { ru: 'Как записаться на услугу?', uz: "Xizmatga qanday yozilish mumkin?", en: 'How to book a service?' },
-  'help.a1': { ru: 'Выберите бизнес на карте, откройте его карточку и нажмите «Записаться». Выберите дату, время и подтвердите.', uz: "Xaritada biznesni tanlang, kartochkasini oching va «Bandlash» tugmasini bosing.", en: 'Select a business on the map, open its card and tap "Book". Choose date, time and confirm.' },
-  'help.q2': { ru: 'Как стать партнёром?', uz: 'Qanday hamkor boʻlish mumkin?', en: 'How to become a partner?' },
-  'help.a2': { ru: 'Перейдите в Профиль → Стать партнёром. После этого вам станет доступен раздел «Бизнес» для управления листингами.', uz: "Profilga oʻting → Hamkor boʻlish. Keyin sizga «Biznes» boʻlimi ochiladi.", en: 'Go to Profile → Become Partner. After that, the "Business" section will be available for managing listings.' },
-  'help.q3': { ru: 'Как связаться с поддержкой?', uz: "Qoʻllab-quvvatlash bilan qanday bogʻlanish mumkin?", en: 'How to contact support?' },
-  'help.a3': { ru: 'Напишите нам в Telegram: @tutgo_support', uz: 'Bizga Telegram orqali yozing: @tutgo_support', en: 'Write to us on Telegram: @tutgo_support' },
-  'help.contact_support': { ru: 'Написать в поддержку', uz: 'Qoʻllab-quvvatlashga yozish', en: 'Contact Support' },
-
-  // Partner Landing
-  'partner_landing.title': { ru: 'TUTGO для бизнеса', uz: 'Biznes uchun TUTGO', en: 'TUTGO for Business' },
-  'partner_landing.subtitle': { ru: 'Привлекайте клиентов через Telegram', uz: 'Telegram orqali mijozlarni jalb qiling', en: 'Attract customers via Telegram' },
-  'partner_landing.benefit1': { ru: 'Покажите бизнес на карте Ташкента', uz: "Biznesingizni Toshkent xaritasida koʻrsating", en: 'Show your business on Tashkent map' },
-  'partner_landing.benefit2': { ru: 'Прямая связь через Telegram', uz: 'Telegram orqali bevosita aloqa', en: 'Direct contact via Telegram' },
-  'partner_landing.benefit3': { ru: 'Управляйте ценами и фото', uz: 'Narxlar va rasmlarni boshqaring', en: 'Manage prices and photos' },
-  'partner_landing.benefit4': { ru: 'Аналитика просмотров и кликов', uz: "Koʻrishlar va kliklar analitikasi", en: 'Views and clicks analytics' },
-  'partner_landing.cta': { ru: 'Стать партнёром', uz: 'Hamkor boʻlish', en: 'Become Partner' },
-  'partner_landing.login_first': { ru: 'Сначала войдите в аккаунт', uz: 'Avval akkauntga kiring', en: 'Sign in first' },
-
-  // Index
-  'index.popular_nearby': { ru: 'Популярное рядом', uz: "Yaqin atrofda ommabop", en: 'Popular nearby' },
-  'index.found': { ru: 'найдено', uz: 'topildi', en: 'found' },
-  'index.nothing_found': { ru: 'Ничего не найдено. Попробуйте другой запрос.', uz: "Hech narsa topilmadi. Boshqa so'rov kiriting.", en: 'Nothing found. Try a different query.' },
-  'index.collapse': { ru: 'Свернуть', uz: 'Yigʻish', en: 'Collapse' },
-  'index.places_found': { ru: 'мест найдено', uz: 'joy topildi', en: 'places found' },
-
-  // Categories
-  'cat.all': { ru: 'Все', uz: 'Hammasi', en: 'All' },
-  'cat.beauty': { ru: 'Красота', uz: 'Goʻzallik', en: 'Beauty' },
-  'cat.medical': { ru: 'Медицина', uz: 'Tibbiyot', en: 'Medical' },
-  'cat.tour': { ru: 'Туры', uz: 'Turlar', en: 'Tours' },
-  'cat.cafe': { ru: 'Кофейни', uz: 'Qahvaxonalar', en: 'Cafes' },
-  'cat.retail': { ru: 'Магазины', uz: 'Doʻkonlar', en: 'Shops' },
-  'cat.service': { ru: 'Услуги', uz: 'Xizmatlar', en: 'Services' },
-  'cat.office': { ru: 'Офисы', uz: 'Ofislar', en: 'Offices' },
-
-  // Partner Dashboard
-  'partner.panel': { ru: 'Панель партнёра', uz: 'Hamkor paneli', en: 'Partner Panel' },
-  'partner.login_prompt': { ru: 'Войдите, чтобы управлять бизнесом', uz: 'Biznesni boshqarish uchun kiring', en: 'Sign in to manage your business' },
-  'partner.not_partner': { ru: 'Вы ещё не партнёр', uz: 'Siz hali hamkor emassiz', en: 'You are not a partner yet' },
-  'partner.become_in_profile': { ru: 'Станьте партнёром в разделе «Профиль»', uz: '«Profil» boʻlimida hamkor boʻling', en: 'Become a partner in "Profile"' },
-  'partner.go_profile': { ru: 'Перейти в профиль', uz: 'Profilga oʻtish', en: 'Go to Profile' },
-  'partner.dashboard': { ru: 'Панель управления', uz: 'Boshqaruv paneli', en: 'Dashboard' },
-  'partner.journal': { ru: 'Журнал записей', uz: 'Bandlovlar jurnali', en: 'Bookings Journal' },
-  'partner.clients': { ru: 'Клиентская база', uz: 'Mijozlar bazasi', en: 'Client Base' },
-  'partner.analytics': { ru: 'Аналитика', uz: 'Analitika', en: 'Analytics' },
-  'partner.services': { ru: 'Мои услуги', uz: 'Mening xizmatlarim', en: 'My Services' },
-  'partner.staff': { ru: 'Мастера / Персонал', uz: 'Ustalar / Xodimlar', en: 'Staff / Team' },
-  'partner.company_settings': { ru: 'Настройки компании', uz: 'Kompaniya sozlamalari', en: 'Company Settings' },
-  'partner.company_profile': { ru: 'Профиль компании', uz: 'Kompaniya profili', en: 'Company Profile' },
-  'partner.deals': { ru: 'Акции', uz: 'Aksiyalar', en: 'Deals' },
-  'partner.tab_about': { ru: 'О компании', uz: 'Kompaniya haqida', en: 'About' },
-  'partner.tab_pricelist': { ru: 'Прайс-лист', uz: 'Narxlar', en: 'Price List' },
-  'partner.tab_team': { ru: 'Команда', uz: 'Jamoa', en: 'Team' },
-  'partner.tab_schedule': { ru: 'График', uz: 'Jadval', en: 'Schedule' },
-  'partner.pricelist_coming': { ru: 'Управление прайс-листом скоро', uz: 'Narxlarni boshqarish tez kunda', en: 'Price list management coming soon' },
-  'partner.pricelist_hint': { ru: 'Добавляйте и редактируйте цены на услуги', uz: 'Xizmatlar narxlarini qoʻshing', en: 'Add and edit service prices' },
-  'partner.no_bookings': { ru: 'Пока нет записей', uz: 'Hozircha bandlovlar yoʻq', en: 'No bookings yet' },
-  'partner.bookings_hint': { ru: 'Здесь появятся записи ваших клиентов', uz: 'Bu yerda mijozlaringiz bandlovlari paydo boʻladi', en: 'Your client bookings will appear here' },
-  'partner.no_clients': { ru: 'Пока нет клиентов', uz: 'Hozircha mijozlar yoʻq', en: 'No clients yet' },
-  'partner.clients_hint': { ru: 'Клиенты появятся после первой записи', uz: 'Birinchi bandlovdan keyin mijozlar paydo boʻladi', en: 'Clients will appear after the first booking' },
-  'partner.stat_views': { ru: 'Просмотры', uz: 'Koʻrishlar', en: 'Views' },
-  'partner.stat_clicks': { ru: 'Клики', uz: 'Kliklar', en: 'Clicks' },
-  'partner.stat_bookings': { ru: 'Записи', uz: 'Bandlovlar', en: 'Bookings' },
-  'partner.stat_listings': { ru: 'Листинги', uz: 'Listinglar', en: 'Listings' },
-  'partner.analytics_coming': { ru: 'Подробная аналитика скоро', uz: 'Batafsil analitika tez kunda', en: 'Detailed analytics coming soon' },
-  'partner.add': { ru: 'Добавить', uz: 'Qoʻshish', en: 'Add' },
-  'partner.new_biz': { ru: 'Новый бизнес', uz: 'Yangi biznes', en: 'New Business' },
-  'partner.enter_name': { ru: 'Введите название бизнеса', uz: 'Biznes nomini kiriting', en: 'Enter business name' },
-  'partner.biz_added': { ru: 'Бизнес добавлен!', uz: 'Biznes qoʻshildi!', en: 'Business added!' },
-  'partner.name_placeholder': { ru: 'Название *', uz: 'Nomi *', en: 'Name *' },
-  'partner.desc_placeholder': { ru: 'Описание', uz: 'Tavsif', en: 'Description' },
-  'partner.address_placeholder': { ru: 'Адрес', uz: 'Manzil', en: 'Address' },
-  'partner.website_placeholder': { ru: 'Сайт (https://...)', uz: 'Sayt (https://...)', en: 'Website (https://...)' },
-  'partner.price_placeholder': { ru: 'Цена от (сум)', uz: 'Narxi (soʻm)', en: 'Price from (sum)' },
-  'partner.amenities': { ru: 'Удобства', uz: 'Qulayliklar', en: 'Amenities' },
-  'partner.no_services': { ru: 'У вас пока нет услуг', uz: 'Hozircha xizmatlaringiz yoʻq', en: 'You have no services yet' },
-  'partner.services_hint': { ru: 'Нажмите «Добавить», чтобы создать первый', uz: '«Qoʻshish» tugmasini bosing', en: 'Tap "Add" to create your first' },
-  'partner.no_staff': { ru: 'Пока нет сотрудников', uz: 'Hozircha xodimlar yoʻq', en: 'No staff yet' },
-  'partner.staff_hint': { ru: 'Добавьте мастеров и персонал', uz: 'Ustalar va xodimlarni qoʻshing', en: 'Add masters and staff members' },
-  'partner.tab_main': { ru: 'Основное', uz: 'Asosiy', en: 'Main' },
-  'partner.tab_hours': { ru: 'Часы работы', uz: 'Ish vaqti', en: 'Hours' },
-  'partner.tab_photos': { ru: 'Фото', uz: 'Rasmlar', en: 'Photos' },
-  'partner.no_desc': { ru: 'Нет описания', uz: 'Tavsif yoʻq', en: 'No description' },
-  'partner.add_in_services': { ru: 'Добавьте бизнес в разделе «Мои услуги»', uz: '«Mening xizmatlarim»da biznes qoʻshing', en: 'Add a business in "My Services"' },
-  'partner.hours_coming': { ru: 'Настройка часов работы скоро', uz: 'Ish vaqtini sozlash tez kunda', en: 'Working hours setup coming soon' },
-  'partner.hours_hint': { ru: 'Задайте расписание для онлайн-записи', uz: 'Onlayn bandlov uchun jadval belgilang', en: 'Set schedule for online booking' },
-  'partner.photos_coming': { ru: 'Галерея фотографий скоро', uz: 'Fotogalereya tez kunda', en: 'Photo gallery coming soon' },
-  'partner.photos_hint': { ru: 'Загрузите фото вашего бизнеса', uz: 'Biznesingiz rasmlarini yuklang', en: 'Upload photos of your business' },
-
-  // Common
-  'common.error': { ru: 'Ошибка', uz: 'Xatolik', en: 'Error' },
-  'common.loading': { ru: 'Загрузка...', uz: 'Yuklanmoqda...', en: 'Loading...' },
-  'common.back': { ru: 'Назад', uz: 'Orqaga', en: 'Back' },
-};
+const translations: Record<Lang, Record<string, string>> = { ru, uz, en };
 
 export function t(key: string, lang: Lang): string {
-  return translations[key]?.[lang] ?? translations[key]?.['ru'] ?? key;
+  return translations[lang]?.[key] ?? translations['ru']?.[key] ?? key;
 }
 
 export const LANG_LABELS: Record<Lang, string> = {
@@ -162,3 +15,17 @@ export const LANG_LABELS: Record<Lang, string> = {
   uz: "O'zbek",
   en: 'English',
 };
+
+export const LANG_FLAGS: Record<Lang, string> = {
+  ru: '🇷🇺',
+  uz: '🇺🇿',
+  en: '🇬🇧',
+};
+
+/** Detect browser language and map to supported Lang */
+export function detectBrowserLang(): Lang {
+  const nav = navigator.language?.toLowerCase() || '';
+  if (nav.startsWith('uz')) return 'uz';
+  if (nav.startsWith('en')) return 'en';
+  return 'ru';
+}
