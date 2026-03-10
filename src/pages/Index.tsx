@@ -39,6 +39,18 @@ const formatDistance = (km: number): string => {
 
 const Index = () => {
   const isDesktop = useIsDesktop();
+  const [showOnboarding, setShowOnboarding] = useState(() => {
+    return !localStorage.getItem('onboarding_completed');
+  });
+
+  const completeOnboarding = useCallback(() => {
+    localStorage.setItem('onboarding_completed', 'true');
+    setShowOnboarding(false);
+  }, []);
+
+  if (showOnboarding) {
+    return <OnboardingFlow onComplete={completeOnboarding} />;
+  }
 
   if (isDesktop) return <DesktopIndex />;
 
