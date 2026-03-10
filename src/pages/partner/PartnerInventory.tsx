@@ -107,19 +107,14 @@ const PartnerInventory = () => {
   const lowStock = items.filter(i => i.min_stock > 0 && i.quantity <= i.min_stock).length;
 
   return (
-    <div className="min-h-screen bg-background pb-24 overflow-y-auto">
-      <div className="px-4 pt-6">
-        <div className="flex items-center gap-3 mb-4">
-          <motion.button whileTap={{ scale: 0.9 }} onClick={() => navigate('/partner')}>
-            <ArrowLeft className="w-5 h-5 text-foreground" />
-          </motion.button>
-          <h1 className="text-lg font-bold font-display text-foreground flex-1">Склад</h1>
-          {lowStock > 0 && (
-            <span className="flex items-center gap-1 px-2 py-1 rounded-full bg-destructive/15 text-destructive text-[10px] font-medium">
-              <AlertTriangle className="w-3 h-3" /> {lowStock}
-            </span>
-          )}
-        </div>
+    <PartnerLayout title="Склад" headerRight={
+      lowStock > 0 ? (
+        <span className="flex items-center gap-1 px-2 py-1 rounded-full bg-destructive/15 text-destructive text-[10px] font-medium">
+          <AlertTriangle className="w-3 h-3" /> {lowStock}
+        </span>
+      ) : undefined
+    }>
+      <div className="px-4">
 
         {/* Add button */}
         <div className="flex justify-between items-center mb-4">
