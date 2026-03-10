@@ -40,8 +40,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setUser(session?.user ?? null);
       if (session?.user) {
         setTimeout(() => checkPartnerRole(session.user.id), 0);
+        setTimeout(() => checkTermsAccepted(session.user.id), 0);
       } else {
         setIsPartner(false);
+        setTermsAccepted(true);
       }
       setLoading(false);
     });
