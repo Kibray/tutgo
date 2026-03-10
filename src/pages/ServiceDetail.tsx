@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Star, Clock, MapPin, ChevronRight, Navigation, Copy, Phone, Share2, Send, User, Users, CalendarDays } from 'lucide-react';
+import { ArrowLeft, Star, Clock, MapPin, ChevronRight, Navigation, Copy, Phone, Share2, Send, User, Users, CalendarDays, Bell } from 'lucide-react';
 import AddressPicker from '@/components/AddressPicker';
 import QueueStatus from '@/components/QueueStatus';
 import { formatPrice, openDirections, copyAddress, categoryEmoji } from '@/lib/types';
@@ -11,6 +11,11 @@ import BottomNav from '@/components/BottomNav';
 import DateChip from '@/components/DateChip';
 import { useToast } from '@/hooks/use-toast';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { useMenu } from '@/hooks/useMenu';
+import { useCart } from '@/hooks/useCart';
+import MenuTab from '@/components/menu/MenuTab';
+import CartBar from '@/components/menu/CartBar';
+import ReservationTab from '@/components/menu/ReservationTab';
 
 const pluralReviews = (n: number) => {
   const mod10 = n % 10;
@@ -36,6 +41,11 @@ const ServiceDetail = () => {
   const [selectedStaff, setSelectedStaff] = useState<string | null>(null);
   const [selectedService, setSelectedService] = useState<string | null>(null);
 
+  const { categories, items: menuItems, combos, loading: menuLoading } = useMenu(id || '');
+  const cart = useCart();
+
+  const isCafe = location?.business_type === 'cafe';
+
   useEffect(() => {
     const fetch = async () => {
       if (!id) return;
@@ -49,7 +59,6 @@ const ServiceDetail = () => {
         ]);
         setServices(svcRes.data || []);
 
-        // Count booked seats for tour services
         if (loc.business_type === 'tour' && svcRes.data?.length) {
           const svcIds = svcRes.data.map((s: any) => s.id);
           const { data: appts } = await supabase.from('appointments').select('service_id')
@@ -61,7 +70,6 @@ const ServiceDetail = () => {
 
         setStaffList(staffRes.data || []);
         
-        // Fetch profile data for reviewers
         const rawReviews = reviewsRes.data || [];
         if (rawReviews.length > 0) {
           const userIds = [...new Set(rawReviews.map((r: any) => r.user_id))];
@@ -78,7 +86,6 @@ const ServiceDetail = () => {
     fetch();
   }, [id]);
 
-  // Compute per-staff ratings
   const staffRatings = useMemo(() => {
     const map: Record<string, { sum: number; count: number }> = {};
     reviews.forEach((r: any) => {
@@ -132,7 +139,12 @@ const ServiceDetail = () => {
     else { navigator.clipboard.writeText(text); toast({ title: 'Скопировано для отправки' }); }
   };
 
-  // Rating distribution
+  const handleCallWaiter = () => {
+    const tg = (window as any).Telegram?.WebApp;
+    tg?.HapticFeedback?.notificationOccurred('success');
+    toast({ title: '📲 Официант вызван!', description: 'Скоро подойдём к вашему столику' });
+  };
+
   const ratingDist = [5, 4, 3, 2, 1].map(star => ({
     star,
     count: reviews.filter((r: any) => r.rating === star).length,
@@ -242,167 +254,287 @@ const ServiceDetail = () => {
         </motion.button>
       </div>
 
-      {/* Tabs: Services / Reviews */}
-      <div className="px-4 mt-4">
-        <Tabs defaultValue="services" className="w-full">
-          <TabsList className="w-full">
-            <TabsTrigger value="services" className="flex-1 text-xs">Услуги</TabsTrigger>
-            <TabsTrigger value="reviews" className="flex-1 text-xs">
-              Отзывы {(location.review_count || 0) > 0 && <span className="ml-1 text-[10px] text-muted-foreground">({location.review_count})</span>}
-            </TabsTrigger>
-          </TabsList>
+      {/* CAFE MODE */}
+      {isCafe ? (
+        <div className="px-4 mt-4">
+          <Tabs defaultValue="menu" className="w-full">
+            <TabsList className="w-full">
+              <TabsTrigger value="menu" className="flex-1 text-xs">🍽️ Меню</TabsTrigger>
+              <TabsTrigger value="reserve" className="flex-1 text-xs">📅 Забронировать</TabsTrigger>
+              <TabsTrigger value="about" className="flex-1 text-xs">
+                О нас {(location.review_count || 0) > 0 && <span className="ml-1 text-[10px] text-muted-foreground">({location.review_count})</span>}
+              </TabsTrigger>
+            </TabsList>
 
-          <TabsContent value="services">
-            {services.length > 0 ? (
+            <TabsContent value="menu">
+              <MenuTab
+                categories={categories}
+                items={menuItems}
+                combos={combos}
+                currency={location.currency || 'сум'}
+                onAddToCart={cart.addItem}
+              />
+            </TabsContent>
+
+            <TabsContent value="reserve">
+              <ReservationTab
+                locationId={location.id}
+                locationName={location.name}
+                currency={location.currency || 'сум'}
+                cartItems={cart.items}
+                cartTotal={cart.totalAmount}
+              />
+            </TabsContent>
+
+            <TabsContent value="about">
+              {/* Reviews section - same as before */}
               <div className="glass rounded-lg p-4">
-                <div className="space-y-2">
-                  {services.map((svc) => {
-                    const meta = svc.metadata || {};
-                    const isTour = location.business_type === 'tour';
-                    const maxSeats = svc.max_seats;
-                    const booked = bookedSeats[svc.id] || 0;
-                    const remaining = maxSeats ? maxSeats - booked : null;
-                    const inclusionLabels: Record<string, string> = {
-                      transport: '🚌', food: '🍽️', hotel: '🏨', tickets: '🎫', photographer: '📸',
-                    };
-
-                    return (
-                      <motion.button key={svc.id} whileTap={{ scale: 0.98 }} onClick={() => setSelectedService(svc.id)}
-                        className={`w-full glass rounded-lg p-3 text-left transition-colors ${selectedService === svc.id ? 'ring-1 ring-primary' : ''}`}>
-                        <div className="flex items-center justify-between">
-                          <p className="text-sm font-medium text-foreground">{svc.name}</p>
-                          <span className="text-sm font-bold text-gradient-green">{formatPrice(svc.price)} {svc.currency}</span>
+                <div className="flex gap-4 mb-4">
+                  <div className="flex flex-col items-center justify-center">
+                    <span className="text-3xl font-bold text-foreground">{location.rating || 0}</span>
+                    <div className="flex items-center gap-0.5 mt-1">
+                      {Array.from({ length: 5 }).map((_, i) => (
+                        <Star key={i} className={`w-3 h-3 ${i < Math.round(location.rating || 0) ? 'text-primary fill-primary' : 'text-muted'}`} />
+                      ))}
+                    </div>
+                    <span className="text-[10px] text-muted-foreground mt-1">{location.review_count || 0} {pluralReviews(location.review_count || 0)}</span>
+                  </div>
+                  <div className="flex-1 space-y-1">
+                    {ratingDist.map(({ star, count }) => (
+                      <div key={star} className="flex items-center gap-2">
+                        <span className="text-[10px] text-muted-foreground w-3">{star}</span>
+                        <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
+                          <div className="h-full bg-primary rounded-full transition-all" style={{ width: `${(count / maxRatingCount) * 100}%` }} />
                         </div>
-                        {isTour ? (
-                          <div className="mt-2 space-y-1.5">
-                            <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                              {meta.duration_days && (
-                                <span className="flex items-center gap-1"><CalendarDays className="w-3 h-3" />{meta.duration_days} {meta.duration_days === 1 ? 'день' : meta.duration_days < 5 ? 'дня' : 'дней'}</span>
-                              )}
-                              {remaining !== null && (
-                                <span className={`flex items-center gap-1 font-medium ${remaining <= 3 ? 'text-destructive' : remaining <= 5 ? 'text-amber-500' : 'text-primary'}`}>
-                                  <Users className="w-3 h-3" />
-                                  {remaining > 0 ? `Осталось ${remaining} мест` : 'Мест нет'}
-                                </span>
-                              )}
-                            </div>
-                            {meta.inclusions?.length > 0 && (
-                              <div className="flex flex-wrap gap-1">
-                                {meta.inclusions.map((inc: string) => (
-                                  <span key={inc} className="text-[10px] bg-secondary px-1.5 py-0.5 rounded-md">{inclusionLabels[inc] || inc}</span>
-                                ))}
-                              </div>
-                            )}
-                            {remaining !== null && remaining <= 0 && (
-                              <button onClick={(e) => { e.stopPropagation(); toast({ title: 'Лист ожидания', description: 'Вы добавлены в лист ожидания. Мы уведомим вас, если место освободится.' }); }}
-                                className="w-full mt-1 py-2 rounded-lg bg-amber-500/15 text-amber-500 text-xs font-medium">
-                                📋 Записаться в лист ожидания
-                              </button>
-                            )}
-                          </div>
-                        ) : (
-                          <p className="text-xs text-muted-foreground flex items-center gap-1 mt-0.5"><Clock className="w-3 h-3" />{svc.duration_minutes} мин</p>
-                        )}
-                      </motion.button>
-                    );
-                  })}
-                </div>
-
-                {/* Tour program for selected service */}
-                {location.business_type === 'tour' && selectedService && (() => {
-                  const svc = services.find(s => s.id === selectedService);
-                  const meta = svc?.metadata || {};
-                  if (!meta.tour_program && !meta.meeting_point) return null;
-                  return (
-                    <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="mt-3 space-y-3 border-t border-border pt-3">
-                      {meta.tour_program && (
-                        <div>
-                          <p className="text-xs font-semibold text-foreground mb-1">📋 Программа тура</p>
-                          <p className="text-xs text-muted-foreground whitespace-pre-line leading-relaxed">{meta.tour_program}</p>
-                        </div>
-                      )}
-                      {meta.meeting_point && (
-                        <div>
-                          <p className="text-xs font-semibold text-foreground mb-1">📍 Точка сбора</p>
-                          <p className="text-xs text-muted-foreground">{meta.meeting_point}</p>
-                        </div>
-                      )}
-                    </motion.div>
-                  );
-                })()}
-              </div>
-            ) : (
-              <div className="text-center py-8 text-xs text-muted-foreground">Услуги не добавлены</div>
-            )}
-          </TabsContent>
-
-          <TabsContent value="reviews">
-            <div className="glass rounded-lg p-4">
-              {/* Rating summary */}
-              <div className="flex gap-4 mb-4">
-                <div className="flex flex-col items-center justify-center">
-                  <span className="text-3xl font-bold text-foreground">{location.rating || 0}</span>
-                  <div className="flex items-center gap-0.5 mt-1">
-                    {Array.from({ length: 5 }).map((_, i) => (
-                      <Star key={i} className={`w-3 h-3 ${i < Math.round(location.rating || 0) ? 'text-primary fill-primary' : 'text-muted'}`} />
+                        <span className="text-[10px] text-muted-foreground w-4 text-right">{count}</span>
+                      </div>
                     ))}
                   </div>
-                  <span className="text-[10px] text-muted-foreground mt-1">{location.review_count || 0} {pluralReviews(location.review_count || 0)}</span>
                 </div>
-                <div className="flex-1 space-y-1">
-                  {ratingDist.map(({ star, count }) => (
-                    <div key={star} className="flex items-center gap-2">
-                      <span className="text-[10px] text-muted-foreground w-3">{star}</span>
-                      <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
-                        <div className="h-full bg-primary rounded-full transition-all" style={{ width: `${(count / maxRatingCount) * 100}%` }} />
-                      </div>
-                      <span className="text-[10px] text-muted-foreground w-4 text-right">{count}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Review list */}
-              {reviews.length === 0 ? (
-                <p className="text-xs text-muted-foreground text-center py-4">Пока нет отзывов</p>
-              ) : (
-                <div className="space-y-3">
-                  {reviews.map((review: any) => {
-                    const profile = review.profiles;
-                    const displayName = profile?.display_name || 'Пользователь';
-                    const initials = displayName.charAt(0).toUpperCase();
-                    return (
-                      <div key={review.id} className="border-t border-border pt-3">
-                        <div className="flex items-start gap-3">
-                          <div className="w-9 h-9 rounded-full bg-primary/15 flex items-center justify-center flex-shrink-0">
-                            {profile?.avatar_url ? (
-                              <img src={profile.avatar_url} className="w-9 h-9 rounded-full object-cover" alt="" />
-                            ) : (
-                              <span className="text-xs font-bold text-primary">{initials}</span>
-                            )}
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center justify-between">
-                              <p className="text-xs font-semibold text-foreground">{displayName}</p>
-                              <span className="text-[10px] text-muted-foreground">{new Date(review.created_at).toLocaleDateString('ru', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+                {reviews.length === 0 ? (
+                  <p className="text-xs text-muted-foreground text-center py-4">Пока нет отзывов</p>
+                ) : (
+                  <div className="space-y-3">
+                    {reviews.map((review: any) => {
+                      const profile = review.profiles;
+                      const displayName = profile?.display_name || 'Пользователь';
+                      const initials = displayName.charAt(0).toUpperCase();
+                      return (
+                        <div key={review.id} className="border-t border-border pt-3">
+                          <div className="flex items-start gap-3">
+                            <div className="w-9 h-9 rounded-full bg-primary/15 flex items-center justify-center flex-shrink-0">
+                              {profile?.avatar_url ? (
+                                <img src={profile.avatar_url} className="w-9 h-9 rounded-full object-cover" alt="" />
+                              ) : (
+                                <span className="text-xs font-bold text-primary">{initials}</span>
+                              )}
                             </div>
-                            <div className="flex items-center gap-0.5 mt-0.5">
-                              {Array.from({ length: 5 }).map((_, i) => (
-                                <Star key={i} className={`w-3 h-3 ${i < review.rating ? 'text-primary fill-primary' : 'text-muted'}`} />
-                              ))}
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center justify-between">
+                                <p className="text-xs font-semibold text-foreground">{displayName}</p>
+                                <span className="text-[10px] text-muted-foreground">{new Date(review.created_at).toLocaleDateString('ru', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+                              </div>
+                              <div className="flex items-center gap-0.5 mt-0.5">
+                                {Array.from({ length: 5 }).map((_, i) => (
+                                  <Star key={i} className={`w-3 h-3 ${i < review.rating ? 'text-primary fill-primary' : 'text-muted'}`} />
+                                ))}
+                              </div>
+                              {review.comment && <p className="text-xs text-muted-foreground mt-1.5 leading-relaxed">{review.comment}</p>}
                             </div>
-                            {review.comment && <p className="text-xs text-muted-foreground mt-1.5 leading-relaxed">{review.comment}</p>}
                           </div>
                         </div>
-                      </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            </TabsContent>
+          </Tabs>
+
+          {/* Call waiter FAB */}
+          <motion.button
+            whileTap={{ scale: 0.9 }}
+            onClick={handleCallWaiter}
+            className="fixed bottom-32 right-4 z-30 w-14 h-14 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-lg glow-green"
+          >
+            <Bell className="w-6 h-6" />
+          </motion.button>
+
+          {/* Cart */}
+          <CartBar
+            items={cart.items}
+            totalAmount={cart.totalAmount}
+            totalItems={cart.totalItems}
+            currency={location.currency || 'сум'}
+            onUpdateQuantity={cart.updateQuantity}
+            onRemove={cart.removeItem}
+            onClear={cart.clear}
+            onCheckout={() => {
+              // Switch to reservation tab with pre-order
+              const tabTrigger = document.querySelector('[data-state][value="reserve"]') as HTMLElement;
+              if (tabTrigger) tabTrigger.click();
+            }}
+          />
+        </div>
+      ) : (
+        /* NON-CAFE MODE - original tabs */
+        <div className="px-4 mt-4">
+          <Tabs defaultValue="services" className="w-full">
+            <TabsList className="w-full">
+              <TabsTrigger value="services" className="flex-1 text-xs">Услуги</TabsTrigger>
+              <TabsTrigger value="reviews" className="flex-1 text-xs">
+                Отзывы {(location.review_count || 0) > 0 && <span className="ml-1 text-[10px] text-muted-foreground">({location.review_count})</span>}
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="services">
+              {services.length > 0 ? (
+                <div className="glass rounded-lg p-4">
+                  <div className="space-y-2">
+                    {services.map((svc) => {
+                      const meta = svc.metadata || {};
+                      const isTour = location.business_type === 'tour';
+                      const maxSeats = svc.max_seats;
+                      const booked = bookedSeats[svc.id] || 0;
+                      const remaining = maxSeats ? maxSeats - booked : null;
+                      const inclusionLabels: Record<string, string> = {
+                        transport: '🚌', food: '🍽️', hotel: '🏨', tickets: '🎫', photographer: '📸',
+                      };
+
+                      return (
+                        <motion.button key={svc.id} whileTap={{ scale: 0.98 }} onClick={() => setSelectedService(svc.id)}
+                          className={`w-full glass rounded-lg p-3 text-left transition-colors ${selectedService === svc.id ? 'ring-1 ring-primary' : ''}`}>
+                          <div className="flex items-center justify-between">
+                            <p className="text-sm font-medium text-foreground">{svc.name}</p>
+                            <span className="text-sm font-bold text-gradient-green">{formatPrice(svc.price)} {svc.currency}</span>
+                          </div>
+                          {isTour ? (
+                            <div className="mt-2 space-y-1.5">
+                              <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                                {meta.duration_days && (
+                                  <span className="flex items-center gap-1"><CalendarDays className="w-3 h-3" />{meta.duration_days} {meta.duration_days === 1 ? 'день' : meta.duration_days < 5 ? 'дня' : 'дней'}</span>
+                                )}
+                                {remaining !== null && (
+                                  <span className={`flex items-center gap-1 font-medium ${remaining <= 3 ? 'text-destructive' : remaining <= 5 ? 'text-amber-500' : 'text-primary'}`}>
+                                    <Users className="w-3 h-3" />
+                                    {remaining > 0 ? `Осталось ${remaining} мест` : 'Мест нет'}
+                                  </span>
+                                )}
+                              </div>
+                              {meta.inclusions?.length > 0 && (
+                                <div className="flex flex-wrap gap-1">
+                                  {meta.inclusions.map((inc: string) => (
+                                    <span key={inc} className="text-[10px] bg-secondary px-1.5 py-0.5 rounded-md">{inclusionLabels[inc] || inc}</span>
+                                  ))}
+                                </div>
+                              )}
+                              {remaining !== null && remaining <= 0 && (
+                                <button onClick={(e) => { e.stopPropagation(); toast({ title: 'Лист ожидания', description: 'Вы добавлены в лист ожидания. Мы уведомим вас, если место освободится.' }); }}
+                                  className="w-full mt-1 py-2 rounded-lg bg-amber-500/15 text-amber-500 text-xs font-medium">
+                                  📋 Записаться в лист ожидания
+                                </button>
+                              )}
+                            </div>
+                          ) : (
+                            <p className="text-xs text-muted-foreground flex items-center gap-1 mt-0.5"><Clock className="w-3 h-3" />{svc.duration_minutes} мин</p>
+                          )}
+                        </motion.button>
+                      );
+                    })}
+                  </div>
+
+                  {location.business_type === 'tour' && selectedService && (() => {
+                    const svc = services.find(s => s.id === selectedService);
+                    const meta = svc?.metadata || {};
+                    if (!meta.tour_program && !meta.meeting_point) return null;
+                    return (
+                      <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="mt-3 space-y-3 border-t border-border pt-3">
+                        {meta.tour_program && (
+                          <div>
+                            <p className="text-xs font-semibold text-foreground mb-1">📋 Программа тура</p>
+                            <p className="text-xs text-muted-foreground whitespace-pre-line leading-relaxed">{meta.tour_program}</p>
+                          </div>
+                        )}
+                        {meta.meeting_point && (
+                          <div>
+                            <p className="text-xs font-semibold text-foreground mb-1">📍 Точка сбора</p>
+                            <p className="text-xs text-muted-foreground">{meta.meeting_point}</p>
+                          </div>
+                        )}
+                      </motion.div>
                     );
-                  })}
+                  })()}
                 </div>
+              ) : (
+                <div className="text-center py-8 text-xs text-muted-foreground">Услуги не добавлены</div>
               )}
-            </div>
-          </TabsContent>
-        </Tabs>
-      </div>
+            </TabsContent>
+
+            <TabsContent value="reviews">
+              <div className="glass rounded-lg p-4">
+                <div className="flex gap-4 mb-4">
+                  <div className="flex flex-col items-center justify-center">
+                    <span className="text-3xl font-bold text-foreground">{location.rating || 0}</span>
+                    <div className="flex items-center gap-0.5 mt-1">
+                      {Array.from({ length: 5 }).map((_, i) => (
+                        <Star key={i} className={`w-3 h-3 ${i < Math.round(location.rating || 0) ? 'text-primary fill-primary' : 'text-muted'}`} />
+                      ))}
+                    </div>
+                    <span className="text-[10px] text-muted-foreground mt-1">{location.review_count || 0} {pluralReviews(location.review_count || 0)}</span>
+                  </div>
+                  <div className="flex-1 space-y-1">
+                    {ratingDist.map(({ star, count }) => (
+                      <div key={star} className="flex items-center gap-2">
+                        <span className="text-[10px] text-muted-foreground w-3">{star}</span>
+                        <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
+                          <div className="h-full bg-primary rounded-full transition-all" style={{ width: `${(count / maxRatingCount) * 100}%` }} />
+                        </div>
+                        <span className="text-[10px] text-muted-foreground w-4 text-right">{count}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                {reviews.length === 0 ? (
+                  <p className="text-xs text-muted-foreground text-center py-4">Пока нет отзывов</p>
+                ) : (
+                  <div className="space-y-3">
+                    {reviews.map((review: any) => {
+                      const profile = review.profiles;
+                      const displayName = profile?.display_name || 'Пользователь';
+                      const initials = displayName.charAt(0).toUpperCase();
+                      return (
+                        <div key={review.id} className="border-t border-border pt-3">
+                          <div className="flex items-start gap-3">
+                            <div className="w-9 h-9 rounded-full bg-primary/15 flex items-center justify-center flex-shrink-0">
+                              {profile?.avatar_url ? (
+                                <img src={profile.avatar_url} className="w-9 h-9 rounded-full object-cover" alt="" />
+                              ) : (
+                                <span className="text-xs font-bold text-primary">{initials}</span>
+                              )}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center justify-between">
+                                <p className="text-xs font-semibold text-foreground">{displayName}</p>
+                                <span className="text-[10px] text-muted-foreground">{new Date(review.created_at).toLocaleDateString('ru', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+                              </div>
+                              <div className="flex items-center gap-0.5 mt-0.5">
+                                {Array.from({ length: 5 }).map((_, i) => (
+                                  <Star key={i} className={`w-3 h-3 ${i < review.rating ? 'text-primary fill-primary' : 'text-muted'}`} />
+                                ))}
+                              </div>
+                              {review.comment && <p className="text-xs text-muted-foreground mt-1.5 leading-relaxed">{review.comment}</p>}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            </TabsContent>
+          </Tabs>
+        </div>
+      )}
 
       {/* Live Queue */}
       {location.queue_enabled && (
@@ -411,8 +543,8 @@ const ServiceDetail = () => {
         </div>
       )}
 
-      {/* Booking */}
-      {isBookable && (
+      {/* Booking (non-cafe) */}
+      {isBookable && !isCafe && (
         <>
           <div className="px-4 mt-4">
             <h3 className="text-sm font-semibold text-foreground mb-3">Выберите дату</h3>
