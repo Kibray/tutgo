@@ -57,6 +57,49 @@ function generateCode(): string {
   return String(Math.floor(100000 + Math.random() * 900000));
 }
 
+// Handle 6-digit link code from user
+async function handleLinkCode(chatId: number, code: string, username: string | null) {
+  // Find valid link code
+  const { data: linkCode, error } = await supabase
+    .from("telegram_link_codes")
+    .select("*")
+    .eq("code", code)
+    .eq("used", false)
+    .gte("expires_at", new Date().toISOString())
+    .limit(1)
+    .single();
+
+  if (error || !linkCode) {
+    await sendTelegramMessage(chatId, "❌ Код не найден или истёк. Получите новый код в приложении TutGo.");
+    return;
+  }
+
+  // Update profile with chat_id and username
+  const { error: updateError } = await supabase
+    .from("profiles")
+    .update({
+      telegram_chat_id: chatId,
+      telegram_username: username || undefined,
+    })
+    .eq("user_id", linkCode.user_id);
+
+  if (updateError) {
+    await sendTelegramMessage(chatId, "❌ Не удалось привязать аккаунт. Попробуйте ещё раз.");
+    return;
+  }
+
+  // Mark code as used
+  await supabase
+    .from("telegram_link_codes")
+    .update({ used: true })
+    .eq("id", linkCode.id);
+
+  await sendTelegramMessage(
+    chatId,
+    "✅ <b>Telegram привязан к TutGo!</b>\n\nТеперь вы будете получать уведомления от TutGo 🎉\n\n📅 Подтверждения записей\n⏰ Напоминания за 1 час\n🎁 Акции и скидки"
+  );
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -64,6 +107,20 @@ Deno.serve(async (req) => {
 
   try {
     const update = await req.json();
+
+    // Handle regular text messages (check for 6-digit code)
+    if (update.message?.text && !update.message.text.startsWith("/")) {
+      const text = update.message.text.trim();
+      const chatId = update.message.chat.id;
+      
+      // Check if it's a 6-digit code
+      if (/^\d{6}$/.test(text)) {
+        await handleLinkCode(chatId, text, update.message.from?.username || null);
+        return new Response(JSON.stringify({ ok: true }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+    }
 
     // Handle /start command
     if (update.message?.text?.startsWith("/start")) {
@@ -115,7 +172,7 @@ Deno.serve(async (req) => {
       } else {
         await sendTelegramMessage(
           chatId,
-          "👋 Привет! Чтобы подключить уведомления, нажмите кнопку «Подключить Telegram» в приложении TUTGO."
+          "👋 <b>Привет! Я бот TutGo.</b>\n\nЧтобы привязать Telegram:\n1️⃣ Откройте tutgo.uz → Профиль\n2️⃣ Нажмите «Подключить Telegram»\n3️⃣ Получите 6-значный код\n4️⃣ Отправьте код мне сюда\n\n✅ После привязки вы будете получать уведомления о записях!"
         );
       }
     }
@@ -151,7 +208,6 @@ Deno.serve(async (req) => {
           await editMessageReplyMarkup(chatId, messageId);
 
           if (isApprove) {
-            // Mark location as verified
             const { data: locations } = await supabase
               .from("locations")
               .select("id, slug")
@@ -165,7 +221,6 @@ Deno.serve(async (req) => {
                 .eq("id", locations[0].id);
             }
 
-            // Notify partner
             const { data: partnerProfile } = await supabase
               .from("profiles")
               .select("telegram_chat_id")
@@ -179,7 +234,6 @@ Deno.serve(async (req) => {
               );
             }
 
-            // In-app notification
             await supabase.from("notifications").insert({
               user_id: app.user_id,
               title: "🎉 Компания подтверждена!",
@@ -190,7 +244,6 @@ Deno.serve(async (req) => {
             await answerCallbackQuery(update.callback_query.id, "✅ Одобрено");
             await sendTelegramMessage(chatId, `✅ Партнёр <b>${app.company_name}</b> одобрен`);
           } else {
-            // Rejected
             const { data: partnerProfile } = await supabase
               .from("profiles")
               .select("telegram_chat_id")
@@ -227,7 +280,6 @@ Deno.serve(async (req) => {
         const action = callbackData.startsWith("confirm_") ? "confirmed" : "cancelled";
         const appointmentId = callbackData.replace("confirm_", "").replace("cancel_", "");
 
-        // Validate UUID format
         if (!/^[0-9a-f-]{36}$/i.test(appointmentId)) {
           await answerCallbackQuery(update.callback_query.id, "Ошибка");
           return new Response(JSON.stringify({ ok: true }), {
