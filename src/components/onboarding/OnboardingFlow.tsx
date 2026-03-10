@@ -3,6 +3,13 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { usePreferences } from '@/hooks/usePreferences';
 import { DashboardSlide, FeaturesSlide, TelegramSlide } from './BusinessSlides';
+import {
+  ToursSlide, ToursText,
+  BarberSlide, BarberText,
+  DentalSlide, DentalText,
+  CafeSlide, CafeText,
+  TelegramClientSlide, TelegramClientText,
+} from './ClientSlides';
 
 type Role = 'client' | 'business' | null;
 
