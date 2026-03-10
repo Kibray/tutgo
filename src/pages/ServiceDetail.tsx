@@ -44,7 +44,7 @@ const ServiceDetail = () => {
   const { categories, items: menuItems, combos, loading: menuLoading } = useMenu(id || '');
   const cart = useCart();
 
-  const isCafe = location?.business_type === 'cafe';
+  const isCafe = location?.business_type === 'cafe' || location?.business_type === 'restaurant' || location?.business_type === 'food';
 
   useEffect(() => {
     const fetch = async () => {
