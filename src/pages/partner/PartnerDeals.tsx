@@ -124,20 +124,13 @@ const PartnerDeals = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background pb-24">
-      <div className="px-4 pt-6">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-3">
-            <motion.button whileTap={{ scale: 0.9 }} onClick={() => navigate('/partner')}>
-              <ArrowLeft className="w-5 h-5 text-foreground" />
-            </motion.button>
-            <h1 className="text-lg font-bold font-display text-foreground">Акции</h1>
-          </div>
-          <motion.button whileTap={{ scale: 0.95 }} onClick={() => { resetForm(); setShowForm(true); }}
-            className="flex items-center gap-1 px-3 py-2 rounded-xl bg-primary text-primary-foreground text-xs font-semibold">
-            <Plus className="w-4 h-4" /> Создать
-          </motion.button>
-        </div>
+    <PartnerLayout title="Акции" headerRight={
+      <motion.button whileTap={{ scale: 0.95 }} onClick={() => { resetForm(); setShowForm(true); }}
+        className="flex items-center gap-1 px-3 py-2 rounded-xl bg-primary text-primary-foreground text-xs font-semibold">
+        <Plus className="w-4 h-4" /> Создать
+      </motion.button>
+    }>
+      <div className="px-4">
 
         {loading ? (
           <div className="text-center py-12 text-muted-foreground text-sm">Загрузка...</div>
