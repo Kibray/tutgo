@@ -7,6 +7,8 @@ interface AuthContextType {
   session: Session | null;
   loading: boolean;
   isPartner: boolean;
+  termsAccepted: boolean;
+  setTermsAccepted: (v: boolean) => void;
   signUp: (email: string, password: string, displayName?: string) => Promise<{ error: any }>;
   signIn: (email: string, password: string) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
