@@ -29,6 +29,8 @@ import EditProfile from "./pages/EditProfile";
 import Help from "./pages/Help";
 import NotFound from "./pages/NotFound";
 import Notifications from "./pages/Notifications";
+import BusinessBySlug from "./pages/BusinessBySlug";
+import ReferralRedirect from "./pages/ReferralRedirect";
 
 const queryClient = new QueryClient();
 
