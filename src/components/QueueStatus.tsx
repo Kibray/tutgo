@@ -119,16 +119,16 @@ const QueueStatus = ({ locationId, locationName }: QueueStatusProps) => {
       <div className="grid grid-cols-3 gap-2">
         <div className="bg-secondary/50 rounded-xl p-3 text-center">
           <p className="text-lg font-bold text-primary">
-            {currentServing ? `№${currentServing.ticket_number}` : '—'}
+            {currentServingNum ? `№${currentServingNum}` : '—'}
           </p>
           <p className="text-[10px] text-muted-foreground">Вызывают</p>
         </div>
         <div className="bg-secondary/50 rounded-xl p-3 text-center">
-          <p className="text-lg font-bold text-foreground">{waiting.length}</p>
+          <p className="text-lg font-bold text-foreground">{waitingCount}</p>
           <p className="text-[10px] text-muted-foreground">В очереди</p>
         </div>
         <div className="bg-secondary/50 rounded-xl p-3 text-center">
-          <p className="text-lg font-bold text-foreground">~{waiting.length * 10}</p>
+          <p className="text-lg font-bold text-foreground">~{waitingCount * 10}</p>
           <p className="text-[10px] text-muted-foreground">мин</p>
         </div>
       </div>
