@@ -133,15 +133,8 @@ const Partner = () => {
   if (isDesktop) return <PartnerDashboardDesktop />;
 
   return (
-    <div className="min-h-screen bg-background pb-24">
-      <div className="px-4 pt-6">
-        <div className="flex items-center gap-3 mb-4">
-          <motion.button whileTap={{ scale: 0.9 }} onClick={() => navigate('/profile')}>
-            <ArrowLeft className="w-5 h-5 text-foreground" />
-          </motion.button>
-          <h1 className="text-lg font-bold font-display text-foreground flex-1">{t('partner.dashboard')}</h1>
-        </div>
-
+    <PartnerLayout title={t('partner.dashboard')} showBackToPartner={false}>
+      <div className="px-4">
         {/* Mini stats */}
         <div className="mb-5">
           <PartnerMobileStats
@@ -181,8 +174,7 @@ const Partner = () => {
           })}
         </div>
       </div>
-      <PartnerBottomNav />
-    </div>
+    </PartnerLayout>
   );
 };
 
