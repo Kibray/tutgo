@@ -278,9 +278,24 @@ const OnboardingFlow = ({ onComplete, forceRole, isPreview }: Props) => {
             variants={slideVariants} initial="enter" animate="center" exit="exit"
             transition={{ duration: 0.35, ease: 'easeInOut' }}
             className="w-full flex flex-col items-center">
-            <div className="mb-8">{currentSlide.illustration}</div>
-            <h2 className="text-xl font-bold text-white text-center mb-2">{currentSlide.title}</h2>
-            <p className="text-gray-400 text-sm text-center max-w-xs">{currentSlide.text}</p>
+            {isClient ? (
+              /* Client: phone + text side by side on desktop, stacked on mobile */
+              <div className="w-full max-w-3xl flex flex-col lg:flex-row items-center gap-6 lg:gap-12">
+                <div className="flex-shrink-0">
+                  {(currentSlide as any).phone}
+                </div>
+                <div className="flex-1 text-center lg:text-left">
+                  {(currentSlide as any).text}
+                </div>
+              </div>
+            ) : (
+              /* Business: centered illustration + title + text */
+              <>
+                <div className="mb-8">{'illustration' in currentSlide && (currentSlide as any).illustration}</div>
+                <h2 className="text-xl font-bold text-white text-center mb-2">{'title' in currentSlide && (currentSlide as any).title}</h2>
+                <p className="text-gray-400 text-sm text-center max-w-xs">{'text' in currentSlide && typeof (currentSlide as any).text === 'string' && (currentSlide as any).text}</p>
+              </>
+            )}
           </motion.div>
         </AnimatePresence>
       </div>
