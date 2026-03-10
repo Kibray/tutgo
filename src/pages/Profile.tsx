@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import LegalFooter from '@/components/LegalFooter';
-import { User, Settings, Globe, HelpCircle, ChevronRight, LogOut, Key, Briefcase, Store, BookOpen, Send } from 'lucide-react';
+import { User, Settings, Globe, HelpCircle, ChevronRight, LogOut, Key, Briefcase, Store, BookOpen, Send, Lightbulb } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { usePreferences } from '@/hooks/usePreferences';
@@ -48,6 +48,7 @@ const Profile = () => {
     { icon: Globe, label: t('profile.language'), desc: t('profile.lang_options'), route: '/settings' },
     { icon: Settings, label: t('profile.settings'), desc: t('profile.settings_desc'), route: '/settings' },
     { icon: HelpCircle, label: t('profile.help'), desc: t('profile.help_desc'), route: '/help' },
+    { icon: Lightbulb, label: t('profile.how_it_works'), desc: t('profile.how_it_works_desc'), route: '/how-it-works' },
   ];
 
   return (

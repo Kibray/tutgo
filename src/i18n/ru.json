@@ -305,6 +305,10 @@
 
   "legal.terms": "Пользовательское соглашение",
   "legal.privacy": "Политика конфиденциальности",
+  "legal.how_it_works": "Как это работает",
+
+  "profile.how_it_works": "Как пользоваться TutGo",
+  "profile.how_it_works_desc": "Обзор возможностей сервиса",
 
   "common.error": "Ошибка",
   "common.loading": "Загрузка...",

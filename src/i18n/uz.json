@@ -305,6 +305,10 @@
 
   "legal.terms": "Foydalanuvchi shartnomasi",
   "legal.privacy": "Maxfiylik siyosati",
+  "legal.how_it_works": "Bu qanday ishlaydi",
+
+  "profile.how_it_works": "TutGo dan qanday foydalanish",
+  "profile.how_it_works_desc": "Xizmat imkoniyatlari haqida",
 
   "common.error": "Xatolik",
   "common.loading": "Yuklanmoqda...",

@@ -11,6 +11,7 @@ import { SkeletonList } from '@/components/SkeletonCard';
 import MapView from '@/components/MapView';
 import AiAssistantFab from '@/components/AiAssistantFab';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
+import OnboardingFlow from '@/components/onboarding/OnboardingFlow';
 import { useLocations } from '@/hooks/useLocations';
 import { useCategories } from '@/hooks/useCategories';
 import { useFavorites } from '@/hooks/useFavorites';
@@ -38,6 +39,18 @@ const formatDistance = (km: number): string => {
 
 const Index = () => {
   const isDesktop = useIsDesktop();
+  const [showOnboarding, setShowOnboarding] = useState(() => {
+    return !localStorage.getItem('onboarding_completed');
+  });
+
+  const completeOnboarding = useCallback(() => {
+    localStorage.setItem('onboarding_completed', 'true');
+    setShowOnboarding(false);
+  }, []);
+
+  if (showOnboarding) {
+    return <OnboardingFlow onComplete={completeOnboarding} />;
+  }
 
   if (isDesktop) return <DesktopIndex />;
 

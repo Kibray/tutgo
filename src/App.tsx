@@ -32,6 +32,7 @@ import CafeTable from "./pages/CafeTable";
 import Settings from "./pages/Settings";
 import EditProfile from "./pages/EditProfile";
 import Help from "./pages/Help";
+import HowItWorks from "./pages/HowItWorks";
 import NotFound from "./pages/NotFound";
 import Notifications from "./pages/Notifications";
 import BusinessBySlug from "./pages/BusinessBySlug";
@@ -98,6 +99,7 @@ const App = () => (
                 <Route path="/ref/:code" element={<ReferralRedirect />} />
                 <Route path="/terms" element={<Terms />} />
                 <Route path="/privacy" element={<Privacy />} />
+                <Route path="/how-it-works" element={<HowItWorks />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </div>

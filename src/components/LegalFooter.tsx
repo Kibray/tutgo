@@ -10,6 +10,8 @@ const LegalFooter = () => {
         <span>·</span>
         <Link to="/privacy" className="hover:text-primary transition-colors">{t('legal.privacy')}</Link>
         <span>·</span>
+        <Link to="/how-it-works" className="hover:text-primary transition-colors">❓ {t('legal.how_it_works')}</Link>
+        <span>·</span>
         <a href="mailto:info@tutgo.uz" className="hover:text-primary transition-colors">info@tutgo.uz</a>
       </div>
       <p className="text-[10px] text-muted-foreground mt-2">© 2026 TutGo · Ташкент, Узбекистан</p>
