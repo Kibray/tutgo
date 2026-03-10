@@ -32,6 +32,7 @@ import CafeTable from "./pages/CafeTable";
 import Settings from "./pages/Settings";
 import EditProfile from "./pages/EditProfile";
 import Help from "./pages/Help";
+import HowItWorks from "./pages/HowItWorks";
 import NotFound from "./pages/NotFound";
 import Notifications from "./pages/Notifications";
 import BusinessBySlug from "./pages/BusinessBySlug";
