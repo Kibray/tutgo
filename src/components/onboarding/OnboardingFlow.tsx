@@ -180,7 +180,8 @@ const OnboardingFlow = ({ onComplete, forceRole, isPreview }: Props) => {
     },
   ];
 
-  const slides = role === 'business' ? businessSlides : clientSlides;
+  const isClient = role === 'client';
+  const slides = isClient ? clientSlides : businessSlides;
   const totalSteps = slides.length;
 
   const next = useCallback(() => {
