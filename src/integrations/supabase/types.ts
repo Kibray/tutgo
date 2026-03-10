@@ -287,6 +287,7 @@ export type Database = {
           queue_enabled: boolean
           rating: number | null
           review_count: number | null
+          slug: string | null
           sub_category: string | null
           telegram: string | null
           updated_at: string
@@ -316,6 +317,7 @@ export type Database = {
           queue_enabled?: boolean
           rating?: number | null
           review_count?: number | null
+          slug?: string | null
           sub_category?: string | null
           telegram?: string | null
           updated_at?: string
@@ -345,6 +347,7 @@ export type Database = {
           queue_enabled?: boolean
           rating?: number | null
           review_count?: number | null
+          slug?: string | null
           sub_category?: string | null
           telegram?: string | null
           updated_at?: string
@@ -408,6 +411,9 @@ export type Database = {
           notify_deals: boolean
           notify_reminder: boolean
           phone: string | null
+          referral_code: string | null
+          referral_count: number
+          referred_by: string | null
           telegram_chat_id: number | null
           telegram_username: string | null
           updated_at: string
@@ -426,6 +432,9 @@ export type Database = {
           notify_deals?: boolean
           notify_reminder?: boolean
           phone?: string | null
+          referral_code?: string | null
+          referral_count?: number
+          referred_by?: string | null
           telegram_chat_id?: number | null
           telegram_username?: string | null
           updated_at?: string
@@ -444,6 +453,9 @@ export type Database = {
           notify_deals?: boolean
           notify_reminder?: boolean
           phone?: string | null
+          referral_code?: string | null
+          referral_count?: number
+          referred_by?: string | null
           telegram_chat_id?: number | null
           telegram_username?: string | null
           updated_at?: string
@@ -500,6 +512,36 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      referral_clicks: {
+        Row: {
+          clicked_at: string
+          converted: boolean
+          converted_user_id: string | null
+          id: string
+          location_slug: string | null
+          referral_code: string
+          referral_type: string
+        }
+        Insert: {
+          clicked_at?: string
+          converted?: boolean
+          converted_user_id?: string | null
+          id?: string
+          location_slug?: string | null
+          referral_code: string
+          referral_type?: string
+        }
+        Update: {
+          clicked_at?: string
+          converted?: boolean
+          converted_user_id?: string | null
+          id?: string
+          location_slug?: string | null
+          referral_code?: string
+          referral_type?: string
+        }
+        Relationships: []
       }
       reviews: {
         Row: {
@@ -717,6 +759,7 @@ export type Database = {
     }
     Functions: {
       become_partner: { Args: never; Returns: undefined }
+      generate_slug: { Args: { name: string }; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
