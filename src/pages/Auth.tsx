@@ -45,6 +45,10 @@ const Auth = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!isLogin && (!ageConfirmed || !termsAccepted)) {
+      toast({ title: 'Внимание', description: 'Подтвердите возраст и примите условия', variant: 'destructive' });
+      return;
+    }
     setLoading(true);
     const { error } = isLogin
       ? await signIn(email, password)
