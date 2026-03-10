@@ -126,26 +126,18 @@ const PartnerStaff = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background pb-24">
-      <div className="px-4 pt-6">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-3">
-            <motion.button whileTap={{ scale: 0.9 }} onClick={() => navigate('/partner')}>
-              <ArrowLeft className="w-5 h-5 text-foreground" />
-            </motion.button>
-            <h1 className="text-lg font-bold font-display text-foreground">{t('partner.staff')}</h1>
-          </div>
-          {locations.length > 0 && (
-            <motion.button
-              whileTap={{ scale: 0.95 }}
-              onClick={() => { setShowAdd(true); if (locations.length === 1) setSelectedLocation(locations[0].id); }}
-              className="flex items-center gap-1 bg-primary text-primary-foreground rounded-lg px-3 py-1.5 text-xs font-medium"
-            >
-              <Plus className="w-3.5 h-3.5" /> Добавить
-            </motion.button>
-          )}
-        </div>
+    <PartnerLayout title={t('partner.staff')} headerRight={
+      locations.length > 0 ? (
+        <motion.button
+          whileTap={{ scale: 0.95 }}
+          onClick={() => { setShowAdd(true); if (locations.length === 1) setSelectedLocation(locations[0].id); }}
+          className="flex items-center gap-1 bg-primary text-primary-foreground rounded-lg px-3 py-1.5 text-xs font-medium"
+        >
+          <Plus className="w-3.5 h-3.5" /> Добавить
+        </motion.button>
+      ) : undefined
+    }>
+      <div className="px-4">
 
         {/* Add form */}
         {showAdd && (
