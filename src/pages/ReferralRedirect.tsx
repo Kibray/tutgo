@@ -24,10 +24,9 @@ const ReferralRedirect = () => {
 
     // Get referrer name
     const fetchReferrer = async () => {
-      const { data } = await supabase
-        .from('profiles')
+      const { data } = await (supabase.from('profiles') as any)
         .select('display_name')
-        .eq('referral_code' as any, code)
+        .eq('referral_code', code)
         .single();
 
       if (data?.display_name) {

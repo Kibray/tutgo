@@ -20,10 +20,9 @@ const BusinessBySlug = () => {
       }).then(() => {});
 
       // Find location by slug
-      const { data } = await supabase
-        .from('locations')
+      const { data } = await (supabase.from('locations') as any)
         .select('id')
-        .eq('slug' as any, slug)
+        .eq('slug', slug)
         .single();
 
       if (data?.id) {
