@@ -235,7 +235,7 @@ const PartnerBookings = () => {
   );
 
   return (
-    <div className="min-h-screen bg-background pb-24">
+    <PartnerLayout title={t("partner.journal")}>
       <div className="px-4 pt-6">
         <div className="flex items-center gap-3 mb-4">
           <motion.button whileTap={{ scale: 0.9 }} onClick={() => navigate("/partner")}>
