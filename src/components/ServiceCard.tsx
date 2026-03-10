@@ -93,6 +93,9 @@ const ServiceCard = ({ service, index, onClick, isFavorite, onToggleFavorite }: 
         <div className="flex items-center gap-1.5 pr-8">
           <h3 className="text-sm font-semibold text-foreground truncate">{service.name}</h3>
           {service.verified && <BadgeCheck className="w-4 h-4 text-primary flex-shrink-0" />}
+          {service.verified === false && (
+            <span className="text-[9px] bg-yellow-500/20 text-yellow-600 dark:text-yellow-400 px-1.5 py-0.5 rounded font-medium flex-shrink-0">⏳</span>
+          )}
         </div>
         <p className="text-xs text-muted-foreground mt-0.5">{service.address}</p>
         <div className="flex items-center gap-3 mt-2 text-xs text-muted-foreground">
