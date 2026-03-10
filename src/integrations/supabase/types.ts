@@ -786,6 +786,45 @@ export type Database = {
         }
         Relationships: []
       }
+      partner_applications: {
+        Row: {
+          address: string
+          category: string
+          company_name: string
+          created_at: string
+          description: string | null
+          id: string
+          instagram: string | null
+          phone: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          address: string
+          category: string
+          company_name: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          instagram?: string | null
+          phone: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          address?: string
+          category?: string
+          company_name?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          instagram?: string | null
+          phone?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
