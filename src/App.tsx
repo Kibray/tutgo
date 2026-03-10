@@ -31,7 +31,8 @@ import NotFound from "./pages/NotFound";
 import Notifications from "./pages/Notifications";
 import BusinessBySlug from "./pages/BusinessBySlug";
 import ReferralRedirect from "./pages/ReferralRedirect";
-
+import Terms from "./pages/Terms";
+import Privacy from "./pages/Privacy";
 const queryClient = new QueryClient();
 
 const App = () => (
