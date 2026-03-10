@@ -760,6 +760,10 @@ export type Database = {
     Functions: {
       become_partner: { Args: never; Returns: undefined }
       generate_slug: { Args: { name: string }; Returns: string }
+      get_queue_stats: {
+        Args: { p_date?: string; p_location_id: string }
+        Returns: Json
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

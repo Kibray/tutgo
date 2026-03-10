@@ -13,41 +13,46 @@ interface QueueStatusProps {
 
 const QueueStatus = ({ locationId, locationName }: QueueStatusProps) => {
   const { user } = useAuth();
-  const [tickets, setTickets] = useState<any[]>([]);
   const [myTicket, setMyTicket] = useState<any>(null);
+  const [stats, setStats] = useState<{ waiting_count: number; current_serving: number | null; last_ticket: number }>({ waiting_count: 0, current_serving: null, last_ticket: 0 });
   const [taking, setTaking] = useState(false);
   const today = new Date().toISOString().split('T')[0];
 
-  const loadTickets = async () => {
+  const loadStats = async () => {
+    const { data } = await supabase.rpc('get_queue_stats', { p_location_id: locationId, p_date: today });
+    if (data) setStats(data as any);
+  };
+
+  const loadMyTicket = async () => {
+    if (!user) { setMyTicket(null); return; }
     const { data } = await supabase.from('queue_tickets')
       .select('*')
       .eq('location_id', locationId)
       .eq('queue_date', today)
-      .order('ticket_number', { ascending: true });
-    const all = data || [];
-    setTickets(all);
-    if (user) {
-      const mine = all.find(t => t.user_id === user.id && ['waiting', 'serving'].includes(t.status));
-      setMyTicket(mine || null);
-    }
+      .eq('user_id', user.id)
+      .in('status', ['waiting', 'serving'])
+      .limit(1)
+      .maybeSingle();
+    setMyTicket(data);
   };
 
-  useEffect(() => { loadTickets(); }, [locationId, user]);
+  const reload = () => { loadStats(); loadMyTicket(); };
 
-  // Realtime
+  useEffect(() => { reload(); }, [locationId, user]);
+
   useEffect(() => {
     const channel = supabase.channel(`queue-client-${locationId}`)
       .on('postgres_changes', {
         event: '*', schema: 'public', table: 'queue_tickets',
         filter: `location_id=eq.${locationId}`,
-      }, () => loadTickets())
+      }, () => reload())
       .subscribe();
     return () => { supabase.removeChannel(channel); };
   }, [locationId]);
 
-  const waiting = tickets.filter(t => t.status === 'waiting');
-  const currentServing = tickets.find(t => t.status === 'serving');
-  const lastTicketNum = tickets.length > 0 ? Math.max(...tickets.map(t => t.ticket_number)) : 0;
+  const waitingCount = stats.waiting_count;
+  const currentServingNum = stats.current_serving;
+  const lastTicketNum = stats.last_ticket;
 
   const handleTakeTicket = async () => {
     if (!user) { toast.error('Войдите чтобы взять талон'); return; }
@@ -82,7 +87,7 @@ const QueueStatus = ({ locationId, locationName }: QueueStatusProps) => {
           body: {
             type: 'queue.notify',
             chatId: prof.telegram_chat_id,
-            text: `🎫 <b>Вы взяли талон №${newNum}</b>\n📍 ${locationName}\n👥 Перед вами: ${waiting.length} чел.\n⏰ Примерное ожидание: ~${waiting.length * 10} мин`,
+            text: `🎫 <b>Вы взяли талон №${newNum}</b>\n📍 ${locationName}\n👥 Перед вами: ${waitingCount} чел.\n⏰ Примерное ожидание: ~${waitingCount * 10} мин`,
           },
         });
       }
@@ -96,8 +101,7 @@ const QueueStatus = ({ locationId, locationName }: QueueStatusProps) => {
     toast('Талон отменён');
   };
 
-  const myPosition = myTicket ? waiting.findIndex(t => t.id === myTicket.id) : -1;
-  const peopleAhead = myPosition >= 0 ? myPosition : waiting.length;
+  const peopleAhead = myTicket && currentServingNum ? myTicket.ticket_number - currentServingNum - 1 : waitingCount;
 
   return (
     <div className="glass rounded-2xl p-4 space-y-4">
@@ -115,16 +119,16 @@ const QueueStatus = ({ locationId, locationName }: QueueStatusProps) => {
       <div className="grid grid-cols-3 gap-2">
         <div className="bg-secondary/50 rounded-xl p-3 text-center">
           <p className="text-lg font-bold text-primary">
-            {currentServing ? `№${currentServing.ticket_number}` : '—'}
+            {currentServingNum ? `№${currentServingNum}` : '—'}
           </p>
           <p className="text-[10px] text-muted-foreground">Вызывают</p>
         </div>
         <div className="bg-secondary/50 rounded-xl p-3 text-center">
-          <p className="text-lg font-bold text-foreground">{waiting.length}</p>
+          <p className="text-lg font-bold text-foreground">{waitingCount}</p>
           <p className="text-[10px] text-muted-foreground">В очереди</p>
         </div>
         <div className="bg-secondary/50 rounded-xl p-3 text-center">
-          <p className="text-lg font-bold text-foreground">~{waiting.length * 10}</p>
+          <p className="text-lg font-bold text-foreground">~{waitingCount * 10}</p>
           <p className="text-[10px] text-muted-foreground">мин</p>
         </div>
       </div>
