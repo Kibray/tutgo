@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import LegalFooter from '@/components/LegalFooter';
 import { User, Settings, Globe, HelpCircle, ChevronRight, LogOut, Key, Briefcase, Store, BookOpen, Send } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
@@ -168,6 +169,7 @@ const Profile = () => {
         )}
 
         <p className="text-center text-[10px] text-muted-foreground/50 mt-8">{t('profile.version')}</p>
+        <LegalFooter />
       </div>
       <BottomNav />
     </div>

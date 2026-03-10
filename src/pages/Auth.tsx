@@ -1,13 +1,14 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Send } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useTelegram } from '@/hooks/useTelegram';
 import { useToast } from '@/hooks/use-toast';
 import { lovable } from '@/integrations/lovable/index';
 import { supabase } from '@/integrations/supabase/client';
 import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
+import { Checkbox } from '@/components/ui/checkbox';
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -15,6 +16,8 @@ const Auth = () => {
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
   const [loading, setLoading] = useState(false);
+  const [ageConfirmed, setAgeConfirmed] = useState(false);
+  const [termsAccepted, setTermsAccepted] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const [confirmationSent, setConfirmationSent] = useState(false);
   const [telegramStep, setTelegramStep] = useState<'idle' | 'waiting_code'>('idle');
@@ -42,6 +45,10 @@ const Auth = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!isLogin && (!ageConfirmed || !termsAccepted)) {
+      toast({ title: 'Внимание', description: 'Подтвердите возраст и примите условия', variant: 'destructive' });
+      return;
+    }
     setLoading(true);
     const { error } = isLogin
       ? await signIn(email, password)
@@ -211,10 +218,28 @@ const Auth = () => {
             onChange={(e) => setPassword(e.target.value)}
             className="w-full glass rounded-lg px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground outline-none border border-border focus:border-primary transition-colors"
           />
+          {!isLogin && (
+            <div className="space-y-3 pt-1">
+              <label className="flex items-start gap-2.5 cursor-pointer">
+                <Checkbox checked={ageConfirmed} onCheckedChange={(v) => setAgeConfirmed(v === true)} className="mt-0.5" />
+                <span className="text-xs text-muted-foreground leading-relaxed">Мне исполнилось 18 лет</span>
+              </label>
+              <label className="flex items-start gap-2.5 cursor-pointer">
+                <Checkbox checked={termsAccepted} onCheckedChange={(v) => setTermsAccepted(v === true)} className="mt-0.5" />
+                <span className="text-xs text-muted-foreground leading-relaxed">
+                  Я принимаю{' '}
+                  <Link to="/terms" className="text-primary hover:underline" onClick={(e) => e.stopPropagation()}>Пользовательское соглашение</Link>
+                  {' '}и{' '}
+                  <Link to="/privacy" className="text-primary hover:underline" onClick={(e) => e.stopPropagation()}>Политику конфиденциальности</Link>
+                  {' '}TutGo
+                </span>
+              </label>
+            </div>
+          )}
           <motion.button
             whileTap={{ scale: 0.98 }}
             type="submit"
-            disabled={loading}
+            disabled={loading || (!isLogin && (!ageConfirmed || !termsAccepted))}
             className="w-full py-3 rounded-lg bg-primary text-primary-foreground font-semibold text-sm disabled:opacity-50"
           >
             {loading ? '...' : isLogin ? 'Войти' : 'Зарегистрироваться'}

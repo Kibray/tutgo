@@ -31,7 +31,8 @@ import NotFound from "./pages/NotFound";
 import Notifications from "./pages/Notifications";
 import BusinessBySlug from "./pages/BusinessBySlug";
 import ReferralRedirect from "./pages/ReferralRedirect";
-
+import Terms from "./pages/Terms";
+import Privacy from "./pages/Privacy";
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -69,6 +70,8 @@ const App = () => (
                 <Route path="/notifications" element={<Notifications />} />
                 <Route path="/b/:slug" element={<BusinessBySlug />} />
                 <Route path="/ref/:code" element={<ReferralRedirect />} />
+                <Route path="/terms" element={<Terms />} />
+                <Route path="/privacy" element={<Privacy />} />
                 <Route path="*" element={<NotFound />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
