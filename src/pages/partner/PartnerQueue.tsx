@@ -120,14 +120,8 @@ const PartnerQueue = () => {
   if (loading) return <div className="min-h-screen bg-background flex items-center justify-center text-muted-foreground">Загрузка...</div>;
 
   return (
-    <div className="min-h-screen bg-background pb-24">
-      <div className="px-4 pt-6">
-        <div className="flex items-center gap-3 mb-4">
-          <motion.button whileTap={{ scale: 0.9 }} onClick={() => navigate('/partner')}>
-            <ArrowLeft className="w-5 h-5 text-foreground" />
-          </motion.button>
-          <h1 className="text-lg font-bold font-display text-foreground">Живая очередь</h1>
-        </div>
+    <PartnerLayout title="Живая очередь">
+      <div className="px-4">
 
         {businesses.length === 0 ? (
           <div className="text-center py-16 text-muted-foreground">
