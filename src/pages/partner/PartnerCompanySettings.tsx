@@ -8,6 +8,7 @@ import { supabase } from '@/integrations/supabase/client';
 import PartnerBottomNav from '@/components/partner/PartnerBottomNav';
 import BusinessPhotoUpload from '@/components/BusinessPhotoUpload';
 import AddressPicker from '@/components/AddressPicker';
+import BusinessLinkSection from '@/components/partner/BusinessLinkSection';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 
@@ -209,6 +210,16 @@ const PartnerCompanySettings = () => {
                       <span className={`absolute top-0.5 w-5 h-5 rounded-full bg-white transition-transform ${biz.queue_enabled ? 'left-[22px]' : 'left-0.5'}`} />
                     </button>
                   </div>
+                  {/* Business Link Section */}
+                  <BusinessLinkSection
+                    locationId={biz.id}
+                    locationName={biz.name}
+                    businessType={biz.business_type}
+                    rating={biz.rating}
+                    reviewCount={biz.review_count}
+                    priceFrom={biz.price_from}
+                    currency={biz.currency}
+                  />
                 </div>
               ))
             )}

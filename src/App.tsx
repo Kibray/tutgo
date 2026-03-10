@@ -29,6 +29,8 @@ import EditProfile from "./pages/EditProfile";
 import Help from "./pages/Help";
 import NotFound from "./pages/NotFound";
 import Notifications from "./pages/Notifications";
+import BusinessBySlug from "./pages/BusinessBySlug";
+import ReferralRedirect from "./pages/ReferralRedirect";
 
 const queryClient = new QueryClient();
 
@@ -65,6 +67,9 @@ const App = () => (
                 <Route path="/partner/inventory" element={<PartnerInventory />} />
                 <Route path="/partner-landing" element={<PartnerLanding />} />
                 <Route path="/notifications" element={<Notifications />} />
+                <Route path="/b/:slug" element={<BusinessBySlug />} />
+                <Route path="/ref/:code" element={<ReferralRedirect />} />
+                <Route path="*" element={<NotFound />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </div>
