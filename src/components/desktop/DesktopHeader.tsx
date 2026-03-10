@@ -1,8 +1,10 @@
-import { Bell, Search, MapPin, Loader2, X, Globe, User } from 'lucide-react';
+import { Bell, Search, MapPin, Loader2, X, User } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useState, useRef, useCallback } from 'react';
 import { useNotifications } from '@/hooks/useNotifications';
+import { usePreferences } from '@/hooks/usePreferences';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import LanguageSwitcher from '@/components/LanguageSwitcher';
 
 interface NominatimResult {
   display_name: string;
@@ -21,6 +23,7 @@ interface DesktopHeaderProps {
 const DesktopHeader = ({ onSearch, onSearchSubmit, onLocationSelect, onGeolocate, geolocating }: DesktopHeaderProps) => {
   const navigate = useNavigate();
   const { unreadCount } = useNotifications();
+  const { t } = usePreferences();
   const [query, setQuery] = useState('');
   const [suggestions, setSuggestions] = useState<NominatimResult[]>([]);
   const [searching, setSearching] = useState(false);
@@ -83,7 +86,7 @@ const DesktopHeader = ({ onSearch, onSearchSubmit, onLocationSelect, onGeolocate
           <Search className="w-4 h-4 text-muted-foreground flex-shrink-0" />
           <input
             type="text"
-            placeholder="Поиск услуг, адресов, мест..."
+            placeholder={t('index.search_placeholder')}
             value={query}
             onChange={(e) => handleChange(e.target.value)}
             onKeyDown={handleKeyDown}
@@ -126,9 +129,7 @@ const DesktopHeader = ({ onSearch, onSearchSubmit, onLocationSelect, onGeolocate
 
       {/* Right section */}
       <div className="flex items-center gap-3">
-        <button className="w-8 h-8 rounded-full bg-secondary/80 flex items-center justify-center text-sm hover:bg-secondary transition-colors">
-          🇺🇿
-        </button>
+        <LanguageSwitcher />
         <button
           onClick={() => navigate('/notifications')}
           className="relative w-8 h-8 rounded-full bg-secondary/80 flex items-center justify-center hover:bg-secondary transition-colors"

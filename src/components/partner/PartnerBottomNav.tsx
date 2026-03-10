@@ -1,17 +1,19 @@
 import { Home, Calendar, Hash, User } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
-
-const tabs = [
-  { id: '/partner', icon: Home, label: 'Главная' },
-  { id: '/partner/bookings', icon: Calendar, label: 'Записи' },
-  { id: '/partner/queue', icon: Hash, label: 'Очередь' },
-  { id: '/partner/settings', icon: User, label: 'Профиль' },
-];
+import { usePreferences } from '@/hooks/usePreferences';
 
 const PartnerBottomNav = () => {
   const navigate = useNavigate();
   const { pathname } = useLocation();
+  const { t } = usePreferences();
+
+  const tabs = [
+    { id: '/partner', icon: Home, label: t('partner.nav_home') },
+    { id: '/partner/bookings', icon: Calendar, label: t('partner.nav_bookings') },
+    { id: '/partner/queue', icon: Hash, label: t('partner.nav_queue') },
+    { id: '/partner/settings', icon: User, label: t('partner.nav_profile') },
+  ];
 
   return (
     <div className="fixed bottom-0 left-0 right-0 z-[2000] safe-bottom bg-background/60 backdrop-blur-xl border-t border-border/50 rounded-t-[20px]">
