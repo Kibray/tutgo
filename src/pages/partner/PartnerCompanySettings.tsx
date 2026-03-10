@@ -8,6 +8,7 @@ import { supabase } from '@/integrations/supabase/client';
 import PartnerBottomNav from '@/components/partner/PartnerBottomNav';
 import BusinessPhotoUpload from '@/components/BusinessPhotoUpload';
 import AddressPicker from '@/components/AddressPicker';
+import BusinessLinkSection from '@/components/partner/BusinessLinkSection';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 
