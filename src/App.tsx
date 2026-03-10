@@ -33,7 +33,22 @@ import BusinessBySlug from "./pages/BusinessBySlug";
 import ReferralRedirect from "./pages/ReferralRedirect";
 import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
+import TermsAcceptanceModal from "./components/TermsAcceptanceModal";
+import { useAuth } from "./hooks/useAuth";
+
 const queryClient = new QueryClient();
+
+const TermsGate = () => {
+  const { user, termsAccepted, setTermsAccepted } = useAuth();
+  if (!user || termsAccepted) return null;
+  return (
+    <TermsAcceptanceModal
+      open={true}
+      userId={user.id}
+      onAccepted={() => setTermsAccepted(true)}
+    />
+  );
+};
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -43,6 +58,7 @@ const App = () => (
       <BrowserRouter>
         <AuthProvider>
           <PreferencesProvider>
+            <TermsGate />
             <div className="lg:max-w-none max-w-lg mx-auto min-h-screen">
               <Routes>
                 <Route path="/" element={<Index />} />
@@ -72,7 +88,6 @@ const App = () => (
                 <Route path="/ref/:code" element={<ReferralRedirect />} />
                 <Route path="/terms" element={<Terms />} />
                 <Route path="/privacy" element={<Privacy />} />
-                <Route path="*" element={<NotFound />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </div>
