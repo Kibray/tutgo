@@ -50,11 +50,14 @@ const queryClient = new QueryClient();
 
 const TermsGate = () => {
   const { user, termsAccepted, setTermsAccepted } = useAuth();
+  const location = useLocation();
   if (!user || termsAccepted) return null;
+  const isPartnerRoute = location.pathname.startsWith('/auth/partner') || location.pathname.startsWith('/partner');
   return (
     <TermsAcceptanceModal
       open={true}
       userId={user.id}
+      variant={isPartnerRoute ? 'partner' : 'client'}
       onAccepted={() => setTermsAccepted(true)}
     />
   );
