@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
+import { useState, useCallback, useMemo, useEffect, useRef, lazy, Suspense } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Locate, ChevronUp, ChevronDown, Bell, Menu } from 'lucide-react';
@@ -8,19 +8,20 @@ import ServiceCard from '@/components/ServiceCard';
 import BottomNav from '@/components/BottomNav';
 import BusinessSheet from '@/components/BusinessSheet';
 import { SkeletonList } from '@/components/SkeletonCard';
-import MapView from '@/components/MapView';
-import AiAssistantFab from '@/components/AiAssistantFab';
 import MobileSidebar from '@/components/MobileSidebar';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
-import OnboardingFlow from '@/components/onboarding/OnboardingFlow';
 import { useLocations } from '@/hooks/useLocations';
 import { useCategories } from '@/hooks/useCategories';
 import { useFavorites } from '@/hooks/useFavorites';
 import { useNotifications } from '@/hooks/useNotifications';
 import { useIsDesktop } from '@/hooks/useIsDesktop';
 import { usePreferences } from '@/hooks/usePreferences';
-import DesktopIndex from '@/components/desktop/DesktopIndex';
 import type { LocationItem } from '@/lib/types';
+
+const MapView = lazy(() => import('@/components/MapView'));
+const AiAssistantFab = lazy(() => import('@/components/AiAssistantFab'));
+const OnboardingFlow = lazy(() => import('@/components/onboarding/OnboardingFlow'));
+const DesktopIndex = lazy(() => import('@/components/desktop/DesktopIndex'));
 
 const TASHKENT: [number, number] = [41.3111, 69.2797];
 const NEARBY_RADIUS_KM = 2;
