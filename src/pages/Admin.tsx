@@ -8,8 +8,6 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 
-const ADMIN_EMAIL = 'tugelbayev.94@gmail.com';
-
 const Admin = () => {
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
@@ -20,8 +18,16 @@ const Admin = () => {
   const [stats, setStats] = useState({ locations: 0, users: 0, appointments: 0, revenue: 0 });
   const [tab, setTab] = useState('pending');
   const [actionLoading, setActionLoading] = useState<string | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [adminChecked, setAdminChecked] = useState(false);
 
-  const isAdmin = user?.email === ADMIN_EMAIL;
+  useEffect(() => {
+    if (!user) { setAdminChecked(true); return; }
+    supabase.rpc('has_role', { _user_id: user.id, _role: 'admin' }).then(({ data }) => {
+      setIsAdmin(!!data);
+      setAdminChecked(true);
+    });
+  }, [user]);
 
   useEffect(() => {
     if (!user || !isAdmin) return;
@@ -157,7 +163,7 @@ const Admin = () => {
     }
   };
 
-  if (authLoading) return <div className="min-h-screen bg-background flex items-center justify-center text-muted-foreground">Загрузка...</div>;
+  if (authLoading || !adminChecked) return <div className="min-h-screen bg-background flex items-center justify-center text-muted-foreground">Загрузка...</div>;
 
   if (!user || !isAdmin) {
     return (
