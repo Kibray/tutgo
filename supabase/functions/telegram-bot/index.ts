@@ -122,6 +122,7 @@ Deno.serve(async (req) => {
 
   try {
     const update = await req.json();
+    console.log("Received update:", JSON.stringify(update).slice(0, 500));
 
     // Handle regular text messages (check for 6-digit code)
     if (update.message?.text && !update.message.text.startsWith("/")) {
@@ -195,170 +196,198 @@ Deno.serve(async (req) => {
     // Handle callback queries
     if (update.callback_query) {
       const callbackData = update.callback_query.data;
-      const chatId = update.callback_query.message.chat.id;
-      const messageId = update.callback_query.message.message_id;
+      const callbackQueryId = update.callback_query.id;
+      const chatId = update.callback_query.message?.chat?.id;
+      const messageId = update.callback_query.message?.message_id;
 
-      // ---- Partner approve/reject ----
-      if (callbackData.startsWith("approve_partner_") || callbackData.startsWith("reject_partner_")) {
-        const isApprove = callbackData.startsWith("approve_partner_");
-        const appId = callbackData.replace("approve_partner_", "").replace("reject_partner_", "");
+      console.log("Callback query received:", JSON.stringify({ callbackData, callbackQueryId, chatId, messageId }));
 
-        if (!/^[0-9a-f-]{36}$/i.test(appId)) {
-          await answerCallbackQuery(update.callback_query.id, "Ошибка");
-          return new Response(JSON.stringify({ ok: true }), {
-            headers: { ...corsHeaders, "Content-Type": "application/json" },
-          });
-        }
+      try {
+        // ---- Partner approve/reject ----
+        if (callbackData.startsWith("approve_partner_") || callbackData.startsWith("reject_partner_")) {
+          const isApprove = callbackData.startsWith("approve_partner_");
+          const appId = callbackData.replace("approve_partner_", "").replace("reject_partner_", "");
 
-        const newStatus = isApprove ? "approved" : "rejected";
-
-        const { data: app, error } = await supabase
-          .from("partner_applications")
-          .update({ status: newStatus })
-          .eq("id", appId)
-          .select("*")
-          .single();
-
-        if (!error && app) {
-          await editMessageReplyMarkup(chatId, messageId);
-
-          if (isApprove) {
-            const { data: locations } = await supabase
-              .from("locations")
-              .select("id, slug")
-              .eq("owner_id", app.user_id)
-              .eq("name", app.company_name);
-
-            if (locations && locations.length > 0) {
-              await supabase
-                .from("locations")
-                .update({ verified: true })
-                .eq("id", locations[0].id);
-            }
-
-            const { data: partnerProfile } = await supabase
-              .from("profiles")
-              .select("telegram_chat_id")
-              .eq("user_id", app.user_id)
-              .single();
-
-            if (partnerProfile?.telegram_chat_id) {
-              const slug = locations?.[0]?.slug || '';
-              await sendTelegramMessage(partnerProfile.telegram_chat_id,
-                `🎉 <b>Ваша компания подтверждена на TutGo!</b>\n\n🏢 ${app.company_name}${slug ? `\n🌐 tutgo.uz/b/${slug}` : ''}`
-              );
-            }
-
-            await supabase.from("notifications").insert({
-              user_id: app.user_id,
-              title: "🎉 Компания подтверждена!",
-              body: `Ваша компания "${app.company_name}" подтверждена на TutGo!`,
-              type: "info",
+          if (!/^[0-9a-f-]{36}$/i.test(appId)) {
+            await answerCallbackQuery(callbackQueryId, "❌ Неверный ID");
+            return new Response(JSON.stringify({ ok: true }), {
+              headers: { ...corsHeaders, "Content-Type": "application/json" },
             });
-
-            await answerCallbackQuery(update.callback_query.id, "✅ Одобрено");
-            await sendTelegramMessage(chatId, `✅ Партнёр <b>${app.company_name}</b> одобрен`);
-          } else {
-            const { data: partnerProfile } = await supabase
-              .from("profiles")
-              .select("telegram_chat_id")
-              .eq("user_id", app.user_id)
-              .single();
-
-            if (partnerProfile?.telegram_chat_id) {
-              await sendTelegramMessage(partnerProfile.telegram_chat_id,
-                `❌ <b>К сожалению ваша заявка не прошла проверку.</b>\n\nНапишите нам: info@tutgo.uz`
-              );
-            }
-
-            await supabase.from("notifications").insert({
-              user_id: app.user_id,
-              title: "❌ Заявка отклонена",
-              body: "К сожалению ваша заявка не прошла проверку. Напишите нам: info@tutgo.uz",
-              type: "info",
-            });
-
-            await answerCallbackQuery(update.callback_query.id, "❌ Заблокировано");
-            await sendTelegramMessage(chatId, `❌ Партнёр <b>${app.company_name}</b> заблокирован`);
           }
-        } else {
-          await answerCallbackQuery(update.callback_query.id, "Ошибка обновления");
-        }
 
-        return new Response(JSON.stringify({ ok: true }), {
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
+          const newStatus = isApprove ? "approved" : "rejected";
 
-      // ---- Appointment confirm/cancel ----
-      if (callbackData.startsWith("confirm_") || callbackData.startsWith("cancel_")) {
-        const action = callbackData.startsWith("confirm_") ? "confirmed" : "cancelled";
-        const appointmentId = callbackData.replace("confirm_", "").replace("cancel_", "");
+          const { data: app, error } = await supabase
+            .from("partner_applications")
+            .update({ status: newStatus })
+            .eq("id", appId)
+            .select("*")
+            .single();
 
-        if (!/^[0-9a-f-]{36}$/i.test(appointmentId)) {
-          await answerCallbackQuery(update.callback_query.id, "Ошибка");
-          return new Response(JSON.stringify({ ok: true }), {
-            headers: { ...corsHeaders, "Content-Type": "application/json" },
-          });
-        }
+          if (!error && app) {
+            if (chatId && messageId) {
+              await editMessageReplyMarkup(chatId, messageId);
+            }
 
-        const { data: appointment, error } = await supabase
-          .from("appointments")
-          .update({ status: action })
-          .eq("id", appointmentId)
-          .select("*, location_id")
-          .single();
-
-        if (!error && appointment) {
-          await editMessageReplyMarkup(chatId, messageId);
-
-          const statusText = action === "confirmed" ? "✅ Запись подтверждена" : "❌ Запись отменена";
-          await answerCallbackQuery(update.callback_query.id, statusText);
-
-          if (appointment.client_user_id) {
-            const { data: clientProfile } = await supabase
-              .from("profiles")
-              .select("telegram_chat_id")
-              .eq("user_id", appointment.client_user_id)
-              .single();
-
-            if (clientProfile?.telegram_chat_id) {
-              const { data: location } = await supabase
+            if (isApprove) {
+              const { data: locations } = await supabase
                 .from("locations")
-                .select("name, phone")
-                .eq("id", appointment.location_id)
+                .select("id, slug")
+                .eq("owner_id", app.user_id)
+                .eq("name", app.company_name);
+
+              if (locations && locations.length > 0) {
+                await supabase
+                  .from("locations")
+                  .update({ verified: true })
+                  .eq("id", locations[0].id);
+              }
+
+              const { data: partnerProfile } = await supabase
+                .from("profiles")
+                .select("telegram_chat_id")
+                .eq("user_id", app.user_id)
                 .single();
 
-              const dateStr = new Date(appointment.start_time).toLocaleString("ru-RU", {
-                timeZone: "Asia/Tashkent",
-                day: "2-digit", month: "2-digit", year: "numeric",
-                hour: "2-digit", minute: "2-digit",
-              });
-
-              if (action === "confirmed") {
-                await sendTelegramMessage(clientProfile.telegram_chat_id,
-                  `✅ <b>Ваша запись подтверждена!</b>\n📍 ${location?.name || ""}\n📅 ${dateStr}\n📞 ${location?.phone || "—"}`
-                );
-              } else {
-                await sendTelegramMessage(clientProfile.telegram_chat_id,
-                  `❌ <b>К сожалению ваша запись отменена</b>\n📍 ${location?.name || ""}\n📅 ${dateStr}\nПожалуйста запишитесь на другое время.`
+              if (partnerProfile?.telegram_chat_id) {
+                const slug = locations?.[0]?.slug || '';
+                await sendTelegramMessage(partnerProfile.telegram_chat_id,
+                  `🎉 <b>Ваша компания подтверждена на TutGo!</b>\n\n🏢 ${app.company_name}${slug ? `\n🌐 tutgo.uz/b/${slug}` : ''}`
                 );
               }
+
+              await supabase.from("notifications").insert({
+                user_id: app.user_id,
+                title: "🎉 Компания подтверждена!",
+                body: `Ваша компания "${app.company_name}" подтверждена на TutGo!`,
+                type: "info",
+              });
+
+              await answerCallbackQuery(callbackQueryId, "✅ Одобрено");
+              if (chatId) await sendTelegramMessage(chatId, `✅ Партнёр <b>${app.company_name}</b> одобрен`);
+            } else {
+              const { data: partnerProfile } = await supabase
+                .from("profiles")
+                .select("telegram_chat_id")
+                .eq("user_id", app.user_id)
+                .single();
+
+              if (partnerProfile?.telegram_chat_id) {
+                await sendTelegramMessage(partnerProfile.telegram_chat_id,
+                  `❌ <b>К сожалению ваша заявка не прошла проверку.</b>\n\nНапишите нам: info@tutgo.uz`
+                );
+              }
+
+              await supabase.from("notifications").insert({
+                user_id: app.user_id,
+                title: "❌ Заявка отклонена",
+                body: "К сожалению ваша заявка не прошла проверку. Напишите нам: info@tutgo.uz",
+                type: "info",
+              });
+
+              await answerCallbackQuery(callbackQueryId, "❌ Отклонено");
+              if (chatId) await sendTelegramMessage(chatId, `❌ Партнёр <b>${app.company_name}</b> заблокирован`);
             }
+          } else {
+            console.error("Partner update error:", error);
+            await answerCallbackQuery(callbackQueryId, "❌ Ошибка обновления");
           }
 
-          await sendTelegramMessage(chatId, `${statusText} ✔️`);
-        } else {
-          await answerCallbackQuery(update.callback_query.id, "Ошибка обновления записи");
+          return new Response(JSON.stringify({ ok: true }), {
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
         }
+
+        // ---- Appointment confirm/cancel ----
+        if (callbackData.startsWith("confirm_") || callbackData.startsWith("cancel_")) {
+          const action = callbackData.startsWith("confirm_") ? "confirmed" : "cancelled";
+          const appointmentId = callbackData.replace("confirm_", "").replace("cancel_", "");
+
+          if (!/^[0-9a-f-]{36}$/i.test(appointmentId)) {
+            await answerCallbackQuery(callbackQueryId, "❌ Неверный ID");
+            return new Response(JSON.stringify({ ok: true }), {
+              headers: { ...corsHeaders, "Content-Type": "application/json" },
+            });
+          }
+
+          const { data: appointment, error } = await supabase
+            .from("appointments")
+            .update({ status: action })
+            .eq("id", appointmentId)
+            .select("*, location_id")
+            .single();
+
+          if (!error && appointment) {
+            if (chatId && messageId) {
+              await editMessageReplyMarkup(chatId, messageId);
+            }
+
+            const statusText = action === "confirmed" ? "✅ Запись подтверждена" : "❌ Запись отменена";
+
+            if (appointment.client_user_id) {
+              const { data: clientProfile } = await supabase
+                .from("profiles")
+                .select("telegram_chat_id")
+                .eq("user_id", appointment.client_user_id)
+                .single();
+
+              if (clientProfile?.telegram_chat_id) {
+                const { data: location } = await supabase
+                  .from("locations")
+                  .select("name, phone")
+                  .eq("id", appointment.location_id)
+                  .single();
+
+                const dateStr = new Date(appointment.start_time).toLocaleString("ru-RU", {
+                  timeZone: "Asia/Tashkent",
+                  day: "2-digit", month: "2-digit", year: "numeric",
+                  hour: "2-digit", minute: "2-digit",
+                });
+
+                if (action === "confirmed") {
+                  await sendTelegramMessage(clientProfile.telegram_chat_id,
+                    `✅ <b>Ваша запись подтверждена!</b>\n📍 ${location?.name || ""}\n📅 ${dateStr}\n📞 ${location?.phone || "—"}`
+                  );
+                } else {
+                  await sendTelegramMessage(clientProfile.telegram_chat_id,
+                    `❌ <b>К сожалению ваша запись отменена</b>\n📍 ${location?.name || ""}\n📅 ${dateStr}\nПожалуйста запишитесь на другое время.`
+                  );
+                }
+              }
+            }
+
+            await answerCallbackQuery(callbackQueryId, statusText);
+            if (chatId) await sendTelegramMessage(chatId, `${statusText} ✔️`);
+          } else {
+            console.error("Appointment update error:", error);
+            await answerCallbackQuery(callbackQueryId, "❌ Ошибка обновления записи");
+          }
+
+          return new Response(JSON.stringify({ ok: true }), {
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+
+        // Unknown callback — still answer to prevent Telegram "Error"
+        console.log("Unknown callback_data:", callbackData);
+        await answerCallbackQuery(callbackQueryId, "⚠️ Неизвестное действие");
+
+      } catch (cbError) {
+        console.error("Callback processing error:", cbError);
+        // Always answer callback query even on error to prevent Telegram showing "Error"
+        await answerCallbackQuery(callbackQueryId, "❌ Произошла ошибка");
       }
+
+      return new Response(JSON.stringify({ ok: true }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
     return new Response(JSON.stringify({ ok: true }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (err) {
-    console.error("Telegram bot error");
+    console.error("Telegram bot error:", err);
     return new Response(JSON.stringify({ ok: true }), {
       status: 200,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
