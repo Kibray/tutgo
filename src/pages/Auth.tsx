@@ -28,6 +28,8 @@ const Auth = () => {
   const { isTelegram, ready: tgReady } = useTelegram();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [searchParams] = useSearchParams();
+  const isPartner = searchParams.get('role') === 'partner';
 
   useEffect(() => {
     if (isTelegram && tgReady && user) {
