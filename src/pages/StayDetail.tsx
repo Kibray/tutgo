@@ -88,10 +88,10 @@ const StayDetail = () => {
         <img src={photos[photoIndex]} alt={stay.name} className="w-full h-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
         <div className="absolute top-4 left-4 right-4 flex justify-between">
-          <button onClick={() => navigate(-1)} className="w-9 h-9 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center">
+          <button onClick={() => navigate('/stay')} className="w-[34px] h-[34px] rounded-[10px] bg-black/60 backdrop-blur-[10px] flex items-center justify-center">
             <ChevronLeft className="w-5 h-5 text-white" />
           </button>
-          <button className="w-9 h-9 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center">
+          <button className="w-[34px] h-[34px] rounded-[10px] bg-black/60 backdrop-blur-[10px] flex items-center justify-center">
             <Heart className="w-5 h-5 text-white" />
           </button>
         </div>
