@@ -79,7 +79,7 @@ const Profile = () => {
           <motion.div
             initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
             onClick={() => {
-              if (!user) { navigate('/auth'); return; }
+              if (!user) { navigate('/auth/partner'); return; }
               if (isPartner) { navigate('/partner'); return; }
               navigate('/partner-landing');
             }}
