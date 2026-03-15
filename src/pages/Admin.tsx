@@ -163,7 +163,7 @@ const Admin = () => {
     }
   };
 
-  if (authLoading) return <div className="min-h-screen bg-background flex items-center justify-center text-muted-foreground">Загрузка...</div>;
+  if (authLoading || !adminChecked) return <div className="min-h-screen bg-background flex items-center justify-center text-muted-foreground">Загрузка...</div>;
 
   if (!user || !isAdmin) {
     return (
