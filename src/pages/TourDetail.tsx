@@ -24,7 +24,7 @@ const TourDetail = () => {
   const [showSuccess, setShowSuccess] = useState(false);
 
   // Similar tours
-  const { data: similarTours = [] } = useTours({ category: tour?.category });
+  const { data: similarData } = useTours({ category: tour?.category });
 
   const totalPrice = useMemo(() => {
     if (!tour) return 0;
