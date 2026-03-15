@@ -108,7 +108,7 @@ Telegram: @TutGoUzBot
 const TermsPartner = () => (
   <LegalPageLayout
     title="Соглашение с партнёрами"
-    subtitle="Partner Agreement TutGo"
+    subtitle="Partner Agreement TutGo (tutgo.uz)"
     sections={sections}
   />
 );
