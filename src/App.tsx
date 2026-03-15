@@ -45,6 +45,8 @@ import TermsPartner from "./pages/TermsPartner";
 import ReviewRules from "./pages/ReviewRules";
 import Tours from "./pages/Tours";
 import TourDetail from "./pages/TourDetail";
+import Transport from "./pages/Transport";
+import TransportResults from "./pages/TransportResults";
 import TermsAcceptanceModal from "./components/TermsAcceptanceModal";
 import { useAuth } from "./hooks/useAuth";
 
