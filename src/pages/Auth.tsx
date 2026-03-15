@@ -224,7 +224,7 @@ const Auth = () => {
           <motion.button
             whileTap={{ scale: 0.98 }}
             type="submit"
-            disabled={loading || (!isLogin && (!ageConfirmed || !termsAccepted))}
+            disabled={loading || (!isLogin && !termsAccepted)}
             className="w-full py-3 rounded-lg bg-primary text-primary-foreground font-semibold text-sm disabled:opacity-50"
           >
             {loading ? '...' : isLogin ? t('btn.sign_in') : t('btn.register')}

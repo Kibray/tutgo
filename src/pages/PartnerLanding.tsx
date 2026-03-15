@@ -228,10 +228,22 @@ const PartnerLanding = () => {
               />
             </div>
 
+            <div className="pt-1">
+              <label className="flex items-start gap-2.5 cursor-pointer">
+                <Checkbox checked={partnerTermsAccepted} onCheckedChange={(v) => setPartnerTermsAccepted(v === true)} className="mt-0.5" />
+                <span className="text-xs text-muted-foreground leading-relaxed">
+                  Я принимаю{' '}
+                  <Link to="/terms-partner" className="text-primary hover:underline">Соглашение с партнёрами</Link>
+                  {' '}и{' '}
+                  <Link to="/privacy" className="text-primary hover:underline">Политику конфиденциальности</Link>
+                </span>
+              </label>
+            </div>
+
             <motion.button
               whileTap={{ scale: 0.98 }}
               onClick={handleSubmit}
-              disabled={submitting}
+              disabled={submitting || !partnerTermsAccepted}
               className="w-full py-3.5 rounded-lg bg-primary text-primary-foreground font-bold text-sm glow-green disabled:opacity-50"
             >
               {submitting ? t('common.loading') : t('partner_landing.submit')}
