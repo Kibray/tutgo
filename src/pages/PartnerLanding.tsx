@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { MapPin, MessageCircle, BarChart3, Image, ArrowLeft, AlertTriangle } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { usePreferences } from '@/hooks/usePreferences';
 import { useToast } from '@/hooks/use-toast';
@@ -10,6 +10,7 @@ import { supabase } from '@/integrations/supabase/client';
 import BottomNav from '@/components/BottomNav';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 const benefits = [
@@ -28,6 +29,7 @@ const PartnerLanding = () => {
 
   const [showForm, setShowForm] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [partnerTermsAccepted, setPartnerTermsAccepted] = useState(false);
   const [form, setForm] = useState({
     company_name: '',
     category: '',
@@ -54,6 +56,10 @@ const PartnerLanding = () => {
     if (!user) return;
     if (!form.company_name || !form.category || !form.phone || !form.address) {
       toast({ title: t('common.error'), description: t('partner_landing.fill_required'), variant: 'destructive' });
+      return;
+    }
+    if (!partnerTermsAccepted) {
+      toast({ title: t('common.error'), description: 'Примите соглашение с партнёрами', variant: 'destructive' });
       return;
     }
 
@@ -222,10 +228,22 @@ const PartnerLanding = () => {
               />
             </div>
 
+            <div className="pt-1">
+              <label className="flex items-start gap-2.5 cursor-pointer">
+                <Checkbox checked={partnerTermsAccepted} onCheckedChange={(v) => setPartnerTermsAccepted(v === true)} className="mt-0.5" />
+                <span className="text-xs text-muted-foreground leading-relaxed">
+                  Я принимаю{' '}
+                  <Link to="/terms-partner" className="text-primary hover:underline">Соглашение с партнёрами</Link>
+                  {' '}и{' '}
+                  <Link to="/privacy" className="text-primary hover:underline">Политику конфиденциальности</Link>
+                </span>
+              </label>
+            </div>
+
             <motion.button
               whileTap={{ scale: 0.98 }}
               onClick={handleSubmit}
-              disabled={submitting}
+              disabled={submitting || !partnerTermsAccepted}
               className="w-full py-3.5 rounded-lg bg-primary text-primary-foreground font-bold text-sm glow-green disabled:opacity-50"
             >
               {submitting ? t('common.loading') : t('partner_landing.submit')}

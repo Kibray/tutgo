@@ -13,14 +13,11 @@ interface TermsAcceptanceModalProps {
 }
 
 const TermsAcceptanceModal = ({ open, userId, onAccepted }: TermsAcceptanceModalProps) => {
-  const [ageConfirmed, setAgeConfirmed] = useState(false);
-  const [termsAccepted, setTermsAccepted] = useState(false);
+  const [accepted, setAccepted] = useState(false);
   const [saving, setSaving] = useState(false);
 
-  const canContinue = ageConfirmed && termsAccepted;
-
   const handleAccept = async () => {
-    if (!canContinue) return;
+    if (!accepted) return;
     setSaving(true);
 
     const { error } = await supabase.from('profiles').update({
@@ -48,24 +45,19 @@ const TermsAcceptanceModal = ({ open, userId, onAccepted }: TermsAcceptanceModal
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-4 py-4">
+        <div className="py-4">
           <label className="flex items-start gap-3 cursor-pointer">
-            <Checkbox checked={ageConfirmed} onCheckedChange={(v) => setAgeConfirmed(v === true)} className="mt-0.5" />
-            <span className="text-sm text-foreground leading-relaxed">Мне исполнилось 18 лет</span>
-          </label>
-          <label className="flex items-start gap-3 cursor-pointer">
-            <Checkbox checked={termsAccepted} onCheckedChange={(v) => setTermsAccepted(v === true)} className="mt-0.5" />
+            <Checkbox checked={accepted} onCheckedChange={(v) => setAccepted(v === true)} className="mt-0.5" />
             <span className="text-sm text-foreground leading-relaxed">
-              Я принимаю{' '}
-              <Link to="/terms" className="text-primary hover:underline font-medium">Пользовательское соглашение</Link>
+              Мне исполнилось 18 лет, и я принимаю{' '}
+              <Link to="/terms" className="text-primary hover:underline font-medium">Условия использования</Link>
               {' '}и{' '}
               <Link to="/privacy" className="text-primary hover:underline font-medium">Политику конфиденциальности</Link>
-              {' '}TutGo
             </span>
           </label>
         </div>
 
-        <Button onClick={handleAccept} disabled={!canContinue || saving} className="w-full">
+        <Button onClick={handleAccept} disabled={!accepted || saving} className="w-full">
           {saving ? 'Сохраняем...' : 'Продолжить'}
         </Button>
       </DialogContent>

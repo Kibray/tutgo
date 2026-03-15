@@ -17,7 +17,6 @@ const Auth = () => {
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
   const [loading, setLoading] = useState(false);
-  const [ageConfirmed, setAgeConfirmed] = useState(false);
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const [confirmationSent, setConfirmationSent] = useState(false);
@@ -46,7 +45,7 @@ const Auth = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!isLogin && (!ageConfirmed || !termsAccepted)) {
+    if (!isLogin && !termsAccepted) {
       toast({ title: t('auth.attention'), description: t('auth.confirm_age_terms'), variant: 'destructive' });
       return;
     }
@@ -210,18 +209,14 @@ const Auth = () => {
             className="w-full glass rounded-lg px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground outline-none border border-border focus:border-primary transition-colors"
           />
           {!isLogin && (
-            <div className="space-y-3 pt-1">
-              <label className="flex items-start gap-2.5 cursor-pointer">
-                <Checkbox checked={ageConfirmed} onCheckedChange={(v) => setAgeConfirmed(v === true)} className="mt-0.5" />
-                <span className="text-xs text-muted-foreground leading-relaxed">{t('auth.age_confirm')}</span>
-              </label>
+            <div className="pt-1">
               <label className="flex items-start gap-2.5 cursor-pointer">
                 <Checkbox checked={termsAccepted} onCheckedChange={(v) => setTermsAccepted(v === true)} className="mt-0.5" />
                 <span className="text-xs text-muted-foreground leading-relaxed">
-                  {t('auth.accept_terms')}{' '}
-                  <Link to="/terms" className="text-primary hover:underline" onClick={(e) => e.stopPropagation()}>{t('legal.terms')}</Link>
-                  {' & '}
-                  <Link to="/privacy" className="text-primary hover:underline" onClick={(e) => e.stopPropagation()}>{t('legal.privacy')}</Link>
+                  Мне исполнилось 18 лет, и я принимаю{' '}
+                  <Link to="/terms" className="text-primary hover:underline" onClick={(e) => e.stopPropagation()}>Условия использования</Link>
+                  {' '}и{' '}
+                  <Link to="/privacy" className="text-primary hover:underline" onClick={(e) => e.stopPropagation()}>Политику конфиденциальности</Link>
                 </span>
               </label>
             </div>
@@ -229,7 +224,7 @@ const Auth = () => {
           <motion.button
             whileTap={{ scale: 0.98 }}
             type="submit"
-            disabled={loading || (!isLogin && (!ageConfirmed || !termsAccepted))}
+            disabled={loading || (!isLogin && !termsAccepted)}
             className="w-full py-3 rounded-lg bg-primary text-primary-foreground font-semibold text-sm disabled:opacity-50"
           >
             {loading ? '...' : isLogin ? t('btn.sign_in') : t('btn.register')}
