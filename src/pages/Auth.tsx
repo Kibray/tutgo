@@ -209,18 +209,14 @@ const Auth = () => {
             className="w-full glass rounded-lg px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground outline-none border border-border focus:border-primary transition-colors"
           />
           {!isLogin && (
-            <div className="space-y-3 pt-1">
-              <label className="flex items-start gap-2.5 cursor-pointer">
-                <Checkbox checked={ageConfirmed} onCheckedChange={(v) => setAgeConfirmed(v === true)} className="mt-0.5" />
-                <span className="text-xs text-muted-foreground leading-relaxed">{t('auth.age_confirm')}</span>
-              </label>
+            <div className="pt-1">
               <label className="flex items-start gap-2.5 cursor-pointer">
                 <Checkbox checked={termsAccepted} onCheckedChange={(v) => setTermsAccepted(v === true)} className="mt-0.5" />
                 <span className="text-xs text-muted-foreground leading-relaxed">
-                  {t('auth.accept_terms')}{' '}
-                  <Link to="/terms" className="text-primary hover:underline" onClick={(e) => e.stopPropagation()}>{t('legal.terms')}</Link>
-                  {' & '}
-                  <Link to="/privacy" className="text-primary hover:underline" onClick={(e) => e.stopPropagation()}>{t('legal.privacy')}</Link>
+                  Мне исполнилось 18 лет, и я принимаю{' '}
+                  <Link to="/terms" className="text-primary hover:underline" onClick={(e) => e.stopPropagation()}>Условия использования</Link>
+                  {' '}и{' '}
+                  <Link to="/privacy" className="text-primary hover:underline" onClick={(e) => e.stopPropagation()}>Политику конфиденциальности</Link>
                 </span>
               </label>
             </div>
