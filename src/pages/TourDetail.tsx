@@ -85,7 +85,7 @@ const TourDetail = () => {
 
         <button
           onClick={() => navigate('/tours')}
-          className="absolute top-4 left-4 w-10 h-10 rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center"
+          className="absolute top-4 left-4 w-[34px] h-[34px] rounded-[10px] bg-black/60 backdrop-blur-[10px] flex items-center justify-center"
         >
           <ChevronLeft className="w-5 h-5 text-white" />
         </button>
