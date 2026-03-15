@@ -58,6 +58,10 @@ const PartnerLanding = () => {
       toast({ title: t('common.error'), description: t('partner_landing.fill_required'), variant: 'destructive' });
       return;
     }
+    if (!partnerTermsAccepted) {
+      toast({ title: t('common.error'), description: 'Примите соглашение с партнёрами', variant: 'destructive' });
+      return;
+    }
 
     setSubmitting(true);
     try {
