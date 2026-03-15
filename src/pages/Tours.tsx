@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, SlidersHorizontal, Star, MapPin, Users, Heart, X, ChevronLeft } from 'lucide-react';
+import { Search, SlidersHorizontal, Star, MapPin, Users, Heart, X, ChevronLeft, LayoutGrid, List } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -118,12 +118,83 @@ const TourCard = ({ tour, onClick }: { tour: Tour; onClick: () => void }) => {
   );
 };
 
+const TourListCard = ({ tour, onClick }: { tour: Tour; onClick: () => void }) => {
+  const isNew = new Date(tour.created_at) > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+  const isHit = tour.rating >= 4.9;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="bg-card rounded-2xl overflow-hidden border border-border hover:border-primary/30 transition-all cursor-pointer flex"
+      onClick={onClick}
+    >
+      <div className="relative w-[140px] h-[140px] shrink-0">
+        <img
+          src={tour.photos?.[0] || '/placeholder.svg'}
+          alt={tour.title}
+          className="w-full h-full object-cover"
+        />
+        <div className="absolute top-2 left-2 flex flex-col gap-1">
+          {isHit && <Badge className="bg-orange-500/90 text-white text-[10px] px-1.5">🔥 Хит</Badge>}
+          {isNew && <Badge className="bg-blue-500/90 text-white text-[10px] px-1.5">🆕</Badge>}
+        </div>
+      </div>
+
+      <div className="flex-1 p-3 flex flex-col justify-between min-w-0">
+        <div className="space-y-1.5">
+          <h3 className="font-bold text-sm text-foreground font-[Syne] line-clamp-1">{tour.title}</h3>
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+            <span className="flex items-center gap-0.5">
+              <Star className="w-3 h-3 text-yellow-500 fill-yellow-500" />
+              {tour.rating}
+            </span>
+            <span>·</span>
+            <span className="flex items-center gap-0.5">
+              <MapPin className="w-3 h-3" />
+              {tour.departure_city}
+            </span>
+            <span>·</span>
+            <span>{tour.duration_days} дн.</span>
+          </div>
+          <div className="flex flex-wrap gap-1">
+            {tour.includes.slice(0, 3).map((inc, i) => (
+              <Badge key={i} variant="secondary" className="text-[10px] px-1.5 py-0">
+                {inc}
+              </Badge>
+            ))}
+          </div>
+        </div>
+        <div className="flex items-end justify-between">
+          <div>
+            <span className="text-base font-bold text-primary">
+              {tour.price_per_person.toLocaleString()} сум
+            </span>
+            <span className="text-[10px] text-muted-foreground ml-1">/ чел</span>
+          </div>
+          <Button size="sm" className="bg-gradient-to-r from-primary to-blue-600 text-white text-xs rounded-xl h-7 px-2.5">
+            Подробнее →
+          </Button>
+        </div>
+      </div>
+    </motion.div>
+  );
+};
+
 const Tours = () => {
   const navigate = useNavigate();
   const isDesktop = useIsDesktop();
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('all');
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>(() => {
+    return (localStorage.getItem('tours_view') as 'grid' | 'list') || 'grid';
+  });
+
+  const toggleView = (mode: 'grid' | 'list') => {
+    setViewMode(mode);
+    localStorage.setItem('tours_view', mode);
+  };
 
   // Filter state
   const [priceRange, setPriceRange] = useState([0, 2000000]);
@@ -167,15 +238,31 @@ const Tours = () => {
             )}
             <h1 className="text-xl font-bold font-[Syne] text-foreground">🌍 Туры</h1>
           </div>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setFiltersOpen(true)}
-            className="border-primary/50 text-primary text-xs"
-          >
-            <SlidersHorizontal className="w-3.5 h-3.5 mr-1" />
-            Фильтры
-          </Button>
+          <div className="flex items-center gap-1.5">
+            <div className="flex border border-border rounded-lg overflow-hidden">
+              <button
+                onClick={() => toggleView('grid')}
+                className={`p-1.5 transition-colors ${viewMode === 'grid' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-secondary'}`}
+              >
+                <LayoutGrid className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => toggleView('list')}
+                className={`p-1.5 transition-colors ${viewMode === 'list' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-secondary'}`}
+              >
+                <List className="w-4 h-4" />
+              </button>
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setFiltersOpen(true)}
+              className="border-primary/50 text-primary text-xs"
+            >
+              <SlidersHorizontal className="w-3.5 h-3.5 mr-1" />
+              Фильтры
+            </Button>
+          </div>
         </div>
       </div>
 
@@ -229,10 +316,14 @@ const Tours = () => {
           </div>
         ) : (
           <div className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {tours.map(tour => (
-                <TourCard key={tour.id} tour={tour} onClick={() => navigate(`/tours/${tour.id}`)} />
-              ))}
+            <div className={viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4' : 'flex flex-col gap-3'}>
+              {tours.map(tour =>
+                viewMode === 'grid' ? (
+                  <TourCard key={tour.id} tour={tour} onClick={() => navigate(`/tours/${tour.id}`)} />
+                ) : (
+                  <TourListCard key={tour.id} tour={tour} onClick={() => navigate(`/tours/${tour.id}`)} />
+                )
+              )}
             </div>
             {hasNextPage && (
               <div className="flex justify-center pt-2">
