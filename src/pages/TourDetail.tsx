@@ -378,8 +378,8 @@ const TourDetail = () => {
               ))}
             </div>
           </div>
-        )}
-      </div>
+          );
+        })()}
 
       {/* Fixed bottom bar */}
       <div className="fixed bottom-0 left-0 right-0 z-40 bg-background/90 backdrop-blur-xl border-t border-border p-4">
