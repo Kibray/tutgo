@@ -14,17 +14,14 @@ Deno.serve(async (req) => {
   try {
     const webhookUrl = "https://ivnczarwkkeyncwrovio.supabase.co/functions/v1/telegram-bot";
 
-    // Log secret token info for debugging (not the value itself)
-    const tokenLen = TELEGRAM_SECRET_TOKEN?.length ?? 0;
-    const tokenValid = TELEGRAM_SECRET_TOKEN ? /^[A-Za-z0-9_-]+$/.test(TELEGRAM_SECRET_TOKEN) : false;
-    console.log(`TELEGRAM_SECRET_TOKEN length: ${tokenLen}, valid chars: ${tokenValid}`);
+    const tokenValid = TELEGRAM_SECRET_TOKEN ? /^[A-Za-z0-9_-]{1,256}$/.test(TELEGRAM_SECRET_TOKEN) : false;
 
     const payload: Record<string, unknown> = {
       url: webhookUrl,
       allowed_updates: ["message", "callback_query"],
     };
 
-    if (TELEGRAM_SECRET_TOKEN && tokenValid) {
+    if (tokenValid) {
       payload.secret_token = TELEGRAM_SECRET_TOKEN;
     }
 
@@ -35,7 +32,7 @@ Deno.serve(async (req) => {
     });
 
     const data = await res.json();
-    return new Response(JSON.stringify({ ok: data.ok, description: data.description, tokenLen, tokenValid }), {
+    return new Response(JSON.stringify({ ok: data.ok, description: data.description }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (err) {
