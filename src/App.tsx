@@ -39,6 +39,8 @@ import BusinessBySlug from "./pages/BusinessBySlug";
 import ReferralRedirect from "./pages/ReferralRedirect";
 import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
+import TermsPartner from "./pages/TermsPartner";
+import ReviewRules from "./pages/ReviewRules";
 import TermsAcceptanceModal from "./components/TermsAcceptanceModal";
 import { useAuth } from "./hooks/useAuth";
 
@@ -98,7 +100,9 @@ const App = () => (
                 <Route path="/b/:slug" element={<BusinessBySlug />} />
                 <Route path="/ref/:code" element={<ReferralRedirect />} />
                 <Route path="/terms" element={<Terms />} />
+                <Route path="/terms-partner" element={<TermsPartner />} />
                 <Route path="/privacy" element={<Privacy />} />
+                <Route path="/review-rules" element={<ReviewRules />} />
                 <Route path="/how-it-works" element={<HowItWorks />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
