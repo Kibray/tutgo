@@ -100,9 +100,22 @@ async function handleLinkCode(chatId: number, code: string, username: string | n
   );
 }
 
+const TELEGRAM_SECRET_TOKEN = Deno.env.get("TELEGRAM_SECRET_TOKEN");
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
+  }
+
+  // Validate Telegram secret token
+  if (TELEGRAM_SECRET_TOKEN) {
+    const headerToken = req.headers.get("x-telegram-bot-api-secret-token");
+    if (headerToken !== TELEGRAM_SECRET_TOKEN) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
   }
 
   try {
