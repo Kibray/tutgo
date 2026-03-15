@@ -215,10 +215,21 @@ const Auth = () => {
               <label className="flex items-start gap-2.5 cursor-pointer">
                 <Checkbox checked={termsAccepted} onCheckedChange={(v) => setTermsAccepted(v === true)} className="mt-0.5" />
                 <span className="text-xs text-muted-foreground leading-relaxed">
-                  Мне исполнилось 18 лет, и я принимаю{' '}
-                  <Link to="/terms" className="text-primary hover:underline" onClick={(e) => e.stopPropagation()}>Условия использования</Link>
-                  {' '}и{' '}
-                  <Link to="/privacy" className="text-primary hover:underline" onClick={(e) => e.stopPropagation()}>Политику конфиденциальности</Link>
+                  {isPartner ? (
+                    <>
+                      Я принимаю{' '}
+                      <Link to="/terms-partner" className="text-primary hover:underline" onClick={(e) => e.stopPropagation()}>Соглашение с партнёрами</Link>
+                      {' '}и{' '}
+                      <Link to="/privacy" className="text-primary hover:underline" onClick={(e) => e.stopPropagation()}>Политику конфиденциальности</Link>
+                    </>
+                  ) : (
+                    <>
+                      Мне исполнилось 18 лет, и я принимаю{' '}
+                      <Link to="/terms" className="text-primary hover:underline" onClick={(e) => e.stopPropagation()}>Условия использования</Link>
+                      {' '}и{' '}
+                      <Link to="/privacy" className="text-primary hover:underline" onClick={(e) => e.stopPropagation()}>Политику конфиденциальности</Link>
+                    </>
+                  )}
                 </span>
               </label>
             </div>
