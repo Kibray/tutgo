@@ -33,8 +33,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const checkTermsAccepted = async (userId: string) => {
-    const { data } = await supabase.from('profiles').select('terms_accepted').eq('user_id', userId).single();
+    const { data } = await supabase.from('profiles').select('terms_accepted, partner_terms_accepted').eq('user_id', userId).single();
     setTermsAccepted(data?.terms_accepted ?? false);
+    setPartnerTermsAccepted((data as any)?.partner_terms_accepted ?? false);
   };
 
   useEffect(() => {
