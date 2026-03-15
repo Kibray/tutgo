@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, SlidersHorizontal, Star, MapPin, Users, Heart, X, ChevronLeft } from 'lucide-react';
+import { Search, SlidersHorizontal, Star, MapPin, Users, Heart, X, ChevronLeft, LayoutGrid, List } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
