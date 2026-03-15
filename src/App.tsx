@@ -43,6 +43,8 @@ import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
 import TermsPartner from "./pages/TermsPartner";
 import ReviewRules from "./pages/ReviewRules";
+import Tours from "./pages/Tours";
+import TourDetail from "./pages/TourDetail";
 import TermsAcceptanceModal from "./components/TermsAcceptanceModal";
 import { useAuth } from "./hooks/useAuth";
 
@@ -129,6 +131,8 @@ const App = () => (
                 <Route path="/privacy" element={<Privacy />} />
                 <Route path="/review-rules" element={<ReviewRules />} />
                 <Route path="/how-it-works" element={<HowItWorks />} />
+                <Route path="/tours" element={<Tours />} />
+                <Route path="/tours/:id" element={<TourDetail />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </div>

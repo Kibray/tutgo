@@ -1,4 +1,4 @@
-import { Home, Tag, Calendar, User } from 'lucide-react';
+import { Home, Tag, Calendar, User, Globe } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { usePreferences } from '@/hooks/usePreferences';
@@ -10,6 +10,7 @@ const BottomNav = () => {
 
   const tabs = [
     { id: '/', icon: Home, label: t('nav.home') },
+    { id: '/tours', icon: Globe, label: 'Туры' },
     { id: '/deals', icon: Tag, label: t('nav.deals') },
     { id: '/bookings', icon: Calendar, label: t('nav.bookings') },
     { id: '/profile', icon: User, label: t('nav.profile') },

@@ -1267,6 +1267,139 @@ export type Database = {
         }
         Relationships: []
       }
+      tour_bookings: {
+        Row: {
+          adults: number | null
+          children: number | null
+          created_at: string | null
+          id: string
+          selected_date: string
+          status: string | null
+          total_price: number | null
+          tour_id: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          adults?: number | null
+          children?: number | null
+          created_at?: string | null
+          id?: string
+          selected_date: string
+          status?: string | null
+          total_price?: number | null
+          tour_id: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          adults?: number | null
+          children?: number | null
+          created_at?: string | null
+          id?: string
+          selected_date?: string
+          status?: string | null
+          total_price?: number | null
+          tour_id?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tour_bookings_tour_id_fkey"
+            columns: ["tour_id"]
+            isOneToOne: false
+            referencedRelation: "tours"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tours: {
+        Row: {
+          available_dates: string[] | null
+          category: string | null
+          created_at: string | null
+          departure_city: string | null
+          description: string | null
+          destinations: string[] | null
+          duration_days: number | null
+          excludes: string[] | null
+          highlights: Json | null
+          id: string
+          includes: string[] | null
+          is_active: boolean | null
+          location_id: string | null
+          max_people: number | null
+          min_people: number | null
+          photos: string[] | null
+          price_child: number | null
+          price_per_person: number | null
+          program: Json | null
+          rating: number | null
+          reviews_count: number | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          available_dates?: string[] | null
+          category?: string | null
+          created_at?: string | null
+          departure_city?: string | null
+          description?: string | null
+          destinations?: string[] | null
+          duration_days?: number | null
+          excludes?: string[] | null
+          highlights?: Json | null
+          id?: string
+          includes?: string[] | null
+          is_active?: boolean | null
+          location_id?: string | null
+          max_people?: number | null
+          min_people?: number | null
+          photos?: string[] | null
+          price_child?: number | null
+          price_per_person?: number | null
+          program?: Json | null
+          rating?: number | null
+          reviews_count?: number | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          available_dates?: string[] | null
+          category?: string | null
+          created_at?: string | null
+          departure_city?: string | null
+          description?: string | null
+          destinations?: string[] | null
+          duration_days?: number | null
+          excludes?: string[] | null
+          highlights?: Json | null
+          id?: string
+          includes?: string[] | null
+          is_active?: boolean | null
+          location_id?: string | null
+          max_people?: number | null
+          min_people?: number | null
+          photos?: string[] | null
+          price_child?: number | null
+          price_per_person?: number | null
+          program?: Json | null
+          rating?: number | null
+          reviews_count?: number | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tours_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           id: string
