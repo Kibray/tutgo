@@ -48,6 +48,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       } else {
         setIsPartner(false);
         setTermsAccepted(true);
+        setPartnerTermsAccepted(true);
       }
       setLoading(false);
     });
