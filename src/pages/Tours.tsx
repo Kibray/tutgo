@@ -238,15 +238,31 @@ const Tours = () => {
             )}
             <h1 className="text-xl font-bold font-[Syne] text-foreground">🌍 Туры</h1>
           </div>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setFiltersOpen(true)}
-            className="border-primary/50 text-primary text-xs"
-          >
-            <SlidersHorizontal className="w-3.5 h-3.5 mr-1" />
-            Фильтры
-          </Button>
+          <div className="flex items-center gap-1.5">
+            <div className="flex border border-border rounded-lg overflow-hidden">
+              <button
+                onClick={() => toggleView('grid')}
+                className={`p-1.5 transition-colors ${viewMode === 'grid' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-secondary'}`}
+              >
+                <LayoutGrid className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => toggleView('list')}
+                className={`p-1.5 transition-colors ${viewMode === 'list' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-secondary'}`}
+              >
+                <List className="w-4 h-4" />
+              </button>
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setFiltersOpen(true)}
+              className="border-primary/50 text-primary text-xs"
+            >
+              <SlidersHorizontal className="w-3.5 h-3.5 mr-1" />
+              Фильтры
+            </Button>
+          </div>
         </div>
       </div>
 
