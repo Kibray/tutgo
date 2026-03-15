@@ -8,6 +8,7 @@ const menuItems = [
   { id: '/tours', icon: Globe, label: 'Туры' },
   { id: '/transport', icon: Bus, label: 'Транспорт' },
   { id: '/flights', icon: Plane, label: 'Билеты' },
+  { id: '/stay', icon: Hotel, label: 'Жильё' },
   { id: '/deals', icon: Tag, label: 'Акции' },
   { id: '/bookings', icon: Calendar, label: 'Мои записи' },
   { id: '/favorites', icon: Heart, label: 'Избранное' },

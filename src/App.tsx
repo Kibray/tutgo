@@ -143,6 +143,8 @@ const App = () => (
                 <Route path="/transport/results" element={<TransportResults />} />
                 <Route path="/flights" element={<Flights />} />
                 <Route path="/flights/results" element={<FlightResults />} />
+                <Route path="/stay" element={<Stay />} />
+                <Route path="/stay/:id" element={<StayDetail />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </div>
