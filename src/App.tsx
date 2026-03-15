@@ -14,6 +14,7 @@ import Profile from "./pages/Profile";
 import Auth from "./pages/Auth";
 import Partner from "./pages/Partner";
 import PartnerLanding from "./pages/PartnerLanding";
+import AuthPartner from "./pages/AuthPartner";
 import Admin from "./pages/Admin";
 import PartnerBookings from "./pages/partner/PartnerBookings";
 import PartnerClients from "./pages/partner/PartnerClients";
