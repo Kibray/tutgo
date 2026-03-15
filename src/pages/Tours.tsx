@@ -187,6 +187,14 @@ const Tours = () => {
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('all');
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>(() => {
+    return (localStorage.getItem('tours_view') as 'grid' | 'list') || 'grid';
+  });
+
+  const toggleView = (mode: 'grid' | 'list') => {
+    setViewMode(mode);
+    localStorage.setItem('tours_view', mode);
+  };
 
   // Filter state
   const [priceRange, setPriceRange] = useState([0, 2000000]);
