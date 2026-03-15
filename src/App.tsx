@@ -49,18 +49,37 @@ import { useAuth } from "./hooks/useAuth";
 const queryClient = new QueryClient();
 
 const TermsGate = () => {
-  const { user, termsAccepted, setTermsAccepted } = useAuth();
+  const { user, termsAccepted, setTermsAccepted, partnerTermsAccepted, setPartnerTermsAccepted } = useAuth();
   const location = useLocation();
-  if (!user || termsAccepted) return null;
+  if (!user) return null;
+
   const isPartnerRoute = location.pathname.startsWith('/auth/partner') || location.pathname.startsWith('/partner');
-  return (
-    <TermsAcceptanceModal
-      open={true}
-      userId={user.id}
-      variant={isPartnerRoute ? 'partner' : 'client'}
-      onAccepted={() => setTermsAccepted(true)}
-    />
-  );
+
+  // On partner routes, check partner terms
+  if (isPartnerRoute && !partnerTermsAccepted) {
+    return (
+      <TermsAcceptanceModal
+        open={true}
+        userId={user.id}
+        variant="partner"
+        onAccepted={() => setPartnerTermsAccepted(true)}
+      />
+    );
+  }
+
+  // On all routes, check client terms
+  if (!termsAccepted) {
+    return (
+      <TermsAcceptanceModal
+        open={true}
+        userId={user.id}
+        variant="client"
+        onAccepted={() => setTermsAccepted(true)}
+      />
+    );
+  }
+
+  return null;
 };
 
 const App = () => (

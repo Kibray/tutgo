@@ -23,10 +23,11 @@ const TermsAcceptanceModal = ({ open, userId, onAccepted, variant = 'client' }: 
     if (!accepted) return;
     setSaving(true);
 
-    const { error } = await supabase.from('profiles').update({
-      terms_accepted: true,
-      terms_accepted_at: new Date().toISOString(),
-    }).eq('user_id', userId);
+    const updateData = isPartner
+      ? { partner_terms_accepted: true, partner_terms_accepted_at: new Date().toISOString() }
+      : { terms_accepted: true, terms_accepted_at: new Date().toISOString() };
+
+    const { error } = await supabase.from('profiles').update(updateData as any).eq('user_id', userId);
 
     setSaving(false);
 
@@ -43,10 +44,10 @@ const TermsAcceptanceModal = ({ open, userId, onAccepted, variant = 'client' }: 
       <DialogContent className="sm:max-w-md" onPointerDownOutside={(e) => e.preventDefault()} onEscapeKeyDown={(e) => e.preventDefault()}>
         <DialogHeader>
           <DialogTitle className="text-lg font-bold font-display text-foreground">
-            {isPartner ? 'Регистрация партнёра' : 'Добро пожаловать в TutGo! 🎉'}
+            {isPartner ? 'Регистрация партнёра TutGo 🏢' : 'Добро пожаловать в TutGo! 🎉'}
           </DialogTitle>
           <DialogDescription className="text-sm text-muted-foreground pt-1">
-            {isPartner ? 'Прежде чем начать, примите условия:' : 'Прежде чем начать, примите условия:'}
+            Прежде чем начать, примите условия:
           </DialogDescription>
         </DialogHeader>
 
