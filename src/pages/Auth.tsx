@@ -45,7 +45,7 @@ const Auth = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!isLogin && (!ageConfirmed || !termsAccepted)) {
+    if (!isLogin && !termsAccepted) {
       toast({ title: t('auth.attention'), description: t('auth.confirm_age_terms'), variant: 'destructive' });
       return;
     }
