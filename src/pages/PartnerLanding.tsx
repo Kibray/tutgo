@@ -29,6 +29,7 @@ const PartnerLanding = () => {
 
   const [showForm, setShowForm] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [partnerTermsAccepted, setPartnerTermsAccepted] = useState(false);
   const [form, setForm] = useState({
     company_name: '',
     category: '',
