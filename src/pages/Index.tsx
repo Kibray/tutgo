@@ -10,6 +10,7 @@ import BusinessSheet from '@/components/BusinessSheet';
 import { SkeletonList } from '@/components/SkeletonCard';
 import MapView from '@/components/MapView';
 import AiAssistantFab from '@/components/AiAssistantFab';
+import MobileSidebar from '@/components/MobileSidebar';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import OnboardingFlow from '@/components/onboarding/OnboardingFlow';
 import { useLocations } from '@/hooks/useLocations';
