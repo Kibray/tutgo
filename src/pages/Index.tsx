@@ -196,7 +196,7 @@ const MobileIndex = () => {
               >
                 <Menu className="w-4.5 h-4.5 text-foreground" />
               </button>
-              <h1 className="text-xl font-bold font-display text-foreground drop-shadow-lg">
+              <h1 onClick={() => navigate('/')} className="text-xl font-bold font-display text-foreground drop-shadow-lg cursor-pointer">
                 TUT<span className="text-gradient-green">GO</span>
               </h1>
             </div>

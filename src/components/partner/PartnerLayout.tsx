@@ -45,7 +45,7 @@ const PartnerLayout = ({ children, title, showBackToPartner = true, headerRight 
       <div className="flex h-screen bg-background overflow-hidden">
         <aside className="w-[240px] flex-shrink-0 bg-card border-r border-border flex flex-col">
           <div className="p-5 border-b border-border">
-            <div className="flex items-center gap-2 mb-1">
+            <div onClick={() => navigate('/')} className="flex items-center gap-2 mb-1 cursor-pointer">
               <span className="text-xl font-bold font-display text-primary">TutGo</span>
               <span className="text-xs bg-primary/15 text-primary px-2 py-0.5 rounded-full font-medium">PRO</span>
             </div>
