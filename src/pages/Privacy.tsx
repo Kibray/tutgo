@@ -1,141 +1,113 @@
-import { useState } from 'react';
-import { motion } from 'framer-motion';
-import { ArrowLeft, Shield } from 'lucide-react';
-import { useNavigate, Link } from 'react-router-dom';
+import LegalPageLayout from '@/components/LegalPageLayout';
 
-type DocLang = 'ru' | 'uz';
-
-const content: Record<DocLang, { title: string; updated: string; sections: { heading: string; body: string }[] }> = {
-  ru: {
-    title: 'Политика конфиденциальности',
-    updated: 'Версия 1.0 · Март 2026',
-    sections: [
-      {
-        heading: '1. Какие данные мы собираем',
-        body: '• Имя и фамилия (при регистрации).\n• Email-адрес.\n• Номер телефона (опционально).\n• Геолокация (для отображения ближайших услуг).\n• История записей и отзывов.\n• Telegram chat_id и username (при подключении бота).\n• Реферальный код.\n• IP-адрес и данные устройства.\n• Предпочтения (язык, тема оформления, настройки уведомлений).',
-      },
-      {
-        heading: '2. Как мы используем данные',
-        body: '• Для записи к специалистам и управления бронированиями.\n• Для отправки уведомлений (Email и Telegram) о статусе записей.\n• Для напоминаний о предстоящих визитах.\n• Для улучшения качества сервиса и персонализации.\n• Для работы реферальной системы.\n• Для аналитики и статистики (в обезличенном виде).',
-      },
-      {
-        heading: '3. Cookies и технологии отслеживания',
-        body: '• Технические cookies — для авторизации и поддержания сессии.\n• Google Auth cookies — при входе через Google.\n• Аналитические cookies — для понимания поведения пользователей.\n\nВы можете отключить cookies в настройках браузера, однако это может повлиять на работу сервиса.',
-      },
-      {
-        heading: '4. Передача данных третьим лицам',
-        body: 'Мы НЕ передаём ваши персональные данные третьим лицам, за исключением:\n\n• Партнёра (бизнеса), к которому вы записались — передаётся только имя, телефон и детали записи.\n• По требованию законодательства Республики Узбекистан.\n\nМы не продаём, не сдаём в аренду и не обмениваем ваши данные.',
-      },
-      {
-        heading: '5. Право на удаление данных',
-        body: 'Вы имеете право запросить полное удаление ваших персональных данных.\n\nДля этого отправьте запрос на info@tutgo.uz с указанием email, привязанного к аккаунту. Мы обработаем запрос в течение 30 рабочих дней.',
-      },
-      {
-        heading: '6. Хранение данных',
-        body: '• База данных: Supabase (дата-центр в Сингапуре).\n• Почтовый сервис: Zoho Mail (дата-центр в США).\n• Данные передаются по защищённому протоколу HTTPS.\n• Доступ к базе данных ограничен политиками Row Level Security (RLS).\n\nОбработка данных осуществляется в соответствии с Законом Республики Узбекистан «О персональных данных» №547 от 2 июля 2019 года.',
-      },
-      {
-        heading: '7. Безопасность',
-        body: '• Все данные передаются по зашифрованному каналу (TLS/SSL).\n• Пароли хранятся в хешированном виде и недоступны даже администраторам.\n• Применяются политики Row Level Security для изоляции данных пользователей.\n• Регулярный аудит безопасности.',
-      },
-      {
-        heading: '8. Изменения политики',
-        body: 'Мы оставляем за собой право обновлять настоящую Политику конфиденциальности. При существенных изменениях мы уведомим пользователей через Telegram-бот @TutGoUzBot и/или email.\n\nПродолжение использования сервиса после уведомления означает согласие с обновлённой политикой.',
-      },
-      {
-        heading: '9. Контакты',
-        body: 'По вопросам конфиденциальности обращайтесь:\n\nEmail: info@tutgo.uz\nTelegram: @TutGoUzBot\nСайт: tutgo.uz\nАдрес: Узбекистан, Ташкент',
-      },
-    ],
+const sections = [
+  {
+    heading: '1. Общие положения',
+    body: `1.1. Настоящая Политика конфиденциальности определяет порядок сбора, обработки и защиты персональных данных клиентов и партнёров сервиса TutGo.
+1.2. Использование Сервиса означает полное и безоговорочное согласие с настоящей Политикой.
+1.3. Оператором персональных данных является TutGo (далее — Оператор).
+1.4. Обработка данных осуществляется в соответствии с законодательством Республики Узбекистан.`,
   },
-  uz: {
-    title: 'Maxfiylik siyosati',
-    updated: 'Versiya 1.0 · Mart 2026',
-    sections: [
-      {
-        heading: '1. Qanday maʼlumotlarni yigʻamiz',
-        body: '• Ism va familiya (roʻyxatdan oʻtishda).\n• Email manzil.\n• Telefon raqami (ixtiyoriy).\n• Geolokatsiya (yaqin xizmatlarni koʻrsatish uchun).\n• Bandlovlar va sharhlar tarixi.\n• Telegram chat_id va username (botni ulashda).\n• Referal kodi.\n• IP manzil va qurilma maʼlumotlari.',
-      },
-      {
-        heading: '2. Maʼlumotlardan qanday foydalanamiz',
-        body: '• Mutaxassislarga yozilish va bron qilishni boshqarish uchun.\n• Bandlovlar holati haqida bildirishnomalar (Email va Telegram) yuborish uchun.\n• Kelgusi tashriflar haqida eslatmalar uchun.\n• Xizmat sifatini yaxshilash va shaxsiylash tish uchun.',
-      },
-      {
-        heading: '3. Cookies',
-        body: '• Texnik cookies — avtorizatsiya va sessiyani saqlash uchun.\n• Google Auth cookies — Google orqali kirishda.\n• Analitik cookies — foydalanuvchi xatti-harakatlarini tushunish uchun.',
-      },
-      {
-        heading: '4. Uchinchi tomonlarga maʼlumot uzatish',
-        body: 'Biz shaxsiy maʼlumotlaringizni uchinchi tomonlarga UZATMAYMIZ, bundan mustasno:\n\n• Siz yozilgan hamkor (biznes) — faqat ism, telefon va bandlov tafsilotlari uzatiladi.\n• Oʻzbekiston Respublikasi qonunchiligi talabiga binoan.',
-      },
-      {
-        heading: '5. Maʼlumotlarni oʻchirish huquqi',
-        body: 'Siz shaxsiy maʼlumotlaringizni toʻliq oʻchirilishini soʻrashga haqsiz.\n\nBuning uchun info@tutgo.uz manziliga akkauntga bogʻlangan emailni koʻrsatib soʻrov yuboring. Biz soʻrovni 30 ish kuni ichida koʻrib chiqamiz.',
-      },
-      {
-        heading: '6. Maʼlumotlarni saqlash',
-        body: '• Maʼlumotlar bazasi: Supabase (Singapur).\n• Pochta xizmati: Zoho Mail (AQSh).\n• Maʼlumotlar HTTPS himoyalangan protokol orqali uzatiladi.\n\nOʻzbekiston Respublikasining «Shaxsiy maʼlumotlar toʻgʻrisida»gi №547-sonli Qonuniga muvofiq.',
-      },
-      {
-        heading: '7. Xavfsizlik',
-        body: '• Barcha maʼlumotlar shifrlangan kanal (TLS/SSL) orqali uzatiladi.\n• Parollar xeshlangan holda saqlanadi.\n• Row Level Security siyosatlari qoʻllaniladi.',
-      },
-      {
-        heading: '8. Siyosat oʻzgarishlari',
-        body: 'Biz ushbu Maxfiylik siyosatini yangilash huquqini saqlab qolamiz. Muhim oʻzgarishlar haqida @TutGoUzBot va/yoki email orqali xabar beramiz.',
-      },
-      {
-        heading: '9. Aloqa',
-        body: 'Email: info@tutgo.uz\nTelegram: @TutGoUzBot\nSayt: tutgo.uz\nManzil: Oʻzbekiston, Toshkent',
-      },
-    ],
+  {
+    heading: '2. Какие данные мы собираем',
+    body: `2.1. Данные клиентов
+•\tимя пользователя
+•\temail
+•\tномер телефона (если указан)
+•\tидентификатор Telegram
+•\tидентификатор Google аккаунта
+•\tистория записей, отзывы и оценки
+2.2. Технические данные (для всех)
+•\tIP-адрес
+•\tтип устройства, браузер, операционная система
+•\tдата и время доступа
+•\tфайлы cookie
+2.3. Данные партнёров (бизнесов)
+•\tнаименование компании
+•\tИНН, ОКЭД, банковские реквизиты
+•\tконтактные данные и данные представителей
+•\tрасписание, услуги, цены
+•\tинформация о записях и клиентах (в рамках CRM)
+Обработка данных партнёров дополнительно регулируется отдельным соглашением.`,
   },
-};
+  {
+    heading: '3. Какие данные мы НЕ собираем',
+    body: `Мы не собираем и не храним паспортные данные, ПИНФЛ, фотографии документов или полные данные банковских карт. Передача таких данных через Сервис запрещена и осуществляется исключительно на собственный риск.`,
+  },
+  {
+    heading: '4. Цели обработки данных',
+    body: `Мы используем данные для:
+•\tрегистрации и идентификации пользователей
+•\tработы системы онлайн-записи и бронирования
+•\tотправки уведомлений о записях и статусе
+•\tуправления записями и CRM для партнёров
+•\tулучшения качества сервиса и пользовательского опыта
+•\tаналитики и статистики (в обезличенном виде)
+•\tпредотвращения мошенничества
+•\tпредоставления поддержки пользователям и партнёрам`,
+  },
+  {
+    heading: '5. Уведомления',
+    body: `Пользователи и партнёры могут получать:
+•\tEmail-уведомления (регистрация, подтверждение записи, восстановление доступа, сервисные сообщения). Сервисные письма отключить невозможно.
+•\tTelegram-уведомления (при подключении бота @TutGoUzBot).
+Отключить маркетинговые уведомления можно в настройках профиля или командой /stop в боте.`,
+  },
+  {
+    heading: '6. Передача данных третьим лицам',
+    body: `Оператор передаёт персональные данные третьим лицам только в следующих случаях:
+•\tПартнёрам (организациям и специалистам) — имя, контактный телефон и детали записи клиента исключительно для выполнения забронированной услуги.
+•\tПоставщикам технических услуг (облачные хранилища, сервисы аналитики, рассылок) в минимальном объёме, необходимом для работы Сервиса, на условиях договоров обработки данных.
+Оператор не продаёт, не разглашает и не использует персональные данные в иных целях. Обработка данных партнёров дополнительно регулируется отдельным соглашением с бизнесом.`,
+  },
+  {
+    heading: '7. Хранение данных',
+    body: `Персональные данные хранятся:
+•\tв течение периода использования Сервиса
+•\tдо удаления аккаунта
+•\tлибо до достижения целей обработки
+После удаления аккаунта данные могут сохраняться в обезличенном виде для статистики и аналитики. Данные партнёров хранятся дольше в рамках CRM и отдельного соглашения.`,
+  },
+  {
+    heading: '8. Трансграничная передача и защита данных',
+    body: `Данные могут храниться в защищённых облачных системах. Оператор принимает все разумные технические и организационные меры для защиты информации (HTTPS, шифрование, ограничение доступа).
+Оператор принимает разумные технические и организационные меры для защиты персональных данных, включая использование шифрования, ограничение доступа сотрудников и защиту серверной инфраструктуры.
+Абсолютная безопасность в интернете не гарантируется.`,
+  },
+  {
+    heading: '9. Права пользователей и партнёров',
+    body: `Вы имеете право:
+•\tполучать информацию о своих данных
+•\tвносить изменения в профиль
+•\tтребовать удаления аккаунта и данных
+•\tотозвать согласие на обработку (кроме случаев, предусмотренных законом)
+•\tотказаться от маркетинговых уведомлений
+Для реализации прав обращайтесь по контактам в разделе 12.`,
+  },
+  {
+    heading: '10. Использование файлов Cookie',
+    body: `Мы используем cookie для работы сайта, авторизации и аналитики. Вы можете отключить их в настройках браузера (это может повлиять на работу Сервиса).`,
+  },
+  {
+    heading: '11. Изменения Политики',
+    body: `Оператор вправе вносить изменения. Новая редакция публикуется на сайте. Продолжение использования Сервиса означает согласие с изменениями.
+Используя сайт TutGo (tutgo.uz), Пользователь подтверждает, что ознакомился с настоящей Политикой конфиденциальности и принимает её условия.`,
+  },
+  {
+    heading: '12. Контакты',
+    body: `По вопросам конфиденциальности:
+Email: info@tutgo.uz
+Telegram: @TutGoUzBot
+Сайт: tutgo.uz`,
+  },
+];
 
-const Privacy = () => {
-  const [lang, setLang] = useState<DocLang>('ru');
-  const navigate = useNavigate();
-  const doc = content[lang];
-
-  return (
-    <div className="min-h-screen bg-background pb-12">
-      <div className="sticky top-0 z-10 bg-background/80 backdrop-blur-xl border-b border-border px-4 py-3 flex items-center gap-3">
-        <motion.button whileTap={{ scale: 0.9 }} onClick={() => navigate(-1)}>
-          <ArrowLeft className="w-5 h-5 text-foreground" />
-        </motion.button>
-        <Shield className="w-5 h-5 text-primary" />
-        <h1 className="text-sm font-bold text-foreground flex-1">{doc.title}</h1>
-        <div className="flex gap-1 bg-secondary rounded-lg p-0.5">
-          {(['ru', 'uz'] as DocLang[]).map((l) => (
-            <button
-              key={l}
-              onClick={() => setLang(l)}
-              className={`px-3 py-1 rounded-md text-xs font-semibold transition-colors ${lang === l ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:text-foreground'}`}
-            >
-              {l.toUpperCase()}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <div className="px-4 pt-4 max-w-2xl mx-auto space-y-6">
-        <p className="text-[11px] text-muted-foreground">{doc.updated}</p>
-        {doc.sections.map((s, i) => (
-          <motion.div key={i} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.03 }}>
-            <h2 className="text-sm font-bold text-foreground mb-2">{s.heading}</h2>
-            <p className="text-xs text-muted-foreground leading-relaxed whitespace-pre-line">{s.body}</p>
-          </motion.div>
-        ))}
-
-        <div className="border-t border-border pt-6 mt-8 text-center space-y-2">
-          <Link to="/terms" className="text-xs text-primary hover:underline">
-            {lang === 'ru' ? 'Пользовательское соглашение' : 'Foydalanish shartlari'}
-          </Link>
-          <p className="text-[10px] text-muted-foreground">© 2026 TutGo. {lang === 'ru' ? 'Все права защищены.' : 'Barcha huquqlar himoyalangan.'}</p>
-        </div>
-      </div>
-    </div>
-  );
-};
+const Privacy = () => (
+  <LegalPageLayout
+    title="Политика конфиденциальности"
+    subtitle="Единая политика обработки данных"
+    sections={sections}
+  />
+);
 
 export default Privacy;
