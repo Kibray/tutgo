@@ -237,8 +237,8 @@ const FlightResults = () => {
       {/* Header */}
       <div className="sticky top-0 z-30 bg-background/80 backdrop-blur-xl border-b border-border/50 px-4 py-3">
         <div className="flex items-center gap-3">
-          <button onClick={() => navigate('/flights')} className="p-1.5">
-            <ChevronLeft className="w-5 h-5 text-foreground" />
+          <button onClick={() => navigate('/flights')} className="w-[34px] h-[34px] rounded-[10px] bg-black/60 backdrop-blur-[10px] flex items-center justify-center">
+            <ChevronLeft className="w-5 h-5 text-white" />
           </button>
           <div className="flex-1">
             <p className="text-sm font-bold text-foreground">{fromCity.split('(')[0]?.trim()} → {toCity.split('(')[0]?.trim() || '?'}</p>
