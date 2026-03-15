@@ -35,7 +35,15 @@ const BookingConfirm = () => {
   const d = new Date(date);
 
   const handleConfirm = async () => {
-    if (!user || !time) return;
+    if (!user) {
+      toast({ title: t('common.error'), description: 'Необходимо войти в аккаунт для бронирования', variant: 'destructive' });
+      navigate('/auth');
+      return;
+    }
+    if (!time) {
+      toast({ title: t('common.error'), description: 'Время не выбрано', variant: 'destructive' });
+      return;
+    }
     setSaving(true);
 
     const [hours, minutes] = time.split(':').map(Number);
@@ -44,7 +52,7 @@ const BookingConfirm = () => {
     const durationMin = service?.duration_minutes || 60;
     const endTime = new Date(startTime.getTime() + durationMin * 60000);
 
-    const { error } = await supabase.from('appointments').insert({
+    const insertData = {
       location_id: location.id,
       service_id: service?.id || null,
       staff_id: staffId || null,
@@ -53,12 +61,18 @@ const BookingConfirm = () => {
       start_time: startTime.toISOString(),
       end_time: endTime.toISOString(),
       status: 'pending',
-    });
+    };
+
+    console.log('Creating appointment:', insertData);
+
+    const { data, error } = await supabase.from('appointments').insert(insertData).select();
 
     setSaving(false);
     if (error) {
+      console.error('Appointment insert error:', error);
       toast({ title: t('common.error'), description: error.message.includes('Double booking') ? t('booking.time_taken') : error.message, variant: 'destructive' });
     } else {
+      console.log('Appointment created successfully:', data);
       setConfirmed(true);
       toast({ title: t('booking.created') });
     }
