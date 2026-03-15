@@ -838,6 +838,8 @@ export type Database = {
           notify_confirmed: boolean
           notify_deals: boolean
           notify_reminder: boolean
+          partner_terms_accepted: boolean
+          partner_terms_accepted_at: string | null
           phone: string | null
           referral_code: string | null
           referral_count: number
@@ -861,6 +863,8 @@ export type Database = {
           notify_confirmed?: boolean
           notify_deals?: boolean
           notify_reminder?: boolean
+          partner_terms_accepted?: boolean
+          partner_terms_accepted_at?: string | null
           phone?: string | null
           referral_code?: string | null
           referral_count?: number
@@ -884,6 +888,8 @@ export type Database = {
           notify_confirmed?: boolean
           notify_deals?: boolean
           notify_reminder?: boolean
+          partner_terms_accepted?: boolean
+          partner_terms_accepted_at?: string | null
           phone?: string | null
           referral_code?: string | null
           referral_count?: number

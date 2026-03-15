@@ -9,6 +9,8 @@ interface AuthContextType {
   isPartner: boolean;
   termsAccepted: boolean;
   setTermsAccepted: (v: boolean) => void;
+  partnerTermsAccepted: boolean;
+  setPartnerTermsAccepted: (v: boolean) => void;
   signUp: (email: string, password: string, displayName?: string) => Promise<{ error: any }>;
   signIn: (email: string, password: string) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
@@ -22,7 +24,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const [isPartner, setIsPartner] = useState(false);
-  const [termsAccepted, setTermsAccepted] = useState(true); // default true to avoid flash
+  const [termsAccepted, setTermsAccepted] = useState(true);
+  const [partnerTermsAccepted, setPartnerTermsAccepted] = useState(true);
 
   const checkPartnerRole = async (userId: string) => {
     const { data } = await supabase.rpc('has_role', { _user_id: userId, _role: 'partner' });
@@ -30,8 +33,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const checkTermsAccepted = async (userId: string) => {
-    const { data } = await supabase.from('profiles').select('terms_accepted').eq('user_id', userId).single();
+    const { data } = await supabase.from('profiles').select('terms_accepted, partner_terms_accepted').eq('user_id', userId).single();
     setTermsAccepted(data?.terms_accepted ?? false);
+    setPartnerTermsAccepted((data as any)?.partner_terms_accepted ?? false);
   };
 
   useEffect(() => {
@@ -44,6 +48,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       } else {
         setIsPartner(false);
         setTermsAccepted(true);
+        setPartnerTermsAccepted(true);
       }
       setLoading(false);
     });
@@ -91,7 +96,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, session, loading, isPartner, termsAccepted, setTermsAccepted, signUp, signIn, signOut, becomePartner }}>
+    <AuthContext.Provider value={{ user, session, loading, isPartner, termsAccepted, setTermsAccepted, partnerTermsAccepted, setPartnerTermsAccepted, signUp, signIn, signOut, becomePartner }}>
       {children}
     </AuthContext.Provider>
   );
