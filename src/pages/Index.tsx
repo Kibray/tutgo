@@ -1,7 +1,7 @@
 import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Locate, ChevronUp, ChevronDown, Bell } from 'lucide-react';
+import { Locate, ChevronUp, ChevronDown, Bell, Menu } from 'lucide-react';
 import SearchBar from '@/components/SearchBar';
 import CategoryChips from '@/components/CategoryChips';
 import ServiceCard from '@/components/ServiceCard';
@@ -10,6 +10,7 @@ import BusinessSheet from '@/components/BusinessSheet';
 import { SkeletonList } from '@/components/SkeletonCard';
 import MapView from '@/components/MapView';
 import AiAssistantFab from '@/components/AiAssistantFab';
+import MobileSidebar from '@/components/MobileSidebar';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import OnboardingFlow from '@/components/onboarding/OnboardingFlow';
 import { useLocations } from '@/hooks/useLocations';
@@ -69,6 +70,7 @@ const MobileIndex = () => {
   const [nearbyMode, setNearbyMode] = useState(false);
   const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
   const [geolocating, setGeolocating] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const { categories } = useCategories();
   const { isFavorite, toggleFavorite } = useFavorites();
   const { unreadCount } = useNotifications();
@@ -184,9 +186,17 @@ const MobileIndex = () => {
       <div className="absolute top-0 left-0 right-0 z-[1000] px-4 pt-4 pointer-events-none">
         <div className="pointer-events-auto">
           <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="flex items-center justify-between mb-3">
-            <h1 className="text-xl font-bold font-display text-foreground drop-shadow-lg">
-              TUT<span className="text-gradient-green">GO</span>
-            </h1>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setSidebarOpen(true)}
+                className="w-9 h-9 rounded-full bg-secondary/80 backdrop-blur-sm flex items-center justify-center"
+              >
+                <Menu className="w-4.5 h-4.5 text-foreground" />
+              </button>
+              <h1 className="text-xl font-bold font-display text-foreground drop-shadow-lg">
+                TUT<span className="text-gradient-green">GO</span>
+              </h1>
+            </div>
             <div className="flex items-center gap-2">
               <LanguageSwitcher />
               <button onClick={() => navigate('/notifications')} className="relative w-9 h-9 rounded-full bg-secondary/80 backdrop-blur-sm flex items-center justify-center">
@@ -316,6 +326,7 @@ const MobileIndex = () => {
         }
         setListExpanded(false);
       }} />
+      <MobileSidebar open={sidebarOpen} onOpenChange={setSidebarOpen} />
       <BottomNav />
     </div>
   );
