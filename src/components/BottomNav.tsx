@@ -10,6 +10,7 @@ const BottomNav = () => {
 
   const tabs = [
     { id: '/', icon: Home, label: t('nav.home') },
+    { id: '/tours', icon: Globe, label: 'Туры' },
     { id: '/deals', icon: Tag, label: t('nav.deals') },
     { id: '/bookings', icon: Calendar, label: t('nav.bookings') },
     { id: '/profile', icon: User, label: t('nav.profile') },

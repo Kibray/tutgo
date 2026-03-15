@@ -131,6 +131,8 @@ const App = () => (
                 <Route path="/privacy" element={<Privacy />} />
                 <Route path="/review-rules" element={<ReviewRules />} />
                 <Route path="/how-it-works" element={<HowItWorks />} />
+                <Route path="/tours" element={<Tours />} />
+                <Route path="/tours/:id" element={<TourDetail />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </div>
