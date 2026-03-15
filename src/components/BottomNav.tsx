@@ -1,4 +1,4 @@
-import { Home, Tag, Calendar, User, Globe, Bus } from 'lucide-react';
+import { Home, Tag, Calendar, User, Globe, Bus, Plane } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { usePreferences } from '@/hooks/usePreferences';
