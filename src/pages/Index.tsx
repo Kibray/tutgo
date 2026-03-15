@@ -51,10 +51,10 @@ const Index = () => {
   }, []);
 
   if (showOnboarding) {
-    return <OnboardingFlow onComplete={completeOnboarding} />;
+    return <Suspense fallback={null}><OnboardingFlow onComplete={completeOnboarding} /></Suspense>;
   }
 
-  if (isDesktop) return <DesktopIndex />;
+  if (isDesktop) return <Suspense fallback={null}><DesktopIndex /></Suspense>;
 
   return <MobileIndex />;
 };
