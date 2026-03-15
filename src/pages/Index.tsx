@@ -1,7 +1,7 @@
 import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Locate, ChevronUp, ChevronDown, Bell } from 'lucide-react';
+import { Locate, ChevronUp, ChevronDown, Bell, Menu } from 'lucide-react';
 import SearchBar from '@/components/SearchBar';
 import CategoryChips from '@/components/CategoryChips';
 import ServiceCard from '@/components/ServiceCard';
