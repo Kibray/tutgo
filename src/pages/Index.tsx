@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
+import { useState, useCallback, useMemo, useEffect, useRef, lazy, Suspense } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Locate, ChevronUp, ChevronDown, Bell, Menu } from 'lucide-react';
@@ -8,19 +8,20 @@ import ServiceCard from '@/components/ServiceCard';
 import BottomNav from '@/components/BottomNav';
 import BusinessSheet from '@/components/BusinessSheet';
 import { SkeletonList } from '@/components/SkeletonCard';
-import MapView from '@/components/MapView';
-import AiAssistantFab from '@/components/AiAssistantFab';
 import MobileSidebar from '@/components/MobileSidebar';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
-import OnboardingFlow from '@/components/onboarding/OnboardingFlow';
 import { useLocations } from '@/hooks/useLocations';
 import { useCategories } from '@/hooks/useCategories';
 import { useFavorites } from '@/hooks/useFavorites';
 import { useNotifications } from '@/hooks/useNotifications';
 import { useIsDesktop } from '@/hooks/useIsDesktop';
 import { usePreferences } from '@/hooks/usePreferences';
-import DesktopIndex from '@/components/desktop/DesktopIndex';
 import type { LocationItem } from '@/lib/types';
+
+const MapView = lazy(() => import('@/components/MapView'));
+const AiAssistantFab = lazy(() => import('@/components/AiAssistantFab'));
+const OnboardingFlow = lazy(() => import('@/components/onboarding/OnboardingFlow'));
+const DesktopIndex = lazy(() => import('@/components/desktop/DesktopIndex'));
 
 const TASHKENT: [number, number] = [41.3111, 69.2797];
 const NEARBY_RADIUS_KM = 2;
@@ -50,10 +51,10 @@ const Index = () => {
   }, []);
 
   if (showOnboarding) {
-    return <OnboardingFlow onComplete={completeOnboarding} />;
+    return <Suspense fallback={null}><OnboardingFlow onComplete={completeOnboarding} /></Suspense>;
   }
 
-  if (isDesktop) return <DesktopIndex />;
+  if (isDesktop) return <Suspense fallback={null}><DesktopIndex /></Suspense>;
 
   return <MobileIndex />;
 };
@@ -174,13 +175,15 @@ const MobileIndex = () => {
   return (
     <div className="relative h-screen w-full overflow-hidden">
       <div className="absolute inset-0 z-0">
-        <MapView
-          services={mapLocations}
-          onMarkerClick={handleMarkerClick}
-          center={mapCenter}
-          nearbyMode={nearbyMode}
-          userLocation={userLocation}
-        />
+        <Suspense fallback={<div className="w-full h-full bg-background" />}>
+          <MapView
+            services={mapLocations}
+            onMarkerClick={handleMarkerClick}
+            center={mapCenter}
+            nearbyMode={nearbyMode}
+            userLocation={userLocation}
+          />
+        </Suspense>
       </div>
 
       <div className="absolute top-0 left-0 right-0 z-[1000] px-4 pt-4 pointer-events-none">
@@ -317,15 +320,17 @@ const MobileIndex = () => {
 
       <BusinessSheet service={sheetService} open={!!sheetService} onClose={() => setSheetService(null)}
         onFullPage={() => { if (sheetService) { navigate(`/service/${sheetService.id}`); setSheetService(null); } }} />
-      <AiAssistantFab onShowOnMap={(locs) => {
-        if (locs.length === 1 && locs[0].lat && locs[0].lng) {
-          setMapCenter([locs[0].lat, locs[0].lng]);
-        } else if (locs.length > 0) {
-          const first = locs.find(l => l.lat && l.lng);
-          if (first) setMapCenter([first.lat!, first.lng!]);
-        }
-        setListExpanded(false);
-      }} />
+      <Suspense fallback={null}>
+        <AiAssistantFab onShowOnMap={(locs) => {
+          if (locs.length === 1 && locs[0].lat && locs[0].lng) {
+            setMapCenter([locs[0].lat, locs[0].lng]);
+          } else if (locs.length > 0) {
+            const first = locs.find(l => l.lat && l.lng);
+            if (first) setMapCenter([first.lat!, first.lng!]);
+          }
+          setListExpanded(false);
+        }} />
+      </Suspense>
       <MobileSidebar open={sidebarOpen} onOpenChange={setSidebarOpen} />
       <BottomNav />
     </div>
