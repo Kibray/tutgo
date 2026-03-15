@@ -107,15 +107,21 @@ Deno.serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
-  // Validate Telegram secret token
-  if (TELEGRAM_SECRET_TOKEN) {
-    const headerToken = req.headers.get("x-telegram-bot-api-secret-token");
-    if (headerToken !== TELEGRAM_SECRET_TOKEN) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), {
-        status: 401,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
+  // Validate Telegram secret token — MANDATORY
+  if (!TELEGRAM_SECRET_TOKEN) {
+    console.error("TELEGRAM_SECRET_TOKEN is not configured — rejecting all requests");
+    return new Response(JSON.stringify({ error: "Server misconfigured" }), {
+      status: 500,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+
+  const headerToken = req.headers.get("x-telegram-bot-api-secret-token");
+  if (headerToken !== TELEGRAM_SECRET_TOKEN) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   }
 
   try {
