@@ -70,6 +70,7 @@ const MobileIndex = () => {
   const [nearbyMode, setNearbyMode] = useState(false);
   const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
   const [geolocating, setGeolocating] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const { categories } = useCategories();
   const { isFavorite, toggleFavorite } = useFavorites();
   const { unreadCount } = useNotifications();
