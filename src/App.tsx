@@ -39,6 +39,8 @@ import BusinessBySlug from "./pages/BusinessBySlug";
 import ReferralRedirect from "./pages/ReferralRedirect";
 import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
+import TermsPartner from "./pages/TermsPartner";
+import ReviewRules from "./pages/ReviewRules";
 import TermsAcceptanceModal from "./components/TermsAcceptanceModal";
 import { useAuth } from "./hooks/useAuth";
 
