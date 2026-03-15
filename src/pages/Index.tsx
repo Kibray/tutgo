@@ -186,9 +186,17 @@ const MobileIndex = () => {
       <div className="absolute top-0 left-0 right-0 z-[1000] px-4 pt-4 pointer-events-none">
         <div className="pointer-events-auto">
           <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="flex items-center justify-between mb-3">
-            <h1 className="text-xl font-bold font-display text-foreground drop-shadow-lg">
-              TUT<span className="text-gradient-green">GO</span>
-            </h1>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setSidebarOpen(true)}
+                className="w-9 h-9 rounded-full bg-secondary/80 backdrop-blur-sm flex items-center justify-center"
+              >
+                <Menu className="w-4.5 h-4.5 text-foreground" />
+              </button>
+              <h1 className="text-xl font-bold font-display text-foreground drop-shadow-lg">
+                TUT<span className="text-gradient-green">GO</span>
+              </h1>
+            </div>
             <div className="flex items-center gap-2">
               <LanguageSwitcher />
               <button onClick={() => navigate('/notifications')} className="relative w-9 h-9 rounded-full bg-secondary/80 backdrop-blur-sm flex items-center justify-center">
