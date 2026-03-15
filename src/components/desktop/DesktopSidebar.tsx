@@ -1,4 +1,4 @@
-import { Home, Map, Tag, Calendar, Heart, Users, Star, MessageSquare, Plus, Globe } from 'lucide-react';
+import { Home, Map, Tag, Calendar, Heart, Users, Star, MessageSquare, Plus, Globe, Bus } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 
