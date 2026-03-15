@@ -1190,6 +1190,193 @@ export type Database = {
           },
         ]
       }
+      stay_bookings: {
+        Row: {
+          check_in: string
+          check_out: string
+          created_at: string | null
+          guests: number | null
+          id: string
+          nights: number | null
+          room_id: string | null
+          status: string | null
+          stay_id: string
+          total_price: number | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          check_in: string
+          check_out: string
+          created_at?: string | null
+          guests?: number | null
+          id?: string
+          nights?: number | null
+          room_id?: string | null
+          status?: string | null
+          stay_id: string
+          total_price?: number | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          check_in?: string
+          check_out?: string
+          created_at?: string | null
+          guests?: number | null
+          id?: string
+          nights?: number | null
+          room_id?: string | null
+          status?: string | null
+          stay_id?: string
+          total_price?: number | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "stay_bookings_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "stay_rooms"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "stay_bookings_stay_id_fkey"
+            columns: ["stay_id"]
+            isOneToOne: false
+            referencedRelation: "stays"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      stay_rooms: {
+        Row: {
+          amenities: string[] | null
+          area_sqm: number | null
+          bed_type: string | null
+          created_at: string | null
+          description: string | null
+          id: string
+          is_available: boolean | null
+          max_guests: number | null
+          name: string
+          photos: string[] | null
+          price_per_night: number | null
+          stay_id: string
+        }
+        Insert: {
+          amenities?: string[] | null
+          area_sqm?: number | null
+          bed_type?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_available?: boolean | null
+          max_guests?: number | null
+          name: string
+          photos?: string[] | null
+          price_per_night?: number | null
+          stay_id: string
+        }
+        Update: {
+          amenities?: string[] | null
+          area_sqm?: number | null
+          bed_type?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_available?: boolean | null
+          max_guests?: number | null
+          name?: string
+          photos?: string[] | null
+          price_per_night?: number | null
+          stay_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "stay_rooms_stay_id_fkey"
+            columns: ["stay_id"]
+            isOneToOne: false
+            referencedRelation: "stays"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      stays: {
+        Row: {
+          address: string | null
+          amenities: string[] | null
+          category: string | null
+          city: string | null
+          created_at: string | null
+          description: string | null
+          id: string
+          is_active: boolean | null
+          lat: number | null
+          lng: number | null
+          location_id: string | null
+          max_guests: number | null
+          min_nights: number | null
+          name: string
+          photos: string[] | null
+          price_per_night: number | null
+          rating: number | null
+          reviews_count: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          address?: string | null
+          amenities?: string[] | null
+          category?: string | null
+          city?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          lat?: number | null
+          lng?: number | null
+          location_id?: string | null
+          max_guests?: number | null
+          min_nights?: number | null
+          name: string
+          photos?: string[] | null
+          price_per_night?: number | null
+          rating?: number | null
+          reviews_count?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          address?: string | null
+          amenities?: string[] | null
+          category?: string | null
+          city?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          lat?: number | null
+          lng?: number | null
+          location_id?: string | null
+          max_guests?: number | null
+          min_nights?: number | null
+          name?: string
+          photos?: string[] | null
+          price_per_night?: number | null
+          rating?: number | null
+          reviews_count?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "stays_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       table_reservations: {
         Row: {
           client_id: string | null

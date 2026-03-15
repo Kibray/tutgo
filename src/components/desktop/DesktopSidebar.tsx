@@ -1,4 +1,4 @@
-import { Home, Map, Tag, Calendar, Heart, Users, Star, MessageSquare, Plus, Globe, Bus, Plane } from 'lucide-react';
+import { Home, Map, Tag, Calendar, Heart, Users, Star, MessageSquare, Plus, Globe, Bus, Plane, Hotel } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 
@@ -8,6 +8,7 @@ const menuItems = [
   { id: '/tours', icon: Globe, label: 'Туры' },
   { id: '/transport', icon: Bus, label: 'Транспорт' },
   { id: '/flights', icon: Plane, label: 'Билеты' },
+  { id: '/stay', icon: Hotel, label: 'Жильё' },
   { id: '/deals', icon: Tag, label: 'Акции' },
   { id: '/bookings', icon: Calendar, label: 'Мои записи' },
   { id: '/favorites', icon: Heart, label: 'Избранное' },
