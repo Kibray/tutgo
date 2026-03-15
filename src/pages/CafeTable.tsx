@@ -48,14 +48,17 @@ const CafeTable = () => {
       const { data: loc } = await supabase.from('locations').select('*').eq('slug', slug).single();
       if (loc) {
         setLocation(loc as LocationItem);
-        // Find table
-        const { data: tbl } = await supabase
-          .from('cafe_tables')
-          .select('*')
-          .eq('location_id', loc.id)
-          .eq('table_number', tableNumber)
-          .single();
-        if (tbl) setTableId(tbl.id);
+        // Find table (requires auth - anon users can't query cafe_tables)
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session) {
+          const { data: tbl } = await supabase
+            .from('cafe_tables')
+            .select('id')
+            .eq('location_id', loc.id)
+            .eq('table_number', tableNumber)
+            .single();
+          if (tbl) setTableId(tbl.id);
+        }
 
         // Check active order for this table
         const { data: orders } = await supabase
