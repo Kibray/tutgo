@@ -45,7 +45,7 @@ const PartnerLanding = () => {
 
     if (!user) {
       toast({ title: t('partner_landing.login_first') });
-      navigate('/auth?role=partner');
+      navigate('/auth/partner');
       return;
     }
 
