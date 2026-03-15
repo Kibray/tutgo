@@ -316,6 +316,51 @@ export type Database = {
           },
         ]
       }
+      driver_trips: {
+        Row: {
+          amenities: string[] | null
+          available_seats: number | null
+          car_color: string | null
+          car_model: string | null
+          created_at: string | null
+          departure_datetime: string | null
+          driver_id: string
+          from_city: string
+          id: string
+          price: number | null
+          status: string | null
+          to_city: string
+        }
+        Insert: {
+          amenities?: string[] | null
+          available_seats?: number | null
+          car_color?: string | null
+          car_model?: string | null
+          created_at?: string | null
+          departure_datetime?: string | null
+          driver_id: string
+          from_city: string
+          id?: string
+          price?: number | null
+          status?: string | null
+          to_city: string
+        }
+        Update: {
+          amenities?: string[] | null
+          available_seats?: number | null
+          car_color?: string | null
+          car_model?: string | null
+          created_at?: string | null
+          departure_datetime?: string | null
+          driver_id?: string
+          from_city?: string
+          id?: string
+          price?: number | null
+          status?: string | null
+          to_city?: string
+        }
+        Relationships: []
+      }
       favorites: {
         Row: {
           created_at: string
@@ -1393,6 +1438,121 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "tours_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      transport_bookings: {
+        Row: {
+          created_at: string | null
+          id: string
+          passenger_name: string | null
+          passenger_phone: string | null
+          route_id: string
+          seats: number | null
+          status: string | null
+          total_price: number | null
+          travel_date: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          passenger_name?: string | null
+          passenger_phone?: string | null
+          route_id: string
+          seats?: number | null
+          status?: string | null
+          total_price?: number | null
+          travel_date: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          passenger_name?: string | null
+          passenger_phone?: string | null
+          route_id?: string
+          seats?: number | null
+          status?: string | null
+          total_price?: number | null
+          travel_date?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "transport_bookings_route_id_fkey"
+            columns: ["route_id"]
+            isOneToOne: false
+            referencedRelation: "transport_routes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      transport_routes: {
+        Row: {
+          amenities: string[] | null
+          arrival_time: string | null
+          available_seats: number | null
+          created_at: string | null
+          departure_time: string | null
+          duration_minutes: number | null
+          from_city: string
+          id: string
+          is_active: boolean | null
+          location_id: string | null
+          price_per_seat: number | null
+          to_city: string
+          total_seats: number | null
+          transport_name: string | null
+          transport_type: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          amenities?: string[] | null
+          arrival_time?: string | null
+          available_seats?: number | null
+          created_at?: string | null
+          departure_time?: string | null
+          duration_minutes?: number | null
+          from_city: string
+          id?: string
+          is_active?: boolean | null
+          location_id?: string | null
+          price_per_seat?: number | null
+          to_city: string
+          total_seats?: number | null
+          transport_name?: string | null
+          transport_type?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          amenities?: string[] | null
+          arrival_time?: string | null
+          available_seats?: number | null
+          created_at?: string | null
+          departure_time?: string | null
+          duration_minutes?: number | null
+          from_city?: string
+          id?: string
+          is_active?: boolean | null
+          location_id?: string | null
+          price_per_seat?: number | null
+          to_city?: string
+          total_seats?: number | null
+          transport_name?: string | null
+          transport_type?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "transport_routes_location_id_fkey"
             columns: ["location_id"]
             isOneToOne: false
             referencedRelation: "locations"
