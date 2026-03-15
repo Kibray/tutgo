@@ -326,6 +326,7 @@ const MobileIndex = () => {
         }
         setListExpanded(false);
       }} />
+      <MobileSidebar open={sidebarOpen} onOpenChange={setSidebarOpen} />
       <BottomNav />
     </div>
   );
