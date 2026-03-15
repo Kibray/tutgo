@@ -175,13 +175,15 @@ const MobileIndex = () => {
   return (
     <div className="relative h-screen w-full overflow-hidden">
       <div className="absolute inset-0 z-0">
-        <MapView
-          services={mapLocations}
-          onMarkerClick={handleMarkerClick}
-          center={mapCenter}
-          nearbyMode={nearbyMode}
-          userLocation={userLocation}
-        />
+        <Suspense fallback={<div className="w-full h-full bg-background" />}>
+          <MapView
+            services={mapLocations}
+            onMarkerClick={handleMarkerClick}
+            center={mapCenter}
+            nearbyMode={nearbyMode}
+            userLocation={userLocation}
+          />
+        </Suspense>
       </div>
 
       <div className="absolute top-0 left-0 right-0 z-[1000] px-4 pt-4 pointer-events-none">
