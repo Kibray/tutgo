@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { MapPin, MessageCircle, BarChart3, Image, ArrowLeft, AlertTriangle } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { usePreferences } from '@/hooks/usePreferences';
 import { useToast } from '@/hooks/use-toast';
@@ -10,6 +10,7 @@ import { supabase } from '@/integrations/supabase/client';
 import BottomNav from '@/components/BottomNav';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 const benefits = [
