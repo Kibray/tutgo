@@ -1,4 +1,5 @@
 const BOT_TOKEN = Deno.env.get("TELEGRAM_BOT_TOKEN")!;
+const TELEGRAM_SECRET_TOKEN = Deno.env.get("TELEGRAM_SECRET_TOKEN");
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -13,14 +14,23 @@ Deno.serve(async (req) => {
   try {
     const webhookUrl = "https://ivnczarwkkeyncwrovio.supabase.co/functions/v1/telegram-bot";
 
+    const payload: Record<string, unknown> = {
+      url: webhookUrl,
+      allowed_updates: ["message", "callback_query"],
+    };
+
+    if (TELEGRAM_SECRET_TOKEN) {
+      payload.secret_token = TELEGRAM_SECRET_TOKEN;
+    }
+
     const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/setWebhook`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ url: webhookUrl }),
+      body: JSON.stringify(payload),
     });
 
     const data = await res.json();
-    return new Response(JSON.stringify({ ok: data.ok }), {
+    return new Response(JSON.stringify({ ok: data.ok, description: data.description }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (err) {
