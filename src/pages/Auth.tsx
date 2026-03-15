@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Send } from 'lucide-react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { usePreferences } from '@/hooks/usePreferences';
 import { useTelegram } from '@/hooks/useTelegram';
@@ -28,6 +28,8 @@ const Auth = () => {
   const { isTelegram, ready: tgReady } = useTelegram();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [searchParams] = useSearchParams();
+  const isPartner = searchParams.get('role') === 'partner';
 
   useEffect(() => {
     if (isTelegram && tgReady && user) {
@@ -213,10 +215,21 @@ const Auth = () => {
               <label className="flex items-start gap-2.5 cursor-pointer">
                 <Checkbox checked={termsAccepted} onCheckedChange={(v) => setTermsAccepted(v === true)} className="mt-0.5" />
                 <span className="text-xs text-muted-foreground leading-relaxed">
-                  Мне исполнилось 18 лет, и я принимаю{' '}
-                  <Link to="/terms" className="text-primary hover:underline" onClick={(e) => e.stopPropagation()}>Условия использования</Link>
-                  {' '}и{' '}
-                  <Link to="/privacy" className="text-primary hover:underline" onClick={(e) => e.stopPropagation()}>Политику конфиденциальности</Link>
+                  {isPartner ? (
+                    <>
+                      Я принимаю{' '}
+                      <Link to="/terms-partner" className="text-primary hover:underline" onClick={(e) => e.stopPropagation()}>Соглашение с партнёрами</Link>
+                      {' '}и{' '}
+                      <Link to="/privacy" className="text-primary hover:underline" onClick={(e) => e.stopPropagation()}>Политику конфиденциальности</Link>
+                    </>
+                  ) : (
+                    <>
+                      Мне исполнилось 18 лет, и я принимаю{' '}
+                      <Link to="/terms" className="text-primary hover:underline" onClick={(e) => e.stopPropagation()}>Условия использования</Link>
+                      {' '}и{' '}
+                      <Link to="/privacy" className="text-primary hover:underline" onClick={(e) => e.stopPropagation()}>Политику конфиденциальности</Link>
+                    </>
+                  )}
                 </span>
               </label>
             </div>
