@@ -118,6 +118,69 @@ const TourCard = ({ tour, onClick }: { tour: Tour; onClick: () => void }) => {
   );
 };
 
+const TourListCard = ({ tour, onClick }: { tour: Tour; onClick: () => void }) => {
+  const isNew = new Date(tour.created_at) > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+  const isHit = tour.rating >= 4.9;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="bg-card rounded-2xl overflow-hidden border border-border hover:border-primary/30 transition-all cursor-pointer flex"
+      onClick={onClick}
+    >
+      <div className="relative w-[140px] h-[140px] shrink-0">
+        <img
+          src={tour.photos?.[0] || '/placeholder.svg'}
+          alt={tour.title}
+          className="w-full h-full object-cover"
+        />
+        <div className="absolute top-2 left-2 flex flex-col gap-1">
+          {isHit && <Badge className="bg-orange-500/90 text-white text-[10px] px-1.5">🔥 Хит</Badge>}
+          {isNew && <Badge className="bg-blue-500/90 text-white text-[10px] px-1.5">🆕</Badge>}
+        </div>
+      </div>
+
+      <div className="flex-1 p-3 flex flex-col justify-between min-w-0">
+        <div className="space-y-1.5">
+          <h3 className="font-bold text-sm text-foreground font-[Syne] line-clamp-1">{tour.title}</h3>
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+            <span className="flex items-center gap-0.5">
+              <Star className="w-3 h-3 text-yellow-500 fill-yellow-500" />
+              {tour.rating}
+            </span>
+            <span>·</span>
+            <span className="flex items-center gap-0.5">
+              <MapPin className="w-3 h-3" />
+              {tour.departure_city}
+            </span>
+            <span>·</span>
+            <span>{tour.duration_days} дн.</span>
+          </div>
+          <div className="flex flex-wrap gap-1">
+            {tour.includes.slice(0, 3).map((inc, i) => (
+              <Badge key={i} variant="secondary" className="text-[10px] px-1.5 py-0">
+                {inc}
+              </Badge>
+            ))}
+          </div>
+        </div>
+        <div className="flex items-end justify-between">
+          <div>
+            <span className="text-base font-bold text-primary">
+              {tour.price_per_person.toLocaleString()} сум
+            </span>
+            <span className="text-[10px] text-muted-foreground ml-1">/ чел</span>
+          </div>
+          <Button size="sm" className="bg-gradient-to-r from-primary to-blue-600 text-white text-xs rounded-xl h-7 px-2.5">
+            Подробнее →
+          </Button>
+        </div>
+      </div>
+    </motion.div>
+  );
+};
+
 const Tours = () => {
   const navigate = useNavigate();
   const isDesktop = useIsDesktop();
