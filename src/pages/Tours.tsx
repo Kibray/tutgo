@@ -132,7 +132,7 @@ const Tours = () => {
   const [minRating, setMinRating] = useState<number | null>(null);
   const [maxGroup, setMaxGroup] = useState<number | null>(null);
 
-  const { data: tours = [], isLoading } = useTours({
+  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = useTours({
     category,
     search: search.length >= 2 ? search : undefined,
     minPrice: priceRange[0] > 0 ? priceRange[0] : undefined,
@@ -142,6 +142,9 @@ const Tours = () => {
     maxGroup: maxGroup || undefined,
     includes: includesFilter.length > 0 ? includesFilter : undefined,
   });
+
+  const tours = data?.pages.flatMap(p => p.tours) ?? [];
+  const totalCount = data?.pages[0]?.totalCount ?? 0;
 
   const resetFilters = () => {
     setPriceRange([0, 2000000]);
@@ -207,7 +210,7 @@ const Tours = () => {
         </div>
 
         {/* Count */}
-        <p className="text-sm text-muted-foreground">{tours.length} туров найдено</p>
+        <p className="text-sm text-muted-foreground">{totalCount} туров найдено</p>
 
         {/* Tour grid */}
         {isLoading ? (
@@ -225,10 +228,24 @@ const Tours = () => {
             </Button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {tours.map(tour => (
-              <TourCard key={tour.id} tour={tour} onClick={() => navigate(`/tours/${tour.id}`)} />
-            ))}
+          <div className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {tours.map(tour => (
+                <TourCard key={tour.id} tour={tour} onClick={() => navigate(`/tours/${tour.id}`)} />
+              ))}
+            </div>
+            {hasNextPage && (
+              <div className="flex justify-center pt-2">
+                <Button
+                  variant="outline"
+                  onClick={() => fetchNextPage()}
+                  disabled={isFetchingNextPage}
+                  className="rounded-xl"
+                >
+                  {isFetchingNextPage ? 'Загрузка...' : 'Загрузить ещё'}
+                </Button>
+              </div>
+            )}
           </div>
         )}
       </div>

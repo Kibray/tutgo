@@ -1,4 +1,4 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -40,6 +40,8 @@ export interface TourBooking {
   tour?: Tour;
 }
 
+const PAGE_SIZE = 9;
+
 export const useTours = (filters?: {
   category?: string;
   search?: string;
@@ -50,14 +52,15 @@ export const useTours = (filters?: {
   maxGroup?: number;
   includes?: string[];
 }) => {
-  return useQuery({
+  return useInfiniteQuery({
     queryKey: ['tours', filters],
-    queryFn: async () => {
+    queryFn: async ({ pageParam = 0 }) => {
       let query = supabase
         .from('tours')
-        .select('*')
+        .select('*', { count: 'exact' })
         .eq('is_active', true)
-        .order('rating', { ascending: false });
+        .order('rating', { ascending: false })
+        .range(pageParam * PAGE_SIZE, (pageParam + 1) * PAGE_SIZE - 1);
 
       if (filters?.category && filters.category !== 'all') {
         query = query.eq('category', filters.category);
@@ -75,7 +78,7 @@ export const useTours = (filters?: {
         query = query.gte('rating', filters.minRating);
       }
 
-      const { data, error } = await query;
+      const { data, error, count } = await query;
       if (error) throw error;
 
       let result = (data || []) as unknown as Tour[];
@@ -99,7 +102,13 @@ export const useTours = (filters?: {
         );
       }
 
-      return result;
+      return { tours: result, totalCount: count ?? 0, page: pageParam };
+    },
+    initialPageParam: 0,
+    getNextPageParam: (lastPage) => {
+      const nextPage = lastPage.page + 1;
+      if (nextPage * PAGE_SIZE >= lastPage.totalCount) return undefined;
+      return nextPage;
     },
   });
 };

@@ -24,7 +24,7 @@ const TourDetail = () => {
   const [showSuccess, setShowSuccess] = useState(false);
 
   // Similar tours
-  const { data: similarTours = [] } = useTours({ category: tour?.category });
+  const { data: similarData } = useTours({ category: tour?.category });
 
   const totalPrice = useMemo(() => {
     if (!tour) return 0;
@@ -356,11 +356,14 @@ const TourDetail = () => {
         </div>
 
         {/* Similar tours */}
-        {similarTours.filter(t => t.id !== tour.id).length > 0 && (
+        {(() => {
+          const allSimilar = similarData?.pages.flatMap(p => p.tours).filter(t => t.id !== tour.id) ?? [];
+          if (allSimilar.length === 0) return null;
+          return (
           <div className="space-y-3">
             <h2 className="text-lg font-bold">🌍 Похожие туры</h2>
             <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-2">
-              {similarTours.filter(t => t.id !== tour.id).slice(0, 6).map(t => (
+              {allSimilar.slice(0, 6).map(t => (
                 <button
                   key={t.id}
                   onClick={() => navigate(`/tours/${t.id}`)}
@@ -375,7 +378,8 @@ const TourDetail = () => {
               ))}
             </div>
           </div>
-        )}
+          );
+        })()}
       </div>
 
       {/* Fixed bottom bar */}
