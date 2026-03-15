@@ -49,6 +49,8 @@ import Transport from "./pages/Transport";
 import TransportResults from "./pages/TransportResults";
 import Flights from "./pages/Flights";
 import FlightResults from "./pages/FlightResults";
+import Stay from "./pages/Stay";
+import StayDetail from "./pages/StayDetail";
 import TermsAcceptanceModal from "./components/TermsAcceptanceModal";
 import { useAuth } from "./hooks/useAuth";
 
