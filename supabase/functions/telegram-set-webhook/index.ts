@@ -14,12 +14,14 @@ Deno.serve(async (req) => {
   try {
     const webhookUrl = "https://ivnczarwkkeyncwrovio.supabase.co/functions/v1/telegram-bot";
 
+    const tokenValid = TELEGRAM_SECRET_TOKEN ? /^[A-Za-z0-9_-]{1,256}$/.test(TELEGRAM_SECRET_TOKEN) : false;
+
     const payload: Record<string, unknown> = {
       url: webhookUrl,
       allowed_updates: ["message", "callback_query"],
     };
 
-    if (TELEGRAM_SECRET_TOKEN) {
+    if (tokenValid) {
       payload.secret_token = TELEGRAM_SECRET_TOKEN;
     }
 
