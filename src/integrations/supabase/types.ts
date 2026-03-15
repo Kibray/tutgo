@@ -1578,6 +1578,27 @@ export type Database = {
         }
         Relationships: []
       }
+      waitlist: {
+        Row: {
+          created_at: string | null
+          feature: string | null
+          id: string
+          telegram_username: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          feature?: string | null
+          id?: string
+          telegram_username?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          feature?: string | null
+          id?: string
+          telegram_username?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

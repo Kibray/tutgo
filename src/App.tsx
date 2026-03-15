@@ -47,6 +47,8 @@ import Tours from "./pages/Tours";
 import TourDetail from "./pages/TourDetail";
 import Transport from "./pages/Transport";
 import TransportResults from "./pages/TransportResults";
+import Flights from "./pages/Flights";
+import FlightResults from "./pages/FlightResults";
 import TermsAcceptanceModal from "./components/TermsAcceptanceModal";
 import { useAuth } from "./hooks/useAuth";
 
@@ -137,6 +139,8 @@ const App = () => (
                 <Route path="/tours/:id" element={<TourDetail />} />
                 <Route path="/transport" element={<Transport />} />
                 <Route path="/transport/results" element={<TransportResults />} />
+                <Route path="/flights" element={<Flights />} />
+                <Route path="/flights/results" element={<FlightResults />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </div>
