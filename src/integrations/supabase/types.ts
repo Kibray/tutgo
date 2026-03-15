@@ -1328,7 +1328,7 @@ export type Database = {
           id: string
           includes: string[] | null
           is_active: boolean | null
-          location_id: string
+          location_id: string | null
           max_people: number | null
           min_people: number | null
           photos: string[] | null
@@ -1353,7 +1353,7 @@ export type Database = {
           id?: string
           includes?: string[] | null
           is_active?: boolean | null
-          location_id: string
+          location_id?: string | null
           max_people?: number | null
           min_people?: number | null
           photos?: string[] | null
@@ -1378,7 +1378,7 @@ export type Database = {
           id?: string
           includes?: string[] | null
           is_active?: boolean | null
-          location_id?: string
+          location_id?: string | null
           max_people?: number | null
           min_people?: number | null
           photos?: string[] | null
