@@ -58,7 +58,7 @@ const MobileSidebar = ({ open, onOpenChange }: MobileSidebarProps) => {
       >
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-border">
-          <h2 className="text-lg font-bold font-display text-foreground">
+          <h2 onClick={() => { navigate('/'); onOpenChange(false); }} className="text-lg font-bold font-display text-foreground cursor-pointer">
             TUT<span className="text-gradient-green">GO</span>
           </h2>
           <SheetClose className="w-8 h-8 rounded-lg bg-secondary/60 flex items-center justify-center">

@@ -76,7 +76,7 @@ const DesktopHeader = ({ onSearch, onSearchSubmit, onLocationSelect, onGeolocate
   return (
     <header className="h-14 bg-card/95 backdrop-blur-xl border-b border-border flex items-center px-6 gap-6 z-[1100] relative">
       {/* Logo */}
-      <h1 className="text-xl font-bold font-display text-foreground whitespace-nowrap select-none">
+      <h1 onClick={() => navigate('/')} className="text-xl font-bold font-display text-foreground whitespace-nowrap select-none cursor-pointer">
         TUT<span className="text-gradient-green">GO</span>
       </h1>
 
