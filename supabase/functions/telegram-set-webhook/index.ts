@@ -14,7 +14,10 @@ Deno.serve(async (req) => {
   try {
     const webhookUrl = "https://ivnczarwkkeyncwrovio.supabase.co/functions/v1/telegram-bot";
 
-    const payload: Record<string, unknown> = {
+    // Log secret token info for debugging (not the value itself)
+    console.log("TELEGRAM_SECRET_TOKEN length:", TELEGRAM_SECRET_TOKEN?.length);
+    console.log("TELEGRAM_SECRET_TOKEN chars valid:", TELEGRAM_SECRET_TOKEN ? /^[A-Za-z0-9_-]+$/.test(TELEGRAM_SECRET_TOKEN) : "null");
+    
       url: webhookUrl,
       allowed_updates: ["message", "callback_query"],
     };
