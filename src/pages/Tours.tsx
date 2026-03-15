@@ -316,10 +316,14 @@ const Tours = () => {
           </div>
         ) : (
           <div className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {tours.map(tour => (
-                <TourCard key={tour.id} tour={tour} onClick={() => navigate(`/tours/${tour.id}`)} />
-              ))}
+            <div className={viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4' : 'flex flex-col gap-3'}>
+              {tours.map(tour =>
+                viewMode === 'grid' ? (
+                  <TourCard key={tour.id} tour={tour} onClick={() => navigate(`/tours/${tour.id}`)} />
+                ) : (
+                  <TourListCard key={tour.id} tour={tour} onClick={() => navigate(`/tours/${tour.id}`)} />
+                )
+              )}
             </div>
             {hasNextPage && (
               <div className="flex justify-center pt-2">
