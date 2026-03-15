@@ -43,6 +43,8 @@ import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
 import TermsPartner from "./pages/TermsPartner";
 import ReviewRules from "./pages/ReviewRules";
+import Tours from "./pages/Tours";
+import TourDetail from "./pages/TourDetail";
 import TermsAcceptanceModal from "./components/TermsAcceptanceModal";
 import { useAuth } from "./hooks/useAuth";
 
