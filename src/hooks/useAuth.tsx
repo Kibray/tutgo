@@ -39,31 +39,40 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   useEffect(() => {
+    let mounted = true;
+
+    const initUser = async (userId: string) => {
+      await Promise.all([checkPartnerRole(userId), checkTermsAccepted(userId)]);
+      if (mounted) setLoading(false);
+    };
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
       setUser(session?.user ?? null);
       if (session?.user) {
-        setTimeout(() => checkPartnerRole(session.user.id), 0);
-        setTimeout(() => checkTermsAccepted(session.user.id), 0);
+        initUser(session.user.id);
       } else {
         setIsPartner(false);
         setTermsAccepted(true);
         setPartnerTermsAccepted(true);
+        if (mounted) setLoading(false);
       }
-      setLoading(false);
     });
 
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
       if (session?.user) {
-        checkPartnerRole(session.user.id);
-        checkTermsAccepted(session.user.id);
+        initUser(session.user.id);
+      } else {
+        if (mounted) setLoading(false);
       }
-      setLoading(false);
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
   }, []);
 
   const signUp = async (email: string, password: string, displayName?: string) => {
