@@ -308,22 +308,6 @@ const PartnerBookings = () => {
 
         {loading ? (
           <div className="text-center py-16 text-muted-foreground text-sm">Загрузка...</div>
-        ) : noStaff ? (
-          <div className="text-center py-16 text-muted-foreground">
-            <User className="w-10 h-10 mx-auto mb-3 opacity-50" />
-            <p className="text-sm">Нет сотрудников</p>
-            <button onClick={() => navigate("/partner/staff")} className="mt-3 text-xs text-primary underline">
-              Перейти к мастерам →
-            </button>
-          </div>
-        ) : noScheduleConfigured ? (
-          <div className="text-center py-16">
-            <AlertTriangle className="w-10 h-10 mx-auto mb-3 text-destructive" />
-            <p className="text-sm font-medium text-foreground">Настройте рабочее время специалиста</p>
-            <button onClick={() => navigate("/partner/staff")} className="mt-3 text-xs text-primary underline">
-              Настроить график →
-            </button>
-          </div>
         ) : viewMode === 'list' ? (
           sortedAppointments.length === 0 ? (
             <div className="text-center py-16 text-muted-foreground">
