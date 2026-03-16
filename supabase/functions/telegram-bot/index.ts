@@ -298,6 +298,64 @@ Deno.serve(async (req) => {
           });
         }
 
+        // ---- Reservation confirm/cancel ----
+        if (callbackData.startsWith("confirm_res_") || callbackData.startsWith("cancel_res_")) {
+          const action = callbackData.startsWith("confirm_res_") ? "confirmed" : "cancelled";
+          const reservationId = callbackData.replace("confirm_res_", "").replace("cancel_res_", "");
+
+          if (!/^[0-9a-f-]{36}$/i.test(reservationId)) {
+            await answerCallbackQuery(callbackQueryId, "❌ Неверный ID");
+            return new Response(JSON.stringify({ ok: true }), {
+              headers: { ...corsHeaders, "Content-Type": "application/json" },
+            });
+          }
+
+          const { data: reservation, error } = await supabase
+            .from("table_reservations")
+            .update({ status: action })
+            .eq("id", reservationId)
+            .select("*, location_id")
+            .single();
+
+          if (!error && reservation) {
+            if (chatId && messageId) {
+              await editMessageReplyMarkup(chatId, messageId);
+            }
+            const statusText = action === "confirmed" ? "✅ Бронь подтверждена" : "❌ Бронь отменена";
+            if (reservation.client_id) {
+              const { data: clientProfile } = await supabase
+                .from("profiles")
+                .select("telegram_chat_id")
+                .eq("user_id", reservation.client_id)
+                .single();
+              if (clientProfile?.telegram_chat_id) {
+                const { data: location } = await supabase
+                  .from("locations")
+                  .select("name, phone")
+                  .eq("id", reservation.location_id)
+                  .single();
+                if (action === "confirmed") {
+                  await sendTelegramMessage(clientProfile.telegram_chat_id,
+                    `✅ <b>Ваша бронь подтверждена!</b>\n🏪 ${location?.name || ""}\n📅 ${reservation.date} · ${reservation.time}\n👥 Гостей: ${reservation.guests_count}${location?.phone ? `\n📞 ${location.phone}` : ""}`
+                  );
+                } else {
+                  await sendTelegramMessage(clientProfile.telegram_chat_id,
+                    `❌ <b>К сожалению ваша бронь отменена</b>\n🏪 ${location?.name || ""}\n📅 ${reservation.date} · ${reservation.time}\nПожалуйста забронируйте на другое время.`
+                  );
+                }
+              }
+            }
+            await answerCallbackQuery(callbackQueryId, statusText);
+            if (chatId) await sendTelegramMessage(chatId, `${statusText} ✔️`);
+          } else {
+            console.error("Reservation update error:", error);
+            await answerCallbackQuery(callbackQueryId, "❌ Ошибка обновления брони");
+          }
+          return new Response(JSON.stringify({ ok: true }), {
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+
         // ---- Appointment confirm/cancel ----
         if (callbackData.startsWith("confirm_") || callbackData.startsWith("cancel_")) {
           const action = callbackData.startsWith("confirm_") ? "confirmed" : "cancelled";
