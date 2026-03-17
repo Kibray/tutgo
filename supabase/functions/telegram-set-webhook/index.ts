@@ -45,7 +45,7 @@ Deno.serve(async (req) => {
     const data = await res.json();
     console.log("setWebhook result:", JSON.stringify(data));
 
-    return new Response(JSON.stringify({ ok: data.ok, description: data.description, secretTokenUsed: tokenValid }), {
+    return new Response(JSON.stringify({ ok: data.ok, description: data.description, secretTokenUsed: !!TELEGRAM_SECRET_TOKEN }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (err) {
