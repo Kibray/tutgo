@@ -107,25 +107,18 @@ Deno.serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
-  // Always validate secret token — reject if not configured or mismatch
-  if (!TELEGRAM_SECRET_TOKEN) {
-    console.error("TELEGRAM_SECRET_TOKEN is not configured — rejecting request");
-    return new Response(JSON.stringify({ error: "Server misconfigured" }), {
-      status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
-  }
-
+  // Validate secret token if Telegram sends it (webhook was configured with secret_token)
   const headerToken = req.headers.get("x-telegram-bot-api-secret-token");
-  if (headerToken !== TELEGRAM_SECRET_TOKEN) {
-    console.error("Secret token mismatch — rejecting. Got:", headerToken ? "a token" : "no token");
-    return new Response(JSON.stringify({ error: "Unauthorized" }), {
-      status: 403,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+  if (headerToken) {
+    // Telegram sent a token — validate it
+    if (!TELEGRAM_SECRET_TOKEN || headerToken !== TELEGRAM_SECRET_TOKEN) {
+      console.error("Secret token mismatch — rejecting");
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 403,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
   }
-
-  console.log("Request passed secret token validation, method:", req.method);
 
   try {
     const update = await req.json();
