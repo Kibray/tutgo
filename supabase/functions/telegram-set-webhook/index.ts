@@ -24,18 +24,16 @@ Deno.serve(async (req) => {
     console.log("deleteWebhook result:", JSON.stringify(delData));
 
     // Step 2: Set webhook with secret_token
-    const tokenValid = TELEGRAM_SECRET_TOKEN ? /^[A-Za-z0-9_-]{1,256}$/.test(TELEGRAM_SECRET_TOKEN) : false;
-
     const payload: Record<string, unknown> = {
       url: webhookUrl,
       allowed_updates: ["message", "callback_query"],
     };
 
-    if (tokenValid) {
+    if (TELEGRAM_SECRET_TOKEN) {
       payload.secret_token = TELEGRAM_SECRET_TOKEN;
       console.log("Setting webhook WITH secret_token");
     } else {
-      console.warn("TELEGRAM_SECRET_TOKEN is missing or invalid — webhook set WITHOUT secret_token");
+      console.warn("TELEGRAM_SECRET_TOKEN is missing — webhook set WITHOUT secret_token");
     }
 
     const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/setWebhook`, {
