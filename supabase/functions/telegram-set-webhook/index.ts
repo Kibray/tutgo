@@ -23,17 +23,21 @@ Deno.serve(async (req) => {
     const delData = await delRes.json();
     console.log("deleteWebhook result:", JSON.stringify(delData));
 
-    // Step 2: Set webhook with secret_token
+    // Step 2: Validate secret_token format (Telegram allows only A-Za-z0-9_- up to 256 chars)
+    const tokenValid = TELEGRAM_SECRET_TOKEN
+      ? /^[A-Za-z0-9_-]{1,256}$/.test(TELEGRAM_SECRET_TOKEN)
+      : false;
+
     const payload: Record<string, unknown> = {
       url: webhookUrl,
       allowed_updates: ["message", "callback_query"],
     };
 
-    if (TELEGRAM_SECRET_TOKEN) {
+    if (tokenValid) {
       payload.secret_token = TELEGRAM_SECRET_TOKEN;
       console.log("Setting webhook WITH secret_token");
     } else {
-      console.warn("TELEGRAM_SECRET_TOKEN is missing — webhook set WITHOUT secret_token");
+      console.warn("TELEGRAM_SECRET_TOKEN missing or contains invalid chars — setting webhook WITHOUT secret_token");
     }
 
     const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/setWebhook`, {
@@ -45,7 +49,7 @@ Deno.serve(async (req) => {
     const data = await res.json();
     console.log("setWebhook result:", JSON.stringify(data));
 
-    return new Response(JSON.stringify({ ok: data.ok, description: data.description, secretTokenUsed: !!TELEGRAM_SECRET_TOKEN }), {
+    return new Response(JSON.stringify({ ok: data.ok, description: data.description, secretTokenUsed: tokenValid }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (err) {
