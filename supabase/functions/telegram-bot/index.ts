@@ -118,11 +118,14 @@ Deno.serve(async (req) => {
 
   const headerToken = req.headers.get("x-telegram-bot-api-secret-token");
   if (headerToken !== TELEGRAM_SECRET_TOKEN) {
+    console.error("Secret token mismatch — rejecting. Got:", headerToken ? "a token" : "no token");
     return new Response(JSON.stringify({ error: "Unauthorized" }), {
       status: 403,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
+
+  console.log("Request passed secret token validation, method:", req.method);
 
   try {
     const update = await req.json();
