@@ -101,23 +101,27 @@ async function handleLinkCode(chatId: number, code: string, username: string | n
 }
 
 const TELEGRAM_SECRET_TOKEN = Deno.env.get("TELEGRAM_SECRET_TOKEN");
-// Check if secret token contains only valid chars for Telegram
-const SECRET_TOKEN_VALID = TELEGRAM_SECRET_TOKEN ? /^[A-Za-z0-9_-]{1,256}$/.test(TELEGRAM_SECRET_TOKEN) : false;
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
-  // Only validate secret token if it's properly configured with valid characters
-  if (SECRET_TOKEN_VALID) {
-    const headerToken = req.headers.get("x-telegram-bot-api-secret-token");
-    if (headerToken !== TELEGRAM_SECRET_TOKEN) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), {
-        status: 401,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
+  // Always validate secret token — reject if not configured or mismatch
+  if (!TELEGRAM_SECRET_TOKEN) {
+    console.error("TELEGRAM_SECRET_TOKEN is not configured — rejecting request");
+    return new Response(JSON.stringify({ error: "Server misconfigured" }), {
+      status: 500,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+
+  const headerToken = req.headers.get("x-telegram-bot-api-secret-token");
+  if (headerToken !== TELEGRAM_SECRET_TOKEN) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 403,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   }
 
   try {
