@@ -29,11 +29,14 @@ const Bookings = () => {
 
   const fetchAppointments = async () => {
     if (!user) { setLoading(false); return; }
-    const { data } = await supabase
+    console.log("Bookings: fetching for user.id =", user.id);
+    const { data, error } = await supabase
       .from('appointments')
       .select('*, locations(*), services(*), staff(*)')
       .eq('client_user_id', user.id)
       .order('start_time', { ascending: true });
+    if (error) console.error("Bookings: appointments error", error);
+    console.log("Bookings: found", (data || []).length, "appointments");
     setAppointments(data || []);
     setLoading(false);
 
