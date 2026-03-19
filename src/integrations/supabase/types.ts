@@ -1152,6 +1152,7 @@ export type Database = {
           full_name: string
           id: string
           location_id: string
+          phone: string | null
           photo_url: string | null
           specialties: string[] | null
           updated_at: string
@@ -1163,6 +1164,7 @@ export type Database = {
           full_name: string
           id?: string
           location_id: string
+          phone?: string | null
           photo_url?: string | null
           specialties?: string[] | null
           updated_at?: string
@@ -1174,6 +1176,7 @@ export type Database = {
           full_name?: string
           id?: string
           location_id?: string
+          phone?: string | null
           photo_url?: string | null
           specialties?: string[] | null
           updated_at?: string
