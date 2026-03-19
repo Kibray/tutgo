@@ -58,6 +58,7 @@ const PartnerStaff = () => {
   const [selectedLocation, setSelectedLocation] = useState('');
   const [saving, setSaving] = useState(false);
   const [scheduleOpenId, setScheduleOpenId] = useState<string | null>(null);
+  const [photoOpenId, setPhotoOpenId] = useState<string | null>(null);
 
   useEffect(() => {
     if (user) fetchData();
