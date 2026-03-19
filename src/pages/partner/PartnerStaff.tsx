@@ -86,6 +86,9 @@ const PartnerStaff = () => {
       full_name: newName.trim(),
       specialties: specs.length > 0 ? specs : null,
       working_hours: null,
+      phone: newPhone.trim() || null,
+      telegram_username: newTelegram.trim() || null,
+      bio: newBio.trim() || null,
     });
     if (error) {
       toast({ title: 'Ошибка', description: error.message, variant: 'destructive' });
