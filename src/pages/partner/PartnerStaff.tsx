@@ -50,6 +50,9 @@ const PartnerStaff = () => {
   const [showAdd, setShowAdd] = useState(false);
   const [newName, setNewName] = useState('');
   const [newSpecialties, setNewSpecialties] = useState('');
+  const [newPhone, setNewPhone] = useState('');
+  const [newTelegram, setNewTelegram] = useState('');
+  const [newBio, setNewBio] = useState('');
   const [selectedLocation, setSelectedLocation] = useState('');
   const [saving, setSaving] = useState(false);
   const [scheduleOpenId, setScheduleOpenId] = useState<string | null>(null);
