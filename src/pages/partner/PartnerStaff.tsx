@@ -16,6 +16,9 @@ interface StaffMember {
   specialties: string[] | null;
   working_hours: Record<string, { start: string; end: string }> | null;
   location_id: string;
+  phone: string | null;
+  telegram_username: string | null;
+  bio: string | null;
 }
 
 const DAY_LABELS: Record<string, { ru: string; uz: string; en: string }> = {
