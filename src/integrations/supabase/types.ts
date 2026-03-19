@@ -1148,6 +1148,7 @@ export type Database = {
       }
       staff: {
         Row: {
+          bio: string | null
           created_at: string
           full_name: string
           id: string
@@ -1155,11 +1156,14 @@ export type Database = {
           phone: string | null
           photo_url: string | null
           specialties: string[] | null
+          telegram_chat_id: number | null
+          telegram_username: string | null
           updated_at: string
           working_days: number[] | null
           working_hours: Json | null
         }
         Insert: {
+          bio?: string | null
           created_at?: string
           full_name: string
           id?: string
@@ -1167,11 +1171,14 @@ export type Database = {
           phone?: string | null
           photo_url?: string | null
           specialties?: string[] | null
+          telegram_chat_id?: number | null
+          telegram_username?: string | null
           updated_at?: string
           working_days?: number[] | null
           working_hours?: Json | null
         }
         Update: {
+          bio?: string | null
           created_at?: string
           full_name?: string
           id?: string
@@ -1179,6 +1186,8 @@ export type Database = {
           phone?: string | null
           photo_url?: string | null
           specialties?: string[] | null
+          telegram_chat_id?: number | null
+          telegram_username?: string | null
           updated_at?: string
           working_days?: number[] | null
           working_hours?: Json | null

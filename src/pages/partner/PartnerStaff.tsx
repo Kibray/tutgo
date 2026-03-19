@@ -16,6 +16,9 @@ interface StaffMember {
   specialties: string[] | null;
   working_hours: Record<string, { start: string; end: string }> | null;
   location_id: string;
+  phone: string | null;
+  telegram_username: string | null;
+  bio: string | null;
 }
 
 const DAY_LABELS: Record<string, { ru: string; uz: string; en: string }> = {
@@ -47,6 +50,9 @@ const PartnerStaff = () => {
   const [showAdd, setShowAdd] = useState(false);
   const [newName, setNewName] = useState('');
   const [newSpecialties, setNewSpecialties] = useState('');
+  const [newPhone, setNewPhone] = useState('');
+  const [newTelegram, setNewTelegram] = useState('');
+  const [newBio, setNewBio] = useState('');
   const [selectedLocation, setSelectedLocation] = useState('');
   const [saving, setSaving] = useState(false);
   const [scheduleOpenId, setScheduleOpenId] = useState<string | null>(null);
@@ -80,6 +86,9 @@ const PartnerStaff = () => {
       full_name: newName.trim(),
       specialties: specs.length > 0 ? specs : null,
       working_hours: null,
+      phone: newPhone.trim() || null,
+      telegram_username: newTelegram.trim() || null,
+      bio: newBio.trim() || null,
     });
     if (error) {
       toast({ title: 'Ошибка', description: error.message, variant: 'destructive' });
@@ -88,6 +97,9 @@ const PartnerStaff = () => {
       setShowAdd(false);
       setNewName('');
       setNewSpecialties('');
+      setNewPhone('');
+      setNewTelegram('');
+      setNewBio('');
       fetchData();
     }
     setSaving(false);
@@ -164,6 +176,28 @@ const PartnerStaff = () => {
               onChange={e => setNewSpecialties(e.target.value)}
               className="w-full rounded-lg border border-border bg-background text-foreground px-3 py-2.5 text-sm placeholder:text-muted-foreground outline-none focus:border-primary"
             />
+            <input
+              placeholder="Телефон"
+              value={newPhone}
+              onChange={e => setNewPhone(e.target.value)}
+              className="w-full rounded-lg border border-border bg-background text-foreground px-3 py-2.5 text-sm placeholder:text-muted-foreground outline-none focus:border-primary"
+            />
+            <div>
+              <input
+                placeholder="Telegram username"
+                value={newTelegram}
+                onChange={e => setNewTelegram(e.target.value)}
+                className="w-full rounded-lg border border-border bg-background text-foreground px-3 py-2.5 text-sm placeholder:text-muted-foreground outline-none focus:border-primary"
+              />
+              <p className="text-[10px] text-muted-foreground mt-1 px-1">Например: @username — для получения уведомлений о записях</p>
+            </div>
+            <textarea
+              placeholder="Краткое описание"
+              value={newBio}
+              onChange={e => setNewBio(e.target.value)}
+              rows={2}
+              className="w-full rounded-lg border border-border bg-background text-foreground px-3 py-2.5 text-sm placeholder:text-muted-foreground outline-none focus:border-primary resize-none"
+            />
             <div className="flex gap-2">
               <button
                 onClick={addStaff}
@@ -212,6 +246,14 @@ const PartnerStaff = () => {
                       <p className="text-sm font-medium text-foreground truncate">{s.full_name}</p>
                       {s.specialties && s.specialties.length > 0 && (
                         <p className="text-xs text-muted-foreground truncate">{s.specialties.join(', ')}</p>
+                      )}
+                      {(s.phone || s.telegram_username) && (
+                        <p className="text-[10px] text-muted-foreground truncate">
+                          {[s.phone, s.telegram_username].filter(Boolean).join(' · ')}
+                        </p>
+                      )}
+                      {s.bio && (
+                        <p className="text-[10px] text-muted-foreground/70 truncate">{s.bio}</p>
                       )}
                     </div>
                     <div className="flex items-center gap-1">
