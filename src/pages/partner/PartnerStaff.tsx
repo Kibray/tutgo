@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, UserCog, Plus, Trash2, Clock, ChevronDown, ChevronUp } from 'lucide-react';
+import { ArrowLeft, UserCog, Plus, Trash2, Clock, ChevronDown, ChevronUp, ImageIcon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { usePreferences } from '@/hooks/usePreferences';
 import { useAuth } from '@/hooks/useAuth';
@@ -8,6 +8,7 @@ import { supabase } from '@/integrations/supabase/client';
 import PartnerLayout from '@/components/partner/PartnerLayout';
 import { useToast } from '@/hooks/use-toast';
 import { Switch } from '@/components/ui/switch';
+import StaffPhotoManager from '@/components/partner/StaffPhotoManager';
 
 interface StaffMember {
   id: string;
@@ -19,6 +20,7 @@ interface StaffMember {
   phone: string | null;
   telegram_username: string | null;
   bio: string | null;
+  portfolio: string[];
 }
 
 const DAY_LABELS: Record<string, { ru: string; uz: string; en: string }> = {
