@@ -114,9 +114,12 @@ const PartnerBookings = () => {
   const fetchData = async () => {
     if (!user) return;
     setLoading(true);
-    const { data: locs } = await supabase.from("locations").select("id").eq("owner_id", user.id);
+
+    const { data: locs, error: locsError } = await supabase.from("locations").select("id").eq("owner_id", user.id);
+    if (locsError) console.error("PartnerBookings: locations error", locsError);
     const locIds = (locs || []).map((l) => l.id);
     setLocations(locIds);
+    console.log("PartnerBookings: user.id =", user.id, "locIds =", locIds);
 
     if (locIds.length === 0) {
       setStaff([]);
@@ -125,10 +128,11 @@ const PartnerBookings = () => {
       return;
     }
 
-    const { data: staffData } = await supabase
+    const { data: staffData, error: staffError } = await supabase
       .from("staff")
       .select("id, full_name, photo_url, working_hours, location_id")
       .in("location_id", locIds);
+    if (staffError) console.error("PartnerBookings: staff error", staffError);
     setStaff((staffData as any[]) || []);
 
     const dayStart = new Date(selectedDate);
@@ -136,7 +140,7 @@ const PartnerBookings = () => {
     const dayEnd = new Date(selectedDate);
     dayEnd.setHours(23, 59, 59, 999);
 
-    const { data: appts } = await supabase
+    const { data: appts, error: apptsError } = await supabase
       .from("appointments")
       .select(
         "id, staff_id, service_id, client_name, client_phone, start_time, end_time, status, service:services(name, price, currency)",
@@ -144,6 +148,8 @@ const PartnerBookings = () => {
       .in("location_id", locIds)
       .gte("start_time", dayStart.toISOString())
       .lte("start_time", dayEnd.toISOString());
+    if (apptsError) console.error("PartnerBookings: appointments error", apptsError);
+    console.log("PartnerBookings: appointments count =", (appts || []).length, "for date", dayStart.toISOString());
     setAppointments((appts as any[]) || []);
     setLoading(false);
   };
