@@ -247,6 +247,14 @@ const PartnerStaff = () => {
                       {s.specialties && s.specialties.length > 0 && (
                         <p className="text-xs text-muted-foreground truncate">{s.specialties.join(', ')}</p>
                       )}
+                      {(s.phone || s.telegram_username) && (
+                        <p className="text-[10px] text-muted-foreground truncate">
+                          {[s.phone, s.telegram_username].filter(Boolean).join(' · ')}
+                        </p>
+                      )}
+                      {s.bio && (
+                        <p className="text-[10px] text-muted-foreground/70 truncate">{s.bio}</p>
+                      )}
                     </div>
                     <div className="flex items-center gap-1">
                       <motion.button
