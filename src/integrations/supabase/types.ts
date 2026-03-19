@@ -1155,6 +1155,7 @@ export type Database = {
           location_id: string
           phone: string | null
           photo_url: string | null
+          portfolio: string[] | null
           specialties: string[] | null
           telegram_chat_id: number | null
           telegram_username: string | null
@@ -1170,6 +1171,7 @@ export type Database = {
           location_id: string
           phone?: string | null
           photo_url?: string | null
+          portfolio?: string[] | null
           specialties?: string[] | null
           telegram_chat_id?: number | null
           telegram_username?: string | null
@@ -1185,6 +1187,7 @@ export type Database = {
           location_id?: string
           phone?: string | null
           photo_url?: string | null
+          portfolio?: string[] | null
           specialties?: string[] | null
           telegram_chat_id?: number | null
           telegram_username?: string | null

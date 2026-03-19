@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, UserCog, Plus, Trash2, Clock, ChevronDown, ChevronUp } from 'lucide-react';
+import { ArrowLeft, UserCog, Plus, Trash2, Clock, ChevronDown, ChevronUp, ImageIcon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { usePreferences } from '@/hooks/usePreferences';
 import { useAuth } from '@/hooks/useAuth';
@@ -8,6 +8,7 @@ import { supabase } from '@/integrations/supabase/client';
 import PartnerLayout from '@/components/partner/PartnerLayout';
 import { useToast } from '@/hooks/use-toast';
 import { Switch } from '@/components/ui/switch';
+import StaffPhotoManager from '@/components/partner/StaffPhotoManager';
 
 interface StaffMember {
   id: string;
@@ -19,6 +20,7 @@ interface StaffMember {
   phone: string | null;
   telegram_username: string | null;
   bio: string | null;
+  portfolio: string[];
 }
 
 const DAY_LABELS: Record<string, { ru: string; uz: string; en: string }> = {
@@ -56,6 +58,7 @@ const PartnerStaff = () => {
   const [selectedLocation, setSelectedLocation] = useState('');
   const [saving, setSaving] = useState(false);
   const [scheduleOpenId, setScheduleOpenId] = useState<string | null>(null);
+  const [photoOpenId, setPhotoOpenId] = useState<string | null>(null);
 
   useEffect(() => {
     if (user) fetchData();
@@ -234,14 +237,19 @@ const PartnerStaff = () => {
           <div className="space-y-3">
             {staff.map(s => {
               const scheduleOpen = scheduleOpenId === s.id;
+              const photoOpen = photoOpenId === s.id;
               const hasHours = s.working_hours && Object.keys(s.working_hours).length > 0;
               return (
                 <div key={s.id} className="rounded-xl border border-border bg-card overflow-hidden">
                   {/* Staff row */}
                   <div className="flex items-center gap-3 p-3">
-                    <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center text-sm font-bold text-foreground flex-shrink-0">
-                      {s.full_name.charAt(0)}
-                    </div>
+                    {s.photo_url ? (
+                      <img src={s.photo_url} alt={s.full_name} className="w-10 h-10 rounded-full object-cover flex-shrink-0 border border-border" />
+                    ) : (
+                      <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center text-sm font-bold text-foreground flex-shrink-0">
+                        {s.full_name.charAt(0)}
+                      </div>
+                    )}
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium text-foreground truncate">{s.full_name}</p>
                       {s.specialties && s.specialties.length > 0 && (
@@ -259,7 +267,14 @@ const PartnerStaff = () => {
                     <div className="flex items-center gap-1">
                       <motion.button
                         whileTap={{ scale: 0.9 }}
-                        onClick={() => setScheduleOpenId(scheduleOpen ? null : s.id)}
+                        onClick={() => { setPhotoOpenId(photoOpen ? null : s.id); if (!photoOpen) setScheduleOpenId(null); }}
+                        className={`p-2 rounded-lg transition-colors ${photoOpen ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-secondary'}`}
+                      >
+                        <ImageIcon className="w-4 h-4" />
+                      </motion.button>
+                      <motion.button
+                        whileTap={{ scale: 0.9 }}
+                        onClick={() => { setScheduleOpenId(scheduleOpen ? null : s.id); if (!scheduleOpen) setPhotoOpenId(null); }}
                         className={`p-2 rounded-lg transition-colors ${scheduleOpen ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-secondary'}`}
                       >
                         <Clock className="w-4 h-4" />
@@ -276,8 +291,8 @@ const PartnerStaff = () => {
                   </div>
 
                   {/* Schedule status badge */}
-                  {!scheduleOpen && (
-                    <div className="px-3 pb-2">
+                  {!scheduleOpen && !photoOpen && (
+                    <div className="px-3 pb-2 flex items-center gap-1.5 flex-wrap">
                       {hasHours ? (
                         <span className="text-[10px] text-primary bg-primary/10 px-2 py-0.5 rounded-full">
                           ✓ График настроен
@@ -287,7 +302,24 @@ const PartnerStaff = () => {
                           ⚠ График не настроен
                         </span>
                       )}
+                      {s.portfolio && s.portfolio.length > 0 && (
+                        <span className="text-[10px] text-primary bg-primary/10 px-2 py-0.5 rounded-full">
+                          📷 {s.portfolio.length} фото
+                        </span>
+                      )}
                     </div>
+                  )}
+
+                  {/* Photo manager */}
+                  {photoOpen && (
+                    <StaffPhotoManager
+                      staffId={s.id}
+                      photoUrl={s.photo_url}
+                      portfolio={s.portfolio || []}
+                      onUpdate={(fields) => {
+                        setStaff(prev => prev.map(st => st.id === s.id ? { ...st, ...fields } : st));
+                      }}
+                    />
                   )}
 
                   {/* Schedule editor */}
