@@ -97,6 +97,9 @@ const PartnerStaff = () => {
       setShowAdd(false);
       setNewName('');
       setNewSpecialties('');
+      setNewPhone('');
+      setNewTelegram('');
+      setNewBio('');
       fetchData();
     }
     setSaving(false);
