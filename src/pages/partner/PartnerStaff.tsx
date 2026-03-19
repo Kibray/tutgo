@@ -176,6 +176,28 @@ const PartnerStaff = () => {
               onChange={e => setNewSpecialties(e.target.value)}
               className="w-full rounded-lg border border-border bg-background text-foreground px-3 py-2.5 text-sm placeholder:text-muted-foreground outline-none focus:border-primary"
             />
+            <input
+              placeholder="Телефон"
+              value={newPhone}
+              onChange={e => setNewPhone(e.target.value)}
+              className="w-full rounded-lg border border-border bg-background text-foreground px-3 py-2.5 text-sm placeholder:text-muted-foreground outline-none focus:border-primary"
+            />
+            <div>
+              <input
+                placeholder="Telegram username"
+                value={newTelegram}
+                onChange={e => setNewTelegram(e.target.value)}
+                className="w-full rounded-lg border border-border bg-background text-foreground px-3 py-2.5 text-sm placeholder:text-muted-foreground outline-none focus:border-primary"
+              />
+              <p className="text-[10px] text-muted-foreground mt-1 px-1">Например: @username — для получения уведомлений о записях</p>
+            </div>
+            <textarea
+              placeholder="Краткое описание"
+              value={newBio}
+              onChange={e => setNewBio(e.target.value)}
+              rows={2}
+              className="w-full rounded-lg border border-border bg-background text-foreground px-3 py-2.5 text-sm placeholder:text-muted-foreground outline-none focus:border-primary resize-none"
+            />
             <div className="flex gap-2">
               <button
                 onClick={addStaff}
