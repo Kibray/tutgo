@@ -12,6 +12,7 @@ import PartnerDashboardDesktop from '@/components/partner/PartnerDashboardDeskto
 import { supabase } from '@/integrations/supabase/client';
 import { Badge } from '@/components/ui/badge';
 import { startOfDay, endOfDay, format } from 'date-fns';
+import PartnerOnboarding from '@/components/partner/PartnerOnboarding';
 
 const dashboardItems = [
   { id: 'bookings', icon: Calendar, labelKey: 'partner.journal', route: '/partner/bookings', badgeKey: 'bookings' },
@@ -37,6 +38,7 @@ const Partner = () => {
   const [todayBookings, setTodayBookings] = useState(0);
   const [queueWaiting, setQueueWaiting] = useState(0);
   const [avgRating, setAvgRating] = useState(0);
+  const [showOnboarding, setShowOnboarding] = useState(() => !localStorage.getItem('partner_onboarding_done'));
 
   const today = useMemo(() => new Date(), []);
   const todayStr = format(today, 'yyyy-MM-dd');
@@ -124,6 +126,7 @@ const Partner = () => {
 
   return (
     <PartnerLayout title={t('partner.dashboard')} showBackToPartner={false}>
+      {showOnboarding && <PartnerOnboarding open={showOnboarding} onComplete={() => setShowOnboarding(false)} />}
       <div className="px-4">
         {/* Mini stats */}
         <div className="mb-5">
