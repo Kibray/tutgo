@@ -126,6 +126,7 @@ const Partner = () => {
 
   return (
     <PartnerLayout title={t('partner.dashboard')} showBackToPartner={false}>
+      {showOnboarding && <PartnerOnboarding open={showOnboarding} onComplete={() => setShowOnboarding(false)} />}
       <div className="px-4">
         {/* Mini stats */}
         <div className="mb-5">
