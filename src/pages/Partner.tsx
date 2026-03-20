@@ -38,6 +38,7 @@ const Partner = () => {
   const [todayBookings, setTodayBookings] = useState(0);
   const [queueWaiting, setQueueWaiting] = useState(0);
   const [avgRating, setAvgRating] = useState(0);
+  const [showOnboarding, setShowOnboarding] = useState(() => !localStorage.getItem('partner_onboarding_done'));
 
   const today = useMemo(() => new Date(), []);
   const todayStr = format(today, 'yyyy-MM-dd');
