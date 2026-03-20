@@ -12,6 +12,7 @@ import PartnerDashboardDesktop from '@/components/partner/PartnerDashboardDeskto
 import { supabase } from '@/integrations/supabase/client';
 import { Badge } from '@/components/ui/badge';
 import { startOfDay, endOfDay, format } from 'date-fns';
+import PartnerOnboarding from '@/components/partner/PartnerOnboarding';
 
 const dashboardItems = [
   { id: 'bookings', icon: Calendar, labelKey: 'partner.journal', route: '/partner/bookings', badgeKey: 'bookings' },
