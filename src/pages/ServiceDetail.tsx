@@ -551,7 +551,7 @@ const ServiceDetail = () => {
       )}
 
       {/* Booking (non-cafe) */}
-      {isBookable && !isCafe && (
+      {isBookable && !isCafe && location.verified && (
         <>
           <div className="px-4 mt-4">
             <h3 className="text-sm font-semibold text-foreground mb-3">Выберите дату</h3>
@@ -603,6 +603,22 @@ const ServiceDetail = () => {
               }`}>Записаться</motion.button>
           </div>
         </>
+      )}
+      {isBookable && !isCafe && !location.verified && (
+        <div className="px-4 mt-6">
+          <div className="glass rounded-lg p-4 flex flex-col items-center gap-3">
+            {location.phone && (
+              <motion.a
+                whileTap={{ scale: 0.97 }}
+                href={`tel:${location.phone}`}
+                className="w-full py-3.5 rounded-lg bg-primary text-accent-foreground font-semibold text-sm text-center flex items-center justify-center gap-2 glow-green"
+              >
+                📞 Позвонить
+              </motion.a>
+            )}
+            <p className="text-xs text-muted-foreground text-center">⏳ Онлайн-запись скоро появится в этом заведении</p>
+          </div>
+        </div>
       )}
       <BottomNav />
     </div>
