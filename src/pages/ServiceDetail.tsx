@@ -212,7 +212,11 @@ const ServiceDetail = () => {
         <div className="glass rounded-lg p-4">
           <div className="flex items-center gap-2">
             <h1 className="text-lg font-bold font-display text-foreground">{location.name}</h1>
-            {location.verified && <span className="inline-flex items-center gap-0.5 text-xs text-primary bg-primary/10 px-2 py-0.5 rounded-full font-medium">✓</span>}
+            {location.verified ? (
+              <span className="inline-flex items-center gap-0.5 text-[10px] text-primary bg-primary/10 px-2 py-0.5 rounded-full font-medium">✅ Онлайн-запись</span>
+            ) : (
+              <span className="inline-flex items-center gap-0.5 text-[10px] text-amber-600 dark:text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-full font-medium">📞 Только по звонку</span>
+            )}
           </div>
           {location.description && <p className="text-sm text-muted-foreground mt-1">{location.description}</p>}
           <div className="flex items-center gap-4 mt-3 text-xs text-muted-foreground">
