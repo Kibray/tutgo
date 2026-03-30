@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Tag, Clock, ChevronRight, Sparkles } from 'lucide-react';
 import BottomNav from '@/components/BottomNav';
-import { formatPrice, categoryEmoji } from '@/lib/types';
+import { formatPrice, getServiceEmoji } from '@/lib/types';
 import { useCategories } from '@/hooks/useCategories';
 import { usePreferences } from '@/hooks/usePreferences';
 import { supabase } from '@/integrations/supabase/client';
