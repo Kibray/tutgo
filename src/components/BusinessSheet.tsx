@@ -1,7 +1,7 @@
 import { Phone, Navigation, Globe, BadgeCheck, Star, MapPin, Copy } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription } from '@/components/ui/drawer';
-import { formatPrice, openDirections, copyAddress, categoryEmoji } from '@/lib/types';
+import { formatPrice, openDirections, copyAddress, getServiceEmoji } from '@/lib/types';
 import type { LocationItem } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 
