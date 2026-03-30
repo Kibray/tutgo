@@ -26,16 +26,20 @@ const markerEmoji: Record<string, string> = {
   education: '📚',
 };
 
-const createCategoryIcon = (category: string, isPromoted: boolean) => {
+const createCategoryIcon = (category: string, isPromoted: boolean, name?: string) => {
   const emoji = markerEmoji[category] || '📍';
   const size = isPromoted ? 42 : 34;
   const border = isPromoted
     ? 'border: 2px solid hsl(142, 72%, 29%); box-shadow: 0 0 12px hsla(142, 72%, 29%, 0.5);'
     : 'border: 1.5px solid hsla(0,0%,100%,0.15);';
+  const label = name ? (name.length > 15 ? name.slice(0, 15) + '…' : name) : '';
+  const labelHtml = label
+    ? `<div style="margin-top:2px;padding:1px 4px;border-radius:4px;background:hsla(220,15%,10%,0.85);color:#fff;font-size:11px;line-height:13px;white-space:nowrap;text-align:center;max-width:80px;overflow:hidden;text-overflow:ellipsis;">${label}</div>`
+    : '';
   return L.divIcon({
-    html: `<div style="width:${size}px;height:${size}px;border-radius:12px;background:hsla(220,15%,10%,0.92);${border}display:flex;align-items:center;justify-content:center;font-size:${isPromoted ? 20 : 16}px;backdrop-filter:blur(10px);transition:transform 0.15s;">${emoji}</div>`,
+    html: `<div style="display:flex;flex-direction:column;align-items:center;"><div style="width:${size}px;height:${size}px;border-radius:12px;background:hsla(220,15%,10%,0.92);${border}display:flex;align-items:center;justify-content:center;font-size:${isPromoted ? 20 : 16}px;backdrop-filter:blur(10px);transition:transform 0.15s;">${emoji}</div>${labelHtml}</div>`,
     className: '',
-    iconSize: [size, size],
+    iconSize: [size, size + (label ? 18 : 0)],
     iconAnchor: [size / 2, size / 2],
     popupAnchor: [0, -size / 2 - 4],
   });
