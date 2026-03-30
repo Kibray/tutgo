@@ -110,7 +110,7 @@ const MapView = ({ services, onMarkerClick, center, className = '', nearbyMode, 
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   fontSize: '18px', flexShrink: 0,
                 }}>
-                  {markerEmoji[s.business_type] || '📍'}
+                  {getServiceEmoji(s.business_type, s.sub_category)}
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{
