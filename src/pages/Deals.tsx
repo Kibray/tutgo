@@ -121,7 +121,7 @@ const Deals = () => {
                     -{deal.discount_percent}%
                   </div>
                   <div className="absolute top-3 left-3 bg-background/80 backdrop-blur-sm text-foreground text-[10px] font-medium px-2 py-1 rounded-lg">
-                    {categoryEmoji[deal.locations?.business_type] || '📍'} {deal.locations?.business_type}
+                    {getServiceEmoji(deal.locations?.business_type || '', deal.locations?.sub_category)} {deal.locations?.business_type}
                   </div>
                 </div>
 
