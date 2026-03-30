@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Tag, Clock, ChevronRight, Sparkles } from 'lucide-react';
 import BottomNav from '@/components/BottomNav';
-import { formatPrice, categoryEmoji } from '@/lib/types';
+import { formatPrice, getServiceEmoji } from '@/lib/types';
 import { useCategories } from '@/hooks/useCategories';
 import { usePreferences } from '@/hooks/usePreferences';
 import { supabase } from '@/integrations/supabase/client';
@@ -21,6 +21,7 @@ interface Deal {
     id: string;
     name: string;
     business_type: string;
+    sub_category: string | null;
     city: string | null;
     category_id: string | null;
     address: string | null;
@@ -48,7 +49,7 @@ const Deals = () => {
       setLoading(true);
       const { data } = await supabase
         .from('deals')
-        .select('*, locations(id, name, business_type, city, category_id, address)')
+        .select('*, locations(id, name, business_type, sub_category, city, category_id, address)')
         .eq('is_active', true)
         .order('created_at', { ascending: false });
       const now = new Date();
@@ -114,14 +115,14 @@ const Deals = () => {
                     <img src={deal.image_url} alt={deal.title} className="w-full h-full object-cover" />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center">
-                      <span className="text-6xl opacity-30">{categoryEmoji[deal.locations?.business_type] || '🏷️'}</span>
+                      <span className="text-6xl opacity-30">{getServiceEmoji(deal.locations?.business_type || '', deal.locations?.sub_category)}</span>
                     </div>
                   )}
                   <div className="absolute top-3 right-3 bg-primary text-primary-foreground text-sm font-extrabold px-3 py-1.5 rounded-xl shadow-lg">
                     -{deal.discount_percent}%
                   </div>
                   <div className="absolute top-3 left-3 bg-background/80 backdrop-blur-sm text-foreground text-[10px] font-medium px-2 py-1 rounded-lg">
-                    {categoryEmoji[deal.locations?.business_type] || '📍'} {deal.locations?.business_type}
+                    {getServiceEmoji(deal.locations?.business_type || '', deal.locations?.sub_category)} {deal.locations?.business_type}
                   </div>
                 </div>
 

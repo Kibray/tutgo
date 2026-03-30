@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, Circle, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { categoryEmoji, formatPrice } from '@/lib/types';
+import { categoryEmoji, formatPrice, getServiceEmoji } from '@/lib/types';
 import type { LocationItem } from '@/lib/types';
 import { Star, MapPin } from 'lucide-react';
 
@@ -110,7 +110,7 @@ const MapView = ({ services, onMarkerClick, center, className = '', nearbyMode, 
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   fontSize: '18px', flexShrink: 0,
                 }}>
-                  {markerEmoji[s.business_type] || '📍'}
+                  {getServiceEmoji(s.business_type, s.sub_category)}
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{

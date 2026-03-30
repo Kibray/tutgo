@@ -1,7 +1,7 @@
 import { Phone, Navigation, Globe, BadgeCheck, Star, MapPin, Copy } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription } from '@/components/ui/drawer';
-import { formatPrice, openDirections, copyAddress, categoryEmoji } from '@/lib/types';
+import { formatPrice, openDirections, copyAddress, getServiceEmoji } from '@/lib/types';
 import type { LocationItem } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 
@@ -31,7 +31,7 @@ const BusinessSheet = ({ service, open, onClose, onFullPage }: BusinessSheetProp
         <DrawerHeader className="text-left">
           <div className="flex items-center gap-3">
             <div className="w-14 h-14 rounded-xl bg-secondary flex items-center justify-center text-2xl flex-shrink-0">
-              {categoryEmoji[service.business_type] || '📍'}
+              {getServiceEmoji(service.business_type, service.sub_category)}
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-1.5">
