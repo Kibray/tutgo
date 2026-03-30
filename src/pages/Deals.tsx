@@ -114,7 +114,7 @@ const Deals = () => {
                     <img src={deal.image_url} alt={deal.title} className="w-full h-full object-cover" />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center">
-                      <span className="text-6xl opacity-30">{categoryEmoji[deal.locations?.business_type] || '🏷️'}</span>
+                      <span className="text-6xl opacity-30">{getServiceEmoji(deal.locations?.business_type || '', deal.locations?.sub_category)}</span>
                     </div>
                   )}
                   <div className="absolute top-3 right-3 bg-primary text-primary-foreground text-sm font-extrabold px-3 py-1.5 rounded-xl shadow-lg">
