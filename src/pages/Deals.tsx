@@ -21,6 +21,7 @@ interface Deal {
     id: string;
     name: string;
     business_type: string;
+    sub_category: string | null;
     city: string | null;
     category_id: string | null;
     address: string | null;
