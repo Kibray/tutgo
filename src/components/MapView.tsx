@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, Circle, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { categoryEmoji, formatPrice } from '@/lib/types';
+import { categoryEmoji, formatPrice, getServiceEmoji } from '@/lib/types';
 import type { LocationItem } from '@/lib/types';
 import { Star, MapPin } from 'lucide-react';
 
