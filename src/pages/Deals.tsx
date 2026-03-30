@@ -48,7 +48,7 @@ const Deals = () => {
       setLoading(true);
       const { data } = await supabase
         .from('deals')
-        .select('*, locations(id, name, business_type, city, category_id, address)')
+        .select('*, locations(id, name, business_type, sub_category, city, category_id, address)')
         .eq('is_active', true)
         .order('created_at', { ascending: false });
       const now = new Date();
