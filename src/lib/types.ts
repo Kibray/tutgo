@@ -40,12 +40,26 @@ export const categoryEmoji: Record<string, string> = {
   office: '🏢',
   barbershop: '💈',
   'барбершоп': '💈',
+  'Барбершопы': '💈',
+  salon: '💅',
   'beauty salon': '✨',
   'салон красоты': '💅',
   spa: '🪷',
   'спа': '🪷',
+  dental: '🦷',
   dentistry: '🦷',
   'стоматология': '🦷',
+  auto: '🚗',
+  sport: '⚽',
+  education: '📚',
+};
+
+export const getServiceEmoji = (businessType: string, subCategory?: string | null): string => {
+  if (subCategory) {
+    const subEmoji = categoryEmoji[subCategory] || categoryEmoji[subCategory.toLowerCase()];
+    if (subEmoji) return subEmoji;
+  }
+  return categoryEmoji[businessType] || '📍';
 };
 
 export const formatPrice = (price: number): string => {
