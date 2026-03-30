@@ -93,8 +93,12 @@ const ServiceCard = ({ service, index, onClick, isFavorite, onToggleFavorite }: 
         <div className="flex items-center gap-1.5 pr-8">
           <h3 className="text-sm font-semibold text-foreground truncate">{service.name}</h3>
           {service.verified && <BadgeCheck className="w-4 h-4 text-primary flex-shrink-0" />}
-          {service.verified === false && (
-            <span className="text-[9px] bg-yellow-500/20 text-yellow-600 dark:text-yellow-400 px-1.5 py-0.5 rounded font-medium flex-shrink-0">⏳</span>
+        </div>
+        <div className="mt-0.5">
+          {service.verified ? (
+            <span className="inline-flex items-center gap-0.5 text-[9px] bg-primary/15 text-primary px-1.5 py-0.5 rounded font-medium">✅ Онлайн-запись</span>
+          ) : (
+            <span className="inline-flex items-center gap-0.5 text-[9px] bg-amber-500/15 text-amber-600 dark:text-amber-400 px-1.5 py-0.5 rounded font-medium">📞 Только по звонку</span>
           )}
         </div>
         <p className="text-xs text-muted-foreground mt-0.5">{service.address}</p>

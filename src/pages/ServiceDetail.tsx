@@ -212,7 +212,11 @@ const ServiceDetail = () => {
         <div className="glass rounded-lg p-4">
           <div className="flex items-center gap-2">
             <h1 className="text-lg font-bold font-display text-foreground">{location.name}</h1>
-            {location.verified && <span className="inline-flex items-center gap-0.5 text-xs text-primary bg-primary/10 px-2 py-0.5 rounded-full font-medium">✓</span>}
+            {location.verified ? (
+              <span className="inline-flex items-center gap-0.5 text-[10px] text-primary bg-primary/10 px-2 py-0.5 rounded-full font-medium">✅ Онлайн-запись</span>
+            ) : (
+              <span className="inline-flex items-center gap-0.5 text-[10px] text-amber-600 dark:text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-full font-medium">📞 Только по звонку</span>
+            )}
           </div>
           {location.description && <p className="text-sm text-muted-foreground mt-1">{location.description}</p>}
           <div className="flex items-center gap-4 mt-3 text-xs text-muted-foreground">
@@ -225,7 +229,10 @@ const ServiceDetail = () => {
             <button onClick={handleCopyAddress} className="p-1.5 rounded-md hover:bg-secondary transition-colors"><Copy className="w-3.5 h-3.5 text-muted-foreground" /></button>
           </div>
           {(location.price_from || 0) > 0 && (
-            <span className="text-lg font-bold text-gradient-green mt-3 block">от {formatPrice(location.price_from!)} {location.currency}</span>
+            <>
+              <span className="text-lg font-bold text-gradient-green mt-3 block">от {formatPrice(location.price_from!)} {location.currency}</span>
+              <span className="text-[10px] text-muted-foreground mt-1 block">* Цены ориентировочные, уточняйте при записи.</span>
+            </>
           )}
         </div>
       </div>
@@ -544,7 +551,7 @@ const ServiceDetail = () => {
       )}
 
       {/* Booking (non-cafe) */}
-      {isBookable && !isCafe && (
+      {isBookable && !isCafe && location.verified && (
         <>
           <div className="px-4 mt-4">
             <h3 className="text-sm font-semibold text-foreground mb-3">Выберите дату</h3>
@@ -596,6 +603,22 @@ const ServiceDetail = () => {
               }`}>Записаться</motion.button>
           </div>
         </>
+      )}
+      {isBookable && !isCafe && !location.verified && (
+        <div className="px-4 mt-6">
+          <div className="glass rounded-lg p-4 flex flex-col items-center gap-3">
+            {location.phone && (
+              <motion.a
+                whileTap={{ scale: 0.97 }}
+                href={`tel:${location.phone}`}
+                className="w-full py-3.5 rounded-lg bg-primary text-accent-foreground font-semibold text-sm text-center flex items-center justify-center gap-2 glow-green"
+              >
+                📞 Позвонить
+              </motion.a>
+            )}
+            <p className="text-xs text-muted-foreground text-center">⏳ Онлайн-запись скоро появится в этом заведении</p>
+          </div>
+        </div>
       )}
       <BottomNav />
     </div>

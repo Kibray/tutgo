@@ -38,6 +38,14 @@ export const categoryEmoji: Record<string, string> = {
   retail: '🛍️',
   service: '🛠️',
   office: '🏢',
+  barbershop: '💈',
+  'барбершоп': '💈',
+  'beauty salon': '✨',
+  'салон красоты': '💅',
+  spa: '🪷',
+  'спа': '🪷',
+  dentistry: '🦷',
+  'стоматология': '🦷',
 };
 
 export const formatPrice = (price: number): string => {
