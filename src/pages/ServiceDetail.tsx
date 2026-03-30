@@ -229,7 +229,10 @@ const ServiceDetail = () => {
             <button onClick={handleCopyAddress} className="p-1.5 rounded-md hover:bg-secondary transition-colors"><Copy className="w-3.5 h-3.5 text-muted-foreground" /></button>
           </div>
           {(location.price_from || 0) > 0 && (
-            <span className="text-lg font-bold text-gradient-green mt-3 block">от {formatPrice(location.price_from!)} {location.currency}</span>
+            <>
+              <span className="text-lg font-bold text-gradient-green mt-3 block">от {formatPrice(location.price_from!)} {location.currency}</span>
+              <span className="text-[10px] text-muted-foreground mt-1 block">* Цены ориентировочные, уточняйте при записи.</span>
+            </>
           )}
         </div>
       </div>
