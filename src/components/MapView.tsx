@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, Circle, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -26,13 +26,13 @@ const markerEmoji: Record<string, string> = {
   education: '📚',
 };
 
-const createCategoryIcon = (category: string, isPromoted: boolean, name?: string) => {
-  const emoji = markerEmoji[category] || '📍';
+const createCategoryIcon = (category: string, isPromoted: boolean, name?: string, subCategory?: string | null, showLabel?: boolean) => {
+  const emoji = getServiceEmoji(category, subCategory);
   const size = isPromoted ? 42 : 34;
   const border = isPromoted
     ? 'border: 2px solid hsl(142, 72%, 29%); box-shadow: 0 0 12px hsla(142, 72%, 29%, 0.5);'
     : 'border: 1.5px solid hsla(0,0%,100%,0.15);';
-  const label = name ? (name.length > 15 ? name.slice(0, 15) + '…' : name) : '';
+  const label = showLabel && name ? (name.length > 15 ? name.slice(0, 15) + '…' : name) : '';
   const labelHtml = label
     ? `<div style="margin-top:2px;padding:1px 4px;border-radius:4px;background:hsla(220,15%,10%,0.85);color:#fff;font-size:11px;line-height:13px;white-space:nowrap;text-align:center;max-width:80px;overflow:hidden;text-overflow:ellipsis;">${label}</div>`
     : '';
@@ -61,6 +61,17 @@ const ResizeHandler = () => {
   return null;
 };
 
+const ZoomTracker = ({ onZoomChange }: { onZoomChange: (z: number) => void }) => {
+  const map = useMap();
+  useEffect(() => {
+    onZoomChange(map.getZoom());
+    const handler = () => onZoomChange(map.getZoom());
+    map.on('zoomend', handler);
+    return () => { map.off('zoomend', handler); };
+  }, [map, onZoomChange]);
+  return null;
+};
+
 interface MapViewProps {
   services: LocationItem[];
   onMarkerClick: (service: LocationItem) => void;
@@ -72,6 +83,7 @@ interface MapViewProps {
 
 const MapView = ({ services, onMarkerClick, center, className = '', nearbyMode, userLocation }: MapViewProps) => {
   const defaultCenter: [number, number] = [41.3111, 69.2797];
+  const [zoom, setZoom] = useState(12);
 
   return (
     <MapContainer center={defaultCenter} zoom={12} className={`w-full h-full ${className}`}
@@ -79,6 +91,7 @@ const MapView = ({ services, onMarkerClick, center, className = '', nearbyMode, 
       <TileLayer url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png" />
       <CenterOnLocation center={center || null} />
       <ResizeHandler />
+      <ZoomTracker onZoomChange={setZoom} />
 
       {/* Nearby radius circle */}
       {nearbyMode && userLocation && (
@@ -97,7 +110,7 @@ const MapView = ({ services, onMarkerClick, center, className = '', nearbyMode, 
 
       {services.map((s) => (
         <Marker key={s.id} position={[s.lat || 41.3111, s.lng || 69.2797]}
-          icon={createCategoryIcon(s.business_type, !!s.is_promoted, s.name)}
+          icon={createCategoryIcon(s.business_type, !!s.is_promoted, s.name, s.sub_category, zoom >= 14)}
           eventHandlers={{ click: () => onMarkerClick(s) }}>
           <Popup className="leaflet-popup-custom" maxWidth={240} minWidth={200}>
             <div style={{
