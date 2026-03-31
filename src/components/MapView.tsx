@@ -91,6 +91,7 @@ const MapView = ({ services, onMarkerClick, center, className = '', nearbyMode, 
       <TileLayer url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png" />
       <CenterOnLocation center={center || null} />
       <ResizeHandler />
+      <ZoomTracker onZoomChange={setZoom} />
 
       {/* Nearby radius circle */}
       {nearbyMode && userLocation && (
