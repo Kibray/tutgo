@@ -32,7 +32,7 @@ const createCategoryIcon = (category: string, isPromoted: boolean, name?: string
   const border = isPromoted
     ? 'border: 2px solid hsl(142, 72%, 29%); box-shadow: 0 0 12px hsla(142, 72%, 29%, 0.5);'
     : 'border: 1.5px solid hsla(0,0%,100%,0.15);';
-  const label = name ? (name.length > 15 ? name.slice(0, 15) + '…' : name) : '';
+  const label = showLabel && name ? (name.length > 15 ? name.slice(0, 15) + '…' : name) : '';
   const labelHtml = label
     ? `<div style="margin-top:2px;padding:1px 4px;border-radius:4px;background:hsla(220,15%,10%,0.85);color:#fff;font-size:11px;line-height:13px;white-space:nowrap;text-align:center;max-width:80px;overflow:hidden;text-overflow:ellipsis;">${label}</div>`
     : '';
