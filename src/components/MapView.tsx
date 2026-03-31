@@ -26,8 +26,8 @@ const markerEmoji: Record<string, string> = {
   education: '📚',
 };
 
-const createCategoryIcon = (category: string, isPromoted: boolean, name?: string) => {
-  const emoji = markerEmoji[category] || '📍';
+const createCategoryIcon = (category: string, isPromoted: boolean, name?: string, subCategory?: string | null, showLabel?: boolean) => {
+  const emoji = getServiceEmoji(category, subCategory);
   const size = isPromoted ? 42 : 34;
   const border = isPromoted
     ? 'border: 2px solid hsl(142, 72%, 29%); box-shadow: 0 0 12px hsla(142, 72%, 29%, 0.5);'
