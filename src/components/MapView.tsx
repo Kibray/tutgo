@@ -61,6 +61,17 @@ const ResizeHandler = () => {
   return null;
 };
 
+const ZoomTracker = ({ onZoomChange }: { onZoomChange: (z: number) => void }) => {
+  const map = useMap();
+  useEffect(() => {
+    onZoomChange(map.getZoom());
+    const handler = () => onZoomChange(map.getZoom());
+    map.on('zoomend', handler);
+    return () => { map.off('zoomend', handler); };
+  }, [map, onZoomChange]);
+  return null;
+};
+
 interface MapViewProps {
   services: LocationItem[];
   onMarkerClick: (service: LocationItem) => void;
