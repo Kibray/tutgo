@@ -83,6 +83,7 @@ interface MapViewProps {
 
 const MapView = ({ services, onMarkerClick, center, className = '', nearbyMode, userLocation }: MapViewProps) => {
   const defaultCenter: [number, number] = [41.3111, 69.2797];
+  const [zoom, setZoom] = useState(12);
 
   return (
     <MapContainer center={defaultCenter} zoom={12} className={`w-full h-full ${className}`}
