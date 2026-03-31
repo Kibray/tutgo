@@ -110,7 +110,7 @@ const MapView = ({ services, onMarkerClick, center, className = '', nearbyMode, 
 
       {services.map((s) => (
         <Marker key={s.id} position={[s.lat || 41.3111, s.lng || 69.2797]}
-          icon={createCategoryIcon(s.business_type, !!s.is_promoted, s.name)}
+          icon={createCategoryIcon(s.business_type, !!s.is_promoted, s.name, s.sub_category, zoom >= 14)}
           eventHandlers={{ click: () => onMarkerClick(s) }}>
           <Popup className="leaflet-popup-custom" maxWidth={240} minWidth={200}>
             <div style={{
