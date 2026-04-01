@@ -268,7 +268,7 @@ const ServiceDetail = () => {
       </div>
 
       {/* Actions */}
-      <div className="px-4 mt-4 grid grid-cols-4 gap-2">
+      <div className="px-4 mt-4 grid grid-cols-5 gap-2">
         {location.telegram && (
           <motion.button whileTap={{ scale: 0.95 }} onClick={() => window.open(`https://t.me/${location.telegram}`, '_blank')}
             className="glass rounded-xl py-3 flex flex-col items-center gap-1.5 ring-1 ring-[hsl(200,80%,55%)]/30">
