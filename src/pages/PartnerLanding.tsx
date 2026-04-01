@@ -38,6 +38,8 @@ const PartnerLanding = () => {
     description: '',
     instagram: '',
   });
+  const [duplicateLocation, setDuplicateLocation] = useState<{ id: string; name: string } | null>(null);
+  const [duplicateChecked, setDuplicateChecked] = useState(false);
 
   const handleCta = () => {
     const tg = (window as any).Telegram?.WebApp;
