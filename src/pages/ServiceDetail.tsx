@@ -10,6 +10,7 @@ import { supabase } from '@/integrations/supabase/client';
 import BottomNav from '@/components/BottomNav';
 import DateChip from '@/components/DateChip';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/hooks/useAuth';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { useMenu } from '@/hooks/useMenu';
 import { useCart } from '@/hooks/useCart';
