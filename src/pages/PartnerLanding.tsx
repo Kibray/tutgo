@@ -295,14 +295,34 @@ const PartnerLanding = () => {
               </label>
             </div>
 
-            <motion.button
-              whileTap={{ scale: 0.98 }}
-              onClick={handleSubmit}
-              disabled={submitting || !partnerTermsAccepted}
-              className="w-full py-3.5 rounded-lg bg-primary text-primary-foreground font-bold text-sm glow-green disabled:opacity-50"
-            >
-              {submitting ? t('common.loading') : t('partner_landing.submit')}
-            </motion.button>
+            {duplicateLocation && duplicateChecked && (
+              <div className="glass rounded-xl p-4 space-y-3">
+                <p className="text-sm text-foreground">
+                  Мы нашли похожий бизнес: <strong>{duplicateLocation.name}</strong>. Это ваш бизнес?
+                </p>
+                <div className="flex gap-2">
+                  <motion.button whileTap={{ scale: 0.95 }} onClick={claimExisting} disabled={submitting}
+                    className="flex-1 py-2.5 rounded-lg bg-primary text-primary-foreground text-xs font-bold disabled:opacity-50">
+                    {submitting ? t('common.loading') : '✅ Да, это мой бизнес'}
+                  </motion.button>
+                  <motion.button whileTap={{ scale: 0.95 }} onClick={() => { setDuplicateLocation(null); submitNew(); }} disabled={submitting}
+                    className="flex-1 py-2.5 rounded-lg bg-muted text-foreground text-xs font-bold disabled:opacity-50">
+                    ➕ Нет, создать новый
+                  </motion.button>
+                </div>
+              </div>
+            )}
+
+            {!duplicateChecked && (
+              <motion.button
+                whileTap={{ scale: 0.98 }}
+                onClick={checkDuplicate}
+                disabled={submitting || !partnerTermsAccepted}
+                className="w-full py-3.5 rounded-lg bg-primary text-primary-foreground font-bold text-sm glow-green disabled:opacity-50"
+              >
+                {submitting ? t('common.loading') : t('partner_landing.submit')}
+              </motion.button>
+            )}
           </motion.div>
         )}
       </div>
