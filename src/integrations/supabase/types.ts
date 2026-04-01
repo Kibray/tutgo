@@ -835,6 +835,7 @@ export type Database = {
         Row: {
           address: string
           category: string
+          claimed_location_id: string | null
           company_name: string
           created_at: string
           description: string | null
@@ -847,6 +848,7 @@ export type Database = {
         Insert: {
           address: string
           category: string
+          claimed_location_id?: string | null
           company_name: string
           created_at?: string
           description?: string | null
@@ -859,6 +861,7 @@ export type Database = {
         Update: {
           address?: string
           category?: string
+          claimed_location_id?: string | null
           company_name?: string
           created_at?: string
           description?: string | null

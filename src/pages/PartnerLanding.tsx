@@ -38,6 +38,8 @@ const PartnerLanding = () => {
     description: '',
     instagram: '',
   });
+  const [duplicateLocation, setDuplicateLocation] = useState<{ id: string; name: string } | null>(null);
+  const [duplicateChecked, setDuplicateChecked] = useState(false);
 
   const handleCta = () => {
     const tg = (window as any).Telegram?.WebApp;
@@ -52,7 +54,7 @@ const PartnerLanding = () => {
     setShowForm(true);
   };
 
-  const handleSubmit = async () => {
+  const checkDuplicate = async () => {
     if (!user) return;
     if (!form.company_name || !form.category || !form.phone || !form.address) {
       toast({ title: t('common.error'), description: t('partner_landing.fill_required'), variant: 'destructive' });
@@ -65,10 +67,64 @@ const PartnerLanding = () => {
 
     setSubmitting(true);
     try {
-      // 1. Become partner (get role)
+      const { data: existing } = await supabase
+        .from('locations')
+        .select('id, name')
+        .ilike('name', `%${form.company_name}%`)
+        .limit(1);
+
+      if (existing && existing.length > 0) {
+        setDuplicateLocation({ id: existing[0].id, name: existing[0].name });
+        setDuplicateChecked(true);
+        setSubmitting(false);
+        return;
+      }
+
+      setDuplicateChecked(true);
+      await submitNew();
+    } catch (err: any) {
+      toast({ title: t('common.error'), description: err.message, variant: 'destructive' });
+      setSubmitting(false);
+    }
+  };
+
+  const claimExisting = async () => {
+    if (!user || !duplicateLocation) return;
+    setSubmitting(true);
+    try {
       await becomePartner();
 
-      // 2. Create location
+      const { error: appError } = await supabase
+        .from('partner_applications')
+        .insert({
+          user_id: user.id,
+          company_name: form.company_name,
+          category: form.category,
+          phone: form.phone,
+          address: form.address,
+          description: form.description || null,
+          instagram: form.instagram || null,
+          status: 'claim_pending',
+          claimed_location_id: duplicateLocation.id,
+        });
+
+      if (appError) throw appError;
+
+      toast({ title: t('profile.partner_success'), description: t('partner_landing.app_submitted') });
+      navigate('/partner');
+    } catch (err: any) {
+      toast({ title: t('common.error'), description: err.message, variant: 'destructive' });
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const submitNew = async () => {
+    if (!user) return;
+    setSubmitting(true);
+    try {
+      await becomePartner();
+
       const { data: location, error: locError } = await supabase
         .from('locations')
         .insert({
@@ -87,7 +143,6 @@ const PartnerLanding = () => {
 
       if (locError) throw locError;
 
-      // 3. Create partner application
       const { error: appError } = await supabase
         .from('partner_applications')
         .insert({
@@ -240,14 +295,34 @@ const PartnerLanding = () => {
               </label>
             </div>
 
-            <motion.button
-              whileTap={{ scale: 0.98 }}
-              onClick={handleSubmit}
-              disabled={submitting || !partnerTermsAccepted}
-              className="w-full py-3.5 rounded-lg bg-primary text-primary-foreground font-bold text-sm glow-green disabled:opacity-50"
-            >
-              {submitting ? t('common.loading') : t('partner_landing.submit')}
-            </motion.button>
+            {duplicateLocation && duplicateChecked && (
+              <div className="glass rounded-xl p-4 space-y-3">
+                <p className="text-sm text-foreground">
+                  Мы нашли похожий бизнес: <strong>{duplicateLocation.name}</strong>. Это ваш бизнес?
+                </p>
+                <div className="flex gap-2">
+                  <motion.button whileTap={{ scale: 0.95 }} onClick={claimExisting} disabled={submitting}
+                    className="flex-1 py-2.5 rounded-lg bg-primary text-primary-foreground text-xs font-bold disabled:opacity-50">
+                    {submitting ? t('common.loading') : '✅ Да, это мой бизнес'}
+                  </motion.button>
+                  <motion.button whileTap={{ scale: 0.95 }} onClick={() => { setDuplicateLocation(null); submitNew(); }} disabled={submitting}
+                    className="flex-1 py-2.5 rounded-lg bg-muted text-foreground text-xs font-bold disabled:opacity-50">
+                    ➕ Нет, создать новый
+                  </motion.button>
+                </div>
+              </div>
+            )}
+
+            {!duplicateChecked && (
+              <motion.button
+                whileTap={{ scale: 0.98 }}
+                onClick={checkDuplicate}
+                disabled={submitting || !partnerTermsAccepted}
+                className="w-full py-3.5 rounded-lg bg-primary text-primary-foreground font-bold text-sm glow-green disabled:opacity-50"
+              >
+                {submitting ? t('common.loading') : t('partner_landing.submit')}
+              </motion.button>
+            )}
           </motion.div>
         )}
       </div>
