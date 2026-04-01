@@ -1,0 +1,1 @@
+ALTER TABLE public.partner_applications ADD COLUMN claimed_location_id uuid DEFAULT NULL;
