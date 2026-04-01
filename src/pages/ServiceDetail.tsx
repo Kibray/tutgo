@@ -30,6 +30,8 @@ const ServiceDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { user } = useAuth();
+  const [claimSubmitting, setClaimSubmitting] = useState(false);
 
   const [location, setLocation] = useState<LocationItem | null>(null);
   const [services, setServices] = useState<any[]>([]);
