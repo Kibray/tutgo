@@ -142,6 +142,33 @@ const ServiceDetail = () => {
     else { navigator.clipboard.writeText(text); toast({ title: 'Скопировано для отправки' }); }
   };
 
+  const handleClaimBusiness = async () => {
+    if (!user) {
+      toast({ title: 'Войдите чтобы заявить права на бизнес' });
+      navigate('/auth/partner');
+      return;
+    }
+    if (!location) return;
+    setClaimSubmitting(true);
+    try {
+      const { error } = await supabase.from('partner_applications').insert({
+        user_id: user.id,
+        company_name: location.name,
+        claimed_location_id: location.id,
+        status: 'claim_pending',
+        phone: location.phone || '',
+        address: location.address || '',
+        category: location.sub_category || '',
+      });
+      if (error) throw error;
+      toast({ title: 'Заявка отправлена! Мы свяжемся с вами.' });
+    } catch (err: any) {
+      toast({ title: 'Ошибка', description: err.message, variant: 'destructive' });
+    } finally {
+      setClaimSubmitting(false);
+    }
+  };
+
   const handleCallWaiter = () => {
     const tg = (window as any).Telegram?.WebApp;
     tg?.HapticFeedback?.notificationOccurred('success');
