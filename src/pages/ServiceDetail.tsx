@@ -10,6 +10,7 @@ import { supabase } from '@/integrations/supabase/client';
 import BottomNav from '@/components/BottomNav';
 import DateChip from '@/components/DateChip';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/hooks/useAuth';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { useMenu } from '@/hooks/useMenu';
 import { useCart } from '@/hooks/useCart';
@@ -29,6 +30,8 @@ const ServiceDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { user } = useAuth();
+  const [claimSubmitting, setClaimSubmitting] = useState(false);
 
   const [location, setLocation] = useState<LocationItem | null>(null);
   const [services, setServices] = useState<any[]>([]);
@@ -139,6 +142,33 @@ const ServiceDetail = () => {
     else { navigator.clipboard.writeText(text); toast({ title: 'Скопировано для отправки' }); }
   };
 
+  const handleClaimBusiness = async () => {
+    if (!user) {
+      toast({ title: 'Войдите чтобы заявить права на бизнес' });
+      navigate('/auth/partner');
+      return;
+    }
+    if (!location) return;
+    setClaimSubmitting(true);
+    try {
+      const { error } = await supabase.from('partner_applications').insert({
+        user_id: user.id,
+        company_name: location.name,
+        claimed_location_id: location.id,
+        status: 'claim_pending',
+        phone: location.phone || '',
+        address: location.address || '',
+        category: location.sub_category || '',
+      });
+      if (error) throw error;
+      toast({ title: 'Заявка отправлена! Мы свяжемся с вами.' });
+    } catch (err: any) {
+      toast({ title: 'Ошибка', description: err.message, variant: 'destructive' });
+    } finally {
+      setClaimSubmitting(false);
+    }
+  };
+
   const handleCallWaiter = () => {
     const tg = (window as any).Telegram?.WebApp;
     tg?.HapticFeedback?.notificationOccurred('success');
@@ -238,7 +268,7 @@ const ServiceDetail = () => {
       </div>
 
       {/* Actions */}
-      <div className="px-4 mt-4 grid grid-cols-4 gap-2">
+      <div className="px-4 mt-4 grid grid-cols-5 gap-2">
         {location.telegram && (
           <motion.button whileTap={{ scale: 0.95 }} onClick={() => window.open(`https://t.me/${location.telegram}`, '_blank')}
             className="glass rounded-xl py-3 flex flex-col items-center gap-1.5 ring-1 ring-[hsl(200,80%,55%)]/30">
@@ -258,6 +288,10 @@ const ServiceDetail = () => {
         <motion.button whileTap={{ scale: 0.95 }} onClick={handleShare}
           className="glass rounded-xl py-3 flex flex-col items-center gap-1.5">
           <Share2 className="w-5 h-5 text-primary" /><span className="text-[10px] font-medium text-foreground">Поделиться</span>
+        </motion.button>
+        <motion.button whileTap={{ scale: 0.95 }} onClick={handleClaimBusiness} disabled={claimSubmitting}
+          className="glass rounded-xl py-3 flex flex-col items-center gap-1.5 disabled:opacity-50">
+          <span className="text-lg">🏢</span><span className="text-[10px] font-medium text-foreground">{claimSubmitting ? '...' : 'Мой бизнес'}</span>
         </motion.button>
       </div>
 
