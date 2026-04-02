@@ -187,6 +187,17 @@ const injectPulseCSS = () => {
       100% { transform: scale(2); opacity: 0; }
     }
     .tutgo-user-pulse { animation: tutgo-pulse 2s infinite; }
+    .leaflet-control-zoom-in,
+    .leaflet-control-zoom-out {
+      background: hsl(220,15%,10%) !important;
+      border: 1px solid hsl(142,72%,29%) !important;
+      color: white !important;
+      border-radius: 8px !important;
+    }
+    .leaflet-control-zoom-in:hover,
+    .leaflet-control-zoom-out:hover {
+      background: hsl(142,72%,29%) !important;
+    }
   `;
   document.head.appendChild(style);
 };
