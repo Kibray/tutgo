@@ -482,6 +482,7 @@ export type Database = {
           description: string | null
           gallery: string[] | null
           id: string
+          instagram: string | null
           is_promoted: boolean | null
           lat: number | null
           lng: number | null
@@ -512,6 +513,7 @@ export type Database = {
           description?: string | null
           gallery?: string[] | null
           id?: string
+          instagram?: string | null
           is_promoted?: boolean | null
           lat?: number | null
           lng?: number | null
@@ -542,6 +544,7 @@ export type Database = {
           description?: string | null
           gallery?: string[] | null
           id?: string
+          instagram?: string | null
           is_promoted?: boolean | null
           lat?: number | null
           lng?: number | null
