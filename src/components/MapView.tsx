@@ -87,33 +87,7 @@ const ZoomTracker = ({ onZoomChange }: { onZoomChange: (z: number) => void }) =>
   return null;
 };
 
-const CustomZoomControls = () => {
-  const map = useMap();
-  const btnStyle: React.CSSProperties = {
-    width: 36, height: 36,
-    background: 'hsl(220,15%,10%)',
-    border: '1px solid hsl(142,72%,29%)',
-    color: 'white', fontSize: 20,
-    borderRadius: 8, cursor: 'pointer',
-    display: 'flex', alignItems: 'center', justifyContent: 'center',
-  };
-  return (
-    <div style={{ position: 'absolute', top: 12, right: 12, zIndex: 1000, display: 'flex', flexDirection: 'column', gap: 4 }}>
-      <button
-        style={btnStyle}
-        onMouseEnter={e => (e.currentTarget.style.background = 'hsl(142,72%,29%)')}
-        onMouseLeave={e => (e.currentTarget.style.background = 'hsl(220,15%,10%)')}
-        onClick={() => map.zoomIn()}
-      >+</button>
-      <button
-        style={btnStyle}
-        onMouseEnter={e => (e.currentTarget.style.background = 'hsl(142,72%,29%)')}
-        onMouseLeave={e => (e.currentTarget.style.background = 'hsl(220,15%,10%)')}
-        onClick={() => map.zoomOut()}
-      >−</button>
-    </div>
-  );
-};
+// Removed custom zoom controls — using native Leaflet zoomControl with CSS overrides
 
 const MarkerClusterWrapper = ({ children, map }: { children: L.Marker[]; map: L.Map }) => {
   const clusterRef = useRef<L.MarkerClusterGroup | null>(null);
@@ -213,6 +187,17 @@ const injectPulseCSS = () => {
       100% { transform: scale(2); opacity: 0; }
     }
     .tutgo-user-pulse { animation: tutgo-pulse 2s infinite; }
+    .leaflet-control-zoom-in,
+    .leaflet-control-zoom-out {
+      background: hsl(220,15%,10%) !important;
+      border: 1px solid hsl(142,72%,29%) !important;
+      color: white !important;
+      border-radius: 8px !important;
+    }
+    .leaflet-control-zoom-in:hover,
+    .leaflet-control-zoom-out:hover {
+      background: hsl(142,72%,29%) !important;
+    }
   `;
   document.head.appendChild(style);
 };
@@ -241,58 +226,55 @@ const MapView = ({ services, onMarkerClick, center, className = '', nearbyMode, 
 
   const mapBg = isDark ? 'hsl(220, 15%, 5%)' : 'hsl(0, 0%, 95%)';
 
+  const pillStyle = (active: boolean): React.CSSProperties => ({
+    background: active ? 'hsl(142,72%,29%)' : 'transparent',
+    color: active ? 'white' : 'hsl(142,72%,45%)',
+    border: '1px solid hsl(142,72%,29%)',
+    borderRadius: 20,
+    padding: '6px 14px',
+    fontSize: 13,
+    cursor: 'pointer',
+  });
+
   return (
-    <div style={{ position: 'relative', width: '100%', height: '100%' }}>
-      <MapContainer center={defaultCenter} zoom={12} className={`w-full h-full ${className}`}
-        zoomControl={false} attributionControl={false} style={{ background: mapBg }}>
-        <TileLayer url={tileUrl} key={tileUrl} />
-        <CenterOnLocation center={center || null} />
-        <ResizeHandler />
-        <ZoomTracker onZoomChange={setZoom} />
-        <CustomZoomControls />
+    <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
+      <div style={{ display: 'flex', gap: 4, marginBottom: 8 }}>
+        <button style={pillStyle(isDark)} onClick={() => setIsDark(true)}>🌙 Тёмная</button>
+        <button style={pillStyle(!isDark)} onClick={() => setIsDark(false)}>☀️ Светлая</button>
+      </div>
+      <div style={{ position: 'relative', flex: 1 }}>
+        <MapContainer center={defaultCenter} zoom={12} className={`w-full h-full ${className}`}
+          zoomControl={true} attributionControl={false} style={{ background: mapBg }}>
+          <TileLayer url={tileUrl} key={tileUrl} />
+          <CenterOnLocation center={center || null} />
+          <ResizeHandler />
+          <ZoomTracker onZoomChange={setZoom} />
 
-        {/* Nearby radius circle */}
-        {nearbyMode && userLocation && (
-          <Circle
-            center={userLocation}
-            radius={2000}
-            pathOptions={{
-              color: 'hsl(142, 72%, 40%)',
-              fillColor: 'hsl(142, 72%, 29%)',
-              fillOpacity: 0.08,
-              weight: 1.5,
-              dashArray: '6 4',
-            }}
-          />
-        )}
+          {nearbyMode && userLocation && (
+            <Circle
+              center={userLocation}
+              radius={2000}
+              pathOptions={{
+                color: 'hsl(142, 72%, 40%)',
+                fillColor: 'hsl(142, 72%, 29%)',
+                fillOpacity: 0.08,
+                weight: 1.5,
+                dashArray: '6 4',
+              }}
+            />
+          )}
 
-        {/* User location dot */}
-        {userLocation && (
-          <Marker
-            position={userLocation}
-            icon={createUserLocationIcon()}
-            interactive={false}
-          />
-        )}
+          {userLocation && (
+            <Marker
+              position={userLocation}
+              icon={createUserLocationIcon()}
+              interactive={false}
+            />
+          )}
 
-        {/* Clustered business markers */}
-        <ClusterLayer services={filteredServices} onMarkerClick={onMarkerClick} zoom={zoom} />
-      </MapContainer>
-
-      {/* Theme toggle button */}
-      <button
-        onClick={() => setIsDark(d => !d)}
-        style={{
-          position: 'absolute', bottom: 12, right: 12, zIndex: 1000,
-          background: 'hsl(220,15%,10%)',
-          border: '1px solid hsl(142,72%,29%)',
-          color: 'white', borderRadius: 10,
-          padding: '8px 14px', fontSize: 13,
-          cursor: 'pointer',
-        }}
-      >
-        {isDark ? '☀️ Светлая' : '🌙 Тёмная'}
-      </button>
+          <ClusterLayer services={filteredServices} onMarkerClick={onMarkerClick} zoom={zoom} />
+        </MapContainer>
+      </div>
     </div>
   );
 };
