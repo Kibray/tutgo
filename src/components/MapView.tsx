@@ -87,33 +87,7 @@ const ZoomTracker = ({ onZoomChange }: { onZoomChange: (z: number) => void }) =>
   return null;
 };
 
-const CustomZoomControls = () => {
-  const map = useMap();
-  const btnStyle: React.CSSProperties = {
-    width: 36, height: 36,
-    background: 'hsl(220,15%,10%)',
-    border: '1px solid hsl(142,72%,29%)',
-    color: 'white', fontSize: 20,
-    borderRadius: 8, cursor: 'pointer',
-    display: 'flex', alignItems: 'center', justifyContent: 'center',
-  };
-  return (
-    <div style={{ position: 'absolute', top: 12, right: 12, zIndex: 1000, display: 'flex', flexDirection: 'column', gap: 4 }}>
-      <button
-        style={btnStyle}
-        onMouseEnter={e => (e.currentTarget.style.background = 'hsl(142,72%,29%)')}
-        onMouseLeave={e => (e.currentTarget.style.background = 'hsl(220,15%,10%)')}
-        onClick={() => map.zoomIn()}
-      >+</button>
-      <button
-        style={btnStyle}
-        onMouseEnter={e => (e.currentTarget.style.background = 'hsl(142,72%,29%)')}
-        onMouseLeave={e => (e.currentTarget.style.background = 'hsl(220,15%,10%)')}
-        onClick={() => map.zoomOut()}
-      >−</button>
-    </div>
-  );
-};
+// Removed custom zoom controls — using native Leaflet zoomControl with CSS overrides
 
 const MarkerClusterWrapper = ({ children, map }: { children: L.Marker[]; map: L.Map }) => {
   const clusterRef = useRef<L.MarkerClusterGroup | null>(null);
