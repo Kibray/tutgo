@@ -1,7 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, Circle, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import 'leaflet.markercluster/dist/MarkerCluster.css';
+import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
+import 'leaflet.markercluster';
 import { categoryEmoji, formatPrice, getServiceEmoji } from '@/lib/types';
 import type { LocationItem } from '@/lib/types';
 import { Star, MapPin } from 'lucide-react';
@@ -37,11 +40,23 @@ const createCategoryIcon = (category: string, isPromoted: boolean, name?: string
     ? `<div style="margin-top:2px;padding:1px 4px;border-radius:4px;background:hsla(220,15%,10%,0.85);color:#fff;font-size:11px;line-height:13px;white-space:nowrap;text-align:center;max-width:80px;overflow:hidden;text-overflow:ellipsis;">${label}</div>`
     : '';
   return L.divIcon({
-    html: `<div style="display:flex;flex-direction:column;align-items:center;"><div style="width:${size}px;height:${size}px;border-radius:12px;background:hsla(220,15%,10%,0.92);${border}display:flex;align-items:center;justify-content:center;font-size:${isPromoted ? 20 : 16}px;backdrop-filter:blur(10px);transition:transform 0.15s;">${emoji}</div>${labelHtml}</div>`,
+    html: `<div style="display:flex;flex-direction:column;align-items:center;"><div style="width:${size}px;height:${size}px;border-radius:12px;background:hsla(220,15%,10%,0.92);${border}display:flex;align-items:center;justify-content:center;font-size:${isPromoted ? 20 : 16}px;backdrop-filter:blur(10px);transition:transform 0.15s ease;">${emoji}</div>${labelHtml}</div>`,
     className: '',
     iconSize: [size, size + (label ? 18 : 0)],
     iconAnchor: [size / 2, size / 2],
     popupAnchor: [0, -size / 2 - 4],
+  });
+};
+
+const createUserLocationIcon = () => {
+  return L.divIcon({
+    html: `<div style="position:relative;width:20px;height:20px;display:flex;align-items:center;justify-content:center;">
+      <div class="tutgo-user-pulse" style="position:absolute;width:20px;height:20px;border-radius:50%;background:hsl(142,72%,29%);opacity:0.3;"></div>
+      <div style="position:relative;width:10px;height:10px;border-radius:50%;background:white;border:2px solid hsl(142,72%,40%);z-index:2;"></div>
+    </div>`,
+    className: '',
+    iconSize: [20, 20],
+    iconAnchor: [10, 10],
   });
 };
 
@@ -72,6 +87,136 @@ const ZoomTracker = ({ onZoomChange }: { onZoomChange: (z: number) => void }) =>
   return null;
 };
 
+const CustomZoomControls = () => {
+  const map = useMap();
+  const btnStyle: React.CSSProperties = {
+    width: 36, height: 36,
+    background: 'hsl(220,15%,10%)',
+    border: '1px solid hsl(142,72%,29%)',
+    color: 'white', fontSize: 20,
+    borderRadius: 8, cursor: 'pointer',
+    display: 'flex', alignItems: 'center', justifyContent: 'center',
+  };
+  return (
+    <div style={{ position: 'absolute', top: 12, right: 12, zIndex: 1000, display: 'flex', flexDirection: 'column', gap: 4 }}>
+      <button
+        style={btnStyle}
+        onMouseEnter={e => (e.currentTarget.style.background = 'hsl(142,72%,29%)')}
+        onMouseLeave={e => (e.currentTarget.style.background = 'hsl(220,15%,10%)')}
+        onClick={() => map.zoomIn()}
+      >+</button>
+      <button
+        style={btnStyle}
+        onMouseEnter={e => (e.currentTarget.style.background = 'hsl(142,72%,29%)')}
+        onMouseLeave={e => (e.currentTarget.style.background = 'hsl(220,15%,10%)')}
+        onClick={() => map.zoomOut()}
+      >−</button>
+    </div>
+  );
+};
+
+const MarkerClusterWrapper = ({ children, map }: { children: L.Marker[]; map: L.Map }) => {
+  const clusterRef = useRef<L.MarkerClusterGroup | null>(null);
+
+  useEffect(() => {
+    if (!map) return;
+
+    if (clusterRef.current) {
+      map.removeLayer(clusterRef.current);
+    }
+
+    const cluster = (L as any).markerClusterGroup({
+      iconCreateFunction: (c: any) => {
+        const count = c.getChildCount();
+        let size = 34;
+        if (count >= 50) size = 54;
+        else if (count >= 10) size = 44;
+        return L.divIcon({
+          html: `<div style="width:${size}px;height:${size}px;border-radius:50%;background:hsl(142,72%,29%);border:2px solid hsl(142,72%,45%);color:white;font-weight:600;display:flex;align-items:center;justify-content:center;font-size:${size > 40 ? 14 : 12}px;">${count}</div>`,
+          className: '',
+          iconSize: [size, size],
+          iconAnchor: [size / 2, size / 2],
+        });
+      },
+      maxClusterRadius: 60,
+      spiderfyOnMaxZoom: true,
+      showCoverageOnHover: false,
+    });
+
+    children.forEach(marker => cluster.addLayer(marker));
+    map.addLayer(cluster);
+    clusterRef.current = cluster;
+
+    return () => {
+      if (clusterRef.current) {
+        map.removeLayer(clusterRef.current);
+        clusterRef.current = null;
+      }
+    };
+  }, [children, map]);
+
+  return null;
+};
+
+const ClusterLayer = ({ services, onMarkerClick, zoom }: { services: LocationItem[]; onMarkerClick: (s: LocationItem) => void; zoom: number }) => {
+  const map = useMap();
+
+  const markers = services.map(s => {
+    const icon = createCategoryIcon(s.business_type, !!s.is_promoted, s.name, s.sub_category, zoom >= 14);
+    const marker = L.marker([s.lat!, s.lng!], { icon });
+
+    const popupContent = `<div style="background:hsl(220,15%,8%);border-radius:12px;padding:12px;border:1px solid hsla(0,0%,100%,0.08);min-width:180px;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+        <div style="width:36px;height:36px;border-radius:8px;background:hsla(220,15%,15%,1);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">${getServiceEmoji(s.business_type, s.sub_category)}</div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:13px;font-weight:600;color:hsl(0,0%,95%);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${s.name}</div>
+          <div style="font-size:11px;color:hsl(0,0%,55%);margin-top:2px;">${s.address || ''}</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <div style="display:flex;align-items:center;gap:4px;">
+          <span style="font-size:12px;">⭐</span>
+          <span style="font-size:12px;font-weight:600;color:hsl(0,0%,90%);">${s.rating || 0}</span>
+          ${(s.review_count || 0) > 0 ? `<span style="font-size:11px;color:hsl(0,0%,50%);">· ${s.review_count}</span>` : ''}
+        </div>
+        ${(s.price_from || 0) > 0 ? `<span style="font-size:12px;font-weight:700;color:hsl(142,72%,45%);">от ${new Intl.NumberFormat('ru-RU').format(s.price_from!)} ${s.currency}</span>` : ''}
+      </div>
+      <button class="tutgo-popup-btn" style="width:100%;padding:8px;border-radius:8px;background:hsl(142,72%,29%);color:white;font-size:12px;font-weight:600;border:none;cursor:pointer;">Подробнее</button>
+    </div>`;
+
+    marker.bindPopup(popupContent, { className: 'leaflet-popup-custom', maxWidth: 240, minWidth: 200 });
+
+    marker.on('click', () => onMarkerClick(s));
+    marker.on('mouseover', () => {
+      const el = marker.getElement();
+      if (el) el.style.transform = el.style.transform.replace(/scale\([^)]*\)/, '') + ' scale(1.2)';
+    });
+    marker.on('mouseout', () => {
+      const el = marker.getElement();
+      if (el) el.style.transform = el.style.transform.replace(/scale\([^)]*\)/, '');
+    });
+
+    return marker;
+  });
+
+  return <MarkerClusterWrapper map={map}>{markers}</MarkerClusterWrapper>;
+};
+
+// Inject pulse animation CSS once
+const injectPulseCSS = () => {
+  if (document.getElementById('tutgo-pulse-css')) return;
+  const style = document.createElement('style');
+  style.id = 'tutgo-pulse-css';
+  style.textContent = `
+    @keyframes tutgo-pulse {
+      0% { transform: scale(1); opacity: 0.3; }
+      100% { transform: scale(2); opacity: 0; }
+    }
+    .tutgo-user-pulse { animation: tutgo-pulse 2s infinite; }
+  `;
+  document.head.appendChild(style);
+};
+
 interface MapViewProps {
   services: LocationItem[];
   onMarkerClick: (service: LocationItem) => void;
@@ -84,88 +229,71 @@ interface MapViewProps {
 const MapView = ({ services, onMarkerClick, center, className = '', nearbyMode, userLocation }: MapViewProps) => {
   const defaultCenter: [number, number] = [41.3111, 69.2797];
   const [zoom, setZoom] = useState(12);
+  const [isDark, setIsDark] = useState(true);
+
+  useEffect(() => { injectPulseCSS(); }, []);
+
+  const filteredServices = services.filter(s => s.lat && s.lng);
+
+  const tileUrl = isDark
+    ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
+    : 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
+
+  const mapBg = isDark ? 'hsl(220, 15%, 5%)' : 'hsl(0, 0%, 95%)';
 
   return (
-    <MapContainer center={defaultCenter} zoom={12} className={`w-full h-full ${className}`}
-      zoomControl={false} attributionControl={false} style={{ background: 'hsl(220, 15%, 5%)' }}>
-      <TileLayer url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png" />
-      <CenterOnLocation center={center || null} />
-      <ResizeHandler />
-      <ZoomTracker onZoomChange={setZoom} />
+    <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+      <MapContainer center={defaultCenter} zoom={12} className={`w-full h-full ${className}`}
+        zoomControl={false} attributionControl={false} style={{ background: mapBg }}>
+        <TileLayer url={tileUrl} key={tileUrl} />
+        <CenterOnLocation center={center || null} />
+        <ResizeHandler />
+        <ZoomTracker onZoomChange={setZoom} />
+        <CustomZoomControls />
 
-      {/* Nearby radius circle */}
-      {nearbyMode && userLocation && (
-        <Circle
-          center={userLocation}
-          radius={2000}
-          pathOptions={{
-            color: 'hsl(142, 72%, 40%)',
-            fillColor: 'hsl(142, 72%, 29%)',
-            fillOpacity: 0.08,
-            weight: 1.5,
-            dashArray: '6 4',
-          }}
-        />
-      )}
+        {/* Nearby radius circle */}
+        {nearbyMode && userLocation && (
+          <Circle
+            center={userLocation}
+            radius={2000}
+            pathOptions={{
+              color: 'hsl(142, 72%, 40%)',
+              fillColor: 'hsl(142, 72%, 29%)',
+              fillOpacity: 0.08,
+              weight: 1.5,
+              dashArray: '6 4',
+            }}
+          />
+        )}
 
-      {services.map((s) => (
-        <Marker key={s.id} position={[s.lat || 41.3111, s.lng || 69.2797]}
-          icon={createCategoryIcon(s.business_type, !!s.is_promoted, s.name, s.sub_category, zoom >= 14)}
-          eventHandlers={{ click: () => onMarkerClick(s) }}>
-          <Popup className="leaflet-popup-custom" maxWidth={240} minWidth={200}>
-            <div style={{
-              background: 'hsl(220, 15%, 8%)',
-              borderRadius: '12px',
-              padding: '12px',
-              border: '1px solid hsla(0,0%,100%,0.08)',
-              minWidth: '180px',
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-                <div style={{
-                  width: '36px', height: '36px', borderRadius: '8px',
-                  background: 'hsla(220,15%,15%,1)',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: '18px', flexShrink: 0,
-                }}>
-                  {getServiceEmoji(s.business_type, s.sub_category)}
-                </div>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{
-                    fontSize: '13px', fontWeight: 600, color: 'hsl(0,0%,95%)',
-                    overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-                  }}>{s.name}</div>
-                  <div style={{ fontSize: '11px', color: 'hsl(0,0%,55%)', marginTop: '2px' }}>{s.address}</div>
-                </div>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                  <span style={{ fontSize: '12px' }}>⭐</span>
-                  <span style={{ fontSize: '12px', fontWeight: 600, color: 'hsl(0,0%,90%)' }}>{s.rating || 0}</span>
-                  {(s.review_count || 0) > 0 && (
-                    <span style={{ fontSize: '11px', color: 'hsl(0,0%,50%)' }}>· {s.review_count}</span>
-                  )}
-                </div>
-                {(s.price_from || 0) > 0 && (
-                  <span style={{ fontSize: '12px', fontWeight: 700, color: 'hsl(142, 72%, 45%)' }}>
-                    от {new Intl.NumberFormat('ru-RU').format(s.price_from!)} {s.currency}
-                  </span>
-                )}
-              </div>
-              <button
-                onClick={(e) => { e.stopPropagation(); onMarkerClick(s); }}
-                style={{
-                  width: '100%', padding: '8px', borderRadius: '8px',
-                  background: 'hsl(142, 72%, 29%)', color: 'white',
-                  fontSize: '12px', fontWeight: 600, border: 'none', cursor: 'pointer',
-                }}
-              >
-                Подробнее
-              </button>
-            </div>
-          </Popup>
-        </Marker>
-      ))}
-    </MapContainer>
+        {/* User location dot */}
+        {userLocation && (
+          <Marker
+            position={userLocation}
+            icon={createUserLocationIcon()}
+            interactive={false}
+          />
+        )}
+
+        {/* Clustered business markers */}
+        <ClusterLayer services={filteredServices} onMarkerClick={onMarkerClick} zoom={zoom} />
+      </MapContainer>
+
+      {/* Theme toggle button */}
+      <button
+        onClick={() => setIsDark(d => !d)}
+        style={{
+          position: 'absolute', bottom: 12, right: 12, zIndex: 1000,
+          background: 'hsl(220,15%,10%)',
+          border: '1px solid hsl(142,72%,29%)',
+          color: 'white', borderRadius: 10,
+          padding: '8px 14px', fontSize: 13,
+          cursor: 'pointer',
+        }}
+      >
+        {isDark ? '☀️ Светлая' : '🌙 Тёмная'}
+      </button>
+    </div>
   );
 };
 
