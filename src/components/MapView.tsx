@@ -198,6 +198,22 @@ const injectPulseCSS = () => {
     .leaflet-control-zoom-out:hover {
       background: hsl(142,72%,29%) !important;
     }
+    .district-label {
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+      color: hsl(142, 72%, 55%) !important;
+      font-size: 11px !important;
+      font-weight: 600 !important;
+      letter-spacing: 0.5px !important;
+      text-transform: uppercase !important;
+      pointer-events: none !important;
+      white-space: nowrap !important;
+      opacity: 0.7 !important;
+    }
+    .district-label::before {
+      display: none !important;
+    }
   `;
   document.head.appendChild(style);
 };
