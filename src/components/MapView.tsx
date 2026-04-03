@@ -287,6 +287,31 @@ const MapView = ({ services, onMarkerClick, center, className = '', nearbyMode, 
         <MapContainer center={defaultCenter} zoom={12} className={`w-full h-full ${className}`}
           zoomControl={true} attributionControl={false} style={{ background: mapBg }}>
           <TileLayer url={tileUrl} key={tileUrl} />
+
+          {districts.map((district) => {
+            const coords = osmToLatLngs(district.members || []);
+            if (coords.length === 0) return null;
+            const name = district.tags?.['name:ru'] || district.tags?.name || '';
+            return (
+              <Polygon
+                key={district.id}
+                positions={coords}
+                pathOptions={{
+                  color: 'hsl(142, 72%, 40%)',
+                  fillColor: 'hsl(142, 72%, 29%)',
+                  fillOpacity: 0.04,
+                  weight: 1,
+                  opacity: 0.5,
+                  dashArray: '4 4',
+                }}
+              >
+                <Tooltip permanent direction="center" className="district-label" offset={[0, 0]}>
+                  {name}
+                </Tooltip>
+              </Polygon>
+            );
+          })}
+
           <CenterOnLocation center={center || null} />
           <ResizeHandler />
           <ZoomTracker onZoomChange={setZoom} />
