@@ -203,14 +203,15 @@ const injectPulseCSS = () => {
       background: transparent !important;
       border: none !important;
       box-shadow: none !important;
-      color: hsl(142, 72%, 55%) !important;
-      font-size: 11px !important;
-      font-weight: 600 !important;
-      letter-spacing: 0.5px !important;
+      color: hsl(142, 72%, 60%) !important;
+      font-size: 10px !important;
+      font-weight: 700 !important;
+      letter-spacing: 0.8px !important;
       text-transform: uppercase !important;
       pointer-events: none !important;
       white-space: nowrap !important;
-      opacity: 0.7 !important;
+      opacity: 0.75 !important;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.8) !important;
     }
     .district-label::before {
       display: none !important;
