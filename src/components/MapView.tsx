@@ -252,80 +252,96 @@ const MapView = ({ services, onMarkerClick, center, className = '', nearbyMode, 
 
   const mapBg = isDark ? 'hsl(220, 15%, 5%)' : 'hsl(0, 0%, 95%)';
 
-  const pillStyle = (active: boolean): React.CSSProperties => ({
-    background: active ? 'hsl(142,72%,29%)' : 'transparent',
-    color: active ? 'white' : 'hsl(142,72%,45%)',
-    border: '1px solid hsl(142,72%,29%)',
+  const themeBtnStyle = (active: boolean): React.CSSProperties => ({
+    height: 36,
+    padding: '0 16px',
     borderRadius: 20,
-    padding: '6px 14px',
+    border: 'none',
     fontSize: 13,
+    fontWeight: 600,
     cursor: 'pointer',
+    touchAction: 'manipulation',
+    transition: 'all 0.2s',
+    background: active ? 'hsl(142,72%,29%)' : 'transparent',
+    color: active ? 'white' : 'hsl(142,72%,55%)',
   });
 
   return (
-    <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
-      <div style={{ display: 'flex', gap: 4, marginBottom: 8 }}>
-        <button style={pillStyle(isDark)} onClick={() => setIsDark(true)}>🌙 Тёмная</button>
-        <button style={pillStyle(!isDark)} onClick={() => setIsDark(false)}>☀️ Светлая</button>
-      </div>
-      <div style={{ position: 'relative', flex: 1 }}>
-        <MapContainer center={defaultCenter} zoom={12} className={`w-full h-full ${className}`}
-          zoomControl={true} attributionControl={false} style={{ background: mapBg }}>
-          <TileLayer url={tileUrl} key={tileUrl} />
+    <div style={{ width: '100%', height: '100%', position: 'relative' }}>
+      <MapContainer center={defaultCenter} zoom={12} className={`w-full h-full ${className}`}
+        zoomControl={true} attributionControl={false} style={{ background: mapBg }}>
+        <TileLayer url={tileUrl} key={tileUrl} />
 
-          {districts && (
-            <GeoJSON
-              key={isDark ? 'dark' : 'light'}
-              data={districts}
-              style={() => ({
-                color: isDark ? 'hsl(142, 72%, 40%)' : 'hsl(142, 72%, 25%)',
-                fillColor: isDark ? 'hsl(142, 72%, 29%)' : 'hsl(142, 72%, 50%)',
-                fillOpacity: 0.04,
-                weight: 1.2,
-                opacity: 0.6,
-                dashArray: '5 5',
-              })}
-              onEachFeature={(feature, layer) => {
-                const engName = feature.properties?.name || '';
-                const ruName = DISTRICT_NAMES[engName] || engName;
-                layer.bindTooltip(ruName, {
-                  permanent: true,
-                  direction: 'center',
-                  className: 'district-label',
-                  offset: [0, 0],
-                });
-              }}
-            />
-          )}
+        {districts && (
+          <GeoJSON
+            key={isDark ? 'dark' : 'light'}
+            data={districts}
+            style={() => ({
+              color: isDark ? 'hsl(142, 72%, 40%)' : 'hsl(142, 72%, 25%)',
+              fillColor: isDark ? 'hsl(142, 72%, 29%)' : 'hsl(142, 72%, 50%)',
+              fillOpacity: 0.04,
+              weight: 1.2,
+              opacity: 0.6,
+              dashArray: '5 5',
+            })}
+            onEachFeature={(feature, layer) => {
+              const engName = feature.properties?.name || '';
+              const ruName = DISTRICT_NAMES[engName] || engName;
+              layer.bindTooltip(ruName, {
+                permanent: true,
+                direction: 'center',
+                className: 'district-label',
+                offset: [0, 0],
+              });
+            }}
+          />
+        )}
 
-          <CenterOnLocation center={center || null} />
-          <ResizeHandler />
-          <ZoomTracker onZoomChange={setZoom} />
+        <CenterOnLocation center={center || null} />
+        <ResizeHandler />
+        <ZoomTracker onZoomChange={setZoom} />
 
-          {nearbyMode && userLocation && (
-            <Circle
-              center={userLocation}
-              radius={2000}
-              pathOptions={{
-                color: 'hsl(142, 72%, 40%)',
-                fillColor: 'hsl(142, 72%, 29%)',
-                fillOpacity: 0.08,
-                weight: 1.5,
-                dashArray: '6 4',
-              }}
-            />
-          )}
+        {nearbyMode && userLocation && (
+          <Circle
+            center={userLocation}
+            radius={2000}
+            pathOptions={{
+              color: 'hsl(142, 72%, 40%)',
+              fillColor: 'hsl(142, 72%, 29%)',
+              fillOpacity: 0.08,
+              weight: 1.5,
+              dashArray: '6 4',
+            }}
+          />
+        )}
 
-          {userLocation && (
-            <Marker
-              position={userLocation}
-              icon={createUserLocationIcon()}
-              interactive={false}
-            />
-          )}
+        {userLocation && (
+          <Marker
+            position={userLocation}
+            icon={createUserLocationIcon()}
+            interactive={false}
+          />
+        )}
 
-          <ClusterLayer services={filteredServices} onMarkerClick={onMarkerClick} zoom={zoom} />
-        </MapContainer>
+        <ClusterLayer services={filteredServices} onMarkerClick={onMarkerClick} zoom={zoom} />
+      </MapContainer>
+
+      <div style={{
+        position: 'absolute',
+        bottom: 90,
+        left: '50%',
+        transform: 'translateX(-50%)',
+        zIndex: 1000,
+        display: 'flex',
+        flexDirection: 'row',
+        gap: 8,
+        background: 'hsl(220,15%,8%)',
+        border: '1px solid hsl(142,72%,29%)',
+        borderRadius: 24,
+        padding: 4,
+      }}>
+        <button style={themeBtnStyle(isDark)} onClick={() => setIsDark(true)}>🌙</button>
+        <button style={themeBtnStyle(!isDark)} onClick={() => setIsDark(false)}>☀️</button>
       </div>
     </div>
   );
