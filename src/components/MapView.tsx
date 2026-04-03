@@ -8,6 +8,7 @@ import 'leaflet.markercluster';
 import { categoryEmoji, formatPrice, getServiceEmoji } from '@/lib/types';
 import type { LocationItem } from '@/lib/types';
 import { Star, MapPin } from 'lucide-react';
+import { TASHKENT_DISTRICTS_URL, DISTRICT_NAMES } from '@/data/tashkentDistricts';
 
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 L.Icon.Default.mergeOptions({
