@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, Circle, Polygon, Tooltip, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, Circle, GeoJSON, Tooltip, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet.markercluster/dist/MarkerCluster.css';
@@ -8,6 +8,7 @@ import 'leaflet.markercluster';
 import { categoryEmoji, formatPrice, getServiceEmoji } from '@/lib/types';
 import type { LocationItem } from '@/lib/types';
 import { Star, MapPin } from 'lucide-react';
+import { TASHKENT_DISTRICTS_URL, DISTRICT_NAMES } from '@/data/tashkentDistricts';
 
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -202,14 +203,15 @@ const injectPulseCSS = () => {
       background: transparent !important;
       border: none !important;
       box-shadow: none !important;
-      color: hsl(142, 72%, 55%) !important;
-      font-size: 11px !important;
-      font-weight: 600 !important;
-      letter-spacing: 0.5px !important;
+      color: hsl(142, 72%, 60%) !important;
+      font-size: 10px !important;
+      font-weight: 700 !important;
+      letter-spacing: 0.8px !important;
       text-transform: uppercase !important;
       pointer-events: none !important;
       white-space: nowrap !important;
-      opacity: 0.7 !important;
+      opacity: 0.75 !important;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.8) !important;
     }
     .district-label::before {
       display: none !important;
@@ -227,35 +229,18 @@ interface MapViewProps {
   userLocation?: [number, number] | null;
 }
 
-const osmToLatLngs = (members: any[]) => {
-  const outer = members.find((m: any) => m.role === 'outer');
-  if (!outer?.geometry) return [];
-  return outer.geometry.map((p: any) => [p.lat, p.lon] as [number, number]);
-};
-
 const MapView = ({ services, onMarkerClick, center, className = '', nearbyMode, userLocation }: MapViewProps) => {
   const defaultCenter: [number, number] = [41.3111, 69.2797];
   const [zoom, setZoom] = useState(12);
   const [isDark, setIsDark] = useState(true);
-  const [districts, setDistricts] = useState<any[]>([]);
+  const [districts, setDistricts] = useState<any>(null);
 
   useEffect(() => { injectPulseCSS(); }, []);
 
   useEffect(() => {
-    const query = `
-      [out:json][timeout:25];
-      area["name"="Toshkent"]["admin_level"="4"]->.city;
-      (
-        relation["admin_level"="6"]["boundary"="administrative"](area.city);
-      );
-      out geom;
-    `;
-    fetch('https://overpass-api.de/api/interpreter', {
-      method: 'POST',
-      body: 'data=' + encodeURIComponent(query),
-    })
+    fetch(TASHKENT_DISTRICTS_URL)
       .then(r => r.json())
-      .then(data => setDistricts(data.elements || []))
+      .then(data => setDistricts(data))
       .catch(() => {});
   }, []);
 
@@ -288,29 +273,30 @@ const MapView = ({ services, onMarkerClick, center, className = '', nearbyMode, 
           zoomControl={true} attributionControl={false} style={{ background: mapBg }}>
           <TileLayer url={tileUrl} key={tileUrl} />
 
-          {districts.map((district) => {
-            const coords = osmToLatLngs(district.members || []);
-            if (coords.length === 0) return null;
-            const name = district.tags?.['name:ru'] || district.tags?.name || '';
-            return (
-              <Polygon
-                key={district.id}
-                positions={coords}
-                pathOptions={{
-                  color: 'hsl(142, 72%, 40%)',
-                  fillColor: 'hsl(142, 72%, 29%)',
-                  fillOpacity: 0.04,
-                  weight: 1,
-                  opacity: 0.5,
-                  dashArray: '4 4',
-                }}
-              >
-                <Tooltip permanent direction="center" className="district-label" offset={[0, 0]}>
-                  {name}
-                </Tooltip>
-              </Polygon>
-            );
-          })}
+          {districts && (
+            <GeoJSON
+              key={isDark ? 'dark' : 'light'}
+              data={districts}
+              style={() => ({
+                color: isDark ? 'hsl(142, 72%, 40%)' : 'hsl(142, 72%, 25%)',
+                fillColor: isDark ? 'hsl(142, 72%, 29%)' : 'hsl(142, 72%, 50%)',
+                fillOpacity: 0.04,
+                weight: 1.2,
+                opacity: 0.6,
+                dashArray: '5 5',
+              })}
+              onEachFeature={(feature, layer) => {
+                const engName = feature.properties?.name || '';
+                const ruName = DISTRICT_NAMES[engName] || engName;
+                layer.bindTooltip(ruName, {
+                  permanent: true,
+                  direction: 'center',
+                  className: 'district-label',
+                  offset: [0, 0],
+                });
+              }}
+            />
+          )}
 
           <CenterOnLocation center={center || null} />
           <ResizeHandler />
