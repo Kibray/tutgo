@@ -273,29 +273,30 @@ const MapView = ({ services, onMarkerClick, center, className = '', nearbyMode, 
           zoomControl={true} attributionControl={false} style={{ background: mapBg }}>
           <TileLayer url={tileUrl} key={tileUrl} />
 
-          {districts.map((district) => {
-            const coords = osmToLatLngs(district.members || []);
-            if (coords.length === 0) return null;
-            const name = district.tags?.['name:ru'] || district.tags?.name || '';
-            return (
-              <Polygon
-                key={district.id}
-                positions={coords}
-                pathOptions={{
-                  color: 'hsl(142, 72%, 40%)',
-                  fillColor: 'hsl(142, 72%, 29%)',
-                  fillOpacity: 0.04,
-                  weight: 1,
-                  opacity: 0.5,
-                  dashArray: '4 4',
-                }}
-              >
-                <Tooltip permanent direction="center" className="district-label" offset={[0, 0]}>
-                  {name}
-                </Tooltip>
-              </Polygon>
-            );
-          })}
+          {districts && (
+            <GeoJSON
+              key={isDark ? 'dark' : 'light'}
+              data={districts}
+              style={() => ({
+                color: isDark ? 'hsl(142, 72%, 40%)' : 'hsl(142, 72%, 25%)',
+                fillColor: isDark ? 'hsl(142, 72%, 29%)' : 'hsl(142, 72%, 50%)',
+                fillOpacity: 0.04,
+                weight: 1.2,
+                opacity: 0.6,
+                dashArray: '5 5',
+              })}
+              onEachFeature={(feature, layer) => {
+                const engName = feature.properties?.name || '';
+                const ruName = DISTRICT_NAMES[engName] || engName;
+                layer.bindTooltip(ruName, {
+                  permanent: true,
+                  direction: 'center',
+                  className: 'district-label',
+                  offset: [0, 0],
+                });
+              }}
+            />
+          )}
 
           <CenterOnLocation center={center || null} />
           <ResizeHandler />
