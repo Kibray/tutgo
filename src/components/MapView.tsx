@@ -229,35 +229,18 @@ interface MapViewProps {
   userLocation?: [number, number] | null;
 }
 
-const osmToLatLngs = (members: any[]) => {
-  const outer = members.find((m: any) => m.role === 'outer');
-  if (!outer?.geometry) return [];
-  return outer.geometry.map((p: any) => [p.lat, p.lon] as [number, number]);
-};
-
 const MapView = ({ services, onMarkerClick, center, className = '', nearbyMode, userLocation }: MapViewProps) => {
   const defaultCenter: [number, number] = [41.3111, 69.2797];
   const [zoom, setZoom] = useState(12);
   const [isDark, setIsDark] = useState(true);
-  const [districts, setDistricts] = useState<any[]>([]);
+  const [districts, setDistricts] = useState<any>(null);
 
   useEffect(() => { injectPulseCSS(); }, []);
 
   useEffect(() => {
-    const query = `
-      [out:json][timeout:25];
-      area["name"="Toshkent"]["admin_level"="4"]->.city;
-      (
-        relation["admin_level"="6"]["boundary"="administrative"](area.city);
-      );
-      out geom;
-    `;
-    fetch('https://overpass-api.de/api/interpreter', {
-      method: 'POST',
-      body: 'data=' + encodeURIComponent(query),
-    })
+    fetch(TASHKENT_DISTRICTS_URL)
       .then(r => r.json())
-      .then(data => setDistricts(data.elements || []))
+      .then(data => setDistricts(data))
       .catch(() => {});
   }, []);
 
