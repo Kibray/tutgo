@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, Circle, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, Circle, Polygon, Tooltip, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet.markercluster/dist/MarkerCluster.css';
@@ -198,6 +198,22 @@ const injectPulseCSS = () => {
     .leaflet-control-zoom-out:hover {
       background: hsl(142,72%,29%) !important;
     }
+    .district-label {
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+      color: hsl(142, 72%, 55%) !important;
+      font-size: 11px !important;
+      font-weight: 600 !important;
+      letter-spacing: 0.5px !important;
+      text-transform: uppercase !important;
+      pointer-events: none !important;
+      white-space: nowrap !important;
+      opacity: 0.7 !important;
+    }
+    .district-label::before {
+      display: none !important;
+    }
   `;
   document.head.appendChild(style);
 };
@@ -211,12 +227,37 @@ interface MapViewProps {
   userLocation?: [number, number] | null;
 }
 
+const osmToLatLngs = (members: any[]) => {
+  const outer = members.find((m: any) => m.role === 'outer');
+  if (!outer?.geometry) return [];
+  return outer.geometry.map((p: any) => [p.lat, p.lon] as [number, number]);
+};
+
 const MapView = ({ services, onMarkerClick, center, className = '', nearbyMode, userLocation }: MapViewProps) => {
   const defaultCenter: [number, number] = [41.3111, 69.2797];
   const [zoom, setZoom] = useState(12);
   const [isDark, setIsDark] = useState(true);
+  const [districts, setDistricts] = useState<any[]>([]);
 
   useEffect(() => { injectPulseCSS(); }, []);
+
+  useEffect(() => {
+    const query = `
+      [out:json][timeout:25];
+      area["name"="Toshkent"]["admin_level"="4"]->.city;
+      (
+        relation["admin_level"="6"]["boundary"="administrative"](area.city);
+      );
+      out geom;
+    `;
+    fetch('https://overpass-api.de/api/interpreter', {
+      method: 'POST',
+      body: 'data=' + encodeURIComponent(query),
+    })
+      .then(r => r.json())
+      .then(data => setDistricts(data.elements || []))
+      .catch(() => {});
+  }, []);
 
   const filteredServices = services.filter(s => s.lat && s.lng);
 
@@ -246,6 +287,31 @@ const MapView = ({ services, onMarkerClick, center, className = '', nearbyMode, 
         <MapContainer center={defaultCenter} zoom={12} className={`w-full h-full ${className}`}
           zoomControl={true} attributionControl={false} style={{ background: mapBg }}>
           <TileLayer url={tileUrl} key={tileUrl} />
+
+          {districts.map((district) => {
+            const coords = osmToLatLngs(district.members || []);
+            if (coords.length === 0) return null;
+            const name = district.tags?.['name:ru'] || district.tags?.name || '';
+            return (
+              <Polygon
+                key={district.id}
+                positions={coords}
+                pathOptions={{
+                  color: 'hsl(142, 72%, 40%)',
+                  fillColor: 'hsl(142, 72%, 29%)',
+                  fillOpacity: 0.04,
+                  weight: 1,
+                  opacity: 0.5,
+                  dashArray: '4 4',
+                }}
+              >
+                <Tooltip permanent direction="center" className="district-label" offset={[0, 0]}>
+                  {name}
+                </Tooltip>
+              </Polygon>
+            );
+          })}
+
           <CenterOnLocation center={center || null} />
           <ResizeHandler />
           <ZoomTracker onZoomChange={setZoom} />
