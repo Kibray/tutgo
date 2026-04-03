@@ -31,14 +31,55 @@ export const useLocations = (categoryName?: string, subcategory?: string, search
   }, []);
 
   const filtered = useMemo(() => {
+    const categoryMap: Record<string, { field: 'sub_category' | 'business_type'; value: string }[]> = {
+      'стоматология': [{ field: 'sub_category', value: 'dental' }],
+      'стоматолог': [{ field: 'sub_category', value: 'dental' }],
+      'зубной': [{ field: 'sub_category', value: 'dental' }],
+      'дантист': [{ field: 'sub_category', value: 'dental' }],
+      'барбершоп': [{ field: 'sub_category', value: 'barbershop' }],
+      'барбер': [{ field: 'sub_category', value: 'barbershop' }],
+      'салон красоты': [{ field: 'sub_category', value: 'salon' }],
+      'салон': [{ field: 'sub_category', value: 'salon' }],
+      'красота': [{ field: 'business_type', value: 'beauty' }],
+      'спа': [{ field: 'sub_category', value: 'spa' }],
+      'кафе': [{ field: 'business_type', value: 'cafe' }],
+      'ресторан': [{ field: 'business_type', value: 'cafe' }],
+      'медицина': [{ field: 'business_type', value: 'medical' }],
+      'клиника': [{ field: 'business_type', value: 'medical' }],
+      'тур': [{ field: 'business_type', value: 'tour' }],
+    };
+
     return locations.filter((s) => {
       const matchCat = !categoryName || categoryName === 'all' || s.business_type === categoryName;
       const matchSub = !subcategory || subcategory === 'all' || s.sub_category === subcategory;
+
+      if (!search) return matchCat && matchSub;
+
+      const q = search.toLowerCase().trim();
+
+      // Check category keyword map
+      const mapped = categoryMap[q];
+      if (mapped) {
+        return mapped.some(m =>
+          m.field === 'sub_category' ? s.sub_category === m.value : s.business_type === m.value
+        );
+      }
+
+      // Partial match on category keywords
+      for (const [keyword, targets] of Object.entries(categoryMap)) {
+        if (keyword.includes(q) || q.includes(keyword)) {
+          if (targets.some(m =>
+            m.field === 'sub_category' ? s.sub_category === m.value : s.business_type === m.value
+          )) return true;
+        }
+      }
+
+      // Text search on name, address, sub_category
       const matchSearch =
-        !search ||
-        s.name.toLowerCase().includes(search.toLowerCase()) ||
-        (s.address || '').toLowerCase().includes(search.toLowerCase()) ||
-        (s.sub_category || '').toLowerCase().includes(search.toLowerCase());
+        s.name.toLowerCase().includes(q) ||
+        (s.address || '').toLowerCase().includes(q) ||
+        (s.sub_category || '').toLowerCase().includes(q) ||
+        (s.business_type || '').toLowerCase().includes(q);
       return matchCat && matchSub && matchSearch;
     });
   }, [locations, categoryName, subcategory, search]);
