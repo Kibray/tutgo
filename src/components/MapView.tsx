@@ -30,18 +30,33 @@ const markerEmoji: Record<string, string> = {
   education: '📚',
 };
 
+const CATEGORY_COLORS: Record<string, string> = {
+  medical: '#3B82F6',
+  beauty: '#EC4899',
+  cafe: '#F97316',
+  tour: '#22C55E',
+  retail: '#A855F7',
+  service: '#EAB308',
+  office: '#6B7280',
+  auto: '#EF4444',
+  sport: '#14B8A6',
+  education: '#8B5CF6',
+};
+const getCategoryColor = (cat: string) => CATEGORY_COLORS[cat] || '#6B7280';
+
 const createCategoryIcon = (category: string, isPromoted: boolean, name?: string, subCategory?: string | null, showLabel?: boolean) => {
   const emoji = getServiceEmoji(category, subCategory);
   const size = isPromoted ? 42 : 34;
+  const color = getCategoryColor(category);
   const border = isPromoted
-    ? 'border: 2px solid hsl(142, 72%, 29%); box-shadow: 0 0 12px hsla(142, 72%, 29%, 0.5);'
-    : 'border: 1.5px solid hsla(0,0%,100%,0.15);';
+    ? `border: 2px solid white; box-shadow: 0 0 16px ${color}99;`
+    : 'border: 1.5px solid rgba(255,255,255,0.4);';
   const label = showLabel && name ? (name.length > 15 ? name.slice(0, 15) + '…' : name) : '';
   const labelHtml = label
-    ? `<div style="margin-top:2px;padding:1px 4px;border-radius:4px;background:hsla(220,15%,10%,0.85);color:#fff;font-size:11px;line-height:13px;white-space:nowrap;text-align:center;max-width:80px;overflow:hidden;text-overflow:ellipsis;">${label}</div>`
+    ? `<div style="margin-top:2px;padding:1px 4px;border-radius:4px;background:${color}dd;color:#fff;font-size:11px;line-height:13px;white-space:nowrap;text-align:center;max-width:80px;overflow:hidden;text-overflow:ellipsis;">${label}</div>`
     : '';
   return L.divIcon({
-    html: `<div style="display:flex;flex-direction:column;align-items:center;"><div style="width:${size}px;height:${size}px;border-radius:12px;background:hsla(220,15%,10%,0.92);${border}display:flex;align-items:center;justify-content:center;font-size:${isPromoted ? 20 : 16}px;backdrop-filter:blur(10px);transition:transform 0.15s ease;">${emoji}</div>${labelHtml}</div>`,
+    html: `<div style="display:flex;flex-direction:column;align-items:center;"><div style="width:${size}px;height:${size}px;border-radius:12px;background:${color};${border}display:flex;align-items:center;justify-content:center;font-size:${isPromoted ? 20 : 16}px;backdrop-filter:blur(10px);transition:transform 0.15s ease;">${emoji}</div>${labelHtml}</div>`,
     className: '',
     iconSize: [size, size + (label ? 18 : 0)],
     iconAnchor: [size / 2, size / 2],
