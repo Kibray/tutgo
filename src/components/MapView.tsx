@@ -32,7 +32,7 @@ const markerEmoji: Record<string, string> = {
 
 const CATEGORY_COLORS: Record<string, string> = {
   medical: '#3B82F6',
-  beauty: '#EC4899',
+  beauty: '#10B981',
   cafe: '#F97316',
   tour: '#22C55E',
   retail: '#A855F7',
