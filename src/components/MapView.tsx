@@ -42,7 +42,19 @@ const CATEGORY_COLORS: Record<string, string> = {
   sport: '#14B8A6',
   education: '#8B5CF6',
 };
-const getCategoryColor = (cat: string) => CATEGORY_COLORS[cat] || '#6B7280';
+const SUB_CATEGORY_COLORS: Record<string, string> = {
+  barbershop: '#10B981',
+  salon: '#EC4899',
+  spa: '#EC4899',
+  nail: '#EC4899',
+  manicure: '#EC4899',
+  waxing: '#EC4899',
+  dental: '#3B82F6',
+};
+const getCategoryColor = (cat: string, sub?: string | null) => {
+  if (sub && SUB_CATEGORY_COLORS[sub]) return SUB_CATEGORY_COLORS[sub];
+  return CATEGORY_COLORS[cat] || '#6B7280';
+};
 
 const createCategoryIcon = (category: string, isPromoted: boolean, name?: string, subCategory?: string | null, showLabel?: boolean) => {
   const emoji = getServiceEmoji(category, subCategory);
