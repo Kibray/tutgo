@@ -30,18 +30,33 @@ const markerEmoji: Record<string, string> = {
   education: '📚',
 };
 
+const CATEGORY_COLORS: Record<string, string> = {
+  medical: '#3B82F6',
+  beauty: '#EC4899',
+  cafe: '#F97316',
+  tour: '#22C55E',
+  retail: '#A855F7',
+  service: '#EAB308',
+  office: '#6B7280',
+  auto: '#EF4444',
+  sport: '#14B8A6',
+  education: '#8B5CF6',
+};
+const getCategoryColor = (cat: string) => CATEGORY_COLORS[cat] || '#6B7280';
+
 const createCategoryIcon = (category: string, isPromoted: boolean, name?: string, subCategory?: string | null, showLabel?: boolean) => {
   const emoji = getServiceEmoji(category, subCategory);
   const size = isPromoted ? 42 : 34;
+  const color = getCategoryColor(category);
   const border = isPromoted
-    ? 'border: 2px solid hsl(142, 72%, 29%); box-shadow: 0 0 12px hsla(142, 72%, 29%, 0.5);'
-    : 'border: 1.5px solid hsla(0,0%,100%,0.15);';
+    ? `border: 2px solid white; box-shadow: 0 0 16px ${color}99;`
+    : 'border: 1.5px solid rgba(255,255,255,0.4);';
   const label = showLabel && name ? (name.length > 15 ? name.slice(0, 15) + '…' : name) : '';
   const labelHtml = label
-    ? `<div style="margin-top:2px;padding:1px 4px;border-radius:4px;background:hsla(220,15%,10%,0.85);color:#fff;font-size:11px;line-height:13px;white-space:nowrap;text-align:center;max-width:80px;overflow:hidden;text-overflow:ellipsis;">${label}</div>`
+    ? `<div style="margin-top:2px;padding:1px 4px;border-radius:4px;background:${color}dd;color:#fff;font-size:11px;line-height:13px;white-space:nowrap;text-align:center;max-width:80px;overflow:hidden;text-overflow:ellipsis;">${label}</div>`
     : '';
   return L.divIcon({
-    html: `<div style="display:flex;flex-direction:column;align-items:center;"><div style="width:${size}px;height:${size}px;border-radius:12px;background:hsla(220,15%,10%,0.92);${border}display:flex;align-items:center;justify-content:center;font-size:${isPromoted ? 20 : 16}px;backdrop-filter:blur(10px);transition:transform 0.15s ease;">${emoji}</div>${labelHtml}</div>`,
+    html: `<div style="display:flex;flex-direction:column;align-items:center;"><div style="width:${size}px;height:${size}px;border-radius:12px;background:${color};${border}display:flex;align-items:center;justify-content:center;font-size:${isPromoted ? 20 : 16}px;backdrop-filter:blur(10px);transition:transform 0.15s ease;">${emoji}</div>${labelHtml}</div>`,
     className: '',
     iconSize: [size, size + (label ? 18 : 0)],
     iconAnchor: [size / 2, size / 2],
@@ -133,30 +148,42 @@ const MarkerClusterWrapper = ({ children, map }: { children: L.Marker[]; map: L.
   return null;
 };
 
-const ClusterLayer = ({ services, onMarkerClick, zoom }: { services: LocationItem[]; onMarkerClick: (s: LocationItem) => void; zoom: number }) => {
+const ClusterLayer = ({ services, onMarkerClick, zoom, isDark }: { services: LocationItem[]; onMarkerClick: (s: LocationItem) => void; zoom: number; isDark: boolean }) => {
   const map = useMap();
 
   const markers = services.map(s => {
     const icon = createCategoryIcon(s.business_type, !!s.is_promoted, s.name, s.sub_category, zoom >= 14);
     const marker = L.marker([s.lat!, s.lng!], { icon });
 
-    const popupContent = `<div style="background:hsl(220,15%,8%);border-radius:12px;padding:12px;border:1px solid hsla(0,0%,100%,0.08);min-width:180px;">
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
-        <div style="width:36px;height:36px;border-radius:8px;background:hsla(220,15%,15%,1);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">${getServiceEmoji(s.business_type, s.sub_category)}</div>
-        <div style="flex:1;min-width:0;">
-          <div style="font-size:13px;font-weight:600;color:hsl(0,0%,95%);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${s.name}</div>
-          <div style="font-size:11px;color:hsl(0,0%,55%);margin-top:2px;">${s.address || ''}</div>
+    const color = getCategoryColor(s.business_type);
+    const bg = isDark ? 'hsl(220,15%,8%)' : '#ffffff';
+    const titleColor = isDark ? 'hsl(0,0%,95%)' : 'hsl(220,15%,10%)';
+    const subColor = isDark ? 'hsl(0,0%,55%)' : 'hsl(0,0%,45%)';
+    const ratingColor = isDark ? 'hsl(0,0%,90%)' : 'hsl(220,15%,15%)';
+    const reviewColor = isDark ? 'hsl(0,0%,50%)' : 'hsl(0,0%,55%)';
+    const borderColor = isDark ? 'hsla(0,0%,100%,0.08)' : 'rgba(0,0,0,0.08)';
+    const iconBg = isDark ? 'hsla(220,15%,15%,1)' : `${color}22`;
+
+    const popupContent = `<div style="background:${bg};border-radius:14px;padding:0;border:1px solid ${borderColor};min-width:200px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,0.18);">
+      <div style="height:4px;background:${color};width:100%;"></div>
+      <div style="padding:12px;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+          <div style="width:36px;height:36px;border-radius:10px;background:${iconBg};display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">${getServiceEmoji(s.business_type, s.sub_category)}</div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:13px;font-weight:600;color:${titleColor};overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${s.name}</div>
+            <div style="font-size:11px;color:${subColor};margin-top:2px;">${s.address || ''}</div>
+          </div>
         </div>
-      </div>
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-        <div style="display:flex;align-items:center;gap:4px;">
-          <span style="font-size:12px;">⭐</span>
-          <span style="font-size:12px;font-weight:600;color:hsl(0,0%,90%);">${s.rating || 0}</span>
-          ${(s.review_count || 0) > 0 ? `<span style="font-size:11px;color:hsl(0,0%,50%);">· ${s.review_count}</span>` : ''}
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+          <div style="display:flex;align-items:center;gap:4px;">
+            <span style="font-size:12px;">⭐</span>
+            <span style="font-size:12px;font-weight:600;color:${ratingColor};">${s.rating || 0}</span>
+            ${(s.review_count || 0) > 0 ? `<span style="font-size:11px;color:${reviewColor};">· ${s.review_count}</span>` : ''}
+          </div>
+          ${(s.price_from || 0) > 0 ? `<span style="font-size:12px;font-weight:700;color:${color};">от ${new Intl.NumberFormat('ru-RU').format(s.price_from!)} ${s.currency}</span>` : ''}
         </div>
-        ${(s.price_from || 0) > 0 ? `<span style="font-size:12px;font-weight:700;color:hsl(142,72%,45%);">от ${new Intl.NumberFormat('ru-RU').format(s.price_from!)} ${s.currency}</span>` : ''}
+        <button class="tutgo-popup-btn" style="width:100%;padding:8px;border-radius:8px;background:${color};color:white;font-size:12px;font-weight:600;border:none;cursor:pointer;">Подробнее</button>
       </div>
-      <button class="tutgo-popup-btn" style="width:100%;padding:8px;border-radius:8px;background:hsl(142,72%,29%);color:white;font-size:12px;font-weight:600;border:none;cursor:pointer;">Подробнее</button>
     </div>`;
 
     marker.bindPopup(popupContent, { className: 'leaflet-popup-custom', maxWidth: 240, minWidth: 200 });
@@ -203,15 +230,15 @@ const injectPulseCSS = () => {
       background: transparent !important;
       border: none !important;
       box-shadow: none !important;
-      color: hsl(142, 72%, 60%) !important;
+      color: hsl(142, 72%, 35%) !important;
       font-size: 10px !important;
       font-weight: 700 !important;
       letter-spacing: 0.8px !important;
       text-transform: uppercase !important;
       pointer-events: none !important;
       white-space: nowrap !important;
-      opacity: 0.75 !important;
-      text-shadow: 0 1px 3px rgba(0,0,0,0.8) !important;
+      opacity: 0.85 !important;
+      text-shadow: 0 1px 2px rgba(255,255,255,0.8), 0 -1px 2px rgba(0,0,0,0.4) !important;
     }
     .district-label::before {
       display: none !important;
@@ -248,9 +275,9 @@ const MapView = ({ services, onMarkerClick, center, className = '', nearbyMode, 
 
   const tileUrl = isDark
     ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
-    : 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
+    : 'https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png';
 
-  const mapBg = isDark ? 'hsl(220, 15%, 5%)' : 'hsl(0, 0%, 95%)';
+  const mapBg = isDark ? 'hsl(220, 15%, 5%)' : 'hsl(210, 20%, 92%)';
 
   const themeBtnStyle = (active: boolean): React.CSSProperties => ({
     height: 36,
@@ -323,7 +350,7 @@ const MapView = ({ services, onMarkerClick, center, className = '', nearbyMode, 
           />
         )}
 
-        <ClusterLayer services={filteredServices} onMarkerClick={onMarkerClick} zoom={zoom} />
+        <ClusterLayer services={filteredServices} onMarkerClick={onMarkerClick} zoom={zoom} isDark={isDark} />
       </MapContainer>
 
       <div style={{
