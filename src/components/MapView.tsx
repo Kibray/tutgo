@@ -350,7 +350,7 @@ const MapView = ({ services, onMarkerClick, center, className = '', nearbyMode, 
           />
         )}
 
-        <ClusterLayer services={filteredServices} onMarkerClick={onMarkerClick} zoom={zoom} />
+        <ClusterLayer services={filteredServices} onMarkerClick={onMarkerClick} zoom={zoom} isDark={isDark} />
       </MapContainer>
 
       <div style={{
