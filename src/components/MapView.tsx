@@ -275,9 +275,9 @@ const MapView = ({ services, onMarkerClick, center, className = '', nearbyMode, 
 
   const tileUrl = isDark
     ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
-    : 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
+    : 'https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png';
 
-  const mapBg = isDark ? 'hsl(220, 15%, 5%)' : 'hsl(0, 0%, 95%)';
+  const mapBg = isDark ? 'hsl(220, 15%, 5%)' : 'hsl(210, 20%, 92%)';
 
   const themeBtnStyle = (active: boolean): React.CSSProperties => ({
     height: 36,
