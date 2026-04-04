@@ -155,23 +155,35 @@ const ClusterLayer = ({ services, onMarkerClick, zoom, isDark }: { services: Loc
     const icon = createCategoryIcon(s.business_type, !!s.is_promoted, s.name, s.sub_category, zoom >= 14);
     const marker = L.marker([s.lat!, s.lng!], { icon });
 
-    const popupContent = `<div style="background:hsl(220,15%,8%);border-radius:12px;padding:12px;border:1px solid hsla(0,0%,100%,0.08);min-width:180px;">
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
-        <div style="width:36px;height:36px;border-radius:8px;background:hsla(220,15%,15%,1);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">${getServiceEmoji(s.business_type, s.sub_category)}</div>
-        <div style="flex:1;min-width:0;">
-          <div style="font-size:13px;font-weight:600;color:hsl(0,0%,95%);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${s.name}</div>
-          <div style="font-size:11px;color:hsl(0,0%,55%);margin-top:2px;">${s.address || ''}</div>
+    const color = getCategoryColor(s.business_type);
+    const bg = isDark ? 'hsl(220,15%,8%)' : '#ffffff';
+    const titleColor = isDark ? 'hsl(0,0%,95%)' : 'hsl(220,15%,10%)';
+    const subColor = isDark ? 'hsl(0,0%,55%)' : 'hsl(0,0%,45%)';
+    const ratingColor = isDark ? 'hsl(0,0%,90%)' : 'hsl(220,15%,15%)';
+    const reviewColor = isDark ? 'hsl(0,0%,50%)' : 'hsl(0,0%,55%)';
+    const borderColor = isDark ? 'hsla(0,0%,100%,0.08)' : 'rgba(0,0,0,0.08)';
+    const iconBg = isDark ? 'hsla(220,15%,15%,1)' : `${color}22`;
+
+    const popupContent = `<div style="background:${bg};border-radius:14px;padding:0;border:1px solid ${borderColor};min-width:200px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,0.18);">
+      <div style="height:4px;background:${color};width:100%;"></div>
+      <div style="padding:12px;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+          <div style="width:36px;height:36px;border-radius:10px;background:${iconBg};display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">${getServiceEmoji(s.business_type, s.sub_category)}</div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:13px;font-weight:600;color:${titleColor};overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${s.name}</div>
+            <div style="font-size:11px;color:${subColor};margin-top:2px;">${s.address || ''}</div>
+          </div>
         </div>
-      </div>
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-        <div style="display:flex;align-items:center;gap:4px;">
-          <span style="font-size:12px;">⭐</span>
-          <span style="font-size:12px;font-weight:600;color:hsl(0,0%,90%);">${s.rating || 0}</span>
-          ${(s.review_count || 0) > 0 ? `<span style="font-size:11px;color:hsl(0,0%,50%);">· ${s.review_count}</span>` : ''}
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+          <div style="display:flex;align-items:center;gap:4px;">
+            <span style="font-size:12px;">⭐</span>
+            <span style="font-size:12px;font-weight:600;color:${ratingColor};">${s.rating || 0}</span>
+            ${(s.review_count || 0) > 0 ? `<span style="font-size:11px;color:${reviewColor};">· ${s.review_count}</span>` : ''}
+          </div>
+          ${(s.price_from || 0) > 0 ? `<span style="font-size:12px;font-weight:700;color:${color};">от ${new Intl.NumberFormat('ru-RU').format(s.price_from!)} ${s.currency}</span>` : ''}
         </div>
-        ${(s.price_from || 0) > 0 ? `<span style="font-size:12px;font-weight:700;color:hsl(142,72%,45%);">от ${new Intl.NumberFormat('ru-RU').format(s.price_from!)} ${s.currency}</span>` : ''}
+        <button class="tutgo-popup-btn" style="width:100%;padding:8px;border-radius:8px;background:${color};color:white;font-size:12px;font-weight:600;border:none;cursor:pointer;">Подробнее</button>
       </div>
-      <button class="tutgo-popup-btn" style="width:100%;padding:8px;border-radius:8px;background:hsl(142,72%,29%);color:white;font-size:12px;font-weight:600;border:none;cursor:pointer;">Подробнее</button>
     </div>`;
 
     marker.bindPopup(popupContent, { className: 'leaflet-popup-custom', maxWidth: 240, minWidth: 200 });
