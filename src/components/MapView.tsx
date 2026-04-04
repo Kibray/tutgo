@@ -148,7 +148,7 @@ const MarkerClusterWrapper = ({ children, map }: { children: L.Marker[]; map: L.
   return null;
 };
 
-const ClusterLayer = ({ services, onMarkerClick, zoom }: { services: LocationItem[]; onMarkerClick: (s: LocationItem) => void; zoom: number }) => {
+const ClusterLayer = ({ services, onMarkerClick, zoom, isDark }: { services: LocationItem[]; onMarkerClick: (s: LocationItem) => void; zoom: number; isDark: boolean }) => {
   const map = useMap();
 
   const markers = services.map(s => {
