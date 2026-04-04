@@ -167,7 +167,7 @@ const ClusterLayer = ({ services, onMarkerClick, zoom, isDark }: { services: Loc
     const icon = createCategoryIcon(s.business_type, !!s.is_promoted, s.name, s.sub_category, zoom >= 14);
     const marker = L.marker([s.lat!, s.lng!], { icon });
 
-    const color = getCategoryColor(s.business_type);
+    const color = getCategoryColor(s.business_type, s.sub_category);
     const bg = isDark ? 'hsl(220,15%,8%)' : '#ffffff';
     const titleColor = isDark ? 'hsl(0,0%,95%)' : 'hsl(220,15%,10%)';
     const subColor = isDark ? 'hsl(0,0%,55%)' : 'hsl(0,0%,45%)';
