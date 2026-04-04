@@ -59,7 +59,7 @@ const getCategoryColor = (cat: string, sub?: string | null) => {
 const createCategoryIcon = (category: string, isPromoted: boolean, name?: string, subCategory?: string | null, showLabel?: boolean) => {
   const emoji = getServiceEmoji(category, subCategory);
   const size = isPromoted ? 42 : 34;
-  const color = getCategoryColor(category);
+  const color = getCategoryColor(category, subCategory);
   const border = isPromoted
     ? `border: 2px solid white; box-shadow: 0 0 16px ${color}99;`
     : 'border: 1.5px solid rgba(255,255,255,0.4);';
