@@ -32,7 +32,7 @@ const markerEmoji: Record<string, string> = {
 
 const CATEGORY_COLORS: Record<string, string> = {
   medical: '#3B82F6',
-  beauty: '#EC4899',
+  beauty: '#10B981',
   cafe: '#F97316',
   tour: '#22C55E',
   retail: '#A855F7',
@@ -42,12 +42,24 @@ const CATEGORY_COLORS: Record<string, string> = {
   sport: '#14B8A6',
   education: '#8B5CF6',
 };
-const getCategoryColor = (cat: string) => CATEGORY_COLORS[cat] || '#6B7280';
+const SUB_CATEGORY_COLORS: Record<string, string> = {
+  barbershop: '#10B981',
+  salon: '#EC4899',
+  spa: '#EC4899',
+  nail: '#EC4899',
+  manicure: '#EC4899',
+  waxing: '#EC4899',
+  dental: '#3B82F6',
+};
+const getCategoryColor = (cat: string, sub?: string | null) => {
+  if (sub && SUB_CATEGORY_COLORS[sub]) return SUB_CATEGORY_COLORS[sub];
+  return CATEGORY_COLORS[cat] || '#6B7280';
+};
 
 const createCategoryIcon = (category: string, isPromoted: boolean, name?: string, subCategory?: string | null, showLabel?: boolean) => {
   const emoji = getServiceEmoji(category, subCategory);
   const size = isPromoted ? 42 : 34;
-  const color = getCategoryColor(category);
+  const color = getCategoryColor(category, subCategory);
   const border = isPromoted
     ? `border: 2px solid white; box-shadow: 0 0 16px ${color}99;`
     : 'border: 1.5px solid rgba(255,255,255,0.4);';
@@ -155,7 +167,7 @@ const ClusterLayer = ({ services, onMarkerClick, zoom, isDark }: { services: Loc
     const icon = createCategoryIcon(s.business_type, !!s.is_promoted, s.name, s.sub_category, zoom >= 14);
     const marker = L.marker([s.lat!, s.lng!], { icon });
 
-    const color = getCategoryColor(s.business_type);
+    const color = getCategoryColor(s.business_type, s.sub_category);
     const bg = isDark ? 'hsl(220,15%,8%)' : '#ffffff';
     const titleColor = isDark ? 'hsl(0,0%,95%)' : 'hsl(220,15%,10%)';
     const subColor = isDark ? 'hsl(0,0%,55%)' : 'hsl(0,0%,45%)';
