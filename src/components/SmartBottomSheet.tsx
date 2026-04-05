@@ -192,7 +192,7 @@ const SmartBottomSheet = ({
       )}
 
       {/* Content */}
-      <div className="overflow-y-auto px-4 pb-4" <div className="overflow-y-auto px-4 pb-4" style={{ height: 'calc(100% - 140px)', paddingBottom: '70px' }}>>
+      <div className="overflow-y-auto px-4 pb-4" style={{ height: 'calc(100% - 140px)', paddingBottom: '70px' }}>>
         {state === 'half' && (
           /* Horizontal scroll cards */
           <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-2">
