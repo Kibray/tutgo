@@ -251,6 +251,7 @@ const SmartBottomSheet = ({
               ))
             )}
           </div>
+          </>
         )}
 
         {state === 'full' && (
