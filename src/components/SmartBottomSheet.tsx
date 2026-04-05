@@ -29,6 +29,9 @@ interface SmartBottomSheetProps {
   nearbyMode: boolean;
   userLocation: [number, number] | null;
   category: string;
+  onCategorySelect: (id: string) => void;
+  subcategory: string;
+  onSubcategorySelect: (id: string) => void;
   onSearch: (q: string) => void;
   onGeolocate: () => void;
   geolocating: boolean;
@@ -41,6 +44,7 @@ interface SmartBottomSheetProps {
 
 const SmartBottomSheet = ({
   locations, loading, nearbyMode, userLocation, category,
+  onCategorySelect, subcategory, onSubcategorySelect,
   onSearch, onGeolocate, geolocating, onLocationSelect,
   onDisableNearby, onServiceClick, onToggleFavorite, isFavorite,
 }: SmartBottomSheetProps) => {
