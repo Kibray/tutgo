@@ -7,6 +7,7 @@ import { formatPrice, getServiceEmoji } from '@/lib/types';
 import { useCategories } from '@/hooks/useCategories';
 import { usePreferences } from '@/hooks/usePreferences';
 import { supabase } from '@/integrations/supabase/client';
+import { getBizType } from '@/lib/categories';
 
 interface Deal {
   id: string;
