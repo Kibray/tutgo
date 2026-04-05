@@ -171,7 +171,7 @@ const SmartBottomSheet = ({
               onClick={onDisableNearby}
               className="flex-shrink-0 text-[11px] font-medium px-3 py-1.5 rounded-full bg-primary/15 text-primary border border-primary/30"
             >
-              📍 Рядом · вкл
+              📍 {t('index.near_you')}
             </button>
           )}
           {favoriteIds.size > 0 && (
@@ -179,14 +179,14 @@ const SmartBottomSheet = ({
               onClick={() => navigate('/profile')}
               className="flex-shrink-0 text-[11px] font-medium px-3 py-1.5 rounded-full bg-secondary text-foreground border border-border/50"
             >
-              ★ Избранное · {favoriteIds.size}
+              ★ {t('nav.favorites')} · {favoriteIds.size}
             </button>
           )}
           <button
             onClick={() => navigate('/bookings')}
             className="flex-shrink-0 text-[11px] font-medium px-3 py-1.5 rounded-full bg-secondary text-foreground border border-border/50"
           >
-            Мои записи
+            {t('nav.bookings')}
           </button>
         </div>
       )}
@@ -205,7 +205,7 @@ const SmartBottomSheet = ({
             ) : locations.length === 0 ? (
               <div className="flex flex-col items-center justify-center w-full py-6 gap-2">
                 <Search className="w-8 h-8 text-muted-foreground/40" />
-                <span className="text-muted-foreground text-xs">Ничего не найдено</span>
+                <span className="text-muted-foreground text-xs">{t('index.nothing_found')}</span>
               </div>
             ) : (
               locations.slice(0, 10).map((loc: any) => (
@@ -249,7 +249,7 @@ const SmartBottomSheet = ({
             {loading ? <SkeletonList count={4} /> : locations.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-16 gap-3">
                 <Search className="w-10 h-10 text-muted-foreground/40" />
-                <span className="text-muted-foreground text-sm">Ничего не найдено</span>
+                <span className="text-muted-foreground text-sm">{t('index.nothing_found')}</span>
               </div>
             ) : (
               locations.map((loc: any, i: number) => (
