@@ -1,4 +1,5 @@
 import { useRef } from 'react';
+import { usePreferences } from '@/hooks/usePreferences';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCategories } from '@/hooks/useCategories';
 
@@ -10,6 +11,7 @@ interface CategoryChipsProps {
 }
 
 const CategoryChips = ({ selected, onSelect, selectedSub, onSubSelect }: CategoryChipsProps) => {
+  const { t } = usePreferences();
   const { categories } = useCategories();
   const activeCat = categories.find((c) => c.id === selected);
   const subs = activeCat?.subcategories || [];
@@ -17,7 +19,7 @@ const CategoryChips = ({ selected, onSelect, selectedSub, onSubSelect }: Categor
   return (
     <div className="space-y-2">
       <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1 -mx-4 px-4">
-        <ChipButton label="Все" icon="🔥" active={selected === 'all'} onClick={() => onSelect('all')} />
+        <ChipButton label={t('cat.all')} icon="🔥" active={selected === 'all'} onClick={() => onSelect('all')} />
         {categories.map((cat) => (
           <ChipButton key={cat.id} label={cat.name} icon={cat.icon} active={selected === cat.id} onClick={() => onSelect(cat.id)} />
         ))}
@@ -26,7 +28,7 @@ const CategoryChips = ({ selected, onSelect, selectedSub, onSubSelect }: Categor
         {subs.length > 0 && onSubSelect && (
           <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}
             className="flex gap-1.5 overflow-x-auto scrollbar-hide pb-1 -mx-4 px-4">
-            <SubChip label="Все" active={!selectedSub || selectedSub === 'all'} onClick={() => onSubSelect('all')} />
+            <SubChip label={t('cat.all')} active={!selectedSub || selectedSub === 'all'} onClick={() => onSubSelect('all')} />
             {subs.map((sub) => (
               <SubChip key={sub.id} label={sub.name} icon={sub.icon} active={selectedSub === sub.id} onClick={() => onSubSelect(sub.id)} />
             ))}
