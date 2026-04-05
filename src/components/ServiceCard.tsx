@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { formatPrice, categoryEmoji } from '@/lib/types';
 import type { LocationItem } from '@/lib/types';
 import { useNavigate } from 'react-router-dom';
+import { usePreferences } from '@/hooks/usePreferences';
 
 import { supabase } from '@/integrations/supabase/client';
 
@@ -25,6 +26,7 @@ const pluralReviews = (n: number) => {
 
 const ServiceCard = ({ service, index, onClick, isFavorite, onToggleFavorite }: ServiceCardProps) => {
   const navigate = useNavigate();
+  const { t } = usePreferences();
   const isTour = service.business_type === 'tour';
   const [tourInfo, setTourInfo] = useState<{ remaining: number | null; durationDays: number | null } | null>(null);
 
@@ -96,9 +98,9 @@ const ServiceCard = ({ service, index, onClick, isFavorite, onToggleFavorite }: 
         </div>
         <div className="mt-0.5">
           {service.verified ? (
-            <span className="inline-flex items-center gap-0.5 text-[9px] bg-primary/15 text-primary px-1.5 py-0.5 rounded font-medium">✅ Онлайн-запись</span>
+            <span className="inline-flex items-center gap-0.5 text-[9px] bg-primary/15 text-primary px-1.5 py-0.5 rounded font-medium">✅ {t('index.online')}</span>
           ) : (
-            <span className="inline-flex items-center gap-0.5 text-[9px] bg-amber-500/15 text-amber-600 dark:text-amber-400 px-1.5 py-0.5 rounded font-medium">📞 Только по звонку</span>
+            <span className="inline-flex items-center gap-0.5 text-[9px] bg-amber-500/15 text-amber-600 dark:text-amber-400 px-1.5 py-0.5 rounded font-medium">📞 {t('detail.call')}</span>
           )}
         </div>
         <p className="text-xs text-muted-foreground mt-0.5">{service.address}</p>
@@ -114,7 +116,7 @@ const ServiceCard = ({ service, index, onClick, isFavorite, onToggleFavorite }: 
             {(service.price_from || 0) > 0 ? (
               <span className="text-sm font-bold text-gradient-green">{formatPrice(service.price_from!)} {service.currency}</span>
             ) : (
-              <span className="text-xs text-muted-foreground">Посмотреть</span>
+              <span className="text-xs text-muted-foreground">{t('card.view')}</span>
             )}
           </div>
           <div className="flex items-center gap-1.5">
@@ -131,7 +133,7 @@ const ServiceCard = ({ service, index, onClick, isFavorite, onToggleFavorite }: 
                 'bg-primary/15 text-primary'
               }`}>
                 <Users className="w-3 h-3" />
-                {tourInfo.remaining > 0 ? `${tourInfo.remaining} мест` : 'Нет мест'}
+                {tourInfo.remaining > 0 ? `${tourInfo.remaining} ${t('card.seats')}` : t('card.no_seats')}
               </span>
             )}
             {service.telegram && (
