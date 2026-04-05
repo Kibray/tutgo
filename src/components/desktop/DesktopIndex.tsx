@@ -14,6 +14,7 @@ import { useLocations } from '@/hooks/useLocations';
 import { useCategories } from '@/hooks/useCategories';
 import { useFavorites } from '@/hooks/useFavorites';
 import type { LocationItem } from '@/lib/types';
+import { getBizType } from '@/lib/categories';
 
 const TASHKENT: [number, number] = [41.3111, 69.2797];
 const NEARBY_RADIUS_KM = 2;
@@ -31,13 +32,6 @@ const formatDistance = (km: number): string => {
   return `${km.toFixed(1)} км`;
 };
 
-const getBizType = (categoryName: string): string => {
-  const map: Record<string, string> = {
-    'Медицина': 'medical', 'Красота': 'beauty', 'Туры': 'tour',
-    'Кофейни': 'cafe', 'Магазины': 'retail', 'Услуги': 'service',
-  };
-  return map[categoryName] || 'service';
-};
 
 const DesktopIndex = () => {
   const navigate = useNavigate();
