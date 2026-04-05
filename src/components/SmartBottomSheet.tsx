@@ -46,7 +46,7 @@ const SmartBottomSheet = ({
   const { t } = usePreferences();
   const navigate = useNavigate();
   const { favoriteIds } = useFavorites();
-  const [state, setState] = useState<SheetState>('peek');
+  const [state, setState] = useState<SheetState>('half');
   const [query, setQuery] = useState('');
   const [suggestions, setSuggestions] = useState<any[]>([]);
   const debounceRef = useRef<ReturnType<typeof setTimeout>>();
@@ -114,7 +114,7 @@ const SmartBottomSheet = ({
       animate={{ height: HEIGHT_MAP[state] }}
       transition={{ type: 'spring', stiffness: 320, damping: 32 }}
       className="absolute bottom-0 left-0 right-0 z-[1000] bg-background/95 backdrop-blur-xl rounded-t-2xl border-t border-border"
-      style={{ paddingBottom: '70px', touchAction: 'none' }}
+      style={{ touchAction: 'none' }}
     >
       {/* Handle */}
       <div className="w-full flex justify-center pt-2 pb-1 cursor-grab active:cursor-grabbing">
@@ -192,7 +192,7 @@ const SmartBottomSheet = ({
       )}
 
       {/* Content */}
-      <div className="overflow-y-auto px-4 pb-4" style={{ height: 'calc(100% - 100px)' }}>
+      <div className="overflow-y-auto px-4 pb-4" <div className="overflow-y-auto px-4 pb-4" style={{ height: 'calc(100% - 140px)', paddingBottom: '70px' }}>>
         {state === 'half' && (
           /* Horizontal scroll cards */
           <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-2">
