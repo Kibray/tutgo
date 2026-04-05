@@ -3,6 +3,7 @@ import { motion, useMotionValue, useTransform, PanInfo } from 'framer-motion';
 import { Search, X, Locate, Loader2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import ServiceCard from '@/components/ServiceCard';
+import CategoryChips from '@/components/CategoryChips';
 import { SkeletonList } from '@/components/SkeletonCard';
 import { useFavorites } from '@/hooks/useFavorites';
 import { usePreferences } from '@/hooks/usePreferences';
