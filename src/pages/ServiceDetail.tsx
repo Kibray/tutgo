@@ -118,7 +118,18 @@ const ServiceDetail = () => {
 
   const isBookable = location ? ['beauty', 'medical', 'tour', 'service', 'auto', 'sport', 'education'].includes(location.business_type) : false;
 
-  if (loading) return <div className="min-h-screen bg-background flex items-center justify-center text-muted-foreground">Загрузка...</div>;
+  if (loading) return (
+    <div className="min-h-screen bg-background p-4 space-y-4">
+      <div className="h-56 rounded-2xl bg-muted animate-pulse" />
+      <div className="h-6 w-2/3 rounded bg-muted animate-pulse" />
+      <div className="h-4 w-1/2 rounded bg-muted animate-pulse" />
+      <div className="h-4 w-full rounded bg-muted animate-pulse" />
+      <div className="h-10 w-full rounded-xl bg-muted animate-pulse" />
+      <div className="flex gap-3 mt-4">
+        {[1,2,3].map(i => <div key={i} className="h-10 w-20 rounded-lg bg-muted animate-pulse" />)}
+      </div>
+    </div>
+  );
   if (!location) return <div className="min-h-screen bg-background flex items-center justify-center text-muted-foreground">Услуга не найдена</div>;
 
   const dates = Array.from({ length: 14 }, (_, i) => { const d = new Date(); d.setDate(d.getDate() + i); return d; });
