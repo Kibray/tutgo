@@ -192,9 +192,18 @@ const SmartBottomSheet = ({
       )}
 
       {/* Content */}
-      <div className="overflow-y-auto px-4 pb-4" style={{ height: 'calc(100% - 140px)', paddingBottom: '70px' }}>
+      <div className="overflow-y-auto px-4 pb-4" style={{ height: 'calc(100% - 160px)', paddingBottom: '70px' }}>
         {state === 'half' && (
           /* Horizontal scroll cards */
+          <>
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs font-semibold text-foreground">
+              {nearbyMode ? t('index.nearby_me') : t('index.popular_nearby')}
+            </span>
+            <span className="text-xs text-muted-foreground">
+              {locations.length} {t('index.found')}
+            </span>
+          </div>
           <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-2">
             {loading ? (
               <div className="flex gap-3">
