@@ -116,6 +116,7 @@ const SmartBottomSheet = ({
       drag="y"
       dragConstraints={{ top: 0, bottom: 0 }}
       dragElastic={0.15}
+      dragSnapToOrigin
       onDragEnd={handleDragEnd}
       animate={{ height: HEIGHT_MAP[state] }}
       transition={{ type: 'spring', stiffness: 320, damping: 32 }}
