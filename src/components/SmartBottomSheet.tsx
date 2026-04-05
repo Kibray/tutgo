@@ -48,6 +48,7 @@ const SmartBottomSheet = ({
   const { favoriteIds } = useFavorites();
   const [state, setState] = useState<SheetState>('half');
   const [query, setQuery] = useState('');
+  const [mapDark, setMapDark] = useState(() => localStorage.getItem('tutgo_map_dark') !== 'false');
   const [suggestions, setSuggestions] = useState<any[]>([]);
   const debounceRef = useRef<ReturnType<typeof setTimeout>>();
 
@@ -166,6 +167,17 @@ const SmartBottomSheet = ({
       {/* Quick chips */}
       {showChips && (
         <div className="flex gap-2 px-4 pb-2 overflow-x-auto scrollbar-hide">
+          <button
+            onClick={() => {
+              const next = !mapDark;
+              setMapDark(next);
+              localStorage.setItem('tutgo_map_dark', String(next));
+              window.dispatchEvent(new Event('storage'));
+            }}
+            className="flex-shrink-0 text-[11px] font-medium px-3 py-1.5 rounded-full bg-secondary text-foreground border border-border/50"
+          >
+            {mapDark ? '🌙' : '☀️'}
+          </button>
           {nearbyMode && (
             <button
               onClick={onDisableNearby}
