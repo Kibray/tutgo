@@ -1,7 +1,7 @@
 import { useState, useCallback, useMemo, useEffect, useRef, lazy, Suspense } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Locate, ChevronUp, ChevronDown, Bell, Menu } from 'lucide-react';
+import { Locate, ChevronUp, ChevronDown, Bell, Menu, Search } from 'lucide-react';
 import SearchBar from '@/components/SearchBar';
 import CategoryChips from '@/components/CategoryChips';
 import ServiceCard from '@/components/ServiceCard';
@@ -276,9 +276,20 @@ const MobileIndex = () => {
                       )}
                     </div>
                   ))}
-                  {displayLocations.length === 0 && (
-                    <div className="text-center py-12 text-muted-foreground text-sm">
-                      {nearbyMode ? t('index.nothing_nearby') : t('index.nothing_found')}
+                  {displayLocations.length === 0 && !loading && (
+                    <div className="flex flex-col items-center justify-center py-16 gap-3">
+                      <Search className="w-10 h-10 text-muted-foreground/40" />
+                      <span className="text-muted-foreground text-sm text-center">
+                        {nearbyMode ? t('index.nothing_nearby') : t('index.nothing_found')}
+                      </span>
+                      {(search || nearbyMode) && (
+                        <button
+                          onClick={() => { setSearch(''); setCategory('all'); setNearbyMode(false); setUserLocation(null); }}
+                          className="text-xs text-primary underline underline-offset-2"
+                        >
+                          Сбросить фильтры
+                        </button>
+                      )}
                     </div>
                   )}
                 </div>

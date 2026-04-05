@@ -12,6 +12,7 @@ import { useAuth } from "./hooks/useAuth";
 
 // Eagerly load the landing page for fastest FCP
 import Index from "./pages/Index";
+import PageLoader from "./components/PageLoader";
 
 // Lazy-load all other pages
 const ServiceDetail = lazy(() => import("./pages/ServiceDetail"));
@@ -111,7 +112,7 @@ const App = () => (
           <PreferencesProvider>
             <TermsGate />
             <div className="lg:max-w-none max-w-lg mx-auto min-h-screen">
-              <Suspense fallback={null}>
+              <Suspense fallback={<PageLoader />}>
                 <Routes>
                   <Route path="/" element={<Index />} />
                   <Route path="/service/:id" element={<ServiceDetail />} />
