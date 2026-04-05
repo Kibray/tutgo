@@ -3,6 +3,7 @@ import { motion, useMotionValue, useTransform, PanInfo } from 'framer-motion';
 import { Search, X, Locate, Loader2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import ServiceCard from '@/components/ServiceCard';
+import CategoryChips from '@/components/CategoryChips';
 import { SkeletonList } from '@/components/SkeletonCard';
 import { useFavorites } from '@/hooks/useFavorites';
 import { usePreferences } from '@/hooks/usePreferences';
@@ -28,6 +29,9 @@ interface SmartBottomSheetProps {
   nearbyMode: boolean;
   userLocation: [number, number] | null;
   category: string;
+  onCategorySelect: (id: string) => void;
+  subcategory: string;
+  onSubcategorySelect: (id: string) => void;
   onSearch: (q: string) => void;
   onGeolocate: () => void;
   geolocating: boolean;
@@ -40,6 +44,7 @@ interface SmartBottomSheetProps {
 
 const SmartBottomSheet = ({
   locations, loading, nearbyMode, userLocation, category,
+  onCategorySelect, subcategory, onSubcategorySelect,
   onSearch, onGeolocate, geolocating, onLocationSelect,
   onDisableNearby, onServiceClick, onToggleFavorite, isFavorite,
 }: SmartBottomSheetProps) => {
@@ -121,6 +126,13 @@ const SmartBottomSheet = ({
       <div className="w-full flex justify-center pt-2 pb-1 cursor-grab active:cursor-grabbing">
         <div className="w-10 h-1 rounded-full bg-muted-foreground/30" />
       </div>
+
+      {/* Category chips */}
+      {(state === 'half' || state === 'full') && (
+        <div className="px-4 pb-2">
+          <CategoryChips selected={category} onSelect={onCategorySelect} selectedSub={subcategory} onSubSelect={onSubcategorySelect} />
+        </div>
+      )}
 
       {/* Search bar */}
       <div className="relative px-4 pb-2">
@@ -204,7 +216,7 @@ const SmartBottomSheet = ({
       )}
 
       {/* Content */}
-      <div className="overflow-y-auto px-4 pb-4" style={{ height: 'calc(100% - 160px)', paddingBottom: '70px' }}>
+      <div className="overflow-y-auto px-4 pb-4" style={{ height: 'calc(100% - 220px)', paddingBottom: '70px' }}>
         {state === 'half' && (
           /* Horizontal scroll cards */
           <>

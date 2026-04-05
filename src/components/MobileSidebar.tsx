@@ -51,10 +51,12 @@ const MobileSidebar = ({ open, onOpenChange }: MobileSidebarProps) => {
   };
 
   return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
+    <Sheet open={open} onOpenChange={onOpenChange} modal={true}>
       <SheetContent
         side="left"
         className="w-[280px] bg-background border-border p-0 flex flex-col"
+        onCloseAutoFocus={(e) => e.preventDefault()}
+        onPointerDownOutside={() => onOpenChange(false)}
       >
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-border">

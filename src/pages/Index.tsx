@@ -2,7 +2,7 @@ import { useState, useCallback, useMemo, useEffect, useRef, lazy, Suspense } fro
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Bell, Menu } from 'lucide-react';
-import CategoryChips from '@/components/CategoryChips';
+
 import BottomNav from '@/components/BottomNav';
 import BusinessSheet from '@/components/BusinessSheet';
 import MobileSidebar from '@/components/MobileSidebar';
@@ -194,9 +194,6 @@ const MobileIndex = () => {
               </button>
             </div>
           </motion.div>
-          <div className="mt-1">
-            <CategoryChips selected={category} onSelect={handleCategorySelect} selectedSub={subcategory} onSubSelect={setSubcategory} />
-          </div>
         </div>
       </div>
 
@@ -206,6 +203,9 @@ const MobileIndex = () => {
         nearbyMode={nearbyMode}
         userLocation={userLocation}
         category={category}
+        onCategorySelect={handleCategorySelect}
+        subcategory={subcategory}
+        onSubcategorySelect={setSubcategory}
         onSearch={setSearch}
         onGeolocate={handleCenterOnMe}
         geolocating={geolocating}
