@@ -1,15 +1,13 @@
 import { useState, useCallback, useMemo, useEffect, useRef, lazy, Suspense } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Locate, ChevronUp, ChevronDown, Bell, Menu, Search } from 'lucide-react';
-import SearchBar from '@/components/SearchBar';
+import { motion } from 'framer-motion';
+import { Bell, Menu } from 'lucide-react';
 import CategoryChips from '@/components/CategoryChips';
-import ServiceCard from '@/components/ServiceCard';
 import BottomNav from '@/components/BottomNav';
 import BusinessSheet from '@/components/BusinessSheet';
-import { SkeletonList } from '@/components/SkeletonCard';
 import MobileSidebar from '@/components/MobileSidebar';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
+import SmartBottomSheet from '@/components/SmartBottomSheet';
 import { useLocations } from '@/hooks/useLocations';
 import { useCategories } from '@/hooks/useCategories';
 import { useFavorites } from '@/hooks/useFavorites';
@@ -33,11 +31,6 @@ const getDistanceKm = (lat1: number, lng1: number, lat2: number, lng2: number): 
   const dLng = (lng2 - lng1) * Math.PI / 180;
   const a = Math.sin(dLat / 2) ** 2 + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLng / 2) ** 2;
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-};
-
-const formatDistance = (km: number): string => {
-  if (km < 1) return `${Math.round(km * 1000)} м`;
-  return `${km.toFixed(1)} км`;
 };
 
 const Index = () => {
@@ -66,7 +59,6 @@ const MobileIndex = () => {
   const [category, setCategory] = useState('all');
   const [subcategory, setSubcategory] = useState('all');
   const [search, setSearch] = useState('');
-  const [listExpanded, setListExpanded] = useState(true);
   const [mapCenter, setMapCenter] = useState<[number, number] | null>(null);
   const [sheetService, setSheetService] = useState<LocationItem | null>(null);
   const [nearbyMode, setNearbyMode] = useState(false);
@@ -128,7 +120,6 @@ const MobileIndex = () => {
           setUserLocation(loc);
           setMapCenter(loc);
           setNearbyMode(true);
-          setListExpanded(true);
           setGeolocating(false);
         },
         () => { setMapCenter(TASHKENT); setGeolocating(false); },
@@ -146,7 +137,6 @@ const MobileIndex = () => {
 
   const handleLocationSelect = useCallback((lat: number, lng: number, _address: string) => {
     setMapCenter([lat, lng]);
-    setListExpanded(false);
   }, []);
 
   const isBookable = (s: LocationItem) =>
@@ -162,16 +152,7 @@ const MobileIndex = () => {
     }
   };
 
-  const handleSearch = (query: string) => setSearch(query);
-  const handleSearchSubmit = (query: string) => {
-    if (query.trim()) { setSearch(query); setListExpanded(false); }
-  };
   const handleCategorySelect = (id: string) => { setCategory(id); setSubcategory('all'); };
-  const toggleList = () => {
-    const tg = (window as any).Telegram?.WebApp;
-    tg?.HapticFeedback?.impactOccurred('light');
-    setListExpanded(!listExpanded);
-  };
 
   return (
     <div className="relative h-screen w-full overflow-hidden">
@@ -213,122 +194,27 @@ const MobileIndex = () => {
               </button>
             </div>
           </motion.div>
-          <SearchBar onSearch={handleSearch} onSubmit={handleSearchSubmit} onLocationSelect={handleLocationSelect} onGeolocate={handleCenterOnMe} geolocating={geolocating} />
-          <div className="mt-3">
+          <div className="mt-1">
             <CategoryChips selected={category} onSelect={handleCategorySelect} selectedSub={subcategory} onSubSelect={setSubcategory} />
           </div>
         </div>
       </div>
 
-      <div className="absolute z-[1000] flex flex-col gap-2"
-        style={{ bottom: listExpanded ? 'calc(50% + 80px + 16px)' : 'calc(80px + 70px + 16px)', right: '16px', transition: 'bottom 0.3s ease' }}>
-        {nearbyMode && (
-          <motion.button
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            onClick={handleDisableNearby}
-            className="w-10 h-10 glass-strong rounded-full flex items-center justify-center shadow-lg ring-1 ring-primary/30"
-          >
-            <span className="text-xs">✕</span>
-          </motion.button>
-        )}
-        <button onClick={handleCenterOnMe}
-          className={`w-10 h-10 glass-strong rounded-full flex items-center justify-center shadow-lg transition-colors ${nearbyMode ? 'ring-2 ring-primary bg-primary/20' : ''}`}>
-          <Locate className="w-5 h-5 text-primary" />
-        </button>
-      </div>
-
-      <motion.div
-        animate={{ height: listExpanded ? '50%' : '80px' }}
-        transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-        className="absolute bottom-0 left-0 right-0 z-[1000] bg-background/95 backdrop-blur-xl rounded-t-2xl border-t border-border"
-        style={{ paddingBottom: '70px' }}>
-        <button onClick={toggleList} className="w-full flex flex-col items-center pt-2 pb-1">
-          <div className="w-10 h-1 rounded-full bg-muted-foreground/30 mb-2" />
-          <div className="flex items-center gap-1 text-xs text-muted-foreground">
-            {listExpanded ? (<><ChevronDown className="w-3.5 h-3.5" />{t('index.collapse')}</>) : (<><ChevronUp className="w-3.5 h-3.5" />{displayLocations.length} {t('index.places_found')}</>)}
-          </div>
-        </button>
-
-        <AnimatePresence>
-          {listExpanded && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              className="overflow-y-auto px-4 pb-4" style={{ height: 'calc(100% - 50px)' }}>
-              <div className="flex items-center justify-between mb-3">
-                <h2 className="text-sm font-semibold text-foreground">
-                  {nearbyMode ? t('index.nearby_me') : category === 'all' ? t('index.popular_nearby') : (selectedCat?.name || '')}
-                </h2>
-                <span className="text-xs text-muted-foreground">
-                  {displayLocations.length} {t('index.found')}
-                  {nearbyMode && ' · до 2 км'}
-                </span>
-              </div>
-              {loading ? <SkeletonList count={4} /> : (
-                <div className="space-y-3">
-                  {displayLocations.map((loc: any, i: number) => (
-                    <div key={loc.id} className="relative">
-                      <ServiceCard service={loc} index={i} onClick={() => handleMarkerClick(loc)}
-                        isFavorite={isFavorite(loc.id)} onToggleFavorite={toggleFavorite} />
-                      {nearbyMode && loc._distance != null && (
-                        <div className="absolute top-3 left-3 bg-primary/90 text-primary-foreground text-[10px] font-bold px-2 py-0.5 rounded-md backdrop-blur-sm">
-                          {formatDistance(loc._distance)}
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                  {displayLocations.length === 0 && !loading && (
-                    <div className="flex flex-col items-center justify-center py-16 gap-3">
-                      <Search className="w-10 h-10 text-muted-foreground/40" />
-                      <span className="text-muted-foreground text-sm text-center">
-                        {nearbyMode ? t('index.nothing_nearby') : t('index.nothing_found')}
-                      </span>
-                      {(search || nearbyMode) && (
-                        <button
-                          onClick={() => { setSearch(''); setCategory('all'); setNearbyMode(false); setUserLocation(null); }}
-                          className="text-xs text-primary underline underline-offset-2"
-                        >
-                          Сбросить фильтры
-                        </button>
-                      )}
-                    </div>
-                  )}
-                </div>
-              )}
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        <AnimatePresence>
-          {!listExpanded && displayLocations.length > 0 && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="px-4 mt-1">
-              <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-2">
-                {displayLocations.slice(0, 8).map((s: any) => (
-                  <motion.div key={s.id} whileTap={{ scale: 0.97 }} onClick={() => handleMarkerClick(s)}
-                    className="glass-strong rounded-lg p-3 min-w-[200px] flex-shrink-0 cursor-pointer">
-                    <p className="text-xs font-semibold text-foreground truncate">{s.name}</p>
-                    <p className="text-[10px] text-muted-foreground truncate mt-0.5">{s.address}</p>
-                    <div className="flex items-center justify-between mt-2">
-                      <div className="flex items-center gap-2">
-                        {(s.price_from || 0) > 0 && (
-                          <span className="text-xs font-bold text-gradient-green">
-                            {new Intl.NumberFormat('ru-RU').format(s.price_from!)} {s.currency}
-                          </span>
-                        )}
-                      </div>
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-[10px] text-muted-foreground">⭐ {s.rating}</span>
-                        {nearbyMode && s._distance != null && (
-                          <span className="text-[10px] text-primary font-medium">{formatDistance(s._distance)}</span>
-                        )}
-                      </div>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </motion.div>
+      <SmartBottomSheet
+        locations={displayLocations}
+        loading={loading}
+        nearbyMode={nearbyMode}
+        userLocation={userLocation}
+        category={category}
+        onSearch={setSearch}
+        onGeolocate={handleCenterOnMe}
+        geolocating={geolocating}
+        onLocationSelect={handleLocationSelect}
+        onDisableNearby={handleDisableNearby}
+        onServiceClick={handleMarkerClick}
+        onToggleFavorite={toggleFavorite}
+        isFavorite={isFavorite}
+      />
 
       <BusinessSheet service={sheetService} open={!!sheetService} onClose={() => setSheetService(null)}
         onFullPage={() => { if (sheetService) { navigate(`/service/${sheetService.id}`); setSheetService(null); } }} />
@@ -340,7 +226,6 @@ const MobileIndex = () => {
             const first = locs.find(l => l.lat && l.lng);
             if (first) setMapCenter([first.lat!, first.lng!]);
           }
-          setListExpanded(false);
         }} />
       </Suspense>
       <MobileSidebar open={sidebarOpen} onOpenChange={setSidebarOpen} />
