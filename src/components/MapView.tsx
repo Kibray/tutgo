@@ -271,7 +271,13 @@ interface MapViewProps {
 const MapView = ({ services, onMarkerClick, center, className = '', nearbyMode, userLocation }: MapViewProps) => {
   const defaultCenter: [number, number] = [41.3111, 69.2797];
   const [zoom, setZoom] = useState(12);
-  const [isDark, setIsDark] = useState(true);
+  const [isDark, setIsDark] = useState(() => localStorage.getItem('tutgo_map_dark') !== 'false');
+
+  useEffect(() => {
+    const handler = () => setIsDark(localStorage.getItem('tutgo_map_dark') !== 'false');
+    window.addEventListener('storage', handler);
+    return () => window.removeEventListener('storage', handler);
+  }, []);
   const [districts, setDistricts] = useState<any>(null);
 
   useEffect(() => { injectPulseCSS(); }, []);
@@ -291,19 +297,6 @@ const MapView = ({ services, onMarkerClick, center, className = '', nearbyMode, 
 
   const mapBg = isDark ? 'hsl(220, 15%, 5%)' : 'hsl(210, 20%, 92%)';
 
-  const themeBtnStyle = (active: boolean): React.CSSProperties => ({
-    height: 36,
-    padding: '0 16px',
-    borderRadius: 20,
-    border: 'none',
-    fontSize: 13,
-    fontWeight: 600,
-    cursor: 'pointer',
-    touchAction: 'manipulation',
-    transition: 'all 0.2s',
-    background: active ? 'hsl(142,72%,29%)' : 'transparent',
-    color: active ? 'white' : 'hsl(142,72%,55%)',
-  });
 
   return (
     <div style={{ width: '100%', height: '100%', position: 'relative' }}>
@@ -365,23 +358,6 @@ const MapView = ({ services, onMarkerClick, center, className = '', nearbyMode, 
         <ClusterLayer services={filteredServices} onMarkerClick={onMarkerClick} zoom={zoom} isDark={isDark} />
       </MapContainer>
 
-      <div style={{
-        position: 'absolute',
-        bottom: 90,
-        left: '50%',
-        transform: 'translateX(-50%)',
-        zIndex: 1000,
-        display: 'flex',
-        flexDirection: 'row',
-        gap: 8,
-        background: 'hsl(220,15%,8%)',
-        border: '1px solid hsl(142,72%,29%)',
-        borderRadius: 24,
-        padding: 4,
-      }}>
-        <button style={themeBtnStyle(isDark)} onClick={() => setIsDark(true)}>🌙</button>
-        <button style={themeBtnStyle(!isDark)} onClick={() => setIsDark(false)}>☀️</button>
-      </div>
     </div>
   );
 };
