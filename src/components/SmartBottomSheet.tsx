@@ -48,6 +48,7 @@ const SmartBottomSheet = ({
   const { favoriteIds } = useFavorites();
   const [state, setState] = useState<SheetState>('half');
   const [query, setQuery] = useState('');
+  const [mapDark, setMapDark] = useState(() => localStorage.getItem('tutgo_map_dark') !== 'false');
   const [suggestions, setSuggestions] = useState<any[]>([]);
   const debounceRef = useRef<ReturnType<typeof setTimeout>>();
 
