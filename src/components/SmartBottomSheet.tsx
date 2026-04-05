@@ -169,13 +169,14 @@ const SmartBottomSheet = ({
         <div className="flex gap-2 px-4 pb-2 overflow-x-auto scrollbar-hide">
           <button
             onClick={() => {
-              const next = localStorage.getItem('tutgo_map_dark') === 'false' ? 'true' : 'false';
-              localStorage.setItem('tutgo_map_dark', next);
+              const next = !mapDark;
+              setMapDark(next);
+              localStorage.setItem('tutgo_map_dark', String(next));
               window.dispatchEvent(new Event('storage'));
             }}
             className="flex-shrink-0 text-[11px] font-medium px-3 py-1.5 rounded-full bg-secondary text-foreground border border-border/50"
           >
-            {localStorage.getItem('tutgo_map_dark') === 'false' ? '☀️' : '🌙'}
+            {mapDark ? '🌙' : '☀️'}
           </button>
           {nearbyMode && (
             <button
