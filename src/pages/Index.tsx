@@ -17,6 +17,7 @@ import { useNotifications } from '@/hooks/useNotifications';
 import { useIsDesktop } from '@/hooks/useIsDesktop';
 import { usePreferences } from '@/hooks/usePreferences';
 import type { LocationItem } from '@/lib/types';
+import { getBizType } from '@/lib/categories';
 
 const MapView = lazy(() => import('@/components/MapView'));
 const AiAssistantFab = lazy(() => import('@/components/AiAssistantFab'));
@@ -335,14 +336,6 @@ const MobileIndex = () => {
       <BottomNav />
     </div>
   );
-};
-
-const getBizType = (categoryName: string): string => {
-  const map: Record<string, string> = {
-    'Медицина': 'medical', 'Красота': 'beauty', 'Туры': 'tour',
-    'Еда и напитки': 'cafe', 'Магазины': 'retail', 'Услуги': 'service',
-  };
-  return map[categoryName] || 'service';
 };
 
 export default Index;

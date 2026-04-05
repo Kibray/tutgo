@@ -59,7 +59,15 @@ const FlightResults = lazy(() => import("./pages/FlightResults"));
 const Stay = lazy(() => import("./pages/Stay"));
 const StayDetail = lazy(() => import("./pages/StayDetail"));
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5 * 60 * 1000,
+      gcTime: 10 * 60 * 1000,
+      retry: 1,
+    }
+  }
+});
 
 const TermsGate = () => {
   const { user, termsAccepted, setTermsAccepted, partnerTermsAccepted, setPartnerTermsAccepted } = useAuth();

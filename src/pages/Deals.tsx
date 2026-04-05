@@ -28,13 +28,6 @@ interface Deal {
   };
 }
 
-const getBizType = (categoryName: string): string => {
-  const map: Record<string, string> = {
-    'Медицина': 'medical', 'Красота': 'beauty', 'Туры': 'tour',
-    'Еда и напитки': 'cafe', 'Магазины': 'retail', 'Услуги': 'service',
-  };
-  return map[categoryName] || 'service';
-};
 
 const Deals = () => {
   const navigate = useNavigate();
