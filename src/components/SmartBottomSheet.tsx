@@ -127,6 +127,13 @@ const SmartBottomSheet = ({
         <div className="w-10 h-1 rounded-full bg-muted-foreground/30" />
       </div>
 
+      {/* Category chips */}
+      {(state === 'half' || state === 'full') && (
+        <div className="px-4 pb-2">
+          <CategoryChips selected={category} onSelect={onCategorySelect} selectedSub={subcategory} onSubSelect={onSubcategorySelect} />
+        </div>
+      )}
+
       {/* Search bar */}
       <div className="relative px-4 pb-2">
         <div className="flex items-center gap-2 bg-secondary/60 backdrop-blur-sm rounded-xl px-3 py-2.5">
