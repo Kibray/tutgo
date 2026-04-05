@@ -174,12 +174,12 @@ const SmartBottomSheet = ({
               📍 Рядом · вкл
             </button>
           )}
-          {favorites.length > 0 && (
+          {favoriteIds.size > 0 && (
             <button
               onClick={() => navigate('/profile')}
               className="flex-shrink-0 text-[11px] font-medium px-3 py-1.5 rounded-full bg-secondary text-foreground border border-border/50"
             >
-              ★ Избранное · {favorites.length}
+              ★ Избранное · {favoriteIds.size}
             </button>
           )}
           <button
