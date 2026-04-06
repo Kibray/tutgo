@@ -38,6 +38,7 @@ const ServiceDetail = () => {
   const [staffList, setStaffList] = useState<any[]>([]);
   const [reviews, setReviews] = useState<any[]>([]);
   const [bookedSeats, setBookedSeats] = useState<Record<string, number>>({});
+  const [bookedSlots, setBookedSlots] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
   const [selectedDate, setSelectedDate] = useState(0);
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
@@ -105,16 +106,70 @@ const ServiceDetail = () => {
     return result;
   }, [reviews]);
 
+  const dates = useMemo(() =>
+    Array.from({ length: 14 }, (_, i) => { const d = new Date(); d.setDate(d.getDate() + i); return d; }),
+  []);
+
+  const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+
   const timeSlots = useMemo(() => {
+    const date = dates[selectedDate];
+    const dayName = dayNames[date.getDay()];
+
+    let startH = 9, startM = 0, endH = 20, endM = 0;
+
+    const staff = staffList.find(s => s.id === selectedStaff);
+    const wh = staff?.working_hours as Record<string, { start: string; end: string }> | null;
+
+    if (wh && wh[dayName]) {
+      const [sh, sm] = wh[dayName].start.split(':').map(Number);
+      const [eh, em] = wh[dayName].end.split(':').map(Number);
+      startH = sh; startM = sm; endH = eh; endM = em;
+    }
+
     const slots: { id: string; time: string; available: boolean }[] = [];
-    for (let h = 9; h <= 20; h++) {
-      for (const m of ['00', '30']) {
-        const time = `${h.toString().padStart(2, '0')}:${m}`;
-        slots.push({ id: `slot-${time}`, time, available: true });
-      }
+    let h = startH, m = startM;
+    const endMinutes = endH * 60 + endM;
+
+    while (h * 60 + m < endMinutes) {
+      const time = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
+      slots.push({ id: `slot-${time}`, time, available: !bookedSlots.has(time) });
+      m += 30;
+      if (m >= 60) { h += 1; m = 0; }
     }
     return slots;
-  }, []);
+  }, [selectedDate, selectedStaff, staffList, dates, bookedSlots]);
+
+  // Fetch existing appointments for selected staff + date
+  useEffect(() => {
+    const fetchBooked = async () => {
+      if (!selectedStaff || !id) { setBookedSlots(new Set()); return; }
+      const date = dates[selectedDate];
+      const dateStr = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
+      const dayStart = `${dateStr}T00:00:00`;
+      const dayEnd = `${dateStr}T23:59:59`;
+
+      const { data } = await supabase.from('appointments').select('start_time, end_time')
+        .eq('staff_id', selectedStaff)
+        .gte('start_time', dayStart)
+        .lte('start_time', dayEnd)
+        .in('status', ['pending', 'confirmed']);
+
+      const taken = new Set<string>();
+      (data || []).forEach((appt: any) => {
+        const start = new Date(appt.start_time);
+        const end = new Date(appt.end_time);
+        let cursor = new Date(start);
+        while (cursor < end) {
+          taken.add(`${cursor.getHours().toString().padStart(2, '0')}:${cursor.getMinutes().toString().padStart(2, '0')}`);
+          cursor = new Date(cursor.getTime() + 30 * 60000);
+        }
+      });
+      setBookedSlots(taken);
+    };
+    fetchBooked();
+  }, [selectedStaff, selectedDate, id, dates]);
+
 
   const isBookable = location ? ['beauty', 'medical', 'tour', 'service', 'auto', 'sport', 'education'].includes(location.business_type) : false;
 
@@ -132,7 +187,6 @@ const ServiceDetail = () => {
   );
   if (!location) return <div className="min-h-screen bg-background flex items-center justify-center text-muted-foreground">Услуга не найдена</div>;
 
-  const dates = Array.from({ length: 14 }, (_, i) => { const d = new Date(); d.setDate(d.getDate() + i); return d; });
   const fullAddress = `${location.address || ''}, ${location.city || ''}`;
   const lat = location.lat || 41.3111;
   const lng = location.lng || 69.2797;
