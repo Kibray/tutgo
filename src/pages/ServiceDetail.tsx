@@ -187,7 +187,6 @@ const ServiceDetail = () => {
   );
   if (!location) return <div className="min-h-screen bg-background flex items-center justify-center text-muted-foreground">Услуга не найдена</div>;
 
-  const dates = Array.from({ length: 14 }, (_, i) => { const d = new Date(); d.setDate(d.getDate() + i); return d; });
   const fullAddress = `${location.address || ''}, ${location.city || ''}`;
   const lat = location.lat || 41.3111;
   const lng = location.lng || 69.2797;
