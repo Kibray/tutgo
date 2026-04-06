@@ -38,6 +38,7 @@ const ServiceDetail = () => {
   const [staffList, setStaffList] = useState<any[]>([]);
   const [reviews, setReviews] = useState<any[]>([]);
   const [bookedSeats, setBookedSeats] = useState<Record<string, number>>({});
+  const [bookedSlots, setBookedSlots] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
   const [selectedDate, setSelectedDate] = useState(0);
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
