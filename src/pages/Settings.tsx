@@ -39,7 +39,7 @@ const Settings = () => {
 
   const saveNotifyPref = async (field: string, value: boolean) => {
     if (!user) return;
-    await supabase.from('profiles').update({ [field]: value }).eq('user_id', user.id);
+    await supabase.from('profiles').update({ [field]: value } as any).eq('user_id', user.id);
     toast({ title: t('settings.saved') });
   };
 

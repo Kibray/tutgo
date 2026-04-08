@@ -69,7 +69,7 @@ export const PreferencesProvider = ({ children }: { children: ReactNode }) => {
 
   const saveToDb = useCallback(async (updates: Record<string, any>) => {
     if (!user) return;
-    await supabase.from('profiles').update(updates).eq('user_id', user.id);
+    await supabase.from('profiles').update(updates as any).eq('user_id', user.id);
   }, [user]);
 
   const setLang = (l: Lang) => {
