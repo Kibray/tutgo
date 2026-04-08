@@ -89,6 +89,12 @@ const PartnerLayout = ({ children, title, showBackToPartner = true, headerRight 
         </aside>
 
         <div className="flex-1 flex flex-col overflow-hidden">
+          <header className="h-12 flex items-center gap-3 px-4 border-b border-border shrink-0">
+            <button onClick={() => navigate('/partner')} className="text-muted-foreground hover:text-foreground transition-colors">
+              <ArrowLeft className="w-5 h-5" />
+            </button>
+            {title && <h1 className="text-sm font-semibold text-foreground">{title}</h1>}
+          </header>
           <main className="flex-1 overflow-y-auto">
             {children}
           </main>
