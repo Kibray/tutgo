@@ -33,6 +33,7 @@ const Partner = () => {
   const { t } = usePreferences();
   const navigate = useNavigate();
   const isDesktop = useIsDesktop();
+  const { plan, isEarlyAdopter, daysLeft } = useSubscription();
 
   const [badges, setBadges] = useState<Record<string, number>>({});
   const [todayRevenue, setTodayRevenue] = useState(0);
