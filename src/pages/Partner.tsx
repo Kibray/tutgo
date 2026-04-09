@@ -13,6 +13,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Badge } from '@/components/ui/badge';
 import { startOfDay, endOfDay, format } from 'date-fns';
 import PartnerOnboarding from '@/components/partner/PartnerOnboarding';
+import { useSubscription } from '@/hooks/useSubscription';
 
 const dashboardItems = [
   { id: 'bookings', icon: Calendar, labelKey: 'partner.journal', route: '/partner/bookings', badgeKey: 'bookings' },
@@ -32,6 +33,7 @@ const Partner = () => {
   const { t } = usePreferences();
   const navigate = useNavigate();
   const isDesktop = useIsDesktop();
+  const { plan, isEarlyAdopter, daysLeft } = useSubscription();
 
   const [badges, setBadges] = useState<Record<string, number>>({});
   const [todayRevenue, setTodayRevenue] = useState(0);
@@ -128,6 +130,32 @@ const Partner = () => {
     <PartnerLayout title={t('partner.dashboard')} showBackToPartner={false}>
       {showOnboarding && <PartnerOnboarding open={showOnboarding} onComplete={() => setShowOnboarding(false)} />}
       <div className="px-4">
+        {/* Subscription banner */}
+        {isEarlyAdopter && daysLeft !== null && daysLeft > 3 && (
+          <div className="mb-4 rounded-xl bg-green-600/15 border border-green-600/30 p-3">
+            <p className="text-sm font-semibold text-green-400">⭐ Ранний доступ — Pro бесплатно ещё {daysLeft} дней</p>
+            <p className="text-[10px] text-green-400/70 mt-0.5">Вы среди первых партнёров TutGo</p>
+          </div>
+        )}
+        {isEarlyAdopter && daysLeft !== null && daysLeft > 0 && daysLeft <= 3 && (
+          <div className="mb-4 rounded-xl bg-orange-500/15 border border-orange-500/30 p-3 flex items-center justify-between">
+            <p className="text-sm font-semibold text-orange-400">⚠️ Pro заканчивается через {daysLeft} дня</p>
+            <a href="https://t.me/tutgo_support" target="_blank" rel="noopener noreferrer"
+              className="px-3 py-1 rounded-lg bg-orange-500 text-white text-xs font-bold shrink-0">
+              Продлить
+            </a>
+          </div>
+        )}
+        {((isEarlyAdopter && daysLeft === 0) || (plan === 'free' && isEarlyAdopter)) && (
+          <div className="mb-4 rounded-xl bg-primary/15 border border-primary/30 p-3 flex items-center justify-between">
+            <p className="text-sm font-semibold text-primary">Ваш пробный период закончился</p>
+            <a href="https://t.me/tutgo_support" target="_blank" rel="noopener noreferrer"
+              className="px-3 py-1 rounded-lg bg-primary text-primary-foreground text-xs font-bold shrink-0">
+              Подключить Pro
+            </a>
+          </div>
+        )}
+
         {/* Mini stats */}
         <div className="mb-5">
           <PartnerMobileStats
