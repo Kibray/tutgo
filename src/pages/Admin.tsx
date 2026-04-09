@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, CheckCircle, XCircle, Clock, Users, Building2, BarChart3, Calendar } from 'lucide-react';
+import { ArrowLeft, CheckCircle, XCircle, Clock, Users, Building2, BarChart3, Calendar, Diamond } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
+import { Input } from '@/components/ui/input';
 
 const Admin = () => {
   const { user, loading: authLoading } = useAuth();
@@ -20,6 +21,10 @@ const Admin = () => {
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [adminChecked, setAdminChecked] = useState(false);
+  const [subscriptions, setSubscriptions] = useState<any[]>([]);
+  const [subLoading, setSubLoading] = useState(false);
+  const [enterpriseNoteId, setEnterpriseNoteId] = useState<string | null>(null);
+  const [enterpriseNote, setEnterpriseNote] = useState('');
 
   useEffect(() => {
     if (!user) { setAdminChecked(true); return; }
@@ -34,22 +39,25 @@ const Admin = () => {
     loadData();
   }, [user, isAdmin]);
 
+  useEffect(() => {
+    if (tab === 'subscriptions' && isAdmin) {
+      loadSubscriptions();
+    }
+  }, [tab, isAdmin]);
+
   const loadData = async () => {
-    // Load applications
     const { data: apps } = await supabase
       .from('partner_applications')
       .select('*')
       .order('created_at', { ascending: false });
     setApplications(apps || []);
 
-    // Load profiles
     const { data: profiles } = await supabase
       .from('profiles')
       .select('*')
       .order('created_at', { ascending: false });
     setAllProfiles(profiles || []);
 
-    // Stats
     const { count: locCount } = await supabase.from('locations').select('*', { count: 'exact', head: true });
     const { count: userCount } = await supabase.from('profiles').select('*', { count: 'exact', head: true });
     const { count: aptCount } = await supabase.from('appointments').select('*', { count: 'exact', head: true });
@@ -62,20 +70,71 @@ const Admin = () => {
     });
   };
 
+  const loadSubscriptions = async () => {
+    setSubLoading(true);
+    const { data: subs } = await supabase
+      .from('subscriptions')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (subs && subs.length > 0) {
+      const userIds = subs.map(s => s.user_id);
+      const { data: profiles } = await supabase
+        .from('profiles')
+        .select('user_id, display_name, phone')
+        .in('user_id', userIds);
+
+      const profileMap = new Map((profiles || []).map(p => [p.user_id, p]));
+      setSubscriptions(subs.map(s => ({
+        ...s,
+        display_name: profileMap.get(s.user_id)?.display_name || 'Партнёр',
+        phone: profileMap.get(s.user_id)?.phone || '—',
+      })));
+    } else {
+      setSubscriptions([]);
+    }
+    setSubLoading(false);
+  };
+
+  const handleSubAction = async (userId: string, plan: string, trialDays?: number, notes?: string) => {
+    setActionLoading(userId);
+    try {
+      const update: any = { plan, updated_at: new Date().toISOString() };
+      if (plan === 'pro' && trialDays) {
+        update.trial_ends_at = new Date(Date.now() + trialDays * 86400000).toISOString();
+        update.current_period_end = update.trial_ends_at;
+      }
+      if (plan === 'free') {
+        update.trial_ends_at = null;
+        update.current_period_end = null;
+      }
+      if (plan === 'enterprise' && notes !== undefined) {
+        update.notes = notes;
+      }
+      await supabase.from('subscriptions').update(update).eq('user_id', userId);
+      toast({ title: `План изменён на ${plan}` });
+      setEnterpriseNoteId(null);
+      setEnterpriseNote('');
+      loadSubscriptions();
+    } catch (err: any) {
+      toast({ title: 'Ошибка', description: err.message, variant: 'destructive' });
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
   const handleAction = async (appId: string, action: 'approved' | 'rejected') => {
     setActionLoading(appId);
     try {
       const app = applications.find(a => a.id === appId);
       if (!app) return;
 
-      // Update application status
       await supabase
         .from('partner_applications')
         .update({ status: action })
         .eq('id', appId);
 
       if (action === 'approved') {
-        // Mark location as verified
         const { data: locations } = await supabase
           .from('locations')
           .select('id')
@@ -89,7 +148,6 @@ const Admin = () => {
             .eq('id', locations[0].id);
         }
 
-        // Notify partner via in-app notification
         await supabase.from('notifications').insert({
           user_id: app.user_id,
           title: '🎉 Компания подтверждена!',
@@ -97,7 +155,6 @@ const Admin = () => {
           type: 'info',
         });
 
-        // Notify via Telegram
         const { data: profile } = await supabase
           .from('profiles')
           .select('telegram_chat_id')
@@ -114,7 +171,6 @@ const Admin = () => {
           });
         }
       } else {
-        // Rejected
         await supabase.from('notifications').insert({
           user_id: app.user_id,
           title: '❌ Заявка отклонена',
@@ -122,7 +178,6 @@ const Admin = () => {
           type: 'info',
         });
 
-        // Hide location from search
         const { data: locations } = await supabase
           .from('locations')
           .select('id')
@@ -136,7 +191,6 @@ const Admin = () => {
             .eq('id', locations[0].id);
         }
 
-        // Telegram notify
         const { data: profile } = await supabase
           .from('profiles')
           .select('telegram_chat_id')
@@ -182,6 +236,11 @@ const Admin = () => {
   const approved = applications.filter(a => a.status === 'approved');
   const rejected = applications.filter(a => a.status === 'rejected');
 
+  const now = new Date();
+  const totalPartners = subscriptions.length;
+  const activePro = subscriptions.filter(s => s.plan === 'pro' && (!s.trial_ends_at || new Date(s.trial_ends_at) > now)).length;
+  const expired = subscriptions.filter(s => s.trial_ends_at && new Date(s.trial_ends_at) < now).length;
+
   return (
     <div className="min-h-screen bg-background pb-8">
       <div className="px-4 pt-6">
@@ -209,13 +268,14 @@ const Admin = () => {
         </div>
 
         <Tabs value={tab} onValueChange={setTab}>
-          <TabsList className="w-full grid grid-cols-4 mb-4">
+          <TabsList className="w-full grid grid-cols-5 mb-4">
             <TabsTrigger value="pending" className="text-xs">
               📋 Заявки {pending.length > 0 && `(${pending.length})`}
             </TabsTrigger>
             <TabsTrigger value="approved" className="text-xs">✅ Партнёры</TabsTrigger>
             <TabsTrigger value="rejected" className="text-xs">❌ Блок</TabsTrigger>
             <TabsTrigger value="users" className="text-xs">👥 Юзеры</TabsTrigger>
+            <TabsTrigger value="subscriptions" className="text-xs">💎 Подписки</TabsTrigger>
           </TabsList>
 
           <TabsContent value="pending">
@@ -243,6 +303,127 @@ const Admin = () => {
               ))}
               {allProfiles.length === 0 && <p className="text-center text-sm text-muted-foreground py-8">Нет пользователей</p>}
             </div>
+          </TabsContent>
+          <TabsContent value="subscriptions">
+            {/* Counters */}
+            <div className="grid grid-cols-3 gap-3 mb-4">
+              <div className="glass rounded-xl p-3 text-center">
+                <p className="text-lg font-bold text-foreground">{totalPartners}</p>
+                <p className="text-[10px] text-muted-foreground">Всего</p>
+              </div>
+              <div className="glass rounded-xl p-3 text-center">
+                <p className="text-lg font-bold text-green-500">{activePro}</p>
+                <p className="text-[10px] text-muted-foreground">Активных Pro</p>
+              </div>
+              <div className="glass rounded-xl p-3 text-center">
+                <p className="text-lg font-bold text-red-500">{expired}</p>
+                <p className="text-[10px] text-muted-foreground">Истёкших</p>
+              </div>
+            </div>
+
+            {subLoading ? (
+              <p className="text-center text-sm text-muted-foreground py-8">Загрузка...</p>
+            ) : subscriptions.length === 0 ? (
+              <p className="text-center text-sm text-muted-foreground py-8">Нет подписок</p>
+            ) : (
+              <div className="space-y-3">
+                {subscriptions.map(sub => {
+                  const trialDate = sub.trial_ends_at ? new Date(sub.trial_ends_at) : null;
+                  const isExpired = trialDate && trialDate < now;
+
+                  return (
+                    <div key={sub.id} className="glass rounded-xl p-4 space-y-2">
+                      <div className="flex items-start justify-between">
+                        <div>
+                          <p className="text-sm font-bold text-foreground">{sub.display_name}</p>
+                          <p className="text-[10px] text-muted-foreground">{sub.phone}</p>
+                        </div>
+                        <div className="flex gap-1 flex-wrap justify-end">
+                          <Badge
+                            variant={sub.plan === 'pro' ? 'default' : sub.plan === 'enterprise' ? 'default' : 'secondary'}
+                            className={
+                              sub.plan === 'pro' ? 'bg-green-600 text-white' :
+                              sub.plan === 'enterprise' ? 'bg-yellow-500 text-black' : ''
+                            }
+                          >
+                            {sub.plan.toUpperCase()}
+                          </Badge>
+                          {sub.is_early_adopter && (
+                            <Badge variant="secondary" className="text-[9px]">⭐ Ранний доступ</Badge>
+                          )}
+                        </div>
+                      </div>
+
+                      {trialDate && (
+                        <p className={`text-xs ${isExpired ? 'text-red-500' : 'text-muted-foreground'}`}>
+                          {isExpired
+                            ? `Истёк ${trialDate.toLocaleDateString('ru-RU')}`
+                            : `Pro до ${trialDate.toLocaleDateString('ru-RU')}`
+                          }
+                        </p>
+                      )}
+
+                      {sub.notes && (
+                        <p className="text-[10px] text-muted-foreground">📝 {sub.notes}</p>
+                      )}
+
+                      {enterpriseNoteId === sub.user_id ? (
+                        <div className="flex gap-2 pt-1">
+                          <Input
+                            value={enterpriseNote}
+                            onChange={e => setEnterpriseNote(e.target.value)}
+                            placeholder="Заметка..."
+                            className="h-8 text-xs flex-1"
+                          />
+                          <motion.button
+                            whileTap={{ scale: 0.95 }}
+                            onClick={() => handleSubAction(sub.user_id, 'enterprise', undefined, enterpriseNote)}
+                            disabled={actionLoading === sub.user_id}
+                            className="px-3 py-1 rounded-lg bg-yellow-500 text-black text-xs font-bold disabled:opacity-50"
+                          >
+                            ОК
+                          </motion.button>
+                          <motion.button
+                            whileTap={{ scale: 0.95 }}
+                            onClick={() => { setEnterpriseNoteId(null); setEnterpriseNote(''); }}
+                            className="px-3 py-1 rounded-lg bg-muted text-muted-foreground text-xs"
+                          >
+                            ✕
+                          </motion.button>
+                        </div>
+                      ) : (
+                        <div className="flex gap-2 pt-1 flex-wrap">
+                          <motion.button
+                            whileTap={{ scale: 0.95 }}
+                            onClick={() => handleSubAction(sub.user_id, 'pro', 30)}
+                            disabled={actionLoading === sub.user_id}
+                            className="px-3 py-1.5 rounded-lg bg-green-600 text-white text-[10px] font-bold disabled:opacity-50"
+                          >
+                            → Pro (30 дней)
+                          </motion.button>
+                          <motion.button
+                            whileTap={{ scale: 0.95 }}
+                            onClick={() => handleSubAction(sub.user_id, 'free')}
+                            disabled={actionLoading === sub.user_id}
+                            className="px-3 py-1.5 rounded-lg bg-muted text-muted-foreground text-[10px] font-bold disabled:opacity-50"
+                          >
+                            → Free
+                          </motion.button>
+                          <motion.button
+                            whileTap={{ scale: 0.95 }}
+                            onClick={() => { setEnterpriseNoteId(sub.user_id); setEnterpriseNote(sub.notes || ''); }}
+                            disabled={actionLoading === sub.user_id}
+                            className="px-3 py-1.5 rounded-lg bg-yellow-500 text-black text-[10px] font-bold disabled:opacity-50"
+                          >
+                            → Enterprise
+                          </motion.button>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </TabsContent>
         </Tabs>
       </div>
