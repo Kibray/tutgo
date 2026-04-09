@@ -79,8 +79,14 @@ const SmartBottomSheet = ({
     if (offset.y < -50 || velocity.y < -300) {
       if (idx < ORDER.length - 1) setStateWithHaptic(ORDER[idx + 1]);
     } else if (offset.y > 50 || velocity.y > 300) {
+      // Never go below peek — always keep search visible
       if (idx > 0) setStateWithHaptic(ORDER[idx - 1]);
     }
+  };
+
+  // Tap on handle or search bar in peek to expand
+  const handlePeekTap = () => {
+    if (state === 'peek') setStateWithHaptic('half');
   };
 
   // Nominatim suggestions
