@@ -79,8 +79,14 @@ const SmartBottomSheet = ({
     if (offset.y < -50 || velocity.y < -300) {
       if (idx < ORDER.length - 1) setStateWithHaptic(ORDER[idx + 1]);
     } else if (offset.y > 50 || velocity.y > 300) {
+      // Never go below peek — always keep search visible
       if (idx > 0) setStateWithHaptic(ORDER[idx - 1]);
     }
+  };
+
+  // Tap on handle or search bar in peek to expand
+  const handlePeekTap = () => {
+    if (state === 'peek') setStateWithHaptic('half');
   };
 
   // Nominatim suggestions
@@ -115,9 +121,8 @@ const SmartBottomSheet = ({
     <motion.div
       drag="y"
       dragConstraints={{ top: 0, bottom: 0 }}
-      dragElastic={0.15}
+      dragElastic={state === 'peek' ? 0 : 0.15}
       dragMomentum={false}
-      dragSnapToOrigin
       onDragEnd={handleDragEnd}
       animate={{ height: HEIGHT_MAP[state], y: 0 }}
       transition={{ type: 'spring', stiffness: 320, damping: 32 }}
@@ -125,7 +130,10 @@ const SmartBottomSheet = ({
       style={{ touchAction: 'none' }}
     >
       {/* Handle */}
-      <div className="w-full flex justify-center pt-2 pb-1 cursor-grab active:cursor-grabbing">
+      <div
+        className="w-full flex justify-center pt-2 pb-1 cursor-grab active:cursor-grabbing"
+        onClick={handlePeekTap}
+      >
         <div className="w-10 h-1 rounded-full bg-muted-foreground/30" />
       </div>
 
