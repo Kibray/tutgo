@@ -136,7 +136,6 @@ const SmartBottomSheet = ({
       >
         <div className="w-10 h-1 rounded-full bg-muted-foreground/30" />
       </div>
-      </div>
 
       {/* Category chips */}
       {(state === 'half' || state === 'full') && (
