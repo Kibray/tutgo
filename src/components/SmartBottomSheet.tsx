@@ -121,9 +121,8 @@ const SmartBottomSheet = ({
     <motion.div
       drag="y"
       dragConstraints={{ top: 0, bottom: 0 }}
-      dragElastic={0.15}
+      dragElastic={state === 'peek' ? 0 : 0.15}
       dragMomentum={false}
-      dragSnapToOrigin
       onDragEnd={handleDragEnd}
       animate={{ height: HEIGHT_MAP[state], y: 0 }}
       transition={{ type: 'spring', stiffness: 320, damping: 32 }}
@@ -131,8 +130,12 @@ const SmartBottomSheet = ({
       style={{ touchAction: 'none' }}
     >
       {/* Handle */}
-      <div className="w-full flex justify-center pt-2 pb-1 cursor-grab active:cursor-grabbing">
+      <div
+        className="w-full flex justify-center pt-2 pb-1 cursor-grab active:cursor-grabbing"
+        onClick={handlePeekTap}
+      >
         <div className="w-10 h-1 rounded-full bg-muted-foreground/30" />
+      </div>
       </div>
 
       {/* Category chips */}
