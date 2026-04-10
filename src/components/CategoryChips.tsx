@@ -10,18 +10,36 @@ interface CategoryChipsProps {
   onSubSelect?: (id: string) => void;
 }
 
+const CATEGORY_NAME_TO_KEY: Record<string, string> = {
+  'Медицина': 'cat.medicine',
+  'Красота': 'cat.beauty',
+  'Туры': 'cat.tours',
+  'Еда и напитки': 'cat.food',
+  'Кофейни': 'cat.food',
+  'Магазины': 'cat.shops',
+  'Услуги': 'cat.services',
+  'Автосервис': 'cat.auto',
+  'Спорт': 'cat.sport',
+  'Обучение': 'cat.education',
+};
+
 const CategoryChips = ({ selected, onSelect, selectedSub, onSubSelect }: CategoryChipsProps) => {
   const { t } = usePreferences();
   const { categories } = useCategories();
   const activeCat = categories.find((c) => c.id === selected);
   const subs = activeCat?.subcategories || [];
 
+  const translateCat = (name: string) => {
+    const key = CATEGORY_NAME_TO_KEY[name];
+    return key ? t(key) : name;
+  };
+
   return (
     <div className="space-y-2">
       <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1 -mx-4 px-4">
         <ChipButton label={t('cat.all')} icon="🔥" active={selected === 'all'} onClick={() => onSelect('all')} />
         {categories.map((cat) => (
-          <ChipButton key={cat.id} label={cat.name} icon={cat.icon} active={selected === cat.id} onClick={() => onSelect(cat.id)} />
+          <ChipButton key={cat.id} label={translateCat(cat.name)} icon={cat.icon} active={selected === cat.id} onClick={() => onSelect(cat.id)} />
         ))}
       </div>
       <AnimatePresence>
