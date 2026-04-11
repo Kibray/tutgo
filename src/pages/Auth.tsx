@@ -21,9 +21,12 @@ const Auth = () => {
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const [confirmationSent, setConfirmationSent] = useState(false);
-  const [telegramStep, setTelegramStep] = useState<'idle' | 'waiting_code'>('idle');
+  const [telegramStep, setTelegramStep] = useState<'idle' | 'waiting_code' | 'phone_input'>('idle');
   const [telegramCode, setTelegramCode] = useState('');
   const [telegramLoading, setTelegramLoading] = useState(false);
+  const [phoneCountry, setPhoneCountry] = useState<Country>(COUNTRIES[0]);
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [fullPhone, setFullPhone] = useState('');
   const { signUp, signIn, user } = useAuth();
   const { t } = usePreferences();
   const { isTelegram, ready: tgReady } = useTelegram();
