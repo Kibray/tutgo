@@ -434,10 +434,136 @@ const Admin = () => {
               </div>
             )}
           </TabsContent>
+          <TabsContent value="broadcast">
+            <div className="glass rounded-xl p-4 space-y-4">
+              <h2 className="text-sm font-bold text-foreground flex items-center gap-2">
+                <Megaphone className="w-4 h-4" /> Рассылка уведомлений
+              </h2>
+
+              <div className="space-y-3">
+                <div>
+                  <label className="text-xs text-muted-foreground mb-1 block">Целевая аудитория</label>
+                  <select
+                    value={broadcastTarget}
+                    onChange={e => setBroadcastTarget(e.target.value)}
+                    className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring"
+                  >
+                    <option value="all_partners">All partners</option>
+                    <option value="pro_partners">Pro / Enterprise only</option>
+                    <option value="free_partners">Free partners only</option>
+                    <option value="all_users">All users</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="text-xs text-muted-foreground mb-1 block">Заголовок</label>
+                  <Input
+                    value={broadcastTitle}
+                    onChange={e => setBroadcastTitle(e.target.value)}
+                    maxLength={80}
+                    placeholder="Заголовок уведомления"
+                    className="text-sm"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-xs text-muted-foreground mb-1 block">Сообщение</label>
+                  <Textarea
+                    value={broadcastBody}
+                    onChange={e => setBroadcastBody(e.target.value)}
+                    rows={4}
+                    maxLength={500}
+                    placeholder="Текст сообщения..."
+                    className="text-sm"
+                  />
+                </div>
+
+                <motion.button
+                  whileTap={{ scale: 0.95 }}
+                  onClick={handleBroadcast}
+                  disabled={broadcasting || !broadcastTitle.trim() || !broadcastBody.trim()}
+                  className="w-full py-2.5 rounded-lg bg-primary text-primary-foreground text-sm font-bold disabled:opacity-50"
+                >
+                  {broadcasting ? 'Отправка...' : '📢 Отправить рассылку'}
+                </motion.button>
+
+                {broadcastProgress && (
+                  <p className="text-xs text-muted-foreground text-center">{broadcastProgress}</p>
+                )}
+              </div>
+            </div>
+          </TabsContent>
         </Tabs>
       </div>
     </div>
   );
+
+  async function handleBroadcast() {
+    setBroadcasting(true);
+    setBroadcastProgress('Загрузка пользователей...');
+    try {
+      let userIds: string[] = [];
+
+      if (broadcastTarget === 'all_partners') {
+        const { data } = await supabase.from('subscriptions').select('user_id');
+        userIds = (data || []).map(s => s.user_id);
+      } else if (broadcastTarget === 'pro_partners') {
+        const { data } = await supabase.from('subscriptions').select('user_id').in('plan', ['pro', 'enterprise']);
+        userIds = (data || []).map(s => s.user_id);
+      } else if (broadcastTarget === 'free_partners') {
+        const { data } = await supabase.from('subscriptions').select('user_id').eq('plan', 'free');
+        userIds = (data || []).map(s => s.user_id);
+      } else {
+        const { data } = await supabase.from('profiles').select('user_id');
+        userIds = (data || []).map(p => p.user_id);
+      }
+
+      if (userIds.length === 0) {
+        setBroadcastProgress('Нет пользователей для рассылки');
+        setBroadcasting(false);
+        return;
+      }
+
+      // Insert notifications in one batch
+      const notifications = userIds.map(uid => ({
+        user_id: uid,
+        title: broadcastTitle.trim(),
+        body: broadcastBody.trim(),
+        type: 'broadcast',
+      }));
+      await supabase.from('notifications').insert(notifications);
+
+      // Fetch telegram_chat_ids
+      const { data: profiles } = await supabase
+        .from('profiles')
+        .select('user_id, telegram_chat_id')
+        .in('user_id', userIds)
+        .not('telegram_chat_id', 'is', null);
+
+      const tgProfiles = (profiles || []).filter(p => p.telegram_chat_id);
+      setBroadcastProgress(`Отправка в Telegram (${tgProfiles.length})...`);
+
+      for (const p of tgProfiles) {
+        await supabase.functions.invoke('telegram-notify', {
+          body: {
+            type: 'queue.notify',
+            chatId: p.telegram_chat_id,
+            text: `📢 <b>${broadcastTitle.trim()}</b>\n\n${broadcastBody.trim()}`,
+          },
+        });
+      }
+
+      setBroadcastProgress(`✅ Отправлено ${userIds.length} пользователям (${tgProfiles.length} в Telegram)`);
+      setBroadcastTitle('');
+      setBroadcastBody('');
+      toast({ title: '📢 Рассылка отправлена', description: `${userIds.length} пользователей` });
+    } catch (err: any) {
+      setBroadcastProgress(`❌ Ошибка: ${err.message}`);
+      toast({ title: 'Ошибка рассылки', description: err.message, variant: 'destructive' });
+    } finally {
+      setBroadcasting(false);
+    }
+  }
 };
 
 const ApplicationList = ({ apps, onAction, actionLoading, showActions }: {
