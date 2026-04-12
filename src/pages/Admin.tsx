@@ -26,6 +26,11 @@ const Admin = () => {
   const [subLoading, setSubLoading] = useState(false);
   const [enterpriseNoteId, setEnterpriseNoteId] = useState<string | null>(null);
   const [enterpriseNote, setEnterpriseNote] = useState('');
+  const [broadcastTarget, setBroadcastTarget] = useState('all_partners');
+  const [broadcastTitle, setBroadcastTitle] = useState('');
+  const [broadcastBody, setBroadcastBody] = useState('');
+  const [broadcasting, setBroadcasting] = useState(false);
+  const [broadcastProgress, setBroadcastProgress] = useState('');
 
   useEffect(() => {
     if (!user) { setAdminChecked(true); return; }
