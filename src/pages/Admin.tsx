@@ -276,7 +276,7 @@ const Admin = () => {
         </div>
 
         <Tabs value={tab} onValueChange={setTab}>
-          <TabsList className="w-full grid grid-cols-5 mb-4">
+          <TabsList className="w-full grid grid-cols-6 mb-4">
             <TabsTrigger value="pending" className="text-xs">
               📋 Заявки {pending.length > 0 && `(${pending.length})`}
             </TabsTrigger>
@@ -284,6 +284,7 @@ const Admin = () => {
             <TabsTrigger value="rejected" className="text-xs">❌ Блок</TabsTrigger>
             <TabsTrigger value="users" className="text-xs">👥 Юзеры</TabsTrigger>
             <TabsTrigger value="subscriptions" className="text-xs">💎 Подписки</TabsTrigger>
+            <TabsTrigger value="broadcast" className="text-xs">📢 Broadcast</TabsTrigger>
           </TabsList>
 
           <TabsContent value="pending">
