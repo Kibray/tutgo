@@ -123,7 +123,7 @@ const Admin = () => {
     }
   };
 
-  const handleAction = async (appId: string, action: 'approved' | 'rejected') => {
+  const handleAction = async (appId: string, action: 'approved' | 'rejected', customMessage?: string) => {
     setActionLoading(appId);
     try {
       const app = applications.find(a => a.id === appId);
@@ -148,10 +148,11 @@ const Admin = () => {
             .eq('id', locations[0].id);
         }
 
+        const approvedBody = customMessage || `Ваша компания "${app.company_name}" подтверждена на TutGo!`;
         await supabase.from('notifications').insert({
           user_id: app.user_id,
           title: '🎉 Компания подтверждена!',
-          body: `Ваша компания "${app.company_name}" подтверждена на TutGo!`,
+          body: approvedBody,
           type: 'info',
         });
 
@@ -166,15 +167,16 @@ const Admin = () => {
             body: {
               type: 'queue.notify',
               chatId: profile.telegram_chat_id,
-              text: `🎉 <b>Ваша компания подтверждена на TutGo!</b>\n\n🏢 ${app.company_name}\n\nТеперь клиенты могут найти вас на tutgo.uz`,
+              text: customMessage || `🎉 <b>Ваша компания подтверждена на TutGo!</b>\n\n🏢 ${app.company_name}\n\nТеперь клиенты могут найти вас на tutgo.uz`,
             },
           });
         }
       } else {
+        const rejectedBody = customMessage || 'К сожалению ваша заявка не прошла проверку. Напишите нам: info@tutgo.uz';
         await supabase.from('notifications').insert({
           user_id: app.user_id,
           title: '❌ Заявка отклонена',
-          body: 'К сожалению ваша заявка не прошла проверку. Напишите нам: info@tutgo.uz',
+          body: rejectedBody,
           type: 'info',
         });
 
@@ -202,7 +204,7 @@ const Admin = () => {
             body: {
               type: 'queue.notify',
               chatId: profile.telegram_chat_id,
-              text: `❌ <b>К сожалению ваша заявка не прошла проверку.</b>\n\nНапишите нам: info@tutgo.uz`,
+              text: customMessage || `❌ <b>К сожалению ваша заявка не прошла проверку.</b>\n\nНапишите нам: info@tutgo.uz`,
             },
           });
         }
@@ -433,10 +435,12 @@ const Admin = () => {
 
 const ApplicationList = ({ apps, onAction, actionLoading, showActions }: {
   apps: any[];
-  onAction: (id: string, action: 'approved' | 'rejected') => void;
+  onAction: (id: string, action: 'approved' | 'rejected', customMessage?: string) => void;
   actionLoading: string | null;
   showActions?: boolean;
 }) => {
+  const [pendingAction, setPendingAction] = useState<{ appId: string; action: 'approved' | 'rejected'; message: string } | null>(null);
+
   if (apps.length === 0) {
     return <p className="text-center text-sm text-muted-foreground py-8">Пусто</p>;
   }
@@ -461,11 +465,11 @@ const ApplicationList = ({ apps, onAction, actionLoading, showActions }: {
             {app.instagram && <p>📸 {app.instagram}</p>}
             <p>📅 {new Date(app.created_at).toLocaleString('ru-RU')}</p>
           </div>
-          {showActions && (
+          {showActions && pendingAction?.appId !== app.id && (
             <div className="flex gap-2 pt-1">
               <motion.button
                 whileTap={{ scale: 0.95 }}
-                onClick={() => onAction(app.id, 'approved')}
+                onClick={() => setPendingAction({ appId: app.id, action: 'approved', message: '' })}
                 disabled={actionLoading === app.id}
                 className="flex-1 py-2 rounded-lg bg-green-600 text-white text-xs font-bold disabled:opacity-50 flex items-center justify-center gap-1"
               >
@@ -473,12 +477,52 @@ const ApplicationList = ({ apps, onAction, actionLoading, showActions }: {
               </motion.button>
               <motion.button
                 whileTap={{ scale: 0.95 }}
-                onClick={() => onAction(app.id, 'rejected')}
+                onClick={() => setPendingAction({ appId: app.id, action: 'rejected', message: '' })}
                 disabled={actionLoading === app.id}
                 className="flex-1 py-2 rounded-lg bg-destructive text-destructive-foreground text-xs font-bold disabled:opacity-50 flex items-center justify-center gap-1"
               >
                 <XCircle className="w-3.5 h-3.5" /> Блокировать
               </motion.button>
+            </div>
+          )}
+          {pendingAction?.appId === app.id && (
+            <div className="pt-2 space-y-2">
+              <Textarea
+                rows={3}
+                value={pendingAction.message}
+                onChange={e => setPendingAction({ ...pendingAction, message: e.target.value })}
+                placeholder={
+                  pendingAction.action === 'approved'
+                    ? 'Поздравляем! Ваша компания верифицирована. Свяжитесь с нами если нужна помощь с настройкой.'
+                    : 'Укажите причину отклонения...'
+                }
+                className="text-xs"
+              />
+              <div className="flex gap-2">
+                <motion.button
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => {
+                    onAction(pendingAction.appId, pendingAction.action, pendingAction.message || undefined);
+                    setPendingAction(null);
+                  }}
+                  disabled={actionLoading === app.id}
+                  className={`flex-1 py-2 rounded-lg text-xs font-bold disabled:opacity-50 flex items-center justify-center gap-1 ${
+                    pendingAction.action === 'approved'
+                      ? 'bg-green-600 text-white'
+                      : 'bg-destructive text-destructive-foreground'
+                  }`}
+                >
+                  {pendingAction.action === 'approved' ? <CheckCircle className="w-3.5 h-3.5" /> : <XCircle className="w-3.5 h-3.5" />}
+                  Отправить
+                </motion.button>
+                <motion.button
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setPendingAction(null)}
+                  className="px-4 py-2 rounded-lg bg-muted text-muted-foreground text-xs font-bold"
+                >
+                  Отмена
+                </motion.button>
+              </div>
             </div>
           )}
         </div>
