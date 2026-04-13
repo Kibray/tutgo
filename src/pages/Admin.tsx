@@ -17,7 +17,7 @@ const Admin = () => {
 
   const [applications, setApplications] = useState<any[]>([]);
   const [allProfiles, setAllProfiles] = useState<any[]>([]);
-  const [stats, setStats] = useState({ locations: 0, users: 0, appointments: 0, revenue: 0 });
+  const [stats, setStats] = useState({ locations: 0, users: 0, appointments: 0 });
   const [tab, setTab] = useState('pending');
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
@@ -72,7 +72,6 @@ const Admin = () => {
       locations: locCount || 0,
       users: userCount || 0,
       appointments: aptCount || 0,
-      revenue: 0,
     });
   };
 
@@ -135,6 +134,12 @@ const Admin = () => {
       const app = applications.find(a => a.id === appId);
       if (!app) return;
 
+      if (app.status === action) {
+        toast({ title: 'Статус уже установлен' });
+        setActionLoading(null);
+        return;
+      }
+
       await supabase
         .from('partner_applications')
         .update({ status: action })
@@ -144,8 +149,7 @@ const Admin = () => {
         const { data: locations } = await supabase
           .from('locations')
           .select('id')
-          .eq('owner_id', app.user_id)
-          .eq('name', app.company_name);
+          .eq('owner_id', app.user_id);
 
         if (locations && locations.length > 0) {
           await supabase
@@ -189,8 +193,7 @@ const Admin = () => {
         const { data: locations } = await supabase
           .from('locations')
           .select('id')
-          .eq('owner_id', app.user_id)
-          .eq('name', app.company_name);
+          .eq('owner_id', app.user_id);
 
         if (locations && locations.length > 0) {
           await supabase
