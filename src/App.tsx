@@ -59,6 +59,7 @@ const Flights = lazy(() => import("./pages/Flights"));
 const FlightResults = lazy(() => import("./pages/FlightResults"));
 const Stay = lazy(() => import("./pages/Stay"));
 const StayDetail = lazy(() => import("./pages/StayDetail"));
+const Reviews = lazy(() => import("./pages/Reviews"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -158,6 +159,7 @@ const App = () => (
                   <Route path="/flights/results" element={<FlightResults />} />
                   <Route path="/stay" element={<Stay />} />
                   <Route path="/stay/:id" element={<StayDetail />} />
+                  <Route path="/reviews" element={<Reviews />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </Suspense>
