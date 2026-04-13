@@ -38,6 +38,7 @@ const PartnerInventory = lazy(() => import("./pages/partner/PartnerInventory"));
 const PartnerMenu = lazy(() => import("./pages/partner/PartnerMenu"));
 const PartnerOrders = lazy(() => import("./pages/partner/PartnerOrders"));
 const PartnerTables = lazy(() => import("./pages/partner/PartnerTables"));
+const PartnerReviews = lazy(() => import("./pages/partner/PartnerReviews"));
 const CafeTable = lazy(() => import("./pages/CafeTable"));
 const Settings = lazy(() => import("./pages/Settings"));
 const EditProfile = lazy(() => import("./pages/EditProfile"));
@@ -139,6 +140,7 @@ const App = () => (
                   <Route path="/partner/menu" element={<PartnerMenu />} />
                   <Route path="/partner/orders" element={<PartnerOrders />} />
                   <Route path="/partner/tables" element={<PartnerTables />} />
+                  <Route path="/partner/reviews" element={<PartnerReviews />} />
                   <Route path="/cafe/:slug/table/:tableNum" element={<CafeTable />} />
                   <Route path="/partner-landing" element={<PartnerLanding />} />
                   <Route path="/auth/partner" element={<AuthPartner />} />
