@@ -17,7 +17,7 @@ const Admin = () => {
 
   const [applications, setApplications] = useState<any[]>([]);
   const [allProfiles, setAllProfiles] = useState<any[]>([]);
-  const [stats, setStats] = useState({ locations: 0, users: 0, appointments: 0, revenue: 0 });
+  const [stats, setStats] = useState({ locations: 0, users: 0, appointments: 0 });
   const [tab, setTab] = useState('pending');
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
@@ -72,7 +72,6 @@ const Admin = () => {
       locations: locCount || 0,
       users: userCount || 0,
       appointments: aptCount || 0,
-      revenue: 0,
     });
   };
 
@@ -135,6 +134,12 @@ const Admin = () => {
       const app = applications.find(a => a.id === appId);
       if (!app) return;
 
+      if (app.status === action) {
+        toast({ title: 'Статус уже установлен' });
+        setActionLoading(null);
+        return;
+      }
+
       await supabase
         .from('partner_applications')
         .update({ status: action })
@@ -144,8 +149,7 @@ const Admin = () => {
         const { data: locations } = await supabase
           .from('locations')
           .select('id')
-          .eq('owner_id', app.user_id)
-          .eq('name', app.company_name);
+          .eq('owner_id', app.user_id);
 
         if (locations && locations.length > 0) {
           await supabase
@@ -189,8 +193,7 @@ const Admin = () => {
         const { data: locations } = await supabase
           .from('locations')
           .select('id')
-          .eq('owner_id', app.user_id)
-          .eq('name', app.company_name);
+          .eq('owner_id', app.user_id);
 
         if (locations && locations.length > 0) {
           await supabase
@@ -224,6 +227,75 @@ const Admin = () => {
       setActionLoading(null);
     }
   };
+
+  async function handleBroadcast() {
+    setBroadcasting(true);
+    setBroadcastProgress('Загрузка пользователей...');
+    try {
+      let userIds: string[] = [];
+
+      if (broadcastTarget === 'all_partners') {
+        const { data } = await supabase.from('subscriptions').select('user_id');
+        userIds = (data || []).map(s => s.user_id);
+      } else if (broadcastTarget === 'pro_partners') {
+        const { data } = await supabase.from('subscriptions').select('user_id').in('plan', ['pro', 'enterprise']);
+        userIds = (data || []).map(s => s.user_id);
+      } else if (broadcastTarget === 'free_partners') {
+        const { data } = await supabase.from('subscriptions').select('user_id').eq('plan', 'free');
+        userIds = (data || []).map(s => s.user_id);
+      } else {
+        const { data } = await supabase.from('profiles').select('user_id');
+        userIds = (data || []).map(p => p.user_id);
+      }
+
+      if (userIds.length === 0) {
+        setBroadcastProgress('Нет пользователей для рассылки');
+        setBroadcasting(false);
+        return;
+      }
+
+      // Insert notifications in one batch
+      const notifications = userIds.map(uid => ({
+        user_id: uid,
+        title: broadcastTitle.trim(),
+        body: broadcastBody.trim(),
+        type: 'broadcast',
+      }));
+      await supabase.from('notifications').insert(notifications);
+
+      // Fetch telegram_chat_ids
+      const { data: profiles } = await supabase
+        .from('profiles')
+        .select('user_id, telegram_chat_id')
+        .in('user_id', userIds)
+        .not('telegram_chat_id', 'is', null);
+
+      const tgProfiles = (profiles || []).filter(p => p.telegram_chat_id);
+      setBroadcastProgress(`Отправка в Telegram (${tgProfiles.length})...`);
+
+      await Promise.allSettled(
+        tgProfiles.map(p =>
+          supabase.functions.invoke('telegram-notify', {
+            body: {
+              type: 'queue.notify',
+              chatId: p.telegram_chat_id,
+              text: `📢 <b>${broadcastTitle.trim()}</b>\n\n${broadcastBody.trim()}`,
+            },
+          })
+        )
+      );
+
+      setBroadcastProgress(`✅ Отправлено ${userIds.length} пользователям (${tgProfiles.length} в Telegram)`);
+      setBroadcastTitle('');
+      setBroadcastBody('');
+      toast({ title: '📢 Рассылка отправлена', description: `${userIds.length} пользователей` });
+    } catch (err: any) {
+      setBroadcastProgress(`❌ Ошибка: ${err.message}`);
+      toast({ title: 'Ошибка рассылки', description: err.message, variant: 'destructive' });
+    } finally {
+      setBroadcasting(false);
+    }
+  }
 
   if (authLoading || !adminChecked) return <div className="min-h-screen bg-background flex items-center justify-center text-muted-foreground">Загрузка...</div>;
 
@@ -497,73 +569,6 @@ const Admin = () => {
       </div>
     </div>
   );
-
-  async function handleBroadcast() {
-    setBroadcasting(true);
-    setBroadcastProgress('Загрузка пользователей...');
-    try {
-      let userIds: string[] = [];
-
-      if (broadcastTarget === 'all_partners') {
-        const { data } = await supabase.from('subscriptions').select('user_id');
-        userIds = (data || []).map(s => s.user_id);
-      } else if (broadcastTarget === 'pro_partners') {
-        const { data } = await supabase.from('subscriptions').select('user_id').in('plan', ['pro', 'enterprise']);
-        userIds = (data || []).map(s => s.user_id);
-      } else if (broadcastTarget === 'free_partners') {
-        const { data } = await supabase.from('subscriptions').select('user_id').eq('plan', 'free');
-        userIds = (data || []).map(s => s.user_id);
-      } else {
-        const { data } = await supabase.from('profiles').select('user_id');
-        userIds = (data || []).map(p => p.user_id);
-      }
-
-      if (userIds.length === 0) {
-        setBroadcastProgress('Нет пользователей для рассылки');
-        setBroadcasting(false);
-        return;
-      }
-
-      // Insert notifications in one batch
-      const notifications = userIds.map(uid => ({
-        user_id: uid,
-        title: broadcastTitle.trim(),
-        body: broadcastBody.trim(),
-        type: 'broadcast',
-      }));
-      await supabase.from('notifications').insert(notifications);
-
-      // Fetch telegram_chat_ids
-      const { data: profiles } = await supabase
-        .from('profiles')
-        .select('user_id, telegram_chat_id')
-        .in('user_id', userIds)
-        .not('telegram_chat_id', 'is', null);
-
-      const tgProfiles = (profiles || []).filter(p => p.telegram_chat_id);
-      setBroadcastProgress(`Отправка в Telegram (${tgProfiles.length})...`);
-
-      for (const p of tgProfiles) {
-        await supabase.functions.invoke('telegram-notify', {
-          body: {
-            type: 'queue.notify',
-            chatId: p.telegram_chat_id,
-            text: `📢 <b>${broadcastTitle.trim()}</b>\n\n${broadcastBody.trim()}`,
-          },
-        });
-      }
-
-      setBroadcastProgress(`✅ Отправлено ${userIds.length} пользователям (${tgProfiles.length} в Telegram)`);
-      setBroadcastTitle('');
-      setBroadcastBody('');
-      toast({ title: '📢 Рассылка отправлена', description: `${userIds.length} пользователей` });
-    } catch (err: any) {
-      setBroadcastProgress(`❌ Ошибка: ${err.message}`);
-      toast({ title: 'Ошибка рассылки', description: err.message, variant: 'destructive' });
-    } finally {
-      setBroadcasting(false);
-    }
-  }
 };
 
 const ApplicationList = ({ apps, onAction, actionLoading, showActions }: {
