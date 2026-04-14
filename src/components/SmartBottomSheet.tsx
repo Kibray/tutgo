@@ -12,8 +12,10 @@ import type { LocationItem } from '@/lib/types';
 
 type SheetState = 'peek' | 'half' | 'full';
 
+const BOTTOM_NAV_HEIGHT = 64;
+
 const HEIGHT_MAP: Record<SheetState, string> = {
-  peek: '80px',
+  peek: `${BOTTOM_NAV_HEIGHT + 44}px`,
   half: '52vh',
   full: '91vh',
 };
@@ -126,8 +128,8 @@ const SmartBottomSheet = ({
       onDragEnd={handleDragEnd}
       animate={{ height: HEIGHT_MAP[state], y: 0 }}
       transition={{ type: 'spring', stiffness: 320, damping: 32 }}
-      className="absolute bottom-0 left-0 right-0 z-[1000] bg-background/95 backdrop-blur-xl rounded-t-2xl border-t border-border"
-      style={{ touchAction: 'none', overflow: 'hidden' }}
+      className="absolute left-0 right-0 z-[1000] bg-background/95 backdrop-blur-xl rounded-t-2xl border-t border-border"
+      style={{ touchAction: 'none', overflow: 'hidden', bottom: `${BOTTOM_NAV_HEIGHT}px` }}
     >
       {/* Handle */}
       <div
