@@ -39,7 +39,7 @@ const Profile = () => {
 
   return (
     <div className="min-h-screen bg-background pb-24">
-      <div className="px-4 pt-6">
+      <div className="px-4 pt-6 max-w-lg mx-auto">
         <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="flex items-center gap-4 mb-6">
           <div className="w-14 h-14 rounded-full bg-primary/20 flex items-center justify-center">
             <User className="w-6 h-6 text-primary" />
