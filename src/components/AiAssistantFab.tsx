@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, X, Send, MapPin, CalendarPlus, Loader2 } from 'lucide-react';
+import { Sparkles, X, Send, MapPin, CalendarPlus, Loader2, Mic, MicOff } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import { supabase } from '@/integrations/supabase/client';
