@@ -128,8 +128,8 @@ const SmartBottomSheet = ({
       onDragEnd={handleDragEnd}
       animate={{ height: HEIGHT_MAP[state], y: 0 }}
       transition={{ type: 'spring', stiffness: 320, damping: 32 }}
-      className="absolute bottom-0 left-0 right-0 z-[1000] bg-background/95 backdrop-blur-xl rounded-t-2xl border-t border-border"
-      style={{ touchAction: 'none', overflow: 'hidden' }}
+      className="absolute left-0 right-0 z-[1000] bg-background/95 backdrop-blur-xl rounded-t-2xl border-t border-border"
+      style={{ touchAction: 'none', overflow: 'hidden', bottom: `${BOTTOM_NAV_HEIGHT}px` }}
     >
       {/* Handle */}
       <div
