@@ -12,8 +12,10 @@ import type { LocationItem } from '@/lib/types';
 
 type SheetState = 'peek' | 'half' | 'full';
 
+const BOTTOM_NAV_HEIGHT = 64;
+
 const HEIGHT_MAP: Record<SheetState, string> = {
-  peek: '80px',
+  peek: `${BOTTOM_NAV_HEIGHT + 44}px`,
   half: '52vh',
   full: '91vh',
 };
