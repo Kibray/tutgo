@@ -24,6 +24,14 @@ const PartnerLayout = ({ children, title, showBackToPartner = true, headerRight 
   const { pathname } = useLocation();
   const isDesktop = useIsDesktop();
   const { t } = usePreferences();
+  const { user, isPartner, loading } = useAuth();
+
+  useEffect(() => {
+    if (!loading && !user) navigate('/auth');
+    else if (!loading && user && !isPartner) navigate('/');
+  }, [loading, user, isPartner, navigate]);
+
+  if (loading) return null;
 
   const sidebarItems = [
     { id: '/partner', icon: LayoutDashboard, label: t('partner.dashboard') },
