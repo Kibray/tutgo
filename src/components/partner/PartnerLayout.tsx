@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import { ReactNode, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { useIsDesktop } from '@/hooks/useIsDesktop';
 import { usePreferences } from '@/hooks/usePreferences';
+import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import PartnerBottomNav from './PartnerBottomNav';
@@ -23,6 +24,14 @@ const PartnerLayout = ({ children, title, showBackToPartner = true, headerRight 
   const { pathname } = useLocation();
   const isDesktop = useIsDesktop();
   const { t } = usePreferences();
+  const { user, isPartner, loading } = useAuth();
+
+  useEffect(() => {
+    if (!loading && !user) navigate('/auth');
+    else if (!loading && user && !isPartner) navigate('/');
+  }, [loading, user, isPartner, navigate]);
+
+  if (loading) return null;
 
   const sidebarItems = [
     { id: '/partner', icon: LayoutDashboard, label: t('partner.dashboard') },
