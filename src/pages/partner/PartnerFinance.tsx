@@ -56,7 +56,7 @@ const PartnerFinance = () => {
   const monthAgo = new Date(now.getTime() - 30 * 86400000);
 
   const revenueToday = useMemo(() =>
-    appointments.filter(a => a.start_time.startsWith(todayStr)).reduce((s, a) => s + getPrice(a), 0),
+    appointments.filter(a => a.start_time?.startsWith(todayStr)).reduce((s, a) => s + getPrice(a), 0),
     [appointments, serviceMap]);
 
   const revenueWeek = useMemo(() =>
@@ -80,7 +80,7 @@ const PartnerFinance = () => {
       days[d.toISOString().split('T')[0]] = 0;
     }
     appointments.forEach(a => {
-      const day = a.start_time.split('T')[0];
+      const day = a.start_time?.split('T')[0];
       if (days[day] !== undefined) days[day] += getPrice(a);
     });
     return Object.entries(days).map(([date, revenue]) => ({
