@@ -83,6 +83,10 @@ const PartnerDeals = () => {
       toast({ title: 'Заполните название и выберите компанию', variant: 'destructive' });
       return;
     }
+    if (expiresAt && new Date(expiresAt) < new Date()) {
+      toast({ title: 'Дата окончания не может быть в прошлом', variant: 'destructive' });
+      return;
+    }
     setSaving(true);
     let imageUrl = editingDeal?.image_url || null;
     if (imageFile) {
