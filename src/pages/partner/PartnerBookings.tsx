@@ -137,14 +137,6 @@ const PartnerBookings = () => {
     const dayEnd = new Date(selectedDate);
     dayEnd.setHours(23, 59, 59, 999);
 
-    const { data: appts, error: apptsError } = await supabase
-      .from("appointments")
-      .select(
-        "id, staff_id, service_id, client_name, client_phone, start_time, end_time, status, service:services(name, price, currency)",
-      )
-      .in("location_id", locIds)
-      .gte("start_time", dayStart.toISOString())
-      .lte("start_time", dayEnd.toISOString());
     const { data: appts } = await supabase
       .from("appointments")
       .select(
