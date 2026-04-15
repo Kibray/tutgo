@@ -45,7 +45,7 @@ const PartnerReviews = () => {
     new Date(d).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
 
   return (
-    <PartnerLayout title="Отзывы">
+    <PartnerLayout title={t('partner.reviews')}>
       <div className="p-4 space-y-4">
         {loading ? (
           <div className="flex justify-center py-20">
