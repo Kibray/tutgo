@@ -46,7 +46,7 @@ const PartnerLayout = ({ children, title, showBackToPartner = true, headerRight 
     { id: '/partner/menu', icon: UtensilsCrossed, label: t('partner.menu') },
     { id: '/partner/orders', icon: ClipboardList, label: t('partner.orders') },
     { id: '/partner/tables', icon: ShoppingBag, label: t('partner.tables') },
-    { id: '/partner/reviews', icon: Star, label: 'Отзывы' },
+    { id: '/partner/reviews', icon: Star, label: t('partner.reviews') },
     { id: '/partner/settings', icon: Building2, label: t('partner.company_profile') },
   ];
 

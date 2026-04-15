@@ -1,11 +1,13 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Star, Loader2 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
+import { usePreferences } from '@/hooks/usePreferences';
 import { supabase } from '@/integrations/supabase/client';
 import PartnerLayout from '@/components/partner/PartnerLayout';
 
 const PartnerReviews = () => {
   const { user } = useAuth();
+  const { t } = usePreferences();
   const [loading, setLoading] = useState(true);
   const [reviews, setReviews] = useState<any[]>([]);
   const [locations, setLocations] = useState<{ id: string; name: string }[]>([]);
@@ -45,7 +47,7 @@ const PartnerReviews = () => {
     new Date(d).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
 
   return (
-    <PartnerLayout title="Отзывы">
+    <PartnerLayout title={t('partner.reviews')}>
       <div className="p-4 space-y-4">
         {loading ? (
           <div className="flex justify-center py-20">
