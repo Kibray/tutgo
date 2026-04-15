@@ -231,11 +231,9 @@ const Tours = () => {
       <div className="sticky top-0 z-30 bg-background/80 backdrop-blur-xl border-b border-border/50 px-4 py-3">
         <div className="flex items-center justify-between max-w-5xl mx-auto">
           <div className="flex items-center gap-2">
-            {!isDesktop && (
-              <button onClick={() => navigate(-1)}>
-                <ChevronLeft className="w-5 h-5 text-muted-foreground" />
-              </button>
-            )}
+            <button onClick={() => navigate(-1)}>
+              <ChevronLeft className="w-5 h-5 text-muted-foreground" />
+            </button>
             <h1 className="text-xl font-bold font-[Syne] text-foreground">🌍 Туры</h1>
           </div>
           <div className="flex items-center gap-1.5">
