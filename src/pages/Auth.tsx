@@ -277,6 +277,10 @@ const Auth = () => {
             onChange={(e) => setPassword(e.target.value)}
             className="w-full glass rounded-lg px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground outline-none border border-border focus:border-primary transition-colors"
           />
+          <button type="button" onClick={() => setShowReset(true)}
+            className="text-xs text-muted-foreground underline mt-1 self-start">
+            Забыли пароль?
+          </button>
           {!isLogin && (
             <div className="pt-1">
               <label className="flex items-start gap-2.5 cursor-pointer">
