@@ -27,6 +27,8 @@ const Auth = () => {
   const [phoneCountry, setPhoneCountry] = useState<Country>(COUNTRIES[0]);
   const [phoneNumber, setPhoneNumber] = useState('');
   const [fullPhone, setFullPhone] = useState('');
+  const [showReset, setShowReset] = useState(false);
+  const [resetEmail, setResetEmail] = useState('');
   const { signUp, signIn, user } = useAuth();
   const { t } = usePreferences();
   const { isTelegram, ready: tgReady } = useTelegram();
@@ -74,9 +76,16 @@ const Auth = () => {
     setLoading(false);
   };
 
-  const handleTelegramLogin = () => {
-    window.open('https://t.me/TutGoUzBot?start=auth', '_blank');
-    setTelegramStep('waiting_code');
+  const handleResetPassword = async () => {
+    const { error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
+      redirectTo: `${window.location.origin}/auth`,
+    });
+    if (error) {
+      toast({ title: 'Ошибка', description: error.message, variant: 'destructive' });
+    } else {
+      toast({ title: 'Ссылка отправлена', description: 'Проверьте вашу почту' });
+      setShowReset(false);
+    }
   };
 
   const handlePhoneLogin = () => {
