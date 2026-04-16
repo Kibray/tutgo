@@ -27,6 +27,8 @@ const Auth = () => {
   const [phoneCountry, setPhoneCountry] = useState<Country>(COUNTRIES[0]);
   const [phoneNumber, setPhoneNumber] = useState('');
   const [fullPhone, setFullPhone] = useState('');
+  const [showReset, setShowReset] = useState(false);
+  const [resetEmail, setResetEmail] = useState('');
   const { signUp, signIn, user } = useAuth();
   const { t } = usePreferences();
   const { isTelegram, ready: tgReady } = useTelegram();
@@ -72,6 +74,18 @@ const Auth = () => {
       }
     }
     setLoading(false);
+  };
+
+  const handleResetPassword = async () => {
+    const { error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
+      redirectTo: `${window.location.origin}/auth`,
+    });
+    if (error) {
+      toast({ title: 'Ошибка', description: error.message, variant: 'destructive' });
+    } else {
+      toast({ title: 'Ссылка отправлена', description: 'Проверьте вашу почту' });
+      setShowReset(false);
+    }
   };
 
   const handleTelegramLogin = () => {
@@ -263,6 +277,10 @@ const Auth = () => {
             onChange={(e) => setPassword(e.target.value)}
             className="w-full glass rounded-lg px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground outline-none border border-border focus:border-primary transition-colors"
           />
+          <button type="button" onClick={() => setShowReset(true)}
+            className="text-xs text-muted-foreground underline mt-1 self-start">
+            Забыли пароль?
+          </button>
           {!isLogin && (
             <div className="pt-1">
               <label className="flex items-start gap-2.5 cursor-pointer">
@@ -296,6 +314,27 @@ const Auth = () => {
             {loading ? '...' : isLogin ? t('btn.sign_in') : t('btn.register')}
           </motion.button>
         </form>
+
+        {showReset && (
+          <div className="mt-4 space-y-3">
+            <p className="text-sm font-medium">Восстановление пароля</p>
+            <input
+              type="email"
+              placeholder="Ваш email"
+              value={resetEmail}
+              onChange={e => setResetEmail(e.target.value)}
+              className="w-full h-10 rounded-lg border border-input bg-background px-3 text-sm"
+            />
+            <button onClick={handleResetPassword}
+              className="w-full py-2 rounded-xl bg-primary text-primary-foreground text-sm font-semibold">
+              Отправить ссылку
+            </button>
+            <button onClick={() => setShowReset(false)}
+              className="w-full py-2 rounded-xl bg-muted text-muted-foreground text-sm">
+              Отмена
+            </button>
+          </div>
+        )}
 
         <div className="flex items-center gap-3 my-5">
           <div className="flex-1 h-px bg-border" />
