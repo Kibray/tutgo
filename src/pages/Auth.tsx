@@ -88,6 +88,11 @@ const Auth = () => {
     }
   };
 
+  const handleTelegramLogin = () => {
+    window.open('https://t.me/TutGoUzBot?start=auth', '_blank');
+    setTelegramStep('waiting_code');
+  };
+
   const handlePhoneLogin = () => {
     const full = phoneCountry.dial + phoneNumber.replace(/\s/g, '');
     setFullPhone(full);
