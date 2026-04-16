@@ -4,12 +4,14 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { usePreferences } from '@/hooks/usePreferences';
+import { useToast } from '@/hooks/use-toast';
 import BottomNav from '@/components/BottomNav';
 import { Button } from '@/components/ui/button';
 
 const Reviews = () => {
   const { user, loading: authLoading } = useAuth();
   const { t } = usePreferences();
+  const { toast } = useToast();
   const navigate = useNavigate();
   const [reviews, setReviews] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -23,7 +25,7 @@ const Reviews = () => {
         .select('*, locations(name, business_type, branded_icon_url, gallery)')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false });
-      if (error) console.error('Reviews fetch error', error);
+      if (error) toast({ title: 'Ошибка загрузки отзывов', description: error.message, variant: 'destructive' });
       setReviews(data || []);
       setLoading(false);
     };

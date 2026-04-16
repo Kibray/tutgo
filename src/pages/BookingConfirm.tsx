@@ -63,16 +63,13 @@ const BookingConfirm = () => {
       status: 'pending',
     };
 
-    console.log('Creating appointment:', insertData);
-
     const { data, error } = await supabase.from('appointments').insert(insertData).select();
 
     setSaving(false);
     if (error) {
-      console.error('Appointment insert error:', error);
+      toast({ title: 'Ошибка при создании записи', description: error.message, variant: 'destructive' });
       toast({ title: t('common.error'), description: error.message.includes('Double booking') ? t('booking.time_taken') : error.message, variant: 'destructive' });
     } else {
-      console.log('Appointment created successfully:', data);
       setConfirmed(true);
       toast({ title: t('booking.created') });
     }
