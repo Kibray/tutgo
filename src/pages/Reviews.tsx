@@ -25,7 +25,7 @@ const Reviews = () => {
         .select('*, locations(name, business_type, branded_icon_url, gallery)')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false });
-      if (error) console.error('Reviews fetch error', error);
+      if (error) toast({ title: 'Ошибка загрузки отзывов', description: error.message, variant: 'destructive' });
       setReviews(data || []);
       setLoading(false);
     };
