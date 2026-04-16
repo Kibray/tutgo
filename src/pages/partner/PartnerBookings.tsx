@@ -156,8 +156,13 @@ const PartnerBookings = () => {
   useEffect(() => {
     if (!user || locations.length === 0) return;
     const channel = supabase
-      .channel("partner-appointments")
-      .on("postgres_changes", { event: "*", schema: "public", table: "appointments" }, () => fetchData())
+      .channel(`partner-appointments-${user.id}`)
+      .on("postgres_changes", {
+        event: "*",
+        schema: "public",
+        table: "appointments",
+        filter: `location_id=in.(${locations.join(",")})`,
+      }, () => fetchData())
       .subscribe();
     return () => {
       supabase.removeChannel(channel);
