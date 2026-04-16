@@ -27,6 +27,7 @@ const PartnerDeals = () => {
   const [selectedLocation, setSelectedLocation] = useState('');
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
 
   const fetchData = async () => {
     if (!user) return;
@@ -175,9 +176,27 @@ const PartnerDeals = () => {
                         )}
                         <Switch checked={deal.is_active} onCheckedChange={() => handleToggleActive(deal)} />
                       </div>
-                      <div className="flex items-center gap-1">
-                        <button onClick={() => openEditForm(deal)} className="p-1.5 rounded-md hover:bg-secondary"><Edit className="w-3.5 h-3.5 text-muted-foreground" /></button>
-                        <button onClick={() => handleDelete(deal.id)} className="p-1.5 rounded-md hover:bg-secondary"><Trash2 className="w-3.5 h-3.5 text-destructive" /></button>
+                      <div className="flex flex-col items-end gap-1">
+                        <div className="flex items-center gap-1">
+                          <button onClick={() => openEditForm(deal)} className="p-1.5 rounded-md hover:bg-secondary"><Edit className="w-3.5 h-3.5 text-muted-foreground" /></button>
+                          <button onClick={() => setDeleteConfirmId(deal.id)} className="p-1.5 rounded-md hover:bg-secondary"><Trash2 className="w-3.5 h-3.5 text-destructive" /></button>
+                        </div>
+                        {deleteConfirmId === deal.id && (
+                          <div className="flex gap-1 mt-1">
+                            <button
+                              onClick={() => { handleDelete(deal.id); setDeleteConfirmId(null); }}
+                              className="px-2 py-1 rounded-lg bg-destructive text-destructive-foreground text-[10px] font-bold"
+                            >
+                              Удалить
+                            </button>
+                            <button
+                              onClick={() => setDeleteConfirmId(null)}
+                              className="px-2 py-1 rounded-lg bg-muted text-muted-foreground text-[10px]"
+                            >
+                              Отмена
+                            </button>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
