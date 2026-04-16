@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button';
 const Reviews = () => {
   const { user, loading: authLoading } = useAuth();
   const { t } = usePreferences();
+  const { toast } = useToast();
   const navigate = useNavigate();
   const [reviews, setReviews] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
