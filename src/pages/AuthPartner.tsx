@@ -22,6 +22,8 @@ const AuthPartner = () => {
   const [telegramStep, setTelegramStep] = useState<'idle' | 'waiting_code'>('idle');
   const [telegramCode, setTelegramCode] = useState('');
   const [telegramLoading, setTelegramLoading] = useState(false);
+  const [showReset, setShowReset] = useState(false);
+  const [resetEmail, setResetEmail] = useState('');
   const { signUp, user } = useAuth();
   const { t } = usePreferences();
   const { isTelegram, ready: tgReady } = useTelegram();
@@ -49,6 +51,18 @@ const AuthPartner = () => {
       setConfirmationSent(true);
     }
     setLoading(false);
+  };
+
+  const handleResetPassword = async () => {
+    const { error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
+      redirectTo: `${window.location.origin}/auth`,
+    });
+    if (error) {
+      toast({ title: 'Ошибка', description: error.message, variant: 'destructive' });
+    } else {
+      toast({ title: 'Ссылка отправлена', description: 'Проверьте вашу почту' });
+      setShowReset(false);
+    }
   };
 
   const handleTelegramLogin = () => {

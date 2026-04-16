@@ -315,6 +315,27 @@ const Auth = () => {
           </motion.button>
         </form>
 
+        {showReset && (
+          <div className="mt-4 space-y-3">
+            <p className="text-sm font-medium">Восстановление пароля</p>
+            <input
+              type="email"
+              placeholder="Ваш email"
+              value={resetEmail}
+              onChange={e => setResetEmail(e.target.value)}
+              className="w-full h-10 rounded-lg border border-input bg-background px-3 text-sm"
+            />
+            <button onClick={handleResetPassword}
+              className="w-full py-2 rounded-xl bg-primary text-primary-foreground text-sm font-semibold">
+              Отправить ссылку
+            </button>
+            <button onClick={() => setShowReset(false)}
+              className="w-full py-2 rounded-xl bg-muted text-muted-foreground text-sm">
+              Отмена
+            </button>
+          </div>
+        )}
+
         <div className="flex items-center gap-3 my-5">
           <div className="flex-1 h-px bg-border" />
           <span className="text-xs text-muted-foreground">{t('auth.or')}</span>
