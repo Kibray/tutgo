@@ -79,23 +79,28 @@ export async function findDemoUserId(log: LogFn): Promise<string | null> {
   return null;
 }
 
+const DEMO_LOCATION_NAME = 'TutGo Demo Барбершоп';
+
 async function ensureLocation(userId: string, log: LogFn): Promise<string | null> {
   const { data: existing } = await supabase
     .from('locations')
     .select('id, name')
     .eq('owner_id', userId)
+    .eq('name', DEMO_LOCATION_NAME)
     .limit(1)
     .maybeSingle();
 
   if (existing?.id) {
-    log(`✅ Используем существующий бизнес: ${existing.name}`);
+    log(`✅ Используем существующий бизнес: ${existing.name} (${existing.id})`);
     return existing.id;
   }
+
+  log(`ℹ️ Демо-бизнес "${DEMO_LOCATION_NAME}" не найден — создаю новый...`);
 
   const { data, error } = await supabase
     .from('locations')
     .insert({
-      name: 'TutGo Demo Барбершоп',
+      name: DEMO_LOCATION_NAME,
       business_type: 'service',
       sub_category: 'barbershop',
       address: 'Ташкент, ул. Амира Темура 15',
@@ -116,7 +121,7 @@ async function ensureLocation(userId: string, log: LogFn): Promise<string | null
     log(`❌ Ошибка создания бизнеса: ${error.message}`);
     return null;
   }
-  log(`✅ Создан бизнес: TutGo Demo Барбершоп`);
+  log(`✅ Создан бизнес: ${DEMO_LOCATION_NAME} (${data.id})`);
   return data.id;
 }
 
