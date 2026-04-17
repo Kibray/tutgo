@@ -317,10 +317,14 @@ async function ensureDeals(locationId: string, log: LogFn) {
     return;
   }
 
+  const in60 = new Date(); in60.setDate(in60.getDate() + 60);
+  const in90 = new Date(); in90.setDate(in90.getDate() + 90);
+  const in30 = new Date(); in30.setDate(in30.getDate() + 30);
+
   const deals = [
-    { location_id: locationId, title: 'Скидка 20% на первый визит', discount_percent: 20, is_active: true, expires_at: '2025-12-31T00:00:00Z' },
-    { location_id: locationId, title: 'Комбо: стрижка + борода', discount_percent: 15, is_active: true, expires_at: '2025-11-30T00:00:00Z' },
-    { location_id: locationId, title: 'Детский день — скидка 30%', discount_percent: 30, is_active: false, expires_at: '2025-06-01T00:00:00Z' },
+    { location_id: locationId, title: 'Скидка 20% на первый визит', discount_percent: 20, is_active: true, expires_at: in90.toISOString() },
+    { location_id: locationId, title: 'Комбо: стрижка + борода', discount_percent: 15, is_active: true, expires_at: in60.toISOString() },
+    { location_id: locationId, title: 'Детский день — скидка 30%', discount_percent: 30, is_active: true, expires_at: in30.toISOString() },
   ];
   const { error } = await supabase.from('deals').insert(deals);
   if (error) {
