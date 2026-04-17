@@ -50,7 +50,7 @@ const SeedDemo = () => {
         {needsConfirm && (
           <div className="rounded-xl border border-border bg-card p-4 mb-4">
             <div className="flex items-start gap-3">
-              <AlertTriangle className="w-5 h-5 text-yellow-500 shrink-0 mt-0.5" />
+              <AlertTriangle className="w-5 h-5 text-destructive shrink-0 mt-0.5" />
               <div className="flex-1">
                 <p className="font-medium">Данные уже есть ({existingCount} записей)</p>
                 <p className="text-sm text-muted-foreground mt-1">
