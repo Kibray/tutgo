@@ -39,6 +39,7 @@ const ServiceDetail = () => {
   const [reviews, setReviews] = useState<any[]>([]);
   const [bookedSeats, setBookedSeats] = useState<Record<string, number>>({});
   const [bookedSlots, setBookedSlots] = useState<Set<string>>(new Set());
+  const [slotsLoading, setSlotsLoading] = useState(false);
   const [loading, setLoading] = useState(true);
   const [selectedDate, setSelectedDate] = useState(0);
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
@@ -144,6 +145,7 @@ const ServiceDetail = () => {
   useEffect(() => {
     const fetchBooked = async () => {
       if (!selectedStaff || !id) { setBookedSlots(new Set()); return; }
+      setSlotsLoading(true);
       const date = dates[selectedDate];
       const dateStr = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
       const dayStart = `${dateStr}T00:00:00`;
@@ -166,6 +168,7 @@ const ServiceDetail = () => {
         }
       });
       setBookedSlots(taken);
+      setSlotsLoading(false);
     };
     fetchBooked();
   }, [selectedStaff, selectedDate, id, dates]);
@@ -744,27 +747,39 @@ const ServiceDetail = () => {
                   </div>
                   <h3 className="text-sm font-semibold text-foreground mt-4 mb-3">Выберите время</h3>
                   <div className="grid grid-cols-4 gap-2">
-                    {timeSlots.map((slot) => {
-                      const isSelected = selectedSlot === slot.time;
-                      const isUnavailable = !slot.available;
-                      return (
-                        <motion.button
-                          key={slot.id}
-                          whileTap={isUnavailable ? undefined : { scale: 0.95 }}
-                          onClick={() => { if (!isUnavailable) setSelectedSlot(slot.time); }}
-                          disabled={isUnavailable}
-                          className={`py-2.5 rounded-md text-xs font-medium transition-colors ${
-                            isUnavailable
-                              ? 'glass text-muted-foreground line-through opacity-40 cursor-not-allowed'
-                              : isSelected
-                              ? 'bg-primary text-accent-foreground glow-green-sm'
-                              : 'glass text-foreground hover:bg-secondary'
-                          }`}
-                        >
-                          {slot.time}
-                        </motion.button>
-                      );
-                    })}
+                    {slotsLoading ? (
+                      Array.from({ length: 8 }).map((_, i) => (
+                        <div key={i} className="py-2.5 rounded-md bg-muted animate-pulse h-9" />
+                      ))
+                    ) : timeSlots.length === 0 ? (
+                      <p className="col-span-4 text-xs text-muted-foreground text-center py-4">
+                        На этот день нет доступного времени, попробуйте другую дату
+                      </p>
+                    ) : (
+                      timeSlots.map((slot) => {
+                        const isSelected = selectedSlot === slot.time;
+                        const isUnavailable = !slot.available;
+                        return (
+                          <motion.button
+                            key={slot.id}
+                            whileTap={isUnavailable ? undefined : { scale: 0.95 }}
+                            onClick={() => { if (!isUnavailable) setSelectedSlot(slot.time); }}
+                            disabled={isUnavailable}
+                            title={isUnavailable ? 'Занято' : undefined}
+                            className={`py-2.5 rounded-md text-xs font-medium transition-colors flex items-center justify-center gap-1 ${
+                              isUnavailable
+                                ? 'bg-muted text-muted-foreground line-through cursor-not-allowed'
+                                : isSelected
+                                ? 'bg-primary text-accent-foreground glow-green-sm'
+                                : 'glass text-foreground hover:bg-secondary'
+                            }`}
+                          >
+                            {isUnavailable && <span className="text-[10px]">🔒</span>}
+                            {slot.time}
+                          </motion.button>
+                        );
+                      })
+                    )}
                   </div>
                 </motion.div>
               )}
