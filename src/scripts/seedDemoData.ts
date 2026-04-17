@@ -303,7 +303,7 @@ async function seedAppointmentsViaRpc(
     log(`  ✓ Чанк ${Math.floor(i / CHUNK) + 1}: вставлено ${result.inserted}`);
   }
 
-  log(`✅ Итого создано записей: ${totalInserted} (за период март–август 2025)`);
+  log(`✅ Итого создано записей: ${totalInserted} (окно ±${DAYS_BACK}/${DAYS_FORWARD} дней от сегодня)`);
   return { ok: true, totalInserted, totalDeleted };
 }
 
