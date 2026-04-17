@@ -200,6 +200,45 @@ const ServiceDetail = () => {
     });
   };
 
+  // Wizard step helpers
+  const hasServices = services.length > 0;
+  const hasStaff = staffList.length > 0;
+  const serviceStepDone = !hasServices || !!selectedService;
+  const staffStepDone = !hasStaff || !!selectedStaff;
+  const dateTimeStepDone = !!selectedSlot;
+  const allStepsDone = serviceStepDone && staffStepDone && dateTimeStepDone;
+
+  const handleSelectService = (svcId: string) => {
+    setSelectedService(svcId);
+    setSelectedStaff(null);
+    setSelectedSlot(null);
+  };
+  const handleSelectStaff = (staffId: string) => {
+    setSelectedStaff(staffId);
+    setSelectedSlot(null);
+  };
+  const handleSelectDate = (i: number) => {
+    setSelectedDate(i);
+    setSelectedSlot(null);
+  };
+
+  const ctaLabel = !serviceStepDone
+    ? 'Выберите услугу'
+    : !staffStepDone
+    ? 'Выберите специалиста'
+    : !dateTimeStepDone
+    ? 'Выберите дату и время'
+    : 'Записаться →';
+
+  const selectedServiceObj = services.find(s => s.id === selectedService);
+  const selectedStaffObj = staffList.find(s => s.id === selectedStaff);
+  const selectedDateObj = dates[selectedDate];
+  const summaryParts = [
+    selectedServiceObj?.name,
+    selectedStaffObj?.full_name,
+    selectedDateObj ? `${selectedDateObj.toLocaleDateString('ru', { day: 'numeric', month: 'short' })}, ${selectedSlot}` : null,
+  ].filter(Boolean);
+
   const handleCopyAddress = () => { copyAddress(fullAddress); toast({ title: 'Адрес скопирован', description: fullAddress }); };
   const handleShare = () => {
     const text = `${location.name}\n${fullAddress}\n${(location.price_from || 0) > 0 ? `от ${formatPrice(location.price_from!)} ${location.currency}` : ''}`;
