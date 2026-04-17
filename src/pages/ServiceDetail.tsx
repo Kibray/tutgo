@@ -638,57 +638,150 @@ const ServiceDetail = () => {
         </div>
       )}
 
-      {/* Booking (non-cafe) */}
+      {/* Booking (non-cafe) - Wizard */}
       {isBookable && !isCafe && location.verified && (
         <>
-          <div className="px-4 mt-4">
-            <h3 className="text-sm font-semibold text-foreground mb-3">Выберите дату</h3>
-            <div className="flex gap-2 overflow-x-auto scrollbar-hide -mx-4 px-4 pb-1">
-              {dates.map((date, i) => <DateChip key={i} date={date} active={selectedDate === i} onClick={() => setSelectedDate(i)} />)}
+          <div className="px-4 mt-6">
+            {/* Progress chips */}
+            <div className="flex flex-wrap gap-2 mb-4">
+              {hasServices && (
+                <span className={`text-[11px] px-2.5 py-1 rounded-full font-medium transition-colors ${
+                  serviceStepDone ? 'bg-primary/15 text-primary' : 'bg-secondary text-muted-foreground'
+                }`}>
+                  1. Услуга {serviceStepDone && '✓'}
+                </span>
+              )}
+              {hasStaff && (
+                <span className={`text-[11px] px-2.5 py-1 rounded-full font-medium transition-colors ${
+                  staffStepDone && !!selectedStaff ? 'bg-primary/15 text-primary' : 'bg-secondary text-muted-foreground'
+                }`}>
+                  {hasServices ? 2 : 1}. Специалист {staffStepDone && !!selectedStaff && '✓'}
+                </span>
+              )}
+              <span className={`text-[11px] px-2.5 py-1 rounded-full font-medium transition-colors ${
+                dateTimeStepDone ? 'bg-primary/15 text-primary' : 'bg-secondary text-muted-foreground'
+              }`}>
+                {(hasServices ? 1 : 0) + (hasStaff ? 1 : 0) + 1}. Дата и время {dateTimeStepDone && '✓'}
+              </span>
             </div>
-          </div>
-          <div className="px-4 mt-4">
-            <h3 className="text-sm font-semibold text-foreground mb-3">Выберите время</h3>
-            <div className="grid grid-cols-4 gap-2">
-              {timeSlots.map((slot) => (
-                <motion.button key={slot.id} whileTap={{ scale: 0.95 }} onClick={() => setSelectedSlot(slot.time)}
-                  className={`py-2.5 rounded-md text-xs font-medium transition-colors ${
-                    selectedSlot === slot.time ? 'bg-primary text-accent-foreground glow-green-sm'
-                    : 'glass text-foreground hover:bg-secondary'
-                  }`}>{slot.time}</motion.button>
-              ))}
-            </div>
-          </div>
-          {staffList.length > 0 && (
-            <div className="px-4 mt-4">
-              <h3 className="text-sm font-semibold text-foreground mb-3">Выберите специалиста</h3>
-              <div className="space-y-2">
-                {staffList.map((s: any) => (
-                  <motion.button key={s.id} whileTap={{ scale: 0.98 }} onClick={() => setSelectedStaff(s.id)}
-                    className={`w-full glass rounded-lg p-3 flex items-center gap-3 transition-colors ${selectedStaff === s.id ? 'ring-1 ring-primary glow-green-sm' : ''}`}>
-                    <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center text-sm font-medium text-foreground">{s.full_name?.charAt(0)}</div>
-                    <div className="flex-1 text-left">
-                      <p className="text-sm font-medium text-foreground">{s.full_name}</p>
-                      <div className="flex items-center gap-2">
-                        <p className="text-xs text-muted-foreground">{(s.specialties || []).join(', ')}</p>
-                        {staffRatings[s.id] && (
-                          <span className="flex items-center gap-0.5 text-[10px] text-muted-foreground">
-                            <Star className="w-3 h-3 text-primary fill-primary" />{staffRatings[s.id]}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                    <ChevronRight className="w-4 h-4 text-muted-foreground" />
-                  </motion.button>
-                ))}
+
+            {/* Step 1 — Service */}
+            {hasServices && (
+              <div className="mb-4">
+                <h3 className="text-sm font-semibold text-foreground mb-3">Выберите услугу</h3>
+                <div className="space-y-2">
+                  {services.map((svc) => {
+                    const meta = svc.metadata || {};
+                    const isTour = location.business_type === 'tour';
+                    return (
+                      <motion.button key={svc.id} whileTap={{ scale: 0.98 }} onClick={() => handleSelectService(svc.id)}
+                        className={`w-full glass rounded-lg p-3 text-left transition-colors ${selectedService === svc.id ? 'ring-1 ring-primary glow-green-sm' : ''}`}>
+                        <div className="flex items-center justify-between">
+                          <p className="text-sm font-medium text-foreground">{svc.name}</p>
+                          <span className="text-sm font-bold text-gradient-green">{formatPrice(svc.price)} {svc.currency}</span>
+                        </div>
+                        <p className="text-xs text-muted-foreground flex items-center gap-1 mt-0.5">
+                          {isTour && meta.duration_days ? (
+                            <><CalendarDays className="w-3 h-3" />{meta.duration_days} {meta.duration_days === 1 ? 'день' : meta.duration_days < 5 ? 'дня' : 'дней'}</>
+                          ) : (
+                            <><Clock className="w-3 h-3" />{svc.duration_minutes} мин</>
+                          )}
+                        </p>
+                      </motion.button>
+                    );
+                  })}
+                </div>
               </div>
-            </div>
-          )}
+            )}
+
+            {/* Step 2 — Staff */}
+            <AnimatePresence>
+              {hasStaff && serviceStepDone && (
+                <motion.div
+                  key="staff-step"
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 8 }}
+                  className="mb-4"
+                >
+                  <h3 className="text-sm font-semibold text-foreground mb-3">Выберите специалиста</h3>
+                  <div className="space-y-2">
+                    {staffList.map((s: any) => (
+                      <motion.button key={s.id} whileTap={{ scale: 0.98 }} onClick={() => handleSelectStaff(s.id)}
+                        className={`w-full glass rounded-lg p-3 flex items-center gap-3 transition-colors ${selectedStaff === s.id ? 'ring-1 ring-primary glow-green-sm' : ''}`}>
+                        <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center text-sm font-medium text-foreground">{s.full_name?.charAt(0)}</div>
+                        <div className="flex-1 text-left">
+                          <p className="text-sm font-medium text-foreground">{s.full_name}</p>
+                          <div className="flex items-center gap-2">
+                            <p className="text-xs text-muted-foreground">{(s.specialties || []).join(', ')}</p>
+                            {staffRatings[s.id] && (
+                              <span className="flex items-center gap-0.5 text-[10px] text-muted-foreground">
+                                <Star className="w-3 h-3 text-primary fill-primary" />{staffRatings[s.id]}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                      </motion.button>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* Step 3 — Date + Time */}
+            <AnimatePresence>
+              {serviceStepDone && staffStepDone && (
+                <motion.div
+                  key="datetime-step"
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 8 }}
+                >
+                  <h3 className="text-sm font-semibold text-foreground mb-3">Выберите дату</h3>
+                  <div className="flex gap-2 overflow-x-auto scrollbar-hide -mx-4 px-4 pb-1">
+                    {dates.map((date, i) => <DateChip key={i} date={date} active={selectedDate === i} onClick={() => handleSelectDate(i)} />)}
+                  </div>
+                  <h3 className="text-sm font-semibold text-foreground mt-4 mb-3">Выберите время</h3>
+                  <div className="grid grid-cols-4 gap-2">
+                    {timeSlots.map((slot) => {
+                      const isSelected = selectedSlot === slot.time;
+                      const isUnavailable = !slot.available;
+                      return (
+                        <motion.button
+                          key={slot.id}
+                          whileTap={isUnavailable ? undefined : { scale: 0.95 }}
+                          onClick={() => { if (!isUnavailable) setSelectedSlot(slot.time); }}
+                          disabled={isUnavailable}
+                          className={`py-2.5 rounded-md text-xs font-medium transition-colors ${
+                            isUnavailable
+                              ? 'glass text-muted-foreground line-through opacity-40 cursor-not-allowed'
+                              : isSelected
+                              ? 'bg-primary text-accent-foreground glow-green-sm'
+                              : 'glass text-foreground hover:bg-secondary'
+                          }`}
+                        >
+                          {slot.time}
+                        </motion.button>
+                      );
+                    })}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+
+          {/* Fixed CTA */}
           <div className="fixed bottom-16 left-0 right-0 px-4 py-3 glass-strong z-40">
-            <motion.button whileTap={{ scale: 0.98 }} onClick={handleBook} disabled={!selectedSlot}
+            {allStepsDone && summaryParts.length > 0 && (
+              <p className="text-[11px] text-muted-foreground text-center mb-2 truncate">
+                {summaryParts.join(' · ')}
+              </p>
+            )}
+            <motion.button whileTap={allStepsDone ? { scale: 0.98 } : undefined} onClick={handleBook} disabled={!allStepsDone}
               className={`w-full py-3.5 rounded-lg font-semibold text-sm transition-all ${
-                selectedSlot ? 'bg-primary text-accent-foreground glow-green' : 'bg-muted text-muted-foreground cursor-not-allowed'
-              }`}>Записаться</motion.button>
+                allStepsDone ? 'bg-primary text-accent-foreground glow-green' : 'bg-muted text-muted-foreground cursor-not-allowed'
+              }`}>{ctaLabel}</motion.button>
           </div>
         </>
       )}
