@@ -34,7 +34,7 @@ const Bookings = () => {
       .select('*, locations(*), services(*), staff(*)')
       .eq('client_user_id', user.id)
       .order('start_time', { ascending: true });
-    
+    if (error) toast({ title: 'Ошибка загрузки записей', description: error.message, variant: 'destructive' });
     setAppointments(data || []);
     setLoading(false);
 
