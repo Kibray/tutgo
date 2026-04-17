@@ -1,8 +1,8 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Check, Calendar, Clock, MapPin, User, Loader2 } from 'lucide-react';
-import { formatPrice } from '@/lib/types';
+import { Check, Calendar, Clock, MapPin, User, Loader2, CalendarDays, Share2, Navigation } from 'lucide-react';
+import { formatPrice, openDirections } from '@/lib/types';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { usePreferences } from '@/hooks/usePreferences';
