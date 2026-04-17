@@ -109,6 +109,18 @@ const PartnerAnalytics = () => {
             </motion.div>
           ))}
         </div>
+        <div className="mt-4">
+          <p className="text-sm font-medium text-foreground mb-2">Динамика за 30 дней</p>
+          <ResponsiveContainer width="100%" height={180}>
+            <AreaChart data={chartData}>
+              <XAxis dataKey="date" tick={{ fontSize: 10 }} tickLine={false} axisLine={false} />
+              <YAxis hide />
+              <Tooltip />
+              <Area type="monotone" dataKey="count" stroke="hsl(var(--primary))"
+                fill="hsl(var(--primary) / 0.1)" strokeWidth={2} />
+            </AreaChart>
+          </ResponsiveContainer>
+        </div>
       </div>
     </PartnerLayout>
   );
