@@ -62,6 +62,23 @@ const PartnerAnalytics = () => {
       .reduce((sum, a) => sum + (serviceMap[a.service_id] || 0), 0),
   [appointments, serviceMap]);
 
+  const chartData = useMemo(() => {
+    const days: Record<string, number> = {};
+    for (let i = 29; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      days[d.toISOString().split('T')[0]] = 0;
+    }
+    appointments.forEach(a => {
+      const day = a.start_time?.split('T')[0];
+      if (day && days[day] !== undefined) days[day]++;
+    });
+    return Object.entries(days).map(([date, count]) => ({
+      date: date.slice(5),
+      count,
+    }));
+  }, [appointments]);
+
   const stats = [
     { icon: CalendarCheck, label: t('partner.stat_bookings'), value: String(bookingsMonth) },
     { icon: CalendarDays, label: 'Сегодня', value: String(bookingsToday) },
