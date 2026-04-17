@@ -100,7 +100,7 @@ async function ensureLocation(userId: string, log: LogFn): Promise<string | null
   const { data, error } = await supabase
     .from('locations')
     .insert({
-      name: 'TutGo Demo Барбершоп',
+      name: DEMO_LOCATION_NAME,
       business_type: 'service',
       sub_category: 'barbershop',
       address: 'Ташкент, ул. Амира Темура 15',
@@ -121,7 +121,7 @@ async function ensureLocation(userId: string, log: LogFn): Promise<string | null
     log(`❌ Ошибка создания бизнеса: ${error.message}`);
     return null;
   }
-  log(`✅ Создан бизнес: TutGo Demo Барбершоп`);
+  log(`✅ Создан бизнес: ${DEMO_LOCATION_NAME} (${data.id})`);
   return data.id;
 }
 
