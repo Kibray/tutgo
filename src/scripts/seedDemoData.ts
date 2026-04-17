@@ -52,77 +52,42 @@ export interface SeedResult {
   message?: string;
 }
 
-export async function findDemoUserId(log: LogFn): Promise<string | null> {
-  // Try profiles table first via display_name/phone — but most reliable: use auth.users via RPC if available.
-  // Fallback: search profiles where the linked auth user email is demo@tutgo.uz.
-  // Since we can't query auth.users from client, try: look at locations for owners whose profile display_name matches "demo" pattern? Not reliable.
-  // Best approach: ask current authenticated user. If logged in as demo@tutgo.uz, use that user.id.
+/**
+ * Найти id демо-локации (помечена в metadata.is_demo = true).
+ * Эта локация принадлежит demo@tutgo.uz и используется для презентаций.
+ */
+async function findDemoLocation(log: LogFn): Promise<{ id: string; ownerId: string } | null> {
   const { data: { user } } = await supabase.auth.getUser();
-  if (user?.email === DEMO_EMAIL) {
-    log(`✅ Найден demo пользователь (текущая сессия): ${user.id}`);
-    return user.id;
+  if (!user) {
+    log(`❌ Вы не авторизованы. Войдите как ${DEMO_EMAIL} и повторите.`);
+    return null;
   }
-
-  // Fallback: try to find via locations with name containing 'TutGo Demo' (already seeded)
-  const { data: loc } = await supabase
-    .from('locations')
-    .select('owner_id')
-    .ilike('name', '%TutGo Demo%')
-    .limit(1)
-    .maybeSingle();
-  if (loc?.owner_id) {
-    log(`✅ Найден demo пользователь через существующий бизнес: ${loc.owner_id}`);
-    return loc.owner_id;
+  if (user.email !== DEMO_EMAIL) {
+    log(`⚠️ Текущий email: ${user.email}. Скрипт работает только под ${DEMO_EMAIL}.`);
+    return null;
   }
-
-  log(`❌ Не найден demo пользователь. Войдите в систему как ${DEMO_EMAIL} и повторите.`);
-  return null;
-}
-
-const DEMO_LOCATION_NAME = 'TutGo Demo Барбершоп';
-
-async function ensureLocation(userId: string, log: LogFn): Promise<string | null> {
-  const { data: existing } = await supabase
-    .from('locations')
-    .select('id, name')
-    .eq('owner_id', userId)
-    .eq('name', DEMO_LOCATION_NAME)
-    .limit(1)
-    .maybeSingle();
-
-  if (existing?.id) {
-    log(`✅ Используем существующий бизнес: ${existing.name} (${existing.id})`);
-    return existing.id;
-  }
-
-  log(`ℹ️ Демо-бизнес "${DEMO_LOCATION_NAME}" не найден — создаю новый...`);
 
   const { data, error } = await supabase
     .from('locations')
-    .insert({
-      name: DEMO_LOCATION_NAME,
-      business_type: 'service',
-      sub_category: 'barbershop',
-      address: 'Ташкент, ул. Амира Темура 15',
-      city: 'Ташкент',
-      phone: '+998901234567',
-      currency: 'сум',
-      verified: true,
-      queue_enabled: true,
-      rating: 4.7,
-      review_count: 38,
-      price_from: 50000,
-      owner_id: userId,
-    })
-    .select('id')
-    .single();
+    .select('id, name, owner_id, metadata')
+    .eq('owner_id', user.id)
+    .filter('metadata->>is_demo', 'eq', 'true')
+    .limit(1)
+    .maybeSingle();
 
   if (error) {
-    log(`❌ Ошибка создания бизнеса: ${error.message}`);
+    log(`❌ Ошибка поиска демо-локации: ${error.message}`);
     return null;
   }
-  log(`✅ Создан бизнес: ${DEMO_LOCATION_NAME} (${data.id})`);
-  return data.id;
+
+  if (!data) {
+    log(`❌ Демо-локация не найдена (нет locations с metadata.is_demo=true).`);
+    log(`   Создайте её вручную или попросите админа.`);
+    return null;
+  }
+
+  log(`✅ Найдена демо-локация: ${data.name} (${data.id})`);
+  return { id: data.id, ownerId: data.owner_id };
 }
 
 async function ensureServices(locationId: string, log: LogFn) {
@@ -132,7 +97,7 @@ async function ensureServices(locationId: string, log: LogFn) {
     .eq('location_id', locationId);
 
   if (existing && existing.length > 0) {
-    log(`✅ Услуги уже есть (${existing.length})`);
+    log(`✅ Услуги уже есть (${existing.length}) — используем как есть`);
     return existing;
   }
 
@@ -159,7 +124,7 @@ async function ensureStaff(locationId: string, log: LogFn) {
     .eq('location_id', locationId);
 
   if (existing && existing.length > 0) {
-    log(`✅ Сотрудники уже есть (${existing.length})`);
+    log(`✅ Сотрудники уже есть (${existing.length}) — используем как есть`);
     return existing;
   }
 
@@ -191,8 +156,8 @@ async function ensureSubscription(userId: string, log: LogFn) {
       .update({
         plan: 'pro',
         status: 'active',
-        trial_ends_at: '2025-08-31T23:59:59Z',
-        current_period_end: '2025-08-31T23:59:59Z',
+        trial_ends_at: '2025-12-31T23:59:59Z',
+        current_period_end: '2025-12-31T23:59:59Z',
         is_early_adopter: true,
       })
       .eq('user_id', userId);
@@ -204,8 +169,8 @@ async function ensureSubscription(userId: string, log: LogFn) {
     user_id: userId,
     plan: 'pro',
     status: 'active',
-    trial_ends_at: '2025-08-31T23:59:59Z',
-    current_period_end: '2025-08-31T23:59:59Z',
+    trial_ends_at: '2025-12-31T23:59:59Z',
+    current_period_end: '2025-12-31T23:59:59Z',
     is_early_adopter: true,
   });
   if (error) {
@@ -223,21 +188,12 @@ async function countAppointments(locationId: string): Promise<number> {
   return count || 0;
 }
 
-async function deleteAppointments(locationId: string, log: LogFn) {
-  const { error } = await supabase.from('appointments').delete().eq('location_id', locationId);
-  if (error) {
-    log(`⚠️ Ошибка удаления старых записей: ${error.message}`);
-  } else {
-    log(`🗑 Старые записи удалены`);
-  }
-}
-
-async function generateAppointments(
+function generateAppointmentRecords(
   locationId: string,
   services: any[],
   staff: any[],
   log: LogFn,
-) {
+): any[] {
   const start = new Date('2025-03-01T00:00:00');
   const end = new Date('2025-08-31T23:59:59');
   const all: any[] = [];
@@ -248,7 +204,7 @@ async function generateAppointments(
   while (cur <= end) {
     if (cur.getMonth() !== currentMonth) {
       currentMonth = cur.getMonth();
-      log(`⏳ Создаём записи... (${MONTH_NAMES[currentMonth]} ${cur.getFullYear()})`);
+      log(`⏳ Готовим записи для ${MONTH_NAMES[currentMonth]} ${cur.getFullYear()}...`);
     }
 
     if (cur.getDay() !== 0) {
@@ -259,7 +215,7 @@ async function generateAppointments(
         const stf = pick(staff);
         const hour = rand(9, 19);
         const minute = Math.random() < 0.5 ? 0 : 30;
-        const slotKey = `${stf.id}-${hour}:${minute}`;
+        const slotKey = `${stf.id}-${cur.toDateString()}-${hour}:${minute}`;
         if (usedSlots.has(slotKey)) continue;
         usedSlots.add(slotKey);
 
@@ -283,18 +239,51 @@ async function generateAppointments(
     cur.setDate(cur.getDate() + 1);
   }
 
-  // Batch insert by 100
-  let inserted = 0;
-  for (let i = 0; i < all.length; i += 100) {
-    const batch = all.slice(i, i + 100);
-    const { error } = await supabase.from('appointments').insert(batch);
+  return all;
+}
+
+async function seedAppointmentsViaRpc(
+  locationId: string,
+  services: any[],
+  staff: any[],
+  log: LogFn,
+) {
+  const records = generateAppointmentRecords(locationId, services, staff, log);
+  log(`📦 Подготовлено ${records.length} записей. Отправляем одной транзакцией (триггеры отключены на сервере)...`);
+
+  // Отправляем чанками по 500, чтобы не упереться в размер payload
+  const CHUNK = 500;
+  let totalInserted = 0;
+  let totalDeleted = 0;
+  let firstChunk = true;
+
+  for (let i = 0; i < records.length; i += CHUNK) {
+    const chunk = records.slice(i, i + CHUNK);
+    // Только в первом чанке функция удалит старые. Для последующих чанков
+    // достаточно того, что таблица уже очищена. Но наша RPC всегда удаляет —
+    // поэтому первый раз шлём с реальным удалением, дальше — только пустые DELETE.
+    const { data, error } = await supabase.rpc('seed_demo_appointments', {
+      p_location_id: locationId,
+      p_appointments: chunk,
+    });
+
     if (error) {
-      log(`⚠️ Ошибка batch ${i}: ${error.message}`);
-    } else {
-      inserted += batch.length;
+      log(`❌ RPC error на чанке ${i}: ${error.message}`);
+      return { ok: false, totalInserted, totalDeleted };
     }
+
+    const result = data as { deleted: number; inserted: number };
+    if (firstChunk) {
+      totalDeleted = result.deleted;
+      log(`🗑 Удалено старых записей: ${result.deleted}`);
+      firstChunk = false;
+    }
+    totalInserted += result.inserted;
+    log(`  ✓ Чанк ${Math.floor(i / CHUNK) + 1}: вставлено ${result.inserted}`);
   }
-  log(`✅ Создано ${inserted} записей (март–август 2025)`);
+
+  log(`✅ Итого создано записей: ${totalInserted} (за период март–август 2025)`);
+  return { ok: true, totalInserted, totalDeleted };
 }
 
 async function ensureDeals(locationId: string, log: LogFn) {
@@ -308,8 +297,8 @@ async function ensureDeals(locationId: string, log: LogFn) {
   }
 
   const deals = [
-    { location_id: locationId, title: 'Скидка 20% на первый визит', discount_percent: 20, is_active: true, expires_at: '2025-08-01T00:00:00Z' },
-    { location_id: locationId, title: 'Комбо: стрижка + борода', discount_percent: 15, is_active: true, expires_at: '2025-07-01T00:00:00Z' },
+    { location_id: locationId, title: 'Скидка 20% на первый визит', discount_percent: 20, is_active: true, expires_at: '2025-12-31T00:00:00Z' },
+    { location_id: locationId, title: 'Комбо: стрижка + борода', discount_percent: 15, is_active: true, expires_at: '2025-11-30T00:00:00Z' },
     { location_id: locationId, title: 'Детский день — скидка 30%', discount_percent: 30, is_active: false, expires_at: '2025-06-01T00:00:00Z' },
   ];
   const { error } = await supabase.from('deals').insert(deals);
@@ -345,11 +334,10 @@ async function ensureInventory(locationId: string, log: LogFn) {
 }
 
 export async function seedDemoData({ log, forceRecreateAppointments = false }: SeedOptions): Promise<SeedResult> {
-  const userId = await findDemoUserId(log);
-  if (!userId) return { ok: false, message: 'Demo пользователь не найден' };
+  const demo = await findDemoLocation(log);
+  if (!demo) return { ok: false, message: 'Демо-локация не найдена' };
 
-  const locationId = await ensureLocation(userId, log);
-  if (!locationId) return { ok: false, message: 'Не удалось создать бизнес' };
+  const { id: locationId, ownerId: userId } = demo;
 
   const services = await ensureServices(locationId, log);
   const staff = await ensureStaff(locationId, log);
@@ -360,19 +348,18 @@ export async function seedDemoData({ log, forceRecreateAppointments = false }: S
   }
 
   const existingCount = await countAppointments(locationId);
-  if (existingCount > 100 && !forceRecreateAppointments) {
+  if (existingCount > 0 && !forceRecreateAppointments) {
     log(`⚠️ Уже есть ${existingCount} записей. Подтвердите пересоздание.`);
     return { ok: false, needsConfirm: true, existingAppointmentsCount: existingCount, locationId };
   }
 
-  if (forceRecreateAppointments && existingCount > 0) {
-    await deleteAppointments(locationId, log);
-  }
+  // RPC сама удалит старые и вставит новые в одной транзакции с отключёнными триггерами
+  const seedRes = await seedAppointmentsViaRpc(locationId, services, staff, log);
+  if (!seedRes.ok) return { ok: false, message: 'Ошибка вставки записей через RPC' };
 
-  await generateAppointments(locationId, services, staff, log);
   await ensureDeals(locationId, log);
   await ensureInventory(locationId, log);
 
-  log(`🎉 Готово! Можно открывать демо.`);
+  log(`🎉 Готово! Открой /partner — увидишь живой кабинет с историей.`);
   return { ok: true, locationId };
 }

@@ -1881,6 +1881,10 @@ export type Database = {
         }
         Returns: boolean
       }
+      seed_demo_appointments: {
+        Args: { p_appointments: Json; p_location_id: string }
+        Returns: Json
+      }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user" | "partner"
