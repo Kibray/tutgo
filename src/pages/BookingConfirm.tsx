@@ -76,6 +76,31 @@ const BookingConfirm = () => {
   };
 
   if (confirmed) {
+    const [hours, minutes] = (time || '00:00').split(':').map(Number);
+    const startCal = new Date(d);
+    startCal.setHours(hours, minutes, 0, 0);
+    const durationMin = service?.duration_minutes || 60;
+    const endCal = new Date(startCal.getTime() + durationMin * 60000);
+    const toCalDate = (dt: Date) => dt.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
+    const fullAddress = `${location.address || ''}, ${location.city || ''}`.trim();
+    const eventTitle = `${service?.name || location.name} в ${location.name}`;
+    const dateStr = d.toLocaleDateString(locale, { weekday: 'long', month: 'short', day: 'numeric' });
+    const calendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(eventTitle)}&dates=${toCalDate(startCal)}/${toCalDate(endCal)}&location=${encodeURIComponent(fullAddress)}`;
+    const shareText = `${service?.name || location.name} в ${location.name} — ${dateStr} в ${time}`;
+
+    const handleAddCalendar = () => window.open(calendarUrl, '_blank');
+    const handleRoute = () => {
+      if (location.lat && location.lng) openDirections(location.lat, location.lng, fullAddress);
+    };
+    const handleShare = async () => {
+      if (navigator.share) {
+        try { await navigator.share({ text: shareText }); } catch {}
+      } else {
+        navigator.clipboard.writeText(shareText);
+        toast({ title: 'Скопировано' });
+      }
+    };
+
     return (
       <div className="min-h-screen bg-background flex flex-col items-center justify-center px-6">
         <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ type: 'spring', duration: 0.5 }}
@@ -92,9 +117,16 @@ const BookingConfirm = () => {
           <h3 className="font-semibold text-foreground text-sm">{service?.name || location.name}</h3>
           <p className="text-xs text-muted-foreground">{location.name}</p>
           <div className="border-t border-border pt-3 space-y-2.5">
-            <Row icon={Calendar} label={t('booking.date')} value={d.toLocaleDateString(locale, { weekday: 'long', month: 'short', day: 'numeric' })} />
+            <Row icon={Calendar} label={t('booking.date')} value={dateStr} />
             <Row icon={Clock} label={t('booking.time')} value={time} />
-            <Row icon={MapPin} label={t('booking.address')} value={`${location.address || ''}, ${location.city || ''}`} />
+            <div className="flex items-center gap-3">
+              <MapPin className="w-4 h-4 text-primary flex-shrink-0" />
+              <span className="text-xs text-muted-foreground w-20">{t('booking.address')}</span>
+              <span className="text-xs text-foreground font-medium flex-1 truncate">{fullAddress}</span>
+              {location.lat && location.lng && (
+                <button onClick={handleRoute} className="text-[10px] text-primary font-semibold whitespace-nowrap">Маршрут</button>
+              )}
+            </div>
             {staffMember && <Row icon={User} label={t('booking.specialist')} value={staffMember.full_name} />}
           </div>
           {service?.price > 0 && (
@@ -105,7 +137,25 @@ const BookingConfirm = () => {
           )}
         </motion.div>
 
-        <div className="flex gap-3 mt-8 w-full max-w-sm">
+        <div className="flex gap-2 mt-4 w-full max-w-sm">
+          <motion.button whileTap={{ scale: 0.98 }} onClick={handleAddCalendar}
+            className="flex-1 glass rounded-lg py-3 flex flex-col items-center gap-1 text-foreground">
+            <CalendarDays className="w-4 h-4 text-primary" />
+            <span className="text-[10px] font-semibold">В календарь</span>
+          </motion.button>
+          <motion.button whileTap={{ scale: 0.98 }} onClick={handleRoute} disabled={!location.lat || !location.lng}
+            className="flex-1 glass rounded-lg py-3 flex flex-col items-center gap-1 text-foreground disabled:opacity-40">
+            <Navigation className="w-4 h-4 text-primary" />
+            <span className="text-[10px] font-semibold">Маршрут</span>
+          </motion.button>
+          <motion.button whileTap={{ scale: 0.98 }} onClick={handleShare}
+            className="flex-1 glass rounded-lg py-3 flex flex-col items-center gap-1 text-foreground">
+            <Share2 className="w-4 h-4 text-primary" />
+            <span className="text-[10px] font-semibold">Поделиться</span>
+          </motion.button>
+        </div>
+
+        <div className="flex gap-3 mt-4 w-full max-w-sm">
           <motion.button whileTap={{ scale: 0.98 }} onClick={() => navigate('/bookings')}
             className="flex-1 py-3.5 glass rounded-lg font-semibold text-sm text-foreground">{t('booking.my_bookings')}</motion.button>
           <motion.button whileTap={{ scale: 0.98 }} onClick={() => navigate('/')}
