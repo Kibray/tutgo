@@ -188,16 +188,27 @@ async function countAppointments(locationId: string): Promise<number> {
   return count || 0;
 }
 
+// Скользящее окно вокруг сегодняшней даты, чтобы дашборд всегда был «живой»:
+// прошлое — для аналитики/выручки, будущее — для календаря/новых заявок.
+const DAYS_BACK = 60;
+const DAYS_FORWARD = 60;
+
 function generateAppointmentRecords(
   locationId: string,
   services: any[],
   staff: any[],
   log: LogFn,
 ): any[] {
-  const start = new Date('2025-03-01T00:00:00');
-  const end = new Date('2025-08-31T23:59:59');
-  const all: any[] = [];
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
 
+  const start = new Date(today);
+  start.setDate(start.getDate() - DAYS_BACK);
+  const end = new Date(today);
+  end.setDate(end.getDate() + DAYS_FORWARD);
+  end.setHours(23, 59, 59, 0);
+
+  const all: any[] = [];
   const cur = new Date(start);
   let currentMonth = -1;
 
@@ -207,8 +218,13 @@ function generateAppointmentRecords(
       log(`⏳ Готовим записи для ${MONTH_NAMES[currentMonth]} ${cur.getFullYear()}...`);
     }
 
+    // Сегодня и ближайшие дни — больше записей, чтобы дашборд был насыщен
+    const isToday = cur.getTime() === today.getTime();
+    const daysFromToday = Math.abs((cur.getTime() - today.getTime()) / 86400000);
+    const isNear = daysFromToday <= 7;
+
     if (cur.getDay() !== 0) {
-      const count = rand(4, 12);
+      const count = isToday ? rand(8, 14) : isNear ? rand(6, 12) : rand(4, 10);
       const usedSlots = new Set<string>();
       for (let i = 0; i < count; i++) {
         const svc = pick(services);
