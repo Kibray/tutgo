@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { CalendarCheck, CalendarDays, TrendingUp, BarChart3 } from 'lucide-react';
+import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { useAuth } from '@/hooks/useAuth';
 import { usePreferences } from '@/hooks/usePreferences';
 import { supabase } from '@/integrations/supabase/client';
