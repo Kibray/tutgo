@@ -150,18 +150,23 @@ async function ensureSubscription(userId: string, log: LogFn) {
     .eq('user_id', userId)
     .maybeSingle();
 
+  // Триал и период подписки — на год вперёд от сегодня
+  const oneYearAhead = new Date();
+  oneYearAhead.setFullYear(oneYearAhead.getFullYear() + 1);
+  const periodEnd = oneYearAhead.toISOString();
+
   if (existing) {
     await supabase
       .from('subscriptions')
       .update({
         plan: 'pro',
         status: 'active',
-        trial_ends_at: '2025-12-31T23:59:59Z',
-        current_period_end: '2025-12-31T23:59:59Z',
+        trial_ends_at: periodEnd,
+        current_period_end: periodEnd,
         is_early_adopter: true,
       })
       .eq('user_id', userId);
-    log(`✅ Подписка Pro обновлена`);
+    log(`✅ Подписка Pro обновлена (до ${periodEnd.slice(0, 10)})`);
     return;
   }
 
@@ -169,14 +174,14 @@ async function ensureSubscription(userId: string, log: LogFn) {
     user_id: userId,
     plan: 'pro',
     status: 'active',
-    trial_ends_at: '2025-12-31T23:59:59Z',
-    current_period_end: '2025-12-31T23:59:59Z',
+    trial_ends_at: periodEnd,
+    current_period_end: periodEnd,
     is_early_adopter: true,
   });
   if (error) {
     log(`⚠️ Ошибка создания подписки: ${error.message}`);
   } else {
-    log(`✅ Создана подписка Pro`);
+    log(`✅ Создана подписка Pro (до ${periodEnd.slice(0, 10)})`);
   }
 }
 
@@ -188,16 +193,27 @@ async function countAppointments(locationId: string): Promise<number> {
   return count || 0;
 }
 
+// Скользящее окно вокруг сегодняшней даты, чтобы дашборд всегда был «живой»:
+// прошлое — для аналитики/выручки, будущее — для календаря/новых заявок.
+const DAYS_BACK = 60;
+const DAYS_FORWARD = 60;
+
 function generateAppointmentRecords(
   locationId: string,
   services: any[],
   staff: any[],
   log: LogFn,
 ): any[] {
-  const start = new Date('2025-03-01T00:00:00');
-  const end = new Date('2025-08-31T23:59:59');
-  const all: any[] = [];
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
 
+  const start = new Date(today);
+  start.setDate(start.getDate() - DAYS_BACK);
+  const end = new Date(today);
+  end.setDate(end.getDate() + DAYS_FORWARD);
+  end.setHours(23, 59, 59, 0);
+
+  const all: any[] = [];
   const cur = new Date(start);
   let currentMonth = -1;
 
@@ -207,8 +223,13 @@ function generateAppointmentRecords(
       log(`⏳ Готовим записи для ${MONTH_NAMES[currentMonth]} ${cur.getFullYear()}...`);
     }
 
+    // Сегодня и ближайшие дни — больше записей, чтобы дашборд был насыщен
+    const isToday = cur.getTime() === today.getTime();
+    const daysFromToday = Math.abs((cur.getTime() - today.getTime()) / 86400000);
+    const isNear = daysFromToday <= 7;
+
     if (cur.getDay() !== 0) {
-      const count = rand(4, 12);
+      const count = isToday ? rand(8, 14) : isNear ? rand(6, 12) : rand(4, 10);
       const usedSlots = new Set<string>();
       for (let i = 0; i < count; i++) {
         const svc = pick(services);
@@ -282,7 +303,7 @@ async function seedAppointmentsViaRpc(
     log(`  ✓ Чанк ${Math.floor(i / CHUNK) + 1}: вставлено ${result.inserted}`);
   }
 
-  log(`✅ Итого создано записей: ${totalInserted} (за период март–август 2025)`);
+  log(`✅ Итого создано записей: ${totalInserted} (окно ±${DAYS_BACK}/${DAYS_FORWARD} дней от сегодня)`);
   return { ok: true, totalInserted, totalDeleted };
 }
 
@@ -296,10 +317,14 @@ async function ensureDeals(locationId: string, log: LogFn) {
     return;
   }
 
+  const in60 = new Date(); in60.setDate(in60.getDate() + 60);
+  const in90 = new Date(); in90.setDate(in90.getDate() + 90);
+  const in30 = new Date(); in30.setDate(in30.getDate() + 30);
+
   const deals = [
-    { location_id: locationId, title: 'Скидка 20% на первый визит', discount_percent: 20, is_active: true, expires_at: '2025-12-31T00:00:00Z' },
-    { location_id: locationId, title: 'Комбо: стрижка + борода', discount_percent: 15, is_active: true, expires_at: '2025-11-30T00:00:00Z' },
-    { location_id: locationId, title: 'Детский день — скидка 30%', discount_percent: 30, is_active: false, expires_at: '2025-06-01T00:00:00Z' },
+    { location_id: locationId, title: 'Скидка 20% на первый визит', discount_percent: 20, is_active: true, expires_at: in90.toISOString() },
+    { location_id: locationId, title: 'Комбо: стрижка + борода', discount_percent: 15, is_active: true, expires_at: in60.toISOString() },
+    { location_id: locationId, title: 'Детский день — скидка 30%', discount_percent: 30, is_active: true, expires_at: in30.toISOString() },
   ];
   const { error } = await supabase.from('deals').insert(deals);
   if (error) {
