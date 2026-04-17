@@ -150,18 +150,23 @@ async function ensureSubscription(userId: string, log: LogFn) {
     .eq('user_id', userId)
     .maybeSingle();
 
+  // Триал и период подписки — на год вперёд от сегодня
+  const oneYearAhead = new Date();
+  oneYearAhead.setFullYear(oneYearAhead.getFullYear() + 1);
+  const periodEnd = oneYearAhead.toISOString();
+
   if (existing) {
     await supabase
       .from('subscriptions')
       .update({
         plan: 'pro',
         status: 'active',
-        trial_ends_at: '2025-12-31T23:59:59Z',
-        current_period_end: '2025-12-31T23:59:59Z',
+        trial_ends_at: periodEnd,
+        current_period_end: periodEnd,
         is_early_adopter: true,
       })
       .eq('user_id', userId);
-    log(`✅ Подписка Pro обновлена`);
+    log(`✅ Подписка Pro обновлена (до ${periodEnd.slice(0, 10)})`);
     return;
   }
 
@@ -169,14 +174,14 @@ async function ensureSubscription(userId: string, log: LogFn) {
     user_id: userId,
     plan: 'pro',
     status: 'active',
-    trial_ends_at: '2025-12-31T23:59:59Z',
-    current_period_end: '2025-12-31T23:59:59Z',
+    trial_ends_at: periodEnd,
+    current_period_end: periodEnd,
     is_early_adopter: true,
   });
   if (error) {
     log(`⚠️ Ошибка создания подписки: ${error.message}`);
   } else {
-    log(`✅ Создана подписка Pro`);
+    log(`✅ Создана подписка Pro (до ${periodEnd.slice(0, 10)})`);
   }
 }
 
