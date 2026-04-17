@@ -280,12 +280,13 @@ async function seedAppointmentsViaRpc(
 
   for (let i = 0; i < records.length; i += CHUNK) {
     const chunk = records.slice(i, i + CHUNK);
-    // Только в первом чанке функция удалит старые. Для последующих чанков
-    // достаточно того, что таблица уже очищена. Но наша RPC всегда удаляет —
-    // поэтому первый раз шлём с реальным удалением, дальше — только пустые DELETE.
+    // В первый чанк добавляем сигнальный элемент __reset__, чтобы серверная
+    // функция один раз удалила старые записи и затем вставила новые.
+    const payload = firstChunk ? [{ __reset__: true }, ...chunk] : chunk;
+
     const { data, error } = await supabase.rpc('seed_demo_appointments', {
       p_location_id: locationId,
-      p_appointments: chunk,
+      p_appointments: payload as any,
     });
 
     if (error) {
