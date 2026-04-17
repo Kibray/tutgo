@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { CalendarCheck, CalendarDays, TrendingUp, BarChart3 } from 'lucide-react';
+import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { useAuth } from '@/hooks/useAuth';
 import { usePreferences } from '@/hooks/usePreferences';
 import { supabase } from '@/integrations/supabase/client';
@@ -61,6 +62,23 @@ const PartnerAnalytics = () => {
       .reduce((sum, a) => sum + (serviceMap[a.service_id] || 0), 0),
   [appointments, serviceMap]);
 
+  const chartData = useMemo(() => {
+    const days: Record<string, number> = {};
+    for (let i = 29; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      days[d.toISOString().split('T')[0]] = 0;
+    }
+    appointments.forEach(a => {
+      const day = a.start_time?.split('T')[0];
+      if (day && days[day] !== undefined) days[day]++;
+    });
+    return Object.entries(days).map(([date, count]) => ({
+      date: date.slice(5),
+      count,
+    }));
+  }, [appointments]);
+
   const stats = [
     { icon: CalendarCheck, label: t('partner.stat_bookings'), value: String(bookingsMonth) },
     { icon: CalendarDays, label: 'Сегодня', value: String(bookingsToday) },
@@ -90,6 +108,18 @@ const PartnerAnalytics = () => {
               )}
             </motion.div>
           ))}
+        </div>
+        <div className="mt-4">
+          <p className="text-sm font-medium text-foreground mb-2">Динамика за 30 дней</p>
+          <ResponsiveContainer width="100%" height={180}>
+            <AreaChart data={chartData}>
+              <XAxis dataKey="date" tick={{ fontSize: 10 }} tickLine={false} axisLine={false} />
+              <YAxis hide />
+              <Tooltip />
+              <Area type="monotone" dataKey="count" stroke="hsl(var(--primary))"
+                fill="hsl(var(--primary) / 0.1)" strokeWidth={2} />
+            </AreaChart>
+          </ResponsiveContainer>
         </div>
       </div>
     </PartnerLayout>
