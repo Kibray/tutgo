@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Star, MapPin, BadgeCheck, Send, Heart, Users, CalendarDays } from 'lucide-react';
+import { Star, MapPin, BadgeCheck, Send, Heart, Users, CalendarDays, Share2 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { formatPrice, categoryEmoji } from '@/lib/types';
 import type { LocationItem } from '@/lib/types';
@@ -51,6 +51,17 @@ const ServiceCard = ({ service, index, onClick, isFavorite, onToggleFavorite }: 
   const handleClick = () => {
     if (onClick) return onClick();
     navigate(`/service/${service.id}`);
+  };
+
+  const handleShare = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const url = `https://tutgo.uz/service/${service.id}`;
+    if (navigator.share) {
+      navigator.share({ title: service.name, text: service.address || '', url }).catch(() => {});
+    } else {
+      await navigator.clipboard.writeText(url).catch(() => {});
+      // toast не используем — просто молча копируем
+    }
   };
 
   return (
@@ -144,6 +155,10 @@ const ServiceCard = ({ service, index, onClick, isFavorite, onToggleFavorite }: 
                 <Send className="w-3 h-3" />TG
               </motion.button>
             )}
+            <motion.button whileTap={{ scale: 0.9 }} onClick={handleShare}
+              className="flex items-center gap-1 px-2 py-1 rounded-md bg-secondary text-muted-foreground text-[10px] font-medium hover:bg-secondary/80 transition-colors">
+              <Share2 className="w-3 h-3" />
+            </motion.button>
           </div>
         </div>
       </div>
