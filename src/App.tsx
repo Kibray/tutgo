@@ -66,8 +66,8 @@ const SeedDemo = lazy(() => import("./pages/SeedDemo"));
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 5 * 60 * 1000,
-      gcTime: 10 * 60 * 1000,
+      staleTime: 60 * 1000,
+      gcTime: 3 * 60 * 1000,
       retry: 1,
     }
   }
