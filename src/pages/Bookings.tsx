@@ -26,6 +26,8 @@ const Bookings = () => {
   const [reviewComment, setReviewComment] = useState('');
   const [submittingReview, setSubmittingReview] = useState(false);
   const [reviewedIds, setReviewedIds] = useState<Set<string>>(new Set());
+  const [cancelConfirmId, setCancelConfirmId] = useState<string | null>(null);
+  const [cancelling, setCancelling] = useState(false);
 
   const fetchAppointments = async () => {
     if (!user) { setLoading(false); return; }
@@ -97,6 +99,29 @@ const Bookings = () => {
     }
   };
 
+  const handleCancelAppointment = async (appointmentId: string) => {
+    setCancelling(true);
+    const apt = appointments.find(a => a.id === appointmentId);
+    const { error } = await supabase
+      .from('appointments')
+      .update({ status: 'cancelled' })
+      .eq('id', appointmentId)
+      .eq('client_user_id', user?.id);
+    if (error) {
+      toast({ title: t('common.error'), description: error.message, variant: 'destructive' });
+    } else {
+      toast({ title: '✅ Запись отменена' });
+      if (apt) {
+        supabase.functions.invoke('telegram-notify', {
+          body: { type: 'appointment.cancelled_by_client', record: apt },
+        }).catch(() => {});
+      }
+      await fetchAppointments();
+    }
+    setCancelling(false);
+    setCancelConfirmId(null);
+  };
+
   const dateFmt = (d: string, opts: Intl.DateTimeFormatOptions) =>
     new Date(d).toLocaleDateString(lang === 'uz' ? 'uz' : lang === 'en' ? 'en' : 'ru', opts);
   const timeFmt = (d: string) =>
@@ -150,6 +175,12 @@ const Bookings = () => {
                         <ChevronRight className="w-4 h-4 text-muted-foreground" />
                       </div>
                     )}
+                    <button
+                      onClick={(e) => { e.stopPropagation(); setCancelConfirmId(b.id); }}
+                      className="mt-3 pt-3 border-t border-border w-full flex items-center justify-center gap-1.5 text-xs text-destructive font-medium"
+                    >
+                      <X className="w-3.5 h-3.5" />Отменить запись
+                    </button>
                   </motion.div>
                 ))}
               </div>
@@ -266,6 +297,42 @@ const Bookings = () => {
                   className="flex-1 py-2.5 text-sm bg-primary text-accent-foreground rounded-xl font-semibold flex items-center justify-center gap-1"
                 >
                   {submittingReview ? <Loader2 className="w-4 h-4 animate-spin" /> : t('bookings.send')}
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {cancelConfirmId && (
+          <motion.div
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[3000] flex items-center justify-center bg-black/70 backdrop-blur-sm"
+            onClick={() => !cancelling && setCancelConfirmId(null)}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-background rounded-2xl p-5 mx-4 w-full max-w-sm shadow-xl"
+            >
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-10 h-10 rounded-full bg-destructive/15 flex items-center justify-center flex-shrink-0">
+                  <AlertTriangle className="w-5 h-5 text-destructive" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-foreground">Отменить запись?</h3>
+                  <p className="text-xs text-muted-foreground mt-0.5">Бизнес получит уведомление об отмене</p>
+                </div>
+              </div>
+              <div className="flex gap-2 mt-4">
+                <button onClick={() => setCancelConfirmId(null)} disabled={cancelling}
+                  className="flex-1 py-2.5 text-sm glass rounded-xl text-muted-foreground font-medium">
+                  Назад
+                </button>
+                <button onClick={() => handleCancelAppointment(cancelConfirmId)} disabled={cancelling}
+                  className="flex-1 py-2.5 text-sm bg-destructive text-destructive-foreground rounded-xl font-semibold flex items-center justify-center gap-1">
+                  {cancelling ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Да, отменить'}
                 </button>
               </div>
             </motion.div>
