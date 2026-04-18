@@ -347,11 +347,15 @@ const Auth = () => {
           disabled={googleLoading}
           onClick={async () => {
             setGoogleLoading(true);
-            const { error } = await lovable.auth.signInWithOAuth('google', {
-              redirect_uri: window.location.origin,
+            const { error } = await supabase.auth.signInWithOAuth({
+              provider: 'google',
+              options: {
+                redirectTo: `${window.location.origin}/profile`,
+                queryParams: { access_type: 'offline', prompt: 'consent' },
+              },
             });
             if (error) {
-              toast({ title: t('common.error'), description: String(error), variant: 'destructive' });
+              toast({ title: t('common.error'), description: error.message, variant: 'destructive' });
               setGoogleLoading(false);
             }
           }}
