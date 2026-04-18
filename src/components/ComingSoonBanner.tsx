@@ -45,6 +45,9 @@ const ComingSoonBanner = ({ feature }: ComingSoonBannerProps) => {
           <div className="min-w-0">
             <p className="text-xs font-semibold text-primary">Скоро · Tez kunda</p>
             <p className="text-[10px] text-muted-foreground">Раздел в разработке — интерфейс готов, запуск скоро</p>
+            <p className="text-[10px] text-muted-foreground/60 mt-0.5">
+              Представленные данные являются демонстрационными и не являются публичной офертой.
+            </p>
           </div>
         </div>
         <div className="flex items-center gap-1 flex-shrink-0">
