@@ -101,7 +101,7 @@ const CafePayment = ({ order, currency, onClose, onPaid }: Props) => {
             selected && !processing ? 'bg-primary text-primary-foreground glow-green' : 'bg-muted text-muted-foreground'
           }`}
         >
-          {processing ? 'Обработка...' : 'Подтвердить оплату'}
+          {processing ? 'Отправка...' : '🔔 Позвать официанта для оплаты'}
         </motion.button>
       </motion.div>
     </motion.div>
