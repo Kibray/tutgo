@@ -1,15 +1,28 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Sprout, Loader2, ExternalLink, AlertTriangle } from 'lucide-react';
 import { seedDemoData } from '@/scripts/seedDemoData';
+import { useAuth } from '@/hooks/useAuth';
 
 const SeedDemo = () => {
   const navigate = useNavigate();
+  const { user, loading: authLoading } = useAuth();
   const [logs, setLogs] = useState<string[]>([]);
   const [running, setRunning] = useState(false);
   const [done, setDone] = useState(false);
   const [needsConfirm, setNeedsConfirm] = useState(false);
   const [existingCount, setExistingCount] = useState(0);
+
+  useEffect(() => {
+    if (authLoading) return;
+    if (!user || user.email !== 'demo@tutgo.uz') navigate('/');
+  }, [user, authLoading]);
+
+  if (authLoading) return (
+    <div className="min-h-screen bg-background flex items-center justify-center">
+      <Loader2 className="w-8 h-8 animate-spin text-primary" />
+    </div>
+  );
 
   const appendLog = (msg: string) => setLogs(prev => [...prev, msg]);
 
