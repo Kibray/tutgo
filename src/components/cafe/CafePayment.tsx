@@ -64,8 +64,11 @@ const CafePayment = ({ order, currency, onClose, onPaid }: Props) => {
         className="absolute bottom-0 left-0 right-0 bg-card rounded-t-2xl p-4"
         onClick={e => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-base font-bold text-foreground">Оплата #{orderId}</h3>
+        <div className="flex items-start justify-between mb-4">
+          <div>
+            <h3 className="text-base font-bold text-foreground">Способ оплаты #{orderId}</h3>
+            <p className="text-xs text-muted-foreground mt-0.5">Выберите — официант проведёт оплату</p>
+          </div>
           <button onClick={onClose} className="p-1"><X className="w-5 h-5 text-muted-foreground" /></button>
         </div>
 
