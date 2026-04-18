@@ -24,8 +24,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const [isPartner, setIsPartner] = useState(false);
-  const [termsAccepted, setTermsAccepted] = useState(true);
-  const [partnerTermsAccepted, setPartnerTermsAccepted] = useState(true);
+  const [termsAccepted, setTermsAccepted] = useState(false);
+  const [partnerTermsAccepted, setPartnerTermsAccepted] = useState(false);
 
   const checkPartnerRole = async (userId: string) => {
     const { data } = await supabase.rpc('has_role', { _user_id: userId, _role: 'partner' });
