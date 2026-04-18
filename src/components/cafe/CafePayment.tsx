@@ -15,8 +15,6 @@ interface Props {
 const paymentMethods = [
   { id: 'cash', label: 'Наличные', icon: '💵', color: 'bg-green-500/15 text-green-400' },
   { id: 'card', label: 'Карта', icon: '💳', color: 'bg-blue-500/15 text-blue-400' },
-  { id: 'payme', label: 'Payme', icon: '📱', color: 'bg-cyan-500/15 text-cyan-400' },
-  { id: 'click', label: 'Click', icon: '📱', color: 'bg-purple-500/15 text-purple-400' },
 ];
 
 const CafePayment = ({ order, currency, onClose, onPaid }: Props) => {
