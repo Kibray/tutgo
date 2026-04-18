@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { X, Banknote, CreditCard, Smartphone } from 'lucide-react';
+import { X } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { formatPrice } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
@@ -15,8 +15,6 @@ interface Props {
 const paymentMethods = [
   { id: 'cash', label: 'Наличные', icon: '💵', color: 'bg-green-500/15 text-green-400' },
   { id: 'card', label: 'Карта', icon: '💳', color: 'bg-blue-500/15 text-blue-400' },
-  { id: 'payme', label: 'Payme', icon: '📱', color: 'bg-cyan-500/15 text-cyan-400' },
-  { id: 'click', label: 'Click', icon: '📱', color: 'bg-purple-500/15 text-purple-400' },
 ];
 
 const CafePayment = ({ order, currency, onClose, onPaid }: Props) => {
@@ -66,8 +64,11 @@ const CafePayment = ({ order, currency, onClose, onPaid }: Props) => {
         className="absolute bottom-0 left-0 right-0 bg-card rounded-t-2xl p-4"
         onClick={e => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-base font-bold text-foreground">Оплата #{orderId}</h3>
+        <div className="flex items-start justify-between mb-4">
+          <div>
+            <h3 className="text-base font-bold text-foreground">Способ оплаты #{orderId}</h3>
+            <p className="text-xs text-muted-foreground mt-0.5">Выберите — официант проведёт оплату</p>
+          </div>
           <button onClick={onClose} className="p-1"><X className="w-5 h-5 text-muted-foreground" /></button>
         </div>
 
@@ -100,7 +101,7 @@ const CafePayment = ({ order, currency, onClose, onPaid }: Props) => {
             selected && !processing ? 'bg-primary text-primary-foreground glow-green' : 'bg-muted text-muted-foreground'
           }`}
         >
-          {processing ? 'Обработка...' : 'Подтвердить оплату'}
+          {processing ? 'Отправка...' : '🔔 Позвать официанта для оплаты'}
         </motion.button>
       </motion.div>
     </motion.div>
