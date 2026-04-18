@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Calendar, Clock, MapPin, ChevronRight, Star, Loader2, Heart, X } from 'lucide-react';
+import { Calendar, Clock, MapPin, ChevronRight, Star, Loader2, Heart, X, AlertTriangle } from 'lucide-react';
 import BottomNav from '@/components/BottomNav';
 import ServiceCard from '@/components/ServiceCard';
 import { supabase } from '@/integrations/supabase/client';
