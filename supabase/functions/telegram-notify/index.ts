@@ -363,7 +363,7 @@ Deno.serve(async (req) => {
       await sendTelegram(clientProfile.telegram_chat_id, text, {
         reply_markup: {
           inline_keyboard: [
-            [{ text: "⭐ Оставить отзыв", url: "https://tutgo.lovable.app" }],
+            [{ text: "⭐ Оставить отзыв", url: "https://tutgo.uz/bookings" }],
           ],
         },
       });
