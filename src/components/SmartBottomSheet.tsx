@@ -80,11 +80,14 @@ const SmartBottomSheet = ({
   const handleDragEnd = (_: any, info: PanInfo) => {
     const { offset, velocity } = info;
     const idx = ORDER.indexOf(state);
-    if (offset.y < -50 || velocity.y < -300) {
+    const isFlick = Math.abs(velocity.y) > 500;
+    if (isFlick && velocity.y < 0) {
       if (idx < ORDER.length - 1) setStateWithHaptic(ORDER[idx + 1]);
-    } else if (offset.y > 50 || velocity.y > 300) {
-      // Never go below peek — always keep search visible
+    } else if (isFlick && velocity.y > 0) {
       if (idx > 0) setStateWithHaptic(ORDER[idx - 1]);
+    } else if (!isFlick) {
+      if (offset.y < -80 && idx < ORDER.length - 1) setStateWithHaptic(ORDER[idx + 1]);
+      if (offset.y > 80 && idx > 0) setStateWithHaptic(ORDER[idx - 1]);
     }
   };
 
