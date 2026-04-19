@@ -294,6 +294,72 @@ const SmartBottomSheet = ({
 
         {state === 'full' && (
           <div className="space-y-3">
+            {/* Filter pills — only when searching */}
+            {query.length > 0 && (
+              <div className="flex gap-2 overflow-x-auto scrollbar-hide -mx-4 px-4 pb-1">
+                {[
+                  { id: 'nearby', label: '📍 Nearby' },
+                  { id: 'rating', label: '⭐ Rating' },
+                  { id: 'price', label: '💰 Price' },
+                  { id: 'open', label: '🟢 Open now' },
+                  { id: 'online', label: '✅ Online' },
+                ].map(p => {
+                  const active = activeFilter === p.id;
+                  return (
+                    <button
+                      key={p.id}
+                      onClick={() => { haptic(); setActiveFilter(active ? null : p.id); }}
+                      className={`flex-shrink-0 text-[11px] font-medium px-3 py-1.5 rounded-full border transition-colors ${
+                        active
+                          ? 'bg-primary text-primary-foreground border-primary'
+                          : 'bg-secondary text-foreground border-border/50'
+                      }`}
+                    >
+                      {p.label}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+
+            {/* Section header */}
+            {!loading && locations.length > 0 && (
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500" />
+                  </span>
+                  <span className="text-xs font-semibold text-foreground">
+                    {nearbyMode ? 'Nearby' : 'Results'}
+                  </span>
+                  <span className="text-xs text-muted-foreground">
+                    {locations.length}
+                  </span>
+                </div>
+                <div className="flex items-center gap-1 bg-secondary/60 rounded-lg p-0.5">
+                  <button
+                    onClick={() => { haptic(); setViewMode('cards'); }}
+                    className={`p-1.5 rounded-md transition-colors ${
+                      viewMode === 'cards' ? 'bg-white text-black shadow-sm' : 'text-muted-foreground'
+                    }`}
+                    aria-label="Card view"
+                  >
+                    <LayoutGrid className="w-3.5 h-3.5" />
+                  </button>
+                  <button
+                    onClick={() => { haptic(); setViewMode('list'); }}
+                    className={`p-1.5 rounded-md transition-colors ${
+                      viewMode === 'list' ? 'bg-white text-black shadow-sm' : 'text-muted-foreground'
+                    }`}
+                    aria-label="List view"
+                  >
+                    <List className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              </div>
+            )}
+
             {loading ? <SkeletonList count={4} /> : locations.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-16 gap-3">
                 <Search className="w-10 h-10 text-muted-foreground/40" />
@@ -308,9 +374,10 @@ const SmartBottomSheet = ({
                     onClick={() => onServiceClick(loc)}
                     isFavorite={isFavorite(loc.id)}
                     onToggleFavorite={onToggleFavorite}
+                    compact={viewMode === 'list'}
                   />
                   {nearbyMode && loc._distance != null && (
-                    <div className="absolute top-3 left-3 bg-primary/90 text-primary-foreground text-[10px] font-bold px-2 py-0.5 rounded-md backdrop-blur-sm">
+                    <div className="absolute top-3 left-3 bg-primary/90 text-primary-foreground text-[10px] font-bold px-2 py-0.5 rounded-md backdrop-blur-sm z-10">
                       {formatDistance(loc._distance)}
                     </div>
                   )}
