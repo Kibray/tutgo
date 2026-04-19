@@ -14,6 +14,7 @@ interface ServiceCardProps {
   onClick?: () => void;
   isFavorite?: boolean;
   onToggleFavorite?: (id: string) => void;
+  compact?: boolean;
 }
 
 const pluralReviews = (n: number) => {
