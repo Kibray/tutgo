@@ -12,13 +12,23 @@ export const useLocations = (categoryName?: string, subcategory?: string, search
       .from('locations')
       .select('*')
       .order('is_promoted', { ascending: false })
-      .order('rating', { ascending: false })
-      .limit(50);
+      .order('rating', { ascending: false });
     setLocations((data as LocationItem[]) || []);
     setLoading(false);
   };
 
   useEffect(() => { fetchLocations(); }, []);
+
+  // Realtime subscription for locations
+  useEffect(() => {
+    const channel = supabase
+      .channel('locations-realtime')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'locations' },
+        () => fetchLocations()
+      )
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, []);
 
   const filtered = useMemo(() => {
     const categoryMap: Record<string, { field: 'sub_category' | 'business_type'; value: string }[]> = {
