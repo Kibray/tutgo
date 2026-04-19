@@ -1,5 +1,5 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
-import { motion, useMotionValue, useTransform, PanInfo } from 'framer-motion';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
+import { motion, PanInfo } from 'framer-motion';
 import { Search, X, Locate, Loader2, LayoutGrid, List } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import ServiceCard from '@/components/ServiceCard';
@@ -7,7 +7,7 @@ import CategoryChips from '@/components/CategoryChips';
 import { SkeletonList } from '@/components/SkeletonCard';
 import { useFavorites } from '@/hooks/useFavorites';
 import { usePreferences } from '@/hooks/usePreferences';
-import { formatPrice, getServiceEmoji } from '@/lib/types';
+import { getServiceEmoji } from '@/lib/types';
 import type { LocationItem } from '@/lib/types';
 
 type SheetState = 'peek' | 'half' | 'full';
@@ -24,6 +24,8 @@ const formatDistance = (km: number): string => {
   if (km < 1) return `${Math.round(km * 1000)} м`;
   return `${km.toFixed(1)} км`;
 };
+
+const ADDRESS_HINT_RE = /\d|улиц|ул\.|кўча|kucha|street|avenue|пр\.|просп/i;
 
 interface SmartBottomSheetProps {
   locations: LocationItem[];
@@ -91,28 +93,66 @@ const SmartBottomSheet = ({
     }
   };
 
-  // Tap on handle or search bar in peek to expand
   const handlePeekTap = () => {
     if (state === 'peek') setStateWithHaptic('half');
+    else if (state === 'half') setStateWithHaptic('full');
+    else setStateWithHaptic('peek');
   };
 
-  // Nominatim suggestions
+  // Apply filter pills to locations
+  const sortedLocations = useMemo(() => {
+    let arr = [...locations];
+    if (activeFilter === 'rating') {
+      arr.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+    } else if (activeFilter === 'price') {
+      arr.sort((a, b) => (a.price_from || 0) - (b.price_from || 0));
+    } else if (activeFilter === 'nearby') {
+      arr.sort((a: any, b: any) => (a._distance ?? 9999) - (b._distance ?? 9999));
+    } else if (activeFilter === 'online') {
+      arr = arr.filter(l => (l as any).verified);
+    } else if (activeFilter === 'open') {
+      const now = new Date();
+      const day = now.getDay();
+      const hour = now.getHours() + now.getMinutes() / 60;
+      arr = arr.filter(l => {
+        const wh = (l as any).metadata?.working_hours?.[day];
+        if (!wh || !wh.open || !wh.close) return true;
+        const [oh, om] = String(wh.open).split(':').map(Number);
+        const [ch, cm] = String(wh.close).split(':').map(Number);
+        return hour >= (oh + (om || 0) / 60) && hour <= (ch + (cm || 0) / 60);
+      });
+    }
+    return arr;
+  }, [locations, activeFilter]);
+
+  // Show address suggestions only if query looks like an address
+  // OR if there are no business matches
+  const looksLikeAddress = useMemo(() => ADDRESS_HINT_RE.test(query), [query]);
+  const showAddressSuggestions = suggestions.length > 0 && (looksLikeAddress || locations.length === 0);
+
+  // Nominatim suggestions — only fetch when query looks like address or no matches
   useEffect(() => {
     if (query.length < 3) { setSuggestions([]); return; }
     clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => {
+      // Skip request if we already have business matches and query doesn't look like address
+      if (locations.length > 0 && !ADDRESS_HINT_RE.test(query)) {
+        setSuggestions([]);
+        return;
+      }
       fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&countrycodes=uz&limit=4&format=json`)
         .then(r => r.json())
         .then(data => setSuggestions(Array.isArray(data) ? data : []))
         .catch(() => setSuggestions([]));
     }, 400);
     return () => clearTimeout(debounceRef.current);
-  }, [query]);
+  }, [query, locations.length]);
 
   const handleClear = () => {
     setQuery('');
     onSearch('');
     setSuggestions([]);
+    setActiveFilter(null);
   };
 
   const handleSuggestionClick = (s: any) => {
@@ -123,220 +163,135 @@ const SmartBottomSheet = ({
   };
 
   const showChips = state === 'half' || state === 'full';
+  const hasQuery = query.trim().length > 0;
+  // When user is searching, always show full vertical list
+  const showFullList = hasQuery || state === 'full';
 
   return (
     <motion.div
-      drag="y"
-      dragConstraints={{ top: 0, bottom: 0 }}
-      dragElastic={0.35}
-      dragMomentum={true}
-      onDragEnd={handleDragEnd}
-      animate={{ height: HEIGHT_MAP[state], y: 0 }}
+      animate={{ height: HEIGHT_MAP[state] }}
       transition={{ type: 'spring', stiffness: 500, damping: 36, mass: 0.6 }}
-      className="absolute left-0 right-0 z-[1000] bg-background/95 rounded-t-2xl border-t border-border"
-      style={{ touchAction: 'pan-x', overflow: 'hidden', bottom: `${BOTTOM_NAV_HEIGHT}px` }}
+      className="absolute left-0 right-0 z-[1000] bg-background/95 rounded-t-2xl border-t border-border flex flex-col"
+      style={{ overflow: 'hidden', bottom: `${BOTTOM_NAV_HEIGHT}px` }}
     >
-      {/* Handle */}
-      <div
-        className="w-full flex justify-center pt-2 pb-1 cursor-grab active:cursor-grabbing"
-        onClick={handlePeekTap}
+      {/* Drag-only header zone */}
+      <motion.div
+        drag="y"
+        dragConstraints={{ top: 0, bottom: 0 }}
+        dragElastic={0.35}
+        dragMomentum={false}
+        onDragEnd={handleDragEnd}
+        className="flex-shrink-0"
+        style={{ touchAction: 'none' }}
       >
-        <div className="w-10 h-1 rounded-full bg-muted-foreground/30" />
-      </div>
-
-      {/* Category chips */}
-      <div className="px-4 pb-2">
-        <CategoryChips selected={category} onSelect={onCategorySelect} selectedSub={subcategory} onSubSelect={onSubcategorySelect} />
-      </div>
-
-      {/* Search bar */}
-      <div className="relative px-4 pb-2">
-        <div className="flex items-center gap-2 bg-secondary/60 backdrop-blur-sm rounded-xl px-3 py-2.5">
-          <Search className="w-4 h-4 text-muted-foreground flex-shrink-0" />
-          <input
-            value={query}
-            onChange={e => { setQuery(e.target.value); onSearch(e.target.value); }}
-            onFocus={() => { if (state !== 'full') setStateWithHaptic('half'); }}
-            onKeyDown={e => e.key === 'Escape' && setStateWithHaptic('half')}
-            placeholder={t('index.search_placeholder')}
-            className="flex-1 bg-transparent text-sm outline-none text-foreground placeholder:text-muted-foreground"
-          />
-          {query.length > 0 && (
-            <button onClick={handleClear} className="p-0.5">
-              <X className="w-4 h-4 text-muted-foreground" />
-            </button>
-          )}
-          <button onClick={onGeolocate} className="p-1">
-            {geolocating ? (
-              <Loader2 className="w-4 h-4 text-primary animate-spin" />
-            ) : (
-              <Locate className="w-4 h-4 text-primary" />
-            )}
-          </button>
+        {/* Handle */}
+        <div
+          className="w-full flex justify-center pt-2 pb-1 cursor-grab active:cursor-grabbing"
+          onClick={handlePeekTap}
+        >
+          <div className="w-10 h-1 rounded-full bg-muted-foreground/30" />
         </div>
 
-        {/* Nominatim suggestions */}
-        {suggestions.length > 0 && (
-          <div className="absolute left-4 right-4 bottom-full mb-1 bg-background border border-border rounded-xl shadow-lg overflow-hidden z-10">
-            {suggestions.map((s, i) => (
-              <button
-                key={i}
-                onClick={() => handleSuggestionClick(s)}
-                className="w-full text-left px-3 py-2.5 text-xs text-foreground hover:bg-secondary/60 border-b border-border/50 last:border-0 truncate"
-              >
-                📍 {s.display_name}
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
+        {/* Category chips */}
+        <div className="px-4 pb-2">
+          <CategoryChips selected={category} onSelect={onCategorySelect} selectedSub={subcategory} onSubSelect={onSubcategorySelect} />
+        </div>
 
-      {/* Quick chips */}
-      {showChips && (
-        <div className="flex gap-2 px-4 pb-2 overflow-x-auto scrollbar-hide">
-          <button
-            onClick={() => {
-              const next = !mapDark;
-              setMapDark(next);
-              localStorage.setItem('tutgo_map_dark', String(next));
-              window.dispatchEvent(new Event('storage'));
-            }}
-            className="flex-shrink-0 text-[11px] font-medium px-3 py-1.5 rounded-full bg-secondary text-foreground border border-border/50"
-          >
-            {mapDark ? '🌙' : '☀️'}
-          </button>
-          {nearbyMode && (
-            <button
-              onClick={onDisableNearby}
-              className="flex-shrink-0 text-[11px] font-medium px-3 py-1.5 rounded-full bg-primary/15 text-primary border border-primary/30"
-            >
-              📍 {t('index.near_you')}
+        {/* Search bar */}
+        <div className="relative px-4 pb-2">
+          <div className="flex items-center gap-2 bg-secondary/60 rounded-xl px-3 py-2.5">
+            <Search className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+            <input
+              value={query}
+              onChange={e => { setQuery(e.target.value); onSearch(e.target.value); }}
+              onFocus={() => { if (state !== 'full') setStateWithHaptic('full'); }}
+              onKeyDown={e => e.key === 'Escape' && setStateWithHaptic('half')}
+              placeholder={t('index.search_placeholder')}
+              className="flex-1 bg-transparent text-sm outline-none text-foreground placeholder:text-muted-foreground"
+            />
+            {query.length > 0 && (
+              <button onClick={handleClear} className="p-0.5">
+                <X className="w-4 h-4 text-muted-foreground" />
+              </button>
+            )}
+            <button onClick={onGeolocate} className="p-1">
+              {geolocating ? (
+                <Loader2 className="w-4 h-4 text-primary animate-spin" />
+              ) : (
+                <Locate className="w-4 h-4 text-primary" />
+              )}
             </button>
+          </div>
+
+          {showAddressSuggestions && (
+            <div className="absolute left-4 right-4 bottom-full mb-1 bg-background border border-border rounded-xl shadow-lg overflow-hidden z-10">
+              {suggestions.map((s, i) => (
+                <button
+                  key={i}
+                  onClick={() => handleSuggestionClick(s)}
+                  className="w-full text-left px-3 py-2.5 text-xs text-foreground hover:bg-secondary/60 border-b border-border/50 last:border-0 truncate"
+                >
+                  📍 {s.display_name}
+                </button>
+              ))}
+            </div>
           )}
-          {favoriteIds.size > 0 && (
+        </div>
+
+        {/* Filter pills — always visible when there are results */}
+        {showChips && sortedLocations.length > 0 && (
+          <div className="flex gap-2 px-4 pb-2 overflow-x-auto scrollbar-hide">
+            {[
+              { id: 'nearby', label: '📍 Рядом', requires: nearbyMode },
+              { id: 'rating', label: '⭐ Рейтинг', requires: true },
+              { id: 'price', label: '💰 Цена', requires: true },
+              { id: 'open', label: '🟢 Открыто', requires: true },
+              { id: 'online', label: '✅ Онлайн', requires: true },
+            ].filter(p => p.requires).map(p => {
+              const active = activeFilter === p.id;
+              return (
+                <button
+                  key={p.id}
+                  onClick={() => { haptic(); setActiveFilter(active ? null : p.id); }}
+                  className={`flex-shrink-0 text-[11px] font-medium px-3 py-1.5 rounded-full border transition-colors ${
+                    active
+                      ? 'bg-primary text-primary-foreground border-primary'
+                      : 'bg-secondary text-foreground border-border/50'
+                  }`}
+                >
+                  {p.label}
+                </button>
+              );
+            })}
             <button
-              onClick={() => navigate('/profile')}
+              onClick={() => {
+                const next = !mapDark;
+                setMapDark(next);
+                localStorage.setItem('tutgo_map_dark', String(next));
+                window.dispatchEvent(new Event('storage'));
+              }}
               className="flex-shrink-0 text-[11px] font-medium px-3 py-1.5 rounded-full bg-secondary text-foreground border border-border/50"
             >
-              ★ {t('nav.favorites')} · {favoriteIds.size}
+              {mapDark ? '🌙' : '☀️'}
             </button>
-          )}
-          <button
-            onClick={() => navigate('/bookings')}
-            className="flex-shrink-0 text-[11px] font-medium px-3 py-1.5 rounded-full bg-secondary text-foreground border border-border/50"
-          >
-            {t('nav.bookings')}
-          </button>
-        </div>
-      )}
-
-      {!query && (
-        <div className="px-4 pb-3">
-          <button
-            onClick={() => { onSearch(''); onCategorySelect('all'); setStateWithHaptic('full'); }}
-            className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-primary/15 border border-primary/30 text-primary text-sm font-medium active:scale-[0.98] transition-transform"
-          >
-            <span>🔥</span>
-            Find available in 30 minutes
-          </button>
-        </div>
-      )}
-
-      {/* Content */}
-      <div className="overflow-y-auto px-4 pb-4" onPointerDownCapture={(e) => e.stopPropagation()} style={{ height: 'calc(100% - 220px)', paddingBottom: '70px' }}>
-        {state === 'half' && (
-          /* Horizontal scroll cards */
-          <>
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-semibold text-foreground">
-              {nearbyMode ? t('index.nearby_me') : t('index.popular_nearby')}
-            </span>
-            <span className="text-xs text-muted-foreground">
-              {locations.length} {t('index.found')}
-            </span>
-          </div>
-          <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-2">
-            {loading ? (
-              <div className="flex gap-3">
-                {[1,2,3].map(i => (
-                  <div key={i} className="min-w-[190px] h-[140px] rounded-lg bg-muted animate-pulse flex-shrink-0" />
-                ))}
-              </div>
-            ) : locations.length === 0 ? (
-              <div className="flex flex-col items-center justify-center w-full py-6 gap-2">
-                <Search className="w-8 h-8 text-muted-foreground/40" />
-                <span className="text-muted-foreground text-xs">{t('index.nothing_found')}</span>
-              </div>
-            ) : (
-              locations.slice(0, 10).map((loc: any) => (
-                <motion.div
-                  key={loc.id}
-                  whileTap={{ scale: 0.97 }}
-                  onClick={() => onServiceClick(loc)}
-                  className="min-w-[190px] flex-shrink-0 rounded-lg bg-secondary/60 border border-border/50 overflow-hidden cursor-pointer"
-                >
-                  {loc.gallery?.[0] ? (
-                    <img src={loc.gallery[0]} alt={loc.name} className="w-full h-[90px] object-cover" />
-                  ) : (
-                    <div className="w-full h-[90px] bg-muted flex items-center justify-center text-2xl">
-                      {getServiceEmoji(loc.business_type, loc.sub_category)}
-                    </div>
-                  )}
-                  <div className="p-2 relative">
-                    <p className="text-xs font-semibold text-foreground truncate">{loc.name}</p>
-                    <div className="flex items-center justify-between mt-1">
-                      <span className="text-[10px] text-muted-foreground">⭐ {loc.rating || 0}</span>
-                      {(loc.price_from || 0) > 0 && (
-                        <span className="text-[10px] font-bold text-primary">
-                          от {new Intl.NumberFormat('ru-RU').format(loc.price_from!)}
-                        </span>
-                      )}
-                    </div>
-                    {nearbyMode && loc._distance != null && (
-                      <span className="absolute top-2 right-2 bg-primary/90 text-primary-foreground text-[9px] font-bold px-1.5 py-0.5 rounded">
-                        {formatDistance(loc._distance)}
-                      </span>
-                    )}
-                  </div>
-                </motion.div>
-              ))
+            {nearbyMode && (
+              <button
+                onClick={onDisableNearby}
+                className="flex-shrink-0 text-[11px] font-medium px-3 py-1.5 rounded-full bg-primary/15 text-primary border border-primary/30"
+              >
+                ✕
+              </button>
             )}
           </div>
-          </>
         )}
+      </motion.div>
 
-        {state === 'full' && (
-          <div className="space-y-3">
-            {/* Filter pills — only when searching */}
-            {query.length > 0 && (
-              <div className="flex gap-2 overflow-x-auto scrollbar-hide -mx-4 px-4 pb-1">
-                {[
-                  { id: 'nearby', label: '📍 Nearby' },
-                  { id: 'rating', label: '⭐ Rating' },
-                  { id: 'price', label: '💰 Price' },
-                  { id: 'open', label: '🟢 Open now' },
-                  { id: 'online', label: '✅ Online' },
-                ].map(p => {
-                  const active = activeFilter === p.id;
-                  return (
-                    <button
-                      key={p.id}
-                      onClick={() => { haptic(); setActiveFilter(active ? null : p.id); }}
-                      className={`flex-shrink-0 text-[11px] font-medium px-3 py-1.5 rounded-full border transition-colors ${
-                        active
-                          ? 'bg-primary text-primary-foreground border-primary'
-                          : 'bg-secondary text-foreground border-border/50'
-                      }`}
-                    >
-                      {p.label}
-                    </button>
-                  );
-                })}
-              </div>
-            )}
-
+      {/* Scrollable content area */}
+      <div className="flex-1 overflow-y-auto px-4 pb-4" style={{ paddingBottom: '70px', overscrollBehavior: 'contain' }}>
+        {showFullList ? (
+          <div className="space-y-3 pt-1">
             {/* Section header */}
-            {!loading && locations.length > 0 && (
+            {!loading && sortedLocations.length > 0 && (
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <span className="relative flex h-2 w-2">
@@ -344,10 +299,10 @@ const SmartBottomSheet = ({
                     <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500" />
                   </span>
                   <span className="text-xs font-semibold text-foreground">
-                    {nearbyMode ? 'Nearby' : 'Results'}
+                    {hasQuery ? `Найдено` : (nearbyMode ? 'Рядом' : 'Результаты')}
                   </span>
                   <span className="text-xs text-muted-foreground">
-                    {locations.length}
+                    {sortedLocations.length}
                   </span>
                 </div>
                 <div className="flex items-center gap-1 bg-secondary/60 rounded-lg p-0.5">
@@ -373,13 +328,13 @@ const SmartBottomSheet = ({
               </div>
             )}
 
-            {loading ? <SkeletonList count={4} /> : locations.length === 0 ? (
+            {loading ? <SkeletonList count={4} /> : sortedLocations.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-16 gap-3">
                 <Search className="w-10 h-10 text-muted-foreground/40" />
                 <span className="text-muted-foreground text-sm">{t('index.nothing_found')}</span>
               </div>
             ) : (
-              locations.slice(0, 20).map((loc: any, i: number) => (
+              sortedLocations.slice(0, 30).map((loc: any, i: number) => (
                 <div key={loc.id} className="relative">
                   <ServiceCard
                     service={loc}
@@ -398,6 +353,76 @@ const SmartBottomSheet = ({
               ))
             )}
           </div>
+        ) : (
+          /* Half state: horizontal scroll cards */
+          <>
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-xs font-semibold text-foreground">
+                {nearbyMode ? t('index.nearby_me') : t('index.popular_nearby')}
+              </span>
+              <span className="text-xs text-muted-foreground">
+                {sortedLocations.length} {t('index.found')}
+              </span>
+            </div>
+            <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-2">
+              {loading ? (
+                <div className="flex gap-3">
+                  {[1,2,3].map(i => (
+                    <div key={i} className="min-w-[190px] h-[140px] rounded-lg bg-muted animate-pulse flex-shrink-0" />
+                  ))}
+                </div>
+              ) : sortedLocations.length === 0 ? (
+                <div className="flex flex-col items-center justify-center w-full py-6 gap-2">
+                  <Search className="w-8 h-8 text-muted-foreground/40" />
+                  <span className="text-muted-foreground text-xs">{t('index.nothing_found')}</span>
+                </div>
+              ) : (
+                sortedLocations.slice(0, 10).map((loc: any) => (
+                  <div
+                    key={loc.id}
+                    onClick={() => onServiceClick(loc)}
+                    className="min-w-[190px] flex-shrink-0 rounded-lg bg-secondary/60 border border-border/50 overflow-hidden cursor-pointer active:scale-[0.97] transition-transform"
+                  >
+                    {loc.gallery?.[0] ? (
+                      <img src={loc.gallery[0]} alt={loc.name} className="w-full h-[90px] object-cover" loading="lazy" />
+                    ) : (
+                      <div className="w-full h-[90px] bg-muted flex items-center justify-center text-2xl">
+                        {getServiceEmoji(loc.business_type, loc.sub_category)}
+                      </div>
+                    )}
+                    <div className="p-2 relative">
+                      <p className="text-xs font-semibold text-foreground truncate">{loc.name}</p>
+                      <div className="flex items-center justify-between mt-1">
+                        <span className="text-[10px] text-muted-foreground">⭐ {loc.rating || 0}</span>
+                        {(loc.price_from || 0) > 0 && (
+                          <span className="text-[10px] font-bold text-primary">
+                            от {new Intl.NumberFormat('ru-RU').format(loc.price_from!)}
+                          </span>
+                        )}
+                      </div>
+                      {nearbyMode && loc._distance != null && (
+                        <span className="absolute top-2 right-2 bg-primary/90 text-primary-foreground text-[9px] font-bold px-1.5 py-0.5 rounded">
+                          {formatDistance(loc._distance)}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+
+            {!hasQuery && (
+              <div className="pt-3">
+                <button
+                  onClick={() => { onSearch(''); onCategorySelect('all'); setStateWithHaptic('full'); }}
+                  className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-primary/15 border border-primary/30 text-primary text-sm font-medium active:scale-[0.98] transition-transform"
+                >
+                  <span>🔥</span>
+                  Доступно сейчас
+                </button>
+              </div>
+            )}
+          </>
         )}
       </div>
     </motion.div>
