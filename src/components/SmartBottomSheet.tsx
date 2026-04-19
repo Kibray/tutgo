@@ -229,6 +229,18 @@ const SmartBottomSheet = ({
         </div>
       )}
 
+      {!query && (
+        <div className="px-4 pb-3">
+          <button
+            onClick={() => { onSearch(''); onCategorySelect('all'); setStateWithHaptic('full'); }}
+            className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-primary/15 border border-primary/30 text-primary text-sm font-medium active:scale-[0.98] transition-transform"
+          >
+            <span>🔥</span>
+            Find available in 30 minutes
+          </button>
+        </div>
+      )}
+
       {/* Content */}
       <div className="overflow-y-auto px-4 pb-4" style={{ height: 'calc(100% - 220px)', paddingBottom: '70px' }}>
         {state === 'half' && (
