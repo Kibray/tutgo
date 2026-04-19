@@ -156,7 +156,7 @@ const SmartBottomSheet = ({
           <input
             value={query}
             onChange={e => { setQuery(e.target.value); onSearch(e.target.value); }}
-            onFocus={() => { setStateWithHaptic('full'); }}
+            onFocus={() => { if (state !== 'full') setStateWithHaptic('half'); }}
             onKeyDown={e => e.key === 'Escape' && setStateWithHaptic('half')}
             placeholder={t('index.search_placeholder')}
             className="flex-1 bg-transparent text-sm outline-none text-foreground placeholder:text-muted-foreground"
@@ -243,7 +243,7 @@ const SmartBottomSheet = ({
       )}
 
       {/* Content */}
-      <div className="overflow-y-auto px-4 pb-4" style={{ height: 'calc(100% - 220px)', paddingBottom: '70px' }}>
+      <div className="overflow-y-auto px-4 pb-4" onPointerDownCapture={(e) => e.stopPropagation()} style={{ height: 'calc(100% - 220px)', paddingBottom: '70px' }}>
         {state === 'half' && (
           /* Horizontal scroll cards */
           <>
