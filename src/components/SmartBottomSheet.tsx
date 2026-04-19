@@ -15,7 +15,7 @@ type SheetState = 'peek' | 'half' | 'full';
 const BOTTOM_NAV_HEIGHT = 64;
 
 const HEIGHT_MAP: Record<SheetState, string> = {
-  peek: `${BOTTOM_NAV_HEIGHT + 44}px`,
+  peek: `${BOTTOM_NAV_HEIGHT + 160}px`,
   half: '52vh',
   full: '91vh',
 };
