@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, useMotionValue, useTransform, PanInfo } from 'framer-motion';
-import { Search, X, Locate, Loader2 } from 'lucide-react';
+import { Search, X, Locate, Loader2, LayoutGrid, List } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import ServiceCard from '@/components/ServiceCard';
 import CategoryChips from '@/components/CategoryChips';
