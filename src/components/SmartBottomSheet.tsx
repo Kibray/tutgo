@@ -379,7 +379,7 @@ const SmartBottomSheet = ({
                 <span className="text-muted-foreground text-sm">{t('index.nothing_found')}</span>
               </div>
             ) : (
-              locations.map((loc: any, i: number) => (
+              locations.slice(0, 20).map((loc: any, i: number) => (
                 <div key={loc.id} className="relative">
                   <ServiceCard
                     service={loc}

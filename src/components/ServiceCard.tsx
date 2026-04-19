@@ -91,12 +91,9 @@ const ServiceCard = ({ service, index, onClick, isFavorite, onToggleFavorite, co
 
   if (compact) {
     return (
-      <motion.div
-        initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: index * 0.06, duration: 0.35 }}
+      <div
         onClick={handleClick}
-        className="glass rounded-lg p-4 flex gap-3 cursor-pointer active:scale-[0.98] transition-transform relative"
+        className="bg-secondary/80 border border-border/50 rounded-lg p-4 flex gap-3 cursor-pointer active:scale-[0.98] transition-transform relative"
       >
         {favoriteBtn}
         <div className="w-20 h-20 rounded-md bg-secondary flex-shrink-0 flex items-center justify-center overflow-hidden">
@@ -168,17 +165,14 @@ const ServiceCard = ({ service, index, onClick, isFavorite, onToggleFavorite, co
             </div>
           </div>
         </div>
-      </motion.div>
+      </div>
     );
   }
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 16 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.06, duration: 0.35 }}
+    <div
       onClick={handleClick}
-      className="glass rounded-lg overflow-hidden cursor-pointer active:scale-[0.98] transition-transform relative"
+      className="bg-secondary/80 border border-border/50 rounded-lg overflow-hidden cursor-pointer active:scale-[0.98] transition-transform relative"
     >
       {favoriteBtn}
       <div className="relative w-full h-[160px] bg-secondary overflow-hidden">
