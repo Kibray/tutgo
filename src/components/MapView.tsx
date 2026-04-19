@@ -184,7 +184,7 @@ const ClusterLayer = ({ services, onMarkerClick, zoom, isDark }: { services: Loc
   const map = useMap();
 
   const markers = services.map(s => {
-    const icon = createCategoryIcon(s.business_type, !!s.is_promoted, s.name, s.sub_category, zoom >= 14);
+    const icon = createPriceIcon(s, !!s.is_promoted);
     const marker = L.marker([s.lat!, s.lng!], { icon });
 
     const color = getCategoryColor(s.business_type, s.sub_category);
