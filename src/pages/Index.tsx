@@ -23,7 +23,6 @@ const OnboardingFlow = lazy(() => import('@/components/onboarding/OnboardingFlow
 const DesktopIndex = lazy(() => import('@/components/desktop/DesktopIndex'));
 
 const TASHKENT: [number, number] = [41.3111, 69.2797];
-const NEARBY_RADIUS_KM = 2;
 
 const getDistanceKm = (lat1: number, lng1: number, lat2: number, lng2: number): number => {
   const R = 6371;
@@ -90,7 +89,7 @@ const MobileIndex = () => {
   }, []);
 
   const selectedCat = categories.find(c => c.id === category);
-  const { locations: filtered, loading } = useLocations(
+  const { locations: filtered, allLocations, loading } = useLocations(
     category === 'all' ? 'all' : (selectedCat ? getBizType(selectedCat.name) : 'all'),
     subcategory,
     search
@@ -103,11 +102,29 @@ const MobileIndex = () => {
         ...loc,
         _distance: getDistanceKm(userLocation[0], userLocation[1], loc.lat || 0, loc.lng || 0),
       }))
-      .filter(loc => loc._distance <= NEARBY_RADIUS_KM)
       .sort((a, b) => a._distance - b._distance);
   }, [filtered, nearbyMode, userLocation]);
 
-  const mapLocations = nearbyMode ? displayLocations : filtered;
+  // Stable map dataset: only depends on category/subcategory, NOT search query.
+  // Prevents leaflet cluster recompute on every keystroke.
+  const mapLocations = useMemo(() => {
+    if (!nearbyMode || !userLocation) return allLocations.filter(l => {
+      const matchCat = category === 'all' || l.business_type === (selectedCat ? getBizType(selectedCat.name) : 'all');
+      const matchSub = !subcategory || subcategory === 'all' || l.sub_category === subcategory;
+      return matchCat && matchSub;
+    });
+    return allLocations
+      .filter(l => {
+        const matchCat = category === 'all' || l.business_type === (selectedCat ? getBizType(selectedCat.name) : 'all');
+        const matchSub = !subcategory || subcategory === 'all' || l.sub_category === subcategory;
+        return matchCat && matchSub;
+      })
+      .map(loc => ({
+        ...loc,
+        _distance: getDistanceKm(userLocation[0], userLocation[1], loc.lat || 0, loc.lng || 0),
+      }));
+  }, [allLocations, category, subcategory, nearbyMode, userLocation, selectedCat]);
+
 
   const handleCenterOnMe = useCallback(() => {
     const tg = (window as any).Telegram?.WebApp;
