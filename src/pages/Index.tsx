@@ -102,7 +102,6 @@ const MobileIndex = () => {
         ...loc,
         _distance: getDistanceKm(userLocation[0], userLocation[1], loc.lat || 0, loc.lng || 0),
       }))
-      .filter(loc => loc._distance <= NEARBY_RADIUS_KM)
       .sort((a, b) => a._distance - b._distance);
   }, [filtered, nearbyMode, userLocation]);
 
