@@ -76,6 +76,26 @@ const createCategoryIcon = (category: string, isPromoted: boolean, name?: string
   });
 };
 
+const createPriceIcon = (service: LocationItem, isPromoted: boolean) => {
+  const color = getCategoryColor(service.business_type, service.sub_category);
+  const hasPrice = (service.price_from || 0) > 0;
+  const label = hasPrice
+    ? `${Math.round((service.price_from || 0) / 1000)}k`
+    : getServiceEmoji(service.business_type, service.sub_category);
+  const verifiedDot = service.verified
+    ? `<span class="tutgo-verified-dot" style="position:absolute;top:-3px;right:-3px;width:8px;height:8px;border-radius:50%;background:#22C55E;border:1.5px solid white;box-shadow:0 0 0 0 rgba(34,197,94,0.7);"></span>`
+    : '';
+  const ring = isPromoted ? `box-shadow:0 2px 8px rgba(0,0,0,0.25),0 0 0 2px white,0 0 16px ${color}99;` : 'box-shadow:0 2px 8px rgba(0,0,0,0.25);';
+  const html = `<div style="position:relative;display:inline-flex;align-items:center;justify-content:center;background:${color};color:white;border-radius:12px;padding:3px 8px;font-size:11px;font-weight:600;line-height:14px;white-space:nowrap;border:1.5px solid rgba(255,255,255,0.9);${ring}transition:transform 0.15s ease;">${label}${verifiedDot}</div>`;
+  return L.divIcon({
+    html,
+    className: '',
+    iconSize: [44, 22],
+    iconAnchor: [22, 11],
+    popupAnchor: [0, -14],
+  });
+};
+
 const createUserLocationIcon = () => {
   return L.divIcon({
     html: `<div style="position:relative;width:20px;height:20px;display:flex;align-items:center;justify-content:center;">
@@ -164,7 +184,7 @@ const ClusterLayer = ({ services, onMarkerClick, zoom, isDark }: { services: Loc
   const map = useMap();
 
   const markers = services.map(s => {
-    const icon = createCategoryIcon(s.business_type, !!s.is_promoted, s.name, s.sub_category, zoom >= 14);
+    const icon = createPriceIcon(s, !!s.is_promoted);
     const marker = L.marker([s.lat!, s.lng!], { icon });
 
     const color = getCategoryColor(s.business_type, s.sub_category);
@@ -227,6 +247,12 @@ const injectPulseCSS = () => {
       100% { transform: scale(2); opacity: 0; }
     }
     .tutgo-user-pulse { animation: tutgo-pulse 2s infinite; }
+    @keyframes tutgo-verified-pulse {
+      0% { box-shadow: 0 0 0 0 rgba(34,197,94,0.7); }
+      70% { box-shadow: 0 0 0 6px rgba(34,197,94,0); }
+      100% { box-shadow: 0 0 0 0 rgba(34,197,94,0); }
+    }
+    .tutgo-verified-dot { animation: tutgo-verified-pulse 1.8s infinite; }
     .leaflet-control-zoom-in,
     .leaflet-control-zoom-out {
       background: hsl(220,15%,10%) !important;
