@@ -15,7 +15,7 @@ type SheetState = 'peek' | 'half' | 'full';
 const BOTTOM_NAV_HEIGHT = 64;
 
 const HEIGHT_MAP: Record<SheetState, string> = {
-  peek: `${BOTTOM_NAV_HEIGHT + 44}px`,
+  peek: `${BOTTOM_NAV_HEIGHT + 160}px`,
   half: '52vh',
   full: '91vh',
 };
@@ -80,11 +80,14 @@ const SmartBottomSheet = ({
   const handleDragEnd = (_: any, info: PanInfo) => {
     const { offset, velocity } = info;
     const idx = ORDER.indexOf(state);
-    if (offset.y < -50 || velocity.y < -300) {
+    const isFlick = Math.abs(velocity.y) > 500;
+    if (isFlick && velocity.y < 0) {
       if (idx < ORDER.length - 1) setStateWithHaptic(ORDER[idx + 1]);
-    } else if (offset.y > 50 || velocity.y > 300) {
-      // Never go below peek — always keep search visible
+    } else if (isFlick && velocity.y > 0) {
       if (idx > 0) setStateWithHaptic(ORDER[idx - 1]);
+    } else if (!isFlick) {
+      if (offset.y < -80 && idx < ORDER.length - 1) setStateWithHaptic(ORDER[idx + 1]);
+      if (offset.y > 80 && idx > 0) setStateWithHaptic(ORDER[idx - 1]);
     }
   };
 
@@ -123,15 +126,15 @@ const SmartBottomSheet = ({
 
   return (
     <motion.div
-      drag={state !== 'peek' ? 'y' : false}
+      drag="y"
       dragConstraints={{ top: 0, bottom: 0 }}
-      dragElastic={0.15}
-      dragMomentum={false}
+      dragElastic={0.35}
+      dragMomentum={true}
       onDragEnd={handleDragEnd}
       animate={{ height: HEIGHT_MAP[state], y: 0 }}
-      transition={{ type: 'spring', stiffness: 320, damping: 32 }}
+      transition={{ type: 'spring', stiffness: 500, damping: 36, mass: 0.6 }}
       className="absolute left-0 right-0 z-[1000] bg-background/95 backdrop-blur-xl rounded-t-2xl border-t border-border"
-      style={{ touchAction: 'none', overflow: 'hidden', bottom: `${BOTTOM_NAV_HEIGHT}px` }}
+      style={{ touchAction: 'pan-x', overflow: 'hidden', bottom: `${BOTTOM_NAV_HEIGHT}px` }}
     >
       {/* Handle */}
       <div
@@ -142,11 +145,9 @@ const SmartBottomSheet = ({
       </div>
 
       {/* Category chips */}
-      {(state === 'half' || state === 'full') && (
-        <div className="px-4 pb-2">
-          <CategoryChips selected={category} onSelect={onCategorySelect} selectedSub={subcategory} onSubSelect={onSubcategorySelect} />
-        </div>
-      )}
+      <div className="px-4 pb-2">
+        <CategoryChips selected={category} onSelect={onCategorySelect} selectedSub={subcategory} onSubSelect={onSubcategorySelect} />
+      </div>
 
       {/* Search bar */}
       <div className="relative px-4 pb-2">
@@ -155,7 +156,7 @@ const SmartBottomSheet = ({
           <input
             value={query}
             onChange={e => { setQuery(e.target.value); onSearch(e.target.value); }}
-            onFocus={() => { setStateWithHaptic('full'); }}
+            onFocus={() => { if (state !== 'full') setStateWithHaptic('half'); }}
             onKeyDown={e => e.key === 'Escape' && setStateWithHaptic('half')}
             placeholder={t('index.search_placeholder')}
             className="flex-1 bg-transparent text-sm outline-none text-foreground placeholder:text-muted-foreground"
@@ -242,7 +243,7 @@ const SmartBottomSheet = ({
       )}
 
       {/* Content */}
-      <div className="overflow-y-auto px-4 pb-4" style={{ height: 'calc(100% - 220px)', paddingBottom: '70px' }}>
+      <div className="overflow-y-auto px-4 pb-4" onPointerDownCapture={(e) => e.stopPropagation()} style={{ height: 'calc(100% - 220px)', paddingBottom: '70px' }}>
         {state === 'half' && (
           /* Horizontal scroll cards */
           <>
