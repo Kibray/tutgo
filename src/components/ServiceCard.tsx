@@ -259,7 +259,7 @@ const ServiceCard = ({ service, index, onClick, isFavorite, onToggleFavorite, co
           </motion.button>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 };
 
