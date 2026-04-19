@@ -133,7 +133,7 @@ const SmartBottomSheet = ({
       onDragEnd={handleDragEnd}
       animate={{ height: HEIGHT_MAP[state], y: 0 }}
       transition={{ type: 'spring', stiffness: 500, damping: 36, mass: 0.6 }}
-      className="absolute left-0 right-0 z-[1000] bg-background/95 backdrop-blur-xl rounded-t-2xl border-t border-border"
+      className="absolute left-0 right-0 z-[1000] bg-background/95 rounded-t-2xl border-t border-border"
       style={{ touchAction: 'pan-x', overflow: 'hidden', bottom: `${BOTTOM_NAV_HEIGHT}px` }}
     >
       {/* Handle */}
@@ -379,7 +379,7 @@ const SmartBottomSheet = ({
                 <span className="text-muted-foreground text-sm">{t('index.nothing_found')}</span>
               </div>
             ) : (
-              locations.map((loc: any, i: number) => (
+              locations.slice(0, 20).map((loc: any, i: number) => (
                 <div key={loc.id} className="relative">
                   <ServiceCard
                     service={loc}
