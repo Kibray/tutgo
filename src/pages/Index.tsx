@@ -23,7 +23,6 @@ const OnboardingFlow = lazy(() => import('@/components/onboarding/OnboardingFlow
 const DesktopIndex = lazy(() => import('@/components/desktop/DesktopIndex'));
 
 const TASHKENT: [number, number] = [41.3111, 69.2797];
-const NEARBY_RADIUS_KM = 2;
 
 const getDistanceKm = (lat1: number, lng1: number, lat2: number, lng2: number): number => {
   const R = 6371;
