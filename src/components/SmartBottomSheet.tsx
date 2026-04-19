@@ -145,11 +145,9 @@ const SmartBottomSheet = ({
       </div>
 
       {/* Category chips */}
-      {(state === 'half' || state === 'full') && (
-        <div className="px-4 pb-2">
-          <CategoryChips selected={category} onSelect={onCategorySelect} selectedSub={subcategory} onSubSelect={onSubcategorySelect} />
-        </div>
-      )}
+      <div className="px-4 pb-2">
+        <CategoryChips selected={category} onSelect={onCategorySelect} selectedSub={subcategory} onSubSelect={onSubcategorySelect} />
+      </div>
 
       {/* Search bar */}
       <div className="relative px-4 pb-2">
