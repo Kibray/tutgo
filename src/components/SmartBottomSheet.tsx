@@ -57,6 +57,8 @@ const SmartBottomSheet = ({
   const [query, setQuery] = useState('');
   const [mapDark, setMapDark] = useState(() => localStorage.getItem('tutgo_map_dark') !== 'false');
   const [suggestions, setSuggestions] = useState<any[]>([]);
+  const [viewMode, setViewMode] = useState<'cards' | 'list'>('cards');
+  const [activeFilter, setActiveFilter] = useState<string | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout>>();
 
   const haptic = () => {
