@@ -247,6 +247,12 @@ const injectPulseCSS = () => {
       100% { transform: scale(2); opacity: 0; }
     }
     .tutgo-user-pulse { animation: tutgo-pulse 2s infinite; }
+    @keyframes tutgo-verified-pulse {
+      0% { box-shadow: 0 0 0 0 rgba(34,197,94,0.7); }
+      70% { box-shadow: 0 0 0 6px rgba(34,197,94,0); }
+      100% { box-shadow: 0 0 0 0 rgba(34,197,94,0); }
+    }
+    .tutgo-verified-dot { animation: tutgo-verified-pulse 1.8s infinite; }
     .leaflet-control-zoom-in,
     .leaflet-control-zoom-out {
       background: hsl(220,15%,10%) !important;
