@@ -309,7 +309,7 @@ const SmartBottomSheet = ({
                   <button
                     onClick={() => { haptic(); setViewMode('cards'); }}
                     className={`p-1.5 rounded-md transition-colors ${
-                      viewMode === 'cards' ? 'bg-white text-black shadow-sm' : 'text-muted-foreground'
+                      viewMode === 'cards' ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground'
                     }`}
                     aria-label="Card view"
                   >
@@ -318,7 +318,7 @@ const SmartBottomSheet = ({
                   <button
                     onClick={() => { haptic(); setViewMode('list'); }}
                     className={`p-1.5 rounded-md transition-colors ${
-                      viewMode === 'list' ? 'bg-white text-black shadow-sm' : 'text-muted-foreground'
+                      viewMode === 'list' ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground'
                     }`}
                     aria-label="List view"
                   >
