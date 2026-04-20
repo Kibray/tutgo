@@ -21,6 +21,9 @@ const BottomNav = () => {
     navigate(id);
   };
 
+  if (pathname.startsWith('/service/')) return null;
+  if (pathname.startsWith('/booking-confirm')) return null;
+
   return (
     <div className="fixed bottom-0 left-0 right-0 z-[2000] safe-bottom bg-background/60 backdrop-blur-xl border-t border-border/50 rounded-t-[20px]">
       <div className="flex items-center justify-around pt-2.5 max-w-lg mx-auto" style={{ paddingBottom: 'max(10px, env(safe-area-inset-bottom))' }}>
