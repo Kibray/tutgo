@@ -61,6 +61,7 @@ const SmartBottomSheet = ({
   const [suggestions, setSuggestions] = useState<any[]>([]);
   const [viewMode, setViewMode] = useState<'cards' | 'list'>('list');
   const [activeFilter, setActiveFilter] = useState<string | null>(null);
+  const [keyboardHeight, setKeyboardHeight] = useState(0);
   const debounceRef = useRef<ReturnType<typeof setTimeout>>();
 
   const haptic = () => {
@@ -147,6 +148,18 @@ const SmartBottomSheet = ({
     }, 400);
     return () => clearTimeout(debounceRef.current);
   }, [query, locations.length]);
+
+  // Keyboard detection for iOS/Android
+  useEffect(() => {
+    const vv = window.visualViewport;
+    if (!vv) return;
+    const handler = () => {
+      const h = window.innerHeight - vv.height;
+      setKeyboardHeight(h > 100 ? h : 0);
+    };
+    vv.addEventListener('resize', handler);
+    return () => vv.removeEventListener('resize', handler);
+  }, []);
 
   const handleClear = () => {
     setQuery('');
@@ -290,7 +303,7 @@ const SmartBottomSheet = ({
       </div>
 
       {/* Scrollable content area */}
-      <div className="flex-1 overflow-y-auto px-4 pb-4" style={{ paddingBottom: '70px', overscrollBehavior: 'contain' }}>
+      <div className="flex-1 overflow-y-auto px-4 pb-4" style={{ paddingBottom: `${70 + keyboardHeight}px`, overscrollBehavior: 'contain' }}>
         {showFullList ? (
           <div className="space-y-3 pt-1">
             {/* Section header */}
