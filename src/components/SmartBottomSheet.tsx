@@ -178,7 +178,7 @@ const SmartBottomSheet = ({
   const showChips = state === 'half' || state === 'full';
   const hasQuery = query.trim().length > 0;
   // When user is searching, always show full vertical list
-  const showFullList = hasQuery || state === 'full';
+  const showFullList = hasQuery || state === 'full' || state === 'half';
 
   return (
     <motion.div
