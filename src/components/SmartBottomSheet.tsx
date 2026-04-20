@@ -174,7 +174,7 @@ const SmartBottomSheet = ({
       className="absolute left-0 right-0 z-[1000] bg-background/95 rounded-t-2xl border-t border-border flex flex-col"
       style={{ overflow: 'hidden', bottom: `${BOTTOM_NAV_HEIGHT}px` }}
     >
-      {/* Drag-only header zone */}
+      {/* Drag handle ONLY */}
       <motion.div
         drag="y"
         dragConstraints={{ top: 0, bottom: 0 }}
@@ -191,7 +191,10 @@ const SmartBottomSheet = ({
         >
           <div className="w-10 h-1 rounded-full bg-muted-foreground/30" />
         </div>
+      </motion.div>
 
+      {/* Non-draggable header content */}
+      <div className="flex-shrink-0">
         {/* Category chips */}
         <div className="px-4 pb-2">
           <CategoryChips selected={category} onSelect={onCategorySelect} selectedSub={subcategory} onSubSelect={onSubcategorySelect} />
@@ -284,7 +287,7 @@ const SmartBottomSheet = ({
             )}
           </div>
         )}
-      </motion.div>
+      </div>
 
       {/* Scrollable content area */}
       <div className="flex-1 overflow-y-auto px-4 pb-4" style={{ paddingBottom: '70px', overscrollBehavior: 'contain' }}>
