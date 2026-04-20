@@ -63,6 +63,7 @@ const SmartBottomSheet = ({
   const [activeFilter, setActiveFilter] = useState<string | null>(null);
   const [keyboardHeight, setKeyboardHeight] = useState(0);
   const debounceRef = useRef<ReturnType<typeof setTimeout>>();
+  const [visibleCount, setVisibleCount] = useState(5);
 
   const haptic = () => {
     const tg = (window as any).Telegram?.WebApp;
@@ -160,6 +161,8 @@ const SmartBottomSheet = ({
     vv.addEventListener('resize', handler);
     return () => vv.removeEventListener('resize', handler);
   }, []);
+
+  useEffect(() => { setVisibleCount(5); }, [category, subcategory, query]);
 
   const handleClear = () => {
     setQuery('');
@@ -350,7 +353,7 @@ const SmartBottomSheet = ({
                 <span className="text-muted-foreground text-sm">{t('index.nothing_found')}</span>
               </div>
             ) : (
-              sortedLocations.slice(0, 30).map((loc: any, i: number) => (
+              sortedLocations.slice(0, visibleCount).map((loc: any, i: number) => (
                 <div key={loc.id} className="relative">
                   <ServiceCard
                     service={loc}
@@ -367,6 +370,14 @@ const SmartBottomSheet = ({
                   )}
                 </div>
               ))
+            )}
+            {!loading && sortedLocations.length > visibleCount && (
+              <button
+                onClick={() => setVisibleCount(prev => prev + 10)}
+                className="w-full py-3 rounded-xl bg-secondary/60 border border-border/50 text-sm text-muted-foreground font-medium active:scale-[0.98] transition-transform"
+              >
+                Показать ещё ({sortedLocations.length - visibleCount} мест)
+              </button>
             )}
           </div>
         ) : (
