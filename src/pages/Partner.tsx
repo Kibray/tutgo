@@ -14,6 +14,7 @@ import { Badge } from '@/components/ui/badge';
 import { startOfDay, endOfDay, format } from 'date-fns';
 import PartnerOnboarding from '@/components/partner/PartnerOnboarding';
 import { useSubscription } from '@/hooks/useSubscription';
+import InstagramConnectCard from '@/components/partner/InstagramConnectCard';
 
 const dashboardItems = [
   { id: 'bookings', icon: Calendar, labelKey: 'partner.journal', route: '/partner/bookings', badgeKey: 'bookings' },
@@ -165,6 +166,8 @@ const Partner = () => {
             avgRating={avgRating}
           />
         </div>
+
+        <InstagramConnectCard />
 
         <div className="grid grid-cols-2 gap-3">
           {dashboardItems.map((item, i) => {
