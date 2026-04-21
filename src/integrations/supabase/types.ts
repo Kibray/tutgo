@@ -883,6 +883,10 @@ export type Database = {
           dark_mode: boolean
           display_name: string | null
           id: string
+          instagram_access_token: string | null
+          instagram_connected: boolean
+          instagram_page_id: string | null
+          instagram_user_id: string | null
           language: string
           notifications_enabled: boolean
           notify_cancelled: boolean
@@ -908,6 +912,10 @@ export type Database = {
           dark_mode?: boolean
           display_name?: string | null
           id?: string
+          instagram_access_token?: string | null
+          instagram_connected?: boolean
+          instagram_page_id?: string | null
+          instagram_user_id?: string | null
           language?: string
           notifications_enabled?: boolean
           notify_cancelled?: boolean
@@ -933,6 +941,10 @@ export type Database = {
           dark_mode?: boolean
           display_name?: string | null
           id?: string
+          instagram_access_token?: string | null
+          instagram_connected?: boolean
+          instagram_page_id?: string | null
+          instagram_user_id?: string | null
           language?: string
           notifications_enabled?: boolean
           notify_cancelled?: boolean
