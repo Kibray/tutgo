@@ -62,6 +62,7 @@ const Stay = lazy(() => import("./pages/Stay"));
 const StayDetail = lazy(() => import("./pages/StayDetail"));
 const Reviews = lazy(() => import("./pages/Reviews"));
 const SeedDemo = lazy(() => import("./pages/SeedDemo"));
+const InstagramCallback = lazy(() => import("./pages/InstagramCallback"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -164,6 +165,7 @@ const App = () => (
                   <Route path="/stay/:id" element={<StayDetail />} />
                   <Route path="/reviews" element={<Reviews />} />
                   <Route path="/seed-demo" element={<SeedDemo />} />
+                  <Route path="/instagram-callback" element={<InstagramCallback />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </Suspense>
