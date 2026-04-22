@@ -322,14 +322,25 @@ const AuthPartner = () => {
           {googleLoading ? '...' : t('auth.google_login')}
         </motion.button>
 
-        <motion.button
-          whileTap={{ scale: 0.98 }}
-          onClick={handleTelegramLogin}
-          className="w-full mt-3 py-3 rounded-lg border border-border bg-background text-foreground font-semibold text-sm flex items-center justify-center gap-2 hover:bg-muted transition-colors"
-        >
-          <Send className="w-[18px] h-[18px] text-[#2AABEE]" />
-          {t('auth.telegram_login')}
-        </motion.button>
+        <div className="mt-3 rounded-lg border border-[#2AABEE33] overflow-hidden">
+          <motion.button
+            whileTap={{ scale: 0.98 }}
+            onClick={handleTelegramLogin}
+            className="w-full py-3 bg-background text-foreground font-semibold text-sm flex items-center justify-center gap-2 hover:bg-muted transition-colors"
+          >
+            <Send className="w-[18px] h-[18px] text-[#2AABEE]" />
+            {t('auth.telegram_login')}
+          </motion.button>
+          <div className="border-t border-[#2a2a2a]" />
+          <motion.button
+            whileTap={{ scale: 0.98 }}
+            onClick={() => setTelegramStep('phone_input')}
+            className="w-full py-2 bg-background text-xs flex items-center justify-center gap-1.5 hover:bg-muted transition-colors text-[#2AABEE]"
+          >
+            <Phone className="w-3.5 h-3.5" />
+            или по номеру телефона
+          </motion.button>
+        </div>
 
         <button
           onClick={() => navigate('/auth')}
