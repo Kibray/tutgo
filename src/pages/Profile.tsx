@@ -10,6 +10,7 @@ import { useState } from 'react';
 import BottomNav from '@/components/BottomNav';
 import TelegramLinkBlock from '@/components/TelegramLinkBlock';
 import ReferralSection from '@/components/ReferralSection';
+import InstagramConnectCard from '@/components/partner/InstagramConnectCard';
 
 const Profile = () => {
   const { user, isPartner, signOut, becomePartner } = useAuth();
@@ -60,6 +61,7 @@ const Profile = () => {
         </motion.div>
 
         {user && <TelegramLinkBlock />}
+        {user && isPartner && <InstagramConnectCard />}
 
         <div className="grid grid-cols-2 gap-3 mb-6">
           <motion.div
