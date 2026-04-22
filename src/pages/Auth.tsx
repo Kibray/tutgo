@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Send, Phone } from 'lucide-react';
+import { ArrowLeft, Send, Phone, KeyRound } from 'lucide-react';
 import PhoneCountrySelect, { COUNTRIES, type Country } from '@/components/auth/PhoneCountrySelect';
 import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
@@ -29,7 +29,11 @@ const Auth = () => {
   const [fullPhone, setFullPhone] = useState('');
   const [showReset, setShowReset] = useState(false);
   const [resetEmail, setResetEmail] = useState('');
-  const { signUp, signIn, user } = useAuth();
+  const { signUp, signIn, user, isRecovery, setIsRecovery } = useAuth();
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [recoveryLoading, setRecoveryLoading] = useState(false);
+  const [recoverySuccess, setRecoverySuccess] = useState(false);
   const { t } = usePreferences();
   const { isTelegram, ready: tgReady } = useTelegram();
   const navigate = useNavigate();
@@ -42,6 +46,30 @@ const Auth = () => {
       navigate('/profile', { replace: true });
     }
   }, [isTelegram, tgReady, user, navigate]);
+
+  const handleUpdatePassword = async () => {
+    if (newPassword.length < 6) {
+      toast({ title: t('common.error'), description: 'Минимум 6 символов', variant: 'destructive' });
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      toast({ title: t('common.error'), description: 'Пароли не совпадают', variant: 'destructive' });
+      return;
+    }
+    setRecoveryLoading(true);
+    const { error } = await supabase.auth.updateUser({ password: newPassword });
+    setRecoveryLoading(false);
+    if (error) {
+      toast({ title: t('common.error'), description: error.message, variant: 'destructive' });
+      return;
+    }
+    setRecoverySuccess(true);
+    toast({ title: 'Пароль обновлён', description: 'Вход выполнен' });
+    setTimeout(() => {
+      setIsRecovery(false);
+      navigate('/profile', { replace: true });
+    }, 1200);
+  };
 
   if (isTelegram && !tgReady) {
     return (
