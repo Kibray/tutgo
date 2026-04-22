@@ -14,6 +14,7 @@ import { Button } from '@/components/ui/button';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { format, subDays, startOfDay, endOfDay } from 'date-fns';
 import { ru } from 'date-fns/locale';
+import InstagramConnectCard from '@/components/partner/InstagramConnectCard';
 
 /* ─── Sidebar items ─── */
 const sidebarItems = [
