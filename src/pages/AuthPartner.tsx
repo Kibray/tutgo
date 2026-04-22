@@ -129,6 +129,47 @@ const AuthPartner = () => {
   }
 
   if (telegramStep === 'waiting_code') {
+    // handled below
+  }
+
+  if (telegramStep === 'phone_input') {
+    return (
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center px-6 relative">
+        <motion.button whileTap={{ scale: 0.9 }} onClick={() => setTelegramStep('idle')}
+          className="absolute top-6 left-4 w-9 h-9 flex items-center justify-center rounded-full glass">
+          <ArrowLeft className="w-5 h-5 text-foreground" />
+        </motion.button>
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="w-full max-w-sm text-center">
+          <div className="glass rounded-2xl p-8 border border-border">
+            <Phone className="w-10 h-10 text-[#2AABEE] mx-auto mb-4" />
+            <h1 className="text-2xl font-bold font-display text-foreground mb-2">Введите номер телефона</h1>
+            <p className="text-sm text-muted-foreground mb-6">Мы отправим код подтверждения в Telegram</p>
+            <div className="flex gap-2 mb-6">
+              <PhoneCountrySelect selected={phoneCountry} onSelect={setPhoneCountry} />
+              <input
+                type="tel"
+                value={phoneNumber}
+                onChange={e => setPhoneNumber(e.target.value)}
+                placeholder="XX XXX XX XX"
+                className="flex-1 glass rounded-lg px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground outline-none border border-border focus:border-primary transition-colors"
+              />
+            </div>
+            <motion.button
+              whileTap={{ scale: 0.98 }}
+              onClick={handlePhoneLogin}
+              disabled={phoneNumber.replace(/\s/g, '').length < 5}
+              className="w-full py-3 rounded-lg bg-[#2AABEE] text-white font-semibold text-sm disabled:opacity-50 flex items-center justify-center gap-2"
+            >
+              <Send className="w-4 h-4" />
+              Получить код в Telegram
+            </motion.button>
+          </div>
+        </motion.div>
+      </div>
+    );
+  }
+
+  if (telegramStep === 'waiting_code') {
     return (
       <div className="min-h-screen bg-background flex flex-col items-center justify-center px-6 relative">
         <motion.button whileTap={{ scale: 0.9 }} onClick={() => setTelegramStep('idle')}
