@@ -128,10 +128,6 @@ const AuthPartner = () => {
     );
   }
 
-  if (telegramStep === 'waiting_code') {
-    // handled below
-  }
-
   if (telegramStep === 'phone_input') {
     return (
       <div className="min-h-screen bg-background flex flex-col items-center justify-center px-6 relative">
