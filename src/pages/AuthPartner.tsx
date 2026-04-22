@@ -74,12 +74,20 @@ const AuthPartner = () => {
     setTelegramStep('waiting_code');
   };
 
+  const handlePhoneLogin = () => {
+    const full = phoneCountry.dial + phoneNumber.replace(/\s/g, '');
+    setFullPhone(full);
+    const encoded = btoa(full);
+    window.open(`https://t.me/TutGoUzBot?start=auth_${encoded}`, '_blank');
+    setTelegramStep('waiting_code');
+  };
+
   const handleVerifyTelegramCode = async () => {
     if (telegramCode.length !== 6) return;
     setTelegramLoading(true);
     try {
       const res = await supabase.functions.invoke('verify-telegram-code', {
-        body: { code: telegramCode },
+        body: { code: telegramCode, ...(fullPhone ? { phone: fullPhone } : {}) },
       });
       if (res.error || res.data?.error) {
         toast({ title: t('common.error'), description: res.data?.error || 'Failed', variant: 'destructive' });
