@@ -27,16 +27,28 @@ const InstagramConnectCard = () => {
 
   useEffect(() => {
     if (!user) { setLoading(false); return; }
-    supabase
-      .from('profiles')
-      .select('instagram_connected, instagram_user_id')
-      .eq('user_id', user.id)
-      .maybeSingle()
-      .then(({ data }) => {
-        setConnected(!!(data as any)?.instagram_connected);
-        setIgId((data as any)?.instagram_user_id ?? null);
-        setLoading(false);
-      });
+    let cancelled = false;
+    (async () => {
+      try {
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('instagram_connected, instagram_user_id')
+          .eq('user_id', user.id)
+          .maybeSingle();
+        if (cancelled) return;
+        if (error) {
+          console.error('[InstagramConnectCard] profile fetch error:', error);
+        } else {
+          setConnected(!!(data as any)?.instagram_connected);
+          setIgId((data as any)?.instagram_user_id ?? null);
+        }
+      } catch (e) {
+        if (!cancelled) console.error('[InstagramConnectCard] unexpected error:', e);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => { cancelled = true; };
   }, [user]);
 
   const handleConnect = async () => {
