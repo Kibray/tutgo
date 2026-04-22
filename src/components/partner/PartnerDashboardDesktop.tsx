@@ -14,6 +14,7 @@ import { Button } from '@/components/ui/button';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { format, subDays, startOfDay, endOfDay } from 'date-fns';
 import { ru } from 'date-fns/locale';
+import InstagramConnectCard from '@/components/partner/InstagramConnectCard';
 
 /* ─── Sidebar items ─── */
 const sidebarItems = [
@@ -332,6 +333,9 @@ const PartnerDashboardDesktop = () => {
               </CardContent>
             </Card>
           </div>
+
+          {/* Instagram AI bot connection */}
+          <InstagramConnectCard />
 
           {/* Row 3: Today's appointments + Top clients */}
           <div className="grid grid-cols-3 gap-4">
