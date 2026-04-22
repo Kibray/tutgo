@@ -334,6 +334,9 @@ const PartnerDashboardDesktop = () => {
             </Card>
           </div>
 
+          {/* Instagram AI bot connection */}
+          <InstagramConnectCard />
+
           {/* Row 3: Today's appointments + Top clients */}
           <div className="grid grid-cols-3 gap-4">
             {/* Appointments */}
