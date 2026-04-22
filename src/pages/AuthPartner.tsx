@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Send } from 'lucide-react';
+import { ArrowLeft, Send, Phone } from 'lucide-react';
+import PhoneCountrySelect, { COUNTRIES, type Country } from '@/components/auth/PhoneCountrySelect';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { usePreferences } from '@/hooks/usePreferences';
@@ -19,9 +20,12 @@ const AuthPartner = () => {
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const [confirmationSent, setConfirmationSent] = useState(false);
-  const [telegramStep, setTelegramStep] = useState<'idle' | 'waiting_code'>('idle');
+  const [telegramStep, setTelegramStep] = useState<'idle' | 'waiting_code' | 'phone_input'>('idle');
   const [telegramCode, setTelegramCode] = useState('');
   const [telegramLoading, setTelegramLoading] = useState(false);
+  const [phoneCountry, setPhoneCountry] = useState<Country>(COUNTRIES[0]);
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [fullPhone, setFullPhone] = useState('');
   const [showReset, setShowReset] = useState(false);
   const [resetEmail, setResetEmail] = useState('');
   const { signUp, user } = useAuth();
@@ -70,12 +74,20 @@ const AuthPartner = () => {
     setTelegramStep('waiting_code');
   };
 
+  const handlePhoneLogin = () => {
+    const full = phoneCountry.dial + phoneNumber.replace(/\s/g, '');
+    setFullPhone(full);
+    const encoded = btoa(full);
+    window.open(`https://t.me/TutGoUzBot?start=auth_${encoded}`, '_blank');
+    setTelegramStep('waiting_code');
+  };
+
   const handleVerifyTelegramCode = async () => {
     if (telegramCode.length !== 6) return;
     setTelegramLoading(true);
     try {
       const res = await supabase.functions.invoke('verify-telegram-code', {
-        body: { code: telegramCode },
+        body: { code: telegramCode, ...(fullPhone ? { phone: fullPhone } : {}) },
       });
       if (res.error || res.data?.error) {
         toast({ title: t('common.error'), description: res.data?.error || 'Failed', variant: 'destructive' });
@@ -116,6 +128,43 @@ const AuthPartner = () => {
     );
   }
 
+  if (telegramStep === 'phone_input') {
+    return (
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center px-6 relative">
+        <motion.button whileTap={{ scale: 0.9 }} onClick={() => setTelegramStep('idle')}
+          className="absolute top-6 left-4 w-9 h-9 flex items-center justify-center rounded-full glass">
+          <ArrowLeft className="w-5 h-5 text-foreground" />
+        </motion.button>
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="w-full max-w-sm text-center">
+          <div className="glass rounded-2xl p-8 border border-border">
+            <Phone className="w-10 h-10 text-[#2AABEE] mx-auto mb-4" />
+            <h1 className="text-2xl font-bold font-display text-foreground mb-2">Введите номер телефона</h1>
+            <p className="text-sm text-muted-foreground mb-6">Мы отправим код подтверждения в Telegram</p>
+            <div className="flex gap-2 mb-6">
+              <PhoneCountrySelect selected={phoneCountry} onSelect={setPhoneCountry} />
+              <input
+                type="tel"
+                value={phoneNumber}
+                onChange={e => setPhoneNumber(e.target.value)}
+                placeholder="XX XXX XX XX"
+                className="flex-1 glass rounded-lg px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground outline-none border border-border focus:border-primary transition-colors"
+              />
+            </div>
+            <motion.button
+              whileTap={{ scale: 0.98 }}
+              onClick={handlePhoneLogin}
+              disabled={phoneNumber.replace(/\s/g, '').length < 5}
+              className="w-full py-3 rounded-lg bg-[#2AABEE] text-white font-semibold text-sm disabled:opacity-50 flex items-center justify-center gap-2"
+            >
+              <Send className="w-4 h-4" />
+              Получить код в Telegram
+            </motion.button>
+          </div>
+        </motion.div>
+      </div>
+    );
+  }
+
   if (telegramStep === 'waiting_code') {
     return (
       <div className="min-h-screen bg-background flex flex-col items-center justify-center px-6 relative">
@@ -127,7 +176,11 @@ const AuthPartner = () => {
           <div className="glass rounded-2xl p-8 border border-border">
             <Send className="w-10 h-10 text-[#2AABEE] mx-auto mb-4" />
             <h1 className="text-2xl font-bold font-display text-foreground mb-2">{t('auth.enter_code')}</h1>
-            <p className="text-sm text-muted-foreground mb-6">{t('auth.code_instruction')}</p>
+            <p className="text-sm text-muted-foreground mb-1">{t('auth.code_instruction')}</p>
+            {fullPhone && (
+              <p className="text-sm font-medium text-foreground mb-5">{fullPhone}</p>
+            )}
+            {!fullPhone && <div className="mb-6" />}
             <div className="flex justify-center mb-6">
               <InputOTP maxLength={6} value={telegramCode} onChange={setTelegramCode}>
                 <InputOTPGroup>
@@ -269,14 +322,25 @@ const AuthPartner = () => {
           {googleLoading ? '...' : t('auth.google_login')}
         </motion.button>
 
-        <motion.button
-          whileTap={{ scale: 0.98 }}
-          onClick={handleTelegramLogin}
-          className="w-full mt-3 py-3 rounded-lg border border-border bg-background text-foreground font-semibold text-sm flex items-center justify-center gap-2 hover:bg-muted transition-colors"
-        >
-          <Send className="w-[18px] h-[18px] text-[#2AABEE]" />
-          {t('auth.telegram_login')}
-        </motion.button>
+        <div className="mt-3 rounded-lg border border-[#2AABEE33] overflow-hidden">
+          <motion.button
+            whileTap={{ scale: 0.98 }}
+            onClick={handleTelegramLogin}
+            className="w-full py-3 bg-background text-foreground font-semibold text-sm flex items-center justify-center gap-2 hover:bg-muted transition-colors"
+          >
+            <Send className="w-[18px] h-[18px] text-[#2AABEE]" />
+            {t('auth.telegram_login')}
+          </motion.button>
+          <div className="border-t border-[#2a2a2a]" />
+          <motion.button
+            whileTap={{ scale: 0.98 }}
+            onClick={() => setTelegramStep('phone_input')}
+            className="w-full py-2 bg-background text-xs flex items-center justify-center gap-1.5 hover:bg-muted transition-colors text-[#2AABEE]"
+          >
+            <Phone className="w-3.5 h-3.5" />
+            или по номеру телефона
+          </motion.button>
+        </div>
 
         <button
           onClick={() => navigate('/auth')}
