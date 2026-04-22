@@ -139,7 +139,11 @@ const AuthPartner = () => {
           <div className="glass rounded-2xl p-8 border border-border">
             <Send className="w-10 h-10 text-[#2AABEE] mx-auto mb-4" />
             <h1 className="text-2xl font-bold font-display text-foreground mb-2">{t('auth.enter_code')}</h1>
-            <p className="text-sm text-muted-foreground mb-6">{t('auth.code_instruction')}</p>
+            <p className="text-sm text-muted-foreground mb-1">{t('auth.code_instruction')}</p>
+            {fullPhone && (
+              <p className="text-sm font-medium text-foreground mb-5">{fullPhone}</p>
+            )}
+            {!fullPhone && <div className="mb-6" />}
             <div className="flex justify-center mb-6">
               <InputOTP maxLength={6} value={telegramCode} onChange={setTelegramCode}>
                 <InputOTPGroup>
