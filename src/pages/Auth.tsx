@@ -159,10 +159,6 @@ const Auth = () => {
     setTelegramLoading(false);
   };
 
-  if (confirmationSent && !isLogin) {
-    // recovery screen takes precedence — handled above
-  }
-
   if (isRecovery) {
     return (
       <div className="min-h-screen bg-background flex flex-col items-center justify-center px-6 relative">
