@@ -160,6 +160,54 @@ const Auth = () => {
   };
 
   if (confirmationSent && !isLogin) {
+    // recovery screen takes precedence — handled above
+  }
+
+  if (isRecovery) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center px-6 relative">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="w-full max-w-sm text-center">
+          <div className="glass rounded-2xl p-8 border border-border">
+            <KeyRound className="w-10 h-10 text-primary mx-auto mb-4" />
+            <h1 className="text-2xl font-bold font-display text-foreground mb-2">Новый пароль</h1>
+            <p className="text-sm text-muted-foreground mb-6">Придумайте новый пароль для входа</p>
+            {recoverySuccess ? (
+              <p className="text-sm text-primary font-medium py-4">Пароль успешно обновлён ✓</p>
+            ) : (
+              <>
+                <input
+                  type="password"
+                  placeholder="Новый пароль"
+                  value={newPassword}
+                  minLength={6}
+                  onChange={e => setNewPassword(e.target.value)}
+                  className="w-full glass rounded-lg px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground outline-none border border-border focus:border-primary transition-colors mb-3"
+                />
+                <input
+                  type="password"
+                  placeholder="Подтвердите пароль"
+                  value={confirmPassword}
+                  minLength={6}
+                  onChange={e => setConfirmPassword(e.target.value)}
+                  className="w-full glass rounded-lg px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground outline-none border border-border focus:border-primary transition-colors mb-5"
+                />
+                <motion.button
+                  whileTap={{ scale: 0.98 }}
+                  onClick={handleUpdatePassword}
+                  disabled={recoveryLoading || newPassword.length < 6 || confirmPassword.length < 6}
+                  className="w-full py-3 rounded-lg bg-primary text-primary-foreground font-semibold text-sm disabled:opacity-50"
+                >
+                  {recoveryLoading ? '...' : 'Обновить пароль'}
+                </motion.button>
+              </>
+            )}
+          </div>
+        </motion.div>
+      </div>
+    );
+  }
+
+  if (confirmationSent && !isLogin) {
     return (
       <div className="min-h-screen bg-background flex flex-col items-center justify-center px-6 relative">
         <motion.button whileTap={{ scale: 0.9 }} onClick={() => navigate(-1 as any)}
