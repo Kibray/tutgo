@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Send, Phone } from 'lucide-react';
+import { ArrowLeft, Send, Phone, KeyRound } from 'lucide-react';
 import PhoneCountrySelect, { COUNTRIES, type Country } from '@/components/auth/PhoneCountrySelect';
 import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
@@ -29,7 +29,11 @@ const Auth = () => {
   const [fullPhone, setFullPhone] = useState('');
   const [showReset, setShowReset] = useState(false);
   const [resetEmail, setResetEmail] = useState('');
-  const { signUp, signIn, user } = useAuth();
+  const { signUp, signIn, user, isRecovery, setIsRecovery } = useAuth();
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [recoveryLoading, setRecoveryLoading] = useState(false);
+  const [recoverySuccess, setRecoverySuccess] = useState(false);
   const { t } = usePreferences();
   const { isTelegram, ready: tgReady } = useTelegram();
   const navigate = useNavigate();
@@ -42,6 +46,30 @@ const Auth = () => {
       navigate('/profile', { replace: true });
     }
   }, [isTelegram, tgReady, user, navigate]);
+
+  const handleUpdatePassword = async () => {
+    if (newPassword.length < 6) {
+      toast({ title: t('common.error'), description: 'Минимум 6 символов', variant: 'destructive' });
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      toast({ title: t('common.error'), description: 'Пароли не совпадают', variant: 'destructive' });
+      return;
+    }
+    setRecoveryLoading(true);
+    const { error } = await supabase.auth.updateUser({ password: newPassword });
+    setRecoveryLoading(false);
+    if (error) {
+      toast({ title: t('common.error'), description: error.message, variant: 'destructive' });
+      return;
+    }
+    setRecoverySuccess(true);
+    toast({ title: 'Пароль обновлён', description: 'Вход выполнен' });
+    setTimeout(() => {
+      setIsRecovery(false);
+      navigate('/profile', { replace: true });
+    }, 1200);
+  };
 
   if (isTelegram && !tgReady) {
     return (
@@ -130,6 +158,50 @@ const Auth = () => {
 
     setTelegramLoading(false);
   };
+
+  if (isRecovery) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center px-6 relative">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="w-full max-w-sm text-center">
+          <div className="glass rounded-2xl p-8 border border-border">
+            <KeyRound className="w-10 h-10 text-primary mx-auto mb-4" />
+            <h1 className="text-2xl font-bold font-display text-foreground mb-2">Новый пароль</h1>
+            <p className="text-sm text-muted-foreground mb-6">Придумайте новый пароль для входа</p>
+            {recoverySuccess ? (
+              <p className="text-sm text-primary font-medium py-4">Пароль успешно обновлён ✓</p>
+            ) : (
+              <>
+                <input
+                  type="password"
+                  placeholder="Новый пароль"
+                  value={newPassword}
+                  minLength={6}
+                  onChange={e => setNewPassword(e.target.value)}
+                  className="w-full glass rounded-lg px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground outline-none border border-border focus:border-primary transition-colors mb-3"
+                />
+                <input
+                  type="password"
+                  placeholder="Подтвердите пароль"
+                  value={confirmPassword}
+                  minLength={6}
+                  onChange={e => setConfirmPassword(e.target.value)}
+                  className="w-full glass rounded-lg px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground outline-none border border-border focus:border-primary transition-colors mb-5"
+                />
+                <motion.button
+                  whileTap={{ scale: 0.98 }}
+                  onClick={handleUpdatePassword}
+                  disabled={recoveryLoading || newPassword.length < 6 || confirmPassword.length < 6}
+                  className="w-full py-3 rounded-lg bg-primary text-primary-foreground font-semibold text-sm disabled:opacity-50"
+                >
+                  {recoveryLoading ? '...' : 'Обновить пароль'}
+                </motion.button>
+              </>
+            )}
+          </div>
+        </motion.div>
+      </div>
+    );
+  }
 
   if (confirmationSent && !isLogin) {
     return (

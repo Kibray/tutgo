@@ -7,6 +7,8 @@ interface AuthContextType {
   session: Session | null;
   loading: boolean;
   isPartner: boolean;
+  isRecovery: boolean;
+  setIsRecovery: (v: boolean) => void;
   termsAccepted: boolean;
   setTermsAccepted: (v: boolean) => void;
   partnerTermsAccepted: boolean;
@@ -24,6 +26,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const [isPartner, setIsPartner] = useState(false);
+  const [isRecovery, setIsRecovery] = useState(false);
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [partnerTermsAccepted, setPartnerTermsAccepted] = useState(false);
 
@@ -47,6 +50,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (_event === 'PASSWORD_RECOVERY') {
+        setIsRecovery(true);
+      }
       setSession(session);
       setUser(session?.user ?? null);
       if (session?.user) {
@@ -105,7 +111,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, session, loading, isPartner, termsAccepted, setTermsAccepted, partnerTermsAccepted, setPartnerTermsAccepted, signUp, signIn, signOut, becomePartner }}>
+    <AuthContext.Provider value={{ user, session, loading, isPartner, isRecovery, setIsRecovery, termsAccepted, setTermsAccepted, partnerTermsAccepted, setPartnerTermsAccepted, signUp, signIn, signOut, becomePartner }}>
       {children}
     </AuthContext.Provider>
   );
