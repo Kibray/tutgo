@@ -336,5 +336,18 @@
   "partner_landing.phone_taken": "This phone number is already registered",
   "partner_landing.fake_warning": "Provide real data. Fake companies will be blocked!",
   "partner_landing.submit": "Submit application",
-  "partner_landing.app_submitted": "Application submitted! Your company is visible in search with a 'Pending' badge"
+  "partner_landing.app_submitted": "Application submitted! Your company is visible in search with a 'Pending' badge",
+  "sport.title": "Sport",
+  "sport.find_game": "Find a game",
+  "sport.book_venue": "Book a venue",
+  "sport.play_with_others": "Play with others",
+  "sport.choose_court": "Choose a court",
+  "sport.join": "Join",
+  "sport.full": "Full",
+  "sport.free": "Free",
+  "sport.players": "Players",
+  "sport.create_game": "Create game",
+  "sport.skill_beginner": "Beginner",
+  "sport.skill_amateur": "Amateur",
+  "sport.skill_pro": "Pro"
 }

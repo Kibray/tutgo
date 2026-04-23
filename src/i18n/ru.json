@@ -336,5 +336,18 @@
   "partner_landing.phone_taken": "Этот номер телефона уже зарегистрирован",
   "partner_landing.fake_warning": "Указывайте реальные данные. Фейковые компании блокируются!",
   "partner_landing.submit": "Отправить заявку",
-  "partner_landing.app_submitted": "Заявка отправлена! Компания видна в поиске с пометкой «На проверке»"
+  "partner_landing.app_submitted": "Заявка отправлена! Компания видна в поиске с пометкой «На проверке»",
+  "sport.title": "Спорт",
+  "sport.find_game": "Найти игру",
+  "sport.book_venue": "Забронировать",
+  "sport.play_with_others": "Играй с другими",
+  "sport.choose_court": "Выбери корт",
+  "sport.join": "Присоединиться",
+  "sport.full": "Заполнено",
+  "sport.free": "Бесплатно",
+  "sport.players": "Игроков",
+  "sport.create_game": "Создать игру",
+  "sport.skill_beginner": "Начинающий",
+  "sport.skill_amateur": "Любитель",
+  "sport.skill_pro": "Про"
 }
