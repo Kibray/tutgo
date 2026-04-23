@@ -186,6 +186,26 @@ const BookingConfirm = () => {
         )}
       </div>
 
+      <div
+        className="mt-4 w-full max-w-sm rounded-xl border p-3 flex gap-3"
+        style={{ backgroundColor: '#FAEEDA', borderColor: '#FAC775' }}
+      >
+        <div
+          className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
+          style={{ backgroundColor: '#FAC775' }}
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#633806" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z" />
+            <line x1="12" y1="9" x2="12" y2="13" />
+            <line x1="12" y1="17" x2="12.01" y2="17" />
+          </svg>
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="text-xs font-bold" style={{ color: '#633806' }}>{t('booking.fraud_title')}</p>
+          <p className="text-[11px] font-medium mt-1 leading-snug" style={{ color: '#8a5a1f' }}>{t('booking.fraud_body')}</p>
+        </div>
+      </div>
+
       <motion.button whileTap={{ scale: 0.98 }} onClick={handleConfirm} disabled={saving || !user}
         className="mt-8 w-full max-w-sm py-3.5 bg-primary text-accent-foreground rounded-lg font-semibold text-sm glow-green disabled:opacity-50 flex items-center justify-center gap-2">
         {saving ? <><Loader2 className="w-4 h-4 animate-spin" />{t('booking.saving')}</> : t('booking.confirm_booking')}
