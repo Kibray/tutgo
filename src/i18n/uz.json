@@ -336,5 +336,18 @@
   "partner_landing.phone_taken": "Bu telefon raqami allaqachon ro'yxatdan o'tgan",
   "partner_landing.fake_warning": "Haqiqiy ma'lumotlarni kiriting. Soxta kompaniyalar bloklanadi!",
   "partner_landing.submit": "Arizani yuborish",
-  "partner_landing.app_submitted": "Ariza yuborildi! Kompaniyangiz qidiruvda «Tekshiruvda» belgisi bilan ko'rinadi"
+  "partner_landing.app_submitted": "Ariza yuborildi! Kompaniyangiz qidiruvda «Tekshiruvda» belgisi bilan ko'rinadi",
+  "sport.title": "Sport",
+  "sport.find_game": "O'yin topish",
+  "sport.book_venue": "Bronlash",
+  "sport.play_with_others": "Boshqalar bilan o'yna",
+  "sport.choose_court": "Maydon tanlash",
+  "sport.join": "Qo'shilish",
+  "sport.full": "To'ldirilgan",
+  "sport.free": "Bepul",
+  "sport.players": "O'yinchilar",
+  "sport.create_game": "O'yin yaratish",
+  "sport.skill_beginner": "Boshlang'ich",
+  "sport.skill_amateur": "Havaskor",
+  "sport.skill_pro": "Professional"
 }
