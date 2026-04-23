@@ -21,6 +21,7 @@ export type Database = {
           client_user_id: string | null
           created_at: string
           end_time: string
+          game_id: string | null
           id: string
           location_id: string
           service_id: string | null
@@ -35,6 +36,7 @@ export type Database = {
           client_user_id?: string | null
           created_at?: string
           end_time: string
+          game_id?: string | null
           id?: string
           location_id: string
           service_id?: string | null
@@ -49,6 +51,7 @@ export type Database = {
           client_user_id?: string | null
           created_at?: string
           end_time?: string
+          game_id?: string | null
           id?: string
           location_id?: string
           service_id?: string | null
@@ -58,6 +61,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "appointments_game_id_fkey"
+            columns: ["game_id"]
+            isOneToOne: false
+            referencedRelation: "sport_games"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "appointments_location_id_fkey"
             columns: ["location_id"]
@@ -386,6 +396,38 @@ export type Database = {
             columns: ["location_id"]
             isOneToOne: false
             referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      game_participants: {
+        Row: {
+          game_id: string
+          id: string
+          joined_at: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          game_id: string
+          id?: string
+          joined_at?: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          game_id?: string
+          id?: string
+          joined_at?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "game_participants_game_id_fkey"
+            columns: ["game_id"]
+            isOneToOne: false
+            referencedRelation: "sport_games"
             referencedColumns: ["id"]
           },
         ]
@@ -1157,6 +1199,122 @@ export type Database = {
           },
           {
             foreignKeyName: "services_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sport_courts: {
+        Row: {
+          capacity: number
+          created_at: string
+          currency: string
+          id: string
+          is_active: boolean
+          location_id: string
+          name: string
+          price_per_hour: number
+          sport_type: string
+        }
+        Insert: {
+          capacity?: number
+          created_at?: string
+          currency?: string
+          id?: string
+          is_active?: boolean
+          location_id: string
+          name: string
+          price_per_hour?: number
+          sport_type: string
+        }
+        Update: {
+          capacity?: number
+          created_at?: string
+          currency?: string
+          id?: string
+          is_active?: boolean
+          location_id?: string
+          name?: string
+          price_per_hour?: number
+          sport_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sport_courts_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sport_games: {
+        Row: {
+          court_id: string
+          created_at: string
+          created_by: string
+          currency: string
+          current_players: number
+          duration_minutes: number
+          game_date: string
+          id: string
+          location_id: string
+          max_players: number
+          notes: string | null
+          price_per_person: number
+          skill_level: string
+          sport_type: string
+          start_time: string
+          status: string
+        }
+        Insert: {
+          court_id: string
+          created_at?: string
+          created_by: string
+          currency?: string
+          current_players?: number
+          duration_minutes?: number
+          game_date: string
+          id?: string
+          location_id: string
+          max_players: number
+          notes?: string | null
+          price_per_person?: number
+          skill_level: string
+          sport_type: string
+          start_time: string
+          status?: string
+        }
+        Update: {
+          court_id?: string
+          created_at?: string
+          created_by?: string
+          currency?: string
+          current_players?: number
+          duration_minutes?: number
+          game_date?: string
+          id?: string
+          location_id?: string
+          max_players?: number
+          notes?: string | null
+          price_per_person?: number
+          skill_level?: string
+          sport_type?: string
+          start_time?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sport_games_court_id_fkey"
+            columns: ["court_id"]
+            isOneToOne: false
+            referencedRelation: "sport_courts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sport_games_location_id_fkey"
             columns: ["location_id"]
             isOneToOne: false
             referencedRelation: "locations"
