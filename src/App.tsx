@@ -54,6 +54,8 @@ const TermsPartner = lazy(() => import("./pages/TermsPartner"));
 const ReviewRules = lazy(() => import("./pages/ReviewRules"));
 const Tours = lazy(() => import("./pages/Tours"));
 const TourDetail = lazy(() => import("./pages/TourDetail"));
+const Sport = lazy(() => import("./pages/Sport"));
+const FindGame = lazy(() => import("./pages/FindGame"));
 const Transport = lazy(() => import("./pages/Transport"));
 const TransportResults = lazy(() => import("./pages/TransportResults"));
 const Flights = lazy(() => import("./pages/Flights"));
