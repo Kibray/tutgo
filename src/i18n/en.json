@@ -92,6 +92,8 @@
   "booking.login_required": "Sign in to book",
   "booking.time_taken": "This time is already taken",
   "booking.any_master": "Any master",
+  "booking.fraud_title": "Fraud protection",
+  "booking.fraud_body": "Do not pay the specialist before your visit. TutGo is not involved in payments and never requests advance payment. If anyone demands a transfer by card or messenger before the service is provided — this is a violation of TutGo's terms and a sign of fraud. Payment is made in person at the venue after the service.",
 
   "bookings.title": "My Account",
   "bookings.subtitle": "Bookings and favorites",
