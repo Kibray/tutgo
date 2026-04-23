@@ -92,6 +92,8 @@
   "booking.login_required": "Yozilish uchun tizimga kiring",
   "booking.time_taken": "Bu vaqt band",
   "booking.any_master": "Ixtiyoriy usta",
+  "booking.fraud_title": "Firibgarlikdan himoya",
+  "booking.fraud_body": "Tashrif oldidan ustaga pul to'lamang. TutGo pul hisob-kitoblarida ishtirok etmaydi va oldindan to'lov talab qilmaydi. Agar kimdir xizmat ko'rsatilgunga qadar karta yoki messenger orqali pul o'tkazishni talab qilsa — bu servis qoidalarini buzish va firibgarlik belgisidir. To'lov faqat xizmatdan so'ng muassasada amalga oshiriladi.",
 
   "bookings.title": "Shaxsiy kabinet",
   "bookings.subtitle": "Yozuvlar va sevimlilar",
