@@ -18,7 +18,8 @@ const LegalFooter = () => {
         <span>·</span>
         <a href="mailto:info@tutgo.uz" className="hover:text-primary transition-colors">info@tutgo.uz</a>
       </div>
-      <p className="text-[10px] text-muted-foreground mt-2">© 2026 TutGo · Ташкент, Узбекистан</p>
+      <p className="text-[10px] text-muted-foreground mt-2">© 2026 TutGo.uz · Ташкент, Узбекистан</p>
+      <p className="text-[10px] text-muted-foreground mt-1">© 2026 TutGo.uz. All rights reserved.</p>
     </footer>
   );
 };
