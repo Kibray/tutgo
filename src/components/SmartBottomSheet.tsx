@@ -75,6 +75,27 @@ const SmartBottomSheet = ({
   const [visibleCount, setVisibleCount] = useState(5);
   const [activeBlock, setActiveBlock] = useState<string | null>(null);
 
+  const STORAGE_KEY = 'tutgo_smart_blocks';
+  const ALL_BLOCK_IDS = SMART_BLOCKS.map(b => b.id);
+  const [enabledBlocks, setEnabledBlocks] = useState<string[]>(() => {
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (stored) return JSON.parse(stored);
+    } catch {}
+    return ALL_BLOCK_IDS;
+  });
+  const [showBlockEditor, setShowBlockEditor] = useState(false);
+
+  const toggleBlock = (id: string) => {
+    setEnabledBlocks(prev => {
+      const next = prev.includes(id)
+        ? prev.filter(b => b !== id)
+        : [...prev, id];
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+      return next;
+    });
+  };
+
   const haptic = () => {
     const tg = (window as any).Telegram?.WebApp;
     if (tg?.HapticFeedback?.impactOccurred) {
