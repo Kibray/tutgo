@@ -90,10 +90,6 @@ const ServiceCard = ({ service, index, onClick, isFavorite, onToggleFavorite, co
     </button>
   );
 
-  if (compact) {
-    // placeholder
-  }
-
   if (gallery2gis) {
     const photos = service.gallery?.length ? service.gallery.slice(0, 4) : [];
     return (
