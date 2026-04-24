@@ -444,9 +444,20 @@ const SmartBottomSheet = ({
           </div>
         ) : (
           <div className="space-y-4 pt-2">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-xs font-medium text-muted-foreground">
+                Быстрый выбор
+              </span>
+              <button
+                onClick={() => setShowBlockEditor(true)}
+                className="text-xs text-primary flex items-center gap-1"
+              >
+                ✏️ Настроить
+              </button>
+            </div>
             {/* Smart Blocks grid */}
             <div className="grid grid-cols-3 gap-2">
-              {SMART_BLOCKS.map((block) => {
+              {SMART_BLOCKS.filter(b => enabledBlocks.includes(b.id)).map((block) => {
                 const isActive = activeBlock === block.id;
                 return (
                   <motion.button
