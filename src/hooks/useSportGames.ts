@@ -33,12 +33,44 @@ export const useSportGames = (filters: SportGamesFilters = {}) => {
   const joinMutation = useMutation({
     mutationFn: async (gameId: string) => {
       if (!user) throw new Error('Not authenticated');
+
+      // 1. Fetch current game state
+      const { data: game, error: gameError } = await (supabase.from('sport_games' as any) as any)
+        .select('current_players, max_players, status')
+        .eq('id', gameId)
+        .single();
+      if (gameError) throw gameError;
+      if (!game) throw new Error('Игра не найдена');
+
+      // 2. Capacity / status guard
+      if (game.current_players >= game.max_players || game.status !== 'open') {
+        throw new Error('Игра уже заполнена');
+      }
+
+      // 3. Prevent duplicate participation
+      const { data: existing } = await (supabase.from('game_participants' as any) as any)
+        .select('id')
+        .eq('game_id', gameId)
+        .eq('user_id', user.id)
+        .maybeSingle();
+      if (existing) throw new Error('Вы уже в этой игре');
+
+      // 4. Insert participant
       const { error } = await (supabase.from('game_participants' as any) as any).insert({
         game_id: gameId,
         user_id: user.id,
         status: 'joined',
       });
       if (error) throw error;
+
+      // 5. Update game player count + status
+      const newCount = (game.current_players || 0) + 1;
+      await (supabase.from('sport_games' as any) as any)
+        .update({
+          current_players: newCount,
+          status: newCount >= game.max_players ? 'full' : 'open',
+        })
+        .eq('id', gameId);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['sport_games'] });
