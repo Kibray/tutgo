@@ -497,21 +497,24 @@ const SmartBottomSheet = ({
             animate={{ y: 0 }}
             transition={{ type: 'spring', damping: 25 }}
             onClick={e => e.stopPropagation()}
-            className="bg-card rounded-t-3xl border-t border-border p-5 space-y-4"
+            className="bg-card rounded-t-3xl border-t border-border"
+            style={{ maxHeight: '70vh', display: 'flex', flexDirection: 'column' }}
           >
-            <div className="flex items-center justify-between">
+            {/* Header - fixed */}
+            <div className="flex items-center justify-between p-5 pb-3 flex-shrink-0">
               <h3 className="font-semibold text-base">Мои блоки</h3>
               <button
                 onClick={() => setShowBlockEditor(false)}
-                className="text-muted-foreground text-sm"
+                className="bg-primary text-white text-sm font-medium px-4 py-1.5 rounded-full"
               >
                 Готово
               </button>
             </div>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-muted-foreground px-5 pb-3 flex-shrink-0">
               Выбери что показывать на главном экране
             </p>
-            <div className="space-y-2">
+            {/* Scrollable list */}
+            <div className="overflow-y-auto flex-1 px-5 pb-8 space-y-2">
               {SMART_BLOCKS.map(block => {
                 const isEnabled = enabledBlocks.includes(block.id);
                 return (
