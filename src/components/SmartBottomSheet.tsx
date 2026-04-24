@@ -75,6 +75,27 @@ const SmartBottomSheet = ({
   const [visibleCount, setVisibleCount] = useState(5);
   const [activeBlock, setActiveBlock] = useState<string | null>(null);
 
+  const STORAGE_KEY = 'tutgo_smart_blocks';
+  const ALL_BLOCK_IDS = SMART_BLOCKS.map(b => b.id);
+  const [enabledBlocks, setEnabledBlocks] = useState<string[]>(() => {
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (stored) return JSON.parse(stored);
+    } catch {}
+    return ALL_BLOCK_IDS;
+  });
+  const [showBlockEditor, setShowBlockEditor] = useState(false);
+
+  const toggleBlock = (id: string) => {
+    setEnabledBlocks(prev => {
+      const next = prev.includes(id)
+        ? prev.filter(b => b !== id)
+        : [...prev, id];
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+      return next;
+    });
+  };
+
   const haptic = () => {
     const tg = (window as any).Telegram?.WebApp;
     if (tg?.HapticFeedback?.impactOccurred) {
@@ -423,9 +444,20 @@ const SmartBottomSheet = ({
           </div>
         ) : (
           <div className="space-y-4 pt-2">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-xs font-medium text-muted-foreground">
+                Быстрый выбор
+              </span>
+              <button
+                onClick={() => setShowBlockEditor(true)}
+                className="text-xs text-primary flex items-center gap-1"
+              >
+                ✏️ Настроить
+              </button>
+            </div>
             {/* Smart Blocks grid */}
             <div className="grid grid-cols-3 gap-2">
-              {SMART_BLOCKS.map((block) => {
+              {SMART_BLOCKS.filter(b => enabledBlocks.includes(b.id)).map((block) => {
                 const isActive = activeBlock === block.id;
                 return (
                   <motion.button
@@ -453,6 +485,65 @@ const SmartBottomSheet = ({
           </div>
         )}
       </div>
+      {showBlockEditor && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="fixed inset-0 z-[200] flex flex-col justify-end"
+          onClick={() => setShowBlockEditor(false)}
+        >
+          <motion.div
+            initial={{ y: 300 }}
+            animate={{ y: 0 }}
+            transition={{ type: 'spring', damping: 25 }}
+            onClick={e => e.stopPropagation()}
+            className="bg-card rounded-t-3xl border-t border-border p-5 space-y-4"
+          >
+            <div className="flex items-center justify-between">
+              <h3 className="font-semibold text-base">Мои блоки</h3>
+              <button
+                onClick={() => setShowBlockEditor(false)}
+                className="text-muted-foreground text-sm"
+              >
+                Готово
+              </button>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Выбери что показывать на главном экране
+            </p>
+            <div className="space-y-2">
+              {SMART_BLOCKS.map(block => {
+                const isEnabled = enabledBlocks.includes(block.id);
+                return (
+                  <button
+                    key={block.id}
+                    onClick={() => toggleBlock(block.id)}
+                    className={`w-full flex items-center justify-between p-3 rounded-xl border transition-colors ${
+                      isEnabled
+                        ? 'bg-primary/10 border-primary/30'
+                        : 'bg-secondary/50 border-border/50'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <span className="text-xl">{block.emoji}</span>
+                      <span className="text-sm font-medium">{block.label}</span>
+                    </div>
+                    <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${
+                      isEnabled
+                        ? 'bg-primary border-primary'
+                        : 'border-muted-foreground'
+                    }`}>
+                      {isEnabled && (
+                        <span className="text-white text-[10px] font-bold">✓</span>
+                      )}
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
     </motion.div>
   );
 };
