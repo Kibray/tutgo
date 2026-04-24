@@ -15,6 +15,7 @@ interface ServiceCardProps {
   isFavorite?: boolean;
   onToggleFavorite?: (id: string) => void;
   compact?: boolean;
+  gallery2gis?: boolean;
 }
 
 const pluralReviews = (n: number) => {
@@ -25,7 +26,7 @@ const pluralReviews = (n: number) => {
   return 'ов';
 };
 
-const ServiceCard = ({ service, index, onClick, isFavorite, onToggleFavorite, compact }: ServiceCardProps) => {
+const ServiceCard = ({ service, index, onClick, isFavorite, onToggleFavorite, compact, gallery2gis }: ServiceCardProps) => {
   const navigate = useNavigate();
   const { t } = usePreferences();
   const isTour = service.business_type === 'tour';
@@ -88,6 +89,95 @@ const ServiceCard = ({ service, index, onClick, isFavorite, onToggleFavorite, co
       <Heart className={`w-4 h-4 transition-colors ${isFavorite ? 'text-red-500 fill-red-500' : 'text-muted-foreground'}`} />
     </button>
   );
+
+  if (gallery2gis) {
+    const photos = service.gallery?.length ? service.gallery.slice(0, 4) : [];
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        onClick={handleClick}
+        className="bg-card rounded-2xl border border-border/50 overflow-hidden cursor-pointer active:scale-[0.98] transition-transform"
+      >
+        {photos.length > 0 && (
+          <div className="flex gap-0.5 h-[110px] overflow-hidden">
+            {photos.map((photo, i) => (
+              <div key={i} className="flex-1 overflow-hidden">
+                <img
+                  src={photo}
+                  alt={service.name}
+                  className="w-full h-full object-cover"
+                  loading="lazy"
+                />
+              </div>
+            ))}
+          </div>
+        )}
+        <div className="p-3 space-y-1.5">
+          <div className="flex items-start justify-between gap-2">
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center gap-1.5">
+                <h3 className="font-bold text-sm text-foreground truncate">
+                  {service.name}
+                </h3>
+                {service.verified && (
+                  <BadgeCheck className="w-3.5 h-3.5 text-primary flex-shrink-0" />
+                )}
+              </div>
+              <p className="text-xs text-muted-foreground truncate mt-0.5">
+                {service.sub_category || service.business_type}
+                {(service.price_from || 0) > 0
+                  ? ` · от ${formatPrice(service.price_from!)} ${service.currency}`
+                  : ''}
+              </p>
+            </div>
+            {onToggleFavorite && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onToggleFavorite(service.id);
+                }}
+                className="w-7 h-7 flex items-center justify-center rounded-full bg-secondary/60 flex-shrink-0"
+              >
+                <Heart
+                  className={`w-3.5 h-3.5 ${
+                    isFavorite
+                      ? 'text-red-500 fill-red-500'
+                      : 'text-muted-foreground'
+                  }`}
+                />
+              </button>
+            )}
+          </div>
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              <span className="flex items-center gap-1">
+                <Star className="w-3 h-3 text-yellow-500 fill-yellow-500" />
+                <span className="font-medium text-foreground">
+                  {service.rating || 0}
+                </span>
+                {(service.review_count || 0) > 0 && (
+                  <span>· {service.review_count} отз.</span>
+                )}
+              </span>
+              {service.address && (
+                <span className="flex items-center gap-1 truncate max-w-[120px]">
+                  <MapPin className="w-3 h-3 flex-shrink-0" />
+                  {service.address}
+                </span>
+              )}
+            </div>
+            <button
+              onClick={handleClick}
+              className="text-[11px] font-semibold text-primary whitespace-nowrap flex-shrink-0"
+            >
+              Подробнее →
+            </button>
+          </div>
+        </div>
+      </motion.div>
+    );
+  }
 
   if (compact) {
     return (

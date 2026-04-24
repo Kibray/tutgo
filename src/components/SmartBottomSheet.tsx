@@ -401,7 +401,8 @@ const SmartBottomSheet = ({
                     onClick={() => onServiceClick(loc)}
                     isFavorite={isFavorite(loc.id)}
                     onToggleFavorite={onToggleFavorite}
-                    compact={viewMode === 'list'}
+                    compact={!activeBlock && !hasQuery && viewMode === 'list'}
+                    gallery2gis={!!(activeBlock || hasQuery)}
                   />
                   {nearbyMode && loc._distance != null && (
                     <div className="absolute top-3 left-3 bg-primary/90 text-primary-foreground text-[10px] font-bold px-2 py-0.5 rounded-md backdrop-blur-sm z-10">
