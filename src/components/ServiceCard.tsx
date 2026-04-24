@@ -15,6 +15,7 @@ interface ServiceCardProps {
   isFavorite?: boolean;
   onToggleFavorite?: (id: string) => void;
   compact?: boolean;
+  gallery2gis?: boolean;
 }
 
 const pluralReviews = (n: number) => {
@@ -25,7 +26,7 @@ const pluralReviews = (n: number) => {
   return 'ов';
 };
 
-const ServiceCard = ({ service, index, onClick, isFavorite, onToggleFavorite, compact }: ServiceCardProps) => {
+const ServiceCard = ({ service, index, onClick, isFavorite, onToggleFavorite, compact, gallery2gis }: ServiceCardProps) => {
   const navigate = useNavigate();
   const { t } = usePreferences();
   const isTour = service.business_type === 'tour';
