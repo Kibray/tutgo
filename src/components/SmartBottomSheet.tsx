@@ -1,12 +1,13 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { motion, PanInfo } from 'framer-motion';
-import { Search, X, Locate, Loader2, LayoutGrid, List } from 'lucide-react';
+import { Search, X, Locate, Loader2, LayoutGrid, List, Clock } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import ServiceCard from '@/components/ServiceCard';
 import CategoryChips from '@/components/CategoryChips';
 import { SkeletonList } from '@/components/SkeletonCard';
 import { useFavorites } from '@/hooks/useFavorites';
 import { usePreferences } from '@/hooks/usePreferences';
+import { useCategories } from '@/hooks/useCategories';
 import { getServiceEmoji } from '@/lib/types';
 import type { LocationItem } from '@/lib/types';
 
@@ -34,6 +35,14 @@ const SMART_BLOCKS = [
   { id: 'new', emoji: '🆕', label: 'Новые места', filter: { sort: 'new' } },
   { id: 'top', emoji: '⭐', label: 'Топ рейтинг', filter: { sort: 'rating' } },
   { id: 'games', emoji: '⚽', label: 'Игры сегодня', filter: { type: 'games' } },
+];
+
+const RECENT_SEARCHES_KEY = 'recent_searches';
+const QUICK_CATEGORIES = [
+  { emoji: '🍽️', label: 'Поесть', match: ['Еда и напитки', 'Кофейни'] },
+  { emoji: '⚽', label: 'Спорт', match: ['Спорт'] },
+  { emoji: '🏨', label: 'Пожить', match: ['Жильё', 'Жилье', 'Отели', 'Проживание'] },
+  { emoji: '💇', label: 'Красота', match: ['Красота'] },
 ];
 
 interface SmartBottomSheetProps {
@@ -64,6 +73,7 @@ const SmartBottomSheet = ({
   const { t } = usePreferences();
   const navigate = useNavigate();
   const { favoriteIds } = useFavorites();
+  const { categories } = useCategories();
   const [state, setState] = useState<SheetState>('half');
   const [query, setQuery] = useState('');
   const [mapDark, setMapDark] = useState(() => localStorage.getItem('tutgo_map_dark') !== 'false');
@@ -74,6 +84,49 @@ const SmartBottomSheet = ({
   const debounceRef = useRef<ReturnType<typeof setTimeout>>();
   const [visibleCount, setVisibleCount] = useState(5);
   const [activeBlock, setActiveBlock] = useState<string | null>(null);
+
+  // Search overlay sheet
+  const [searchSheetOpen, setSearchSheetOpen] = useState(false);
+  const [recentSearches, setRecentSearches] = useState<string[]>(() => {
+    try {
+      const stored = localStorage.getItem(RECENT_SEARCHES_KEY);
+      if (stored) return JSON.parse(stored);
+    } catch {}
+    return [];
+  });
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  const saveRecentSearch = useCallback((q: string) => {
+    const trimmed = q.trim();
+    if (trimmed.length < 2) return;
+    setRecentSearches(prev => {
+      const next = [trimmed, ...prev.filter(s => s.toLowerCase() !== trimmed.toLowerCase())].slice(0, 5);
+      try { localStorage.setItem(RECENT_SEARCHES_KEY, JSON.stringify(next)); } catch {}
+      return next;
+    });
+  }, []);
+
+  const handleQuickCategory = (qc: typeof QUICK_CATEGORIES[number]) => {
+    haptic();
+    const cat = categories.find(c => qc.match.some(m => c.name.toLowerCase().includes(m.toLowerCase())));
+    if (cat) {
+      onCategorySelect(cat.id);
+    }
+    setSearchSheetOpen(false);
+  };
+
+  const handleRecentClick = (q: string) => {
+    haptic();
+    setQuery(q);
+    onSearch(q);
+    saveRecentSearch(q);
+    setSearchSheetOpen(false);
+    setStateWithHaptic('full');
+  };
+
+  const closeSearchSheet = () => {
+    setSearchSheetOpen(false);
+  };
 
   const STORAGE_KEY = 'tutgo_smart_blocks';
   const ALL_BLOCK_IDS = SMART_BLOCKS.map(b => b.id);
