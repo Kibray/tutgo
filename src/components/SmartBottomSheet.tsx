@@ -569,7 +569,7 @@ const SmartBottomSheet = ({
               Выбери что показывать на главном экране
             </p>
             {/* Scrollable list */}
-            <div className="overflow-y-auto px-5 pb-3 space-y-2" style={{ maxHeight: '60vh' }}>
+            <div className="overflow-y-scroll px-5 pb-3 space-y-2" style={{ maxHeight: '60vh', WebkitOverflowScrolling: 'touch' }}>
               {SMART_BLOCKS.map(block => {
                 const isEnabled = enabledBlocks.includes(block.id);
                 return (
