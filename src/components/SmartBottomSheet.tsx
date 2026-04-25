@@ -559,23 +559,17 @@ const SmartBottomSheet = ({
             transition={{ type: 'spring', damping: 25 }}
             onClick={e => e.stopPropagation()}
             className="bg-card rounded-t-3xl border-t border-border"
-            style={{ maxHeight: '70vh', display: 'flex', flexDirection: 'column' }}
+            style={{ display: 'flex', flexDirection: 'column' }}
           >
             {/* Header - fixed */}
-            <div className="flex items-center justify-between p-5 pb-3 flex-shrink-0">
+            <div className="flex items-center justify-between p-5 pb-2 flex-shrink-0">
               <h3 className="font-semibold text-base">Мои блоки</h3>
-              <button
-                onClick={() => setShowBlockEditor(false)}
-                className="bg-primary text-white text-sm font-medium px-4 py-1.5 rounded-full"
-              >
-                Готово
-              </button>
             </div>
             <p className="text-xs text-muted-foreground px-5 pb-3 flex-shrink-0">
               Выбери что показывать на главном экране
             </p>
             {/* Scrollable list */}
-            <div className="overflow-y-auto flex-1 px-5 pb-8 space-y-2">
+            <div className="overflow-y-auto px-5 pb-3 space-y-2" style={{ maxHeight: '60vh' }}>
               {SMART_BLOCKS.map(block => {
                 const isEnabled = enabledBlocks.includes(block.id);
                 return (
@@ -604,6 +598,17 @@ const SmartBottomSheet = ({
                   </button>
                 );
               })}
+            </div>
+            {/* Divider */}
+            <div className="h-px bg-border flex-shrink-0" />
+            {/* Fixed bottom action */}
+            <div className="px-5 pt-4 flex-shrink-0" style={{ paddingBottom: '80px' }}>
+              <button
+                onClick={() => setShowBlockEditor(false)}
+                className="w-full bg-primary text-primary-foreground text-sm font-semibold py-3 rounded-xl active:scale-[0.98] transition-transform"
+              >
+                Сохранить
+              </button>
             </div>
           </motion.div>
         </motion.div>
