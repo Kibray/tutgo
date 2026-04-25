@@ -10,6 +10,11 @@ import { usePreferences } from '@/hooks/usePreferences';
 import { useCategories } from '@/hooks/useCategories';
 import { getServiceEmoji } from '@/lib/types';
 import type { LocationItem } from '@/lib/types';
+import catBarbershop from '@/assets/cat-barbershop.png';
+import catSalon from '@/assets/cat-salon.png';
+import catDeals from '@/assets/cat-deals.png';
+import catNew from '@/assets/cat-new.png';
+import catTop from '@/assets/cat-top.png';
 
 type SheetState = 'peek' | 'half' | 'full';
 
@@ -29,12 +34,12 @@ const formatDistance = (km: number): string => {
 const ADDRESS_HINT_RE = /\d|улиц|ул\.|кўча|kucha|street|avenue|пр\.|просп/i;
 
 const SMART_BLOCKS = [
-  { id: 'barbershop', emoji: '💈', label: 'Барбершопы', filter: { business_type: 'beauty', sub_category: 'barbershop' } },
-  { id: 'salon', emoji: '✂️', label: 'Салоны красоты', filter: { business_type: 'beauty', sub_category: 'salon' } },
-  { id: 'deals', emoji: '🔥', label: 'Акции', filter: { is_promoted: true } },
-  { id: 'new', emoji: '🆕', label: 'Новые места', filter: { sort: 'new' } },
-  { id: 'top', emoji: '⭐', label: 'Топ рейтинг', filter: { sort: 'rating' } },
-  { id: 'games', emoji: '⚽', label: 'Игры сегодня', filter: { type: 'games' } },
+  { id: 'barbershop', emoji: '💈', image: catBarbershop, label: 'Барбершопы', filter: { business_type: 'beauty', sub_category: 'barbershop' } },
+  { id: 'salon', emoji: '✂️', image: catSalon, label: 'Салоны красоты', filter: { business_type: 'beauty', sub_category: 'salon' } },
+  { id: 'deals', emoji: '🔥', image: catDeals, label: 'Акции', filter: { is_promoted: true } },
+  { id: 'new', emoji: '🆕', image: catNew, label: 'Новые места', filter: { sort: 'new' } },
+  { id: 'top', emoji: '⭐', image: catTop, label: 'Топ рейтинг', filter: { sort: 'rating' } },
+  { id: 'games', emoji: '⚽', image: null as string | null, label: 'Игры сегодня', filter: { type: 'games' } },
 ];
 
 const RECENT_SEARCHES_KEY = 'recent_searches';
@@ -529,14 +534,28 @@ const SmartBottomSheet = ({
                       setActiveBlock(isActive ? null : block.id);
                       if (!isActive) setStateWithHaptic('full');
                     }}
-                    className={`flex flex-col items-center justify-center gap-1.5 p-3 rounded-2xl border transition-colors ${
-                      isActive
-                        ? 'bg-primary/20 border-primary/50 text-primary'
-                        : 'bg-secondary/60 border-border/50 text-foreground'
+                    className={`relative overflow-hidden flex items-end justify-center transition-all h-[90px] md:h-[110px] ${
+                      isActive ? 'ring-2 ring-primary' : ''
                     }`}
+                    style={{ borderRadius: '16px' }}
                   >
-                    <span className="text-2xl">{block.emoji}</span>
-                    <span className="text-[11px] font-medium text-center leading-tight">
+                    {block.image ? (
+                      <>
+                        <div
+                          className="absolute inset-0 bg-cover bg-center"
+                          style={{ backgroundImage: `url(${block.image})` }}
+                        />
+                        <div
+                          className="absolute inset-0"
+                          style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.7) 100%)' }}
+                        />
+                      </>
+                    ) : (
+                      <div className="absolute inset-0 bg-secondary/60 flex items-center justify-center">
+                        <span className="text-3xl">{block.emoji}</span>
+                      </div>
+                    )}
+                    <span className="relative z-10 text-[12px] font-bold text-white text-center leading-tight px-2 pb-2 drop-shadow-md">
                       {block.label}
                     </span>
                   </motion.button>
