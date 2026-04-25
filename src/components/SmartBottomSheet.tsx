@@ -1,12 +1,13 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { motion, PanInfo } from 'framer-motion';
-import { Search, X, Locate, Loader2, LayoutGrid, List } from 'lucide-react';
+import { Search, X, Locate, Loader2, LayoutGrid, List, Clock } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import ServiceCard from '@/components/ServiceCard';
 import CategoryChips from '@/components/CategoryChips';
 import { SkeletonList } from '@/components/SkeletonCard';
 import { useFavorites } from '@/hooks/useFavorites';
 import { usePreferences } from '@/hooks/usePreferences';
+import { useCategories } from '@/hooks/useCategories';
 import { getServiceEmoji } from '@/lib/types';
 import type { LocationItem } from '@/lib/types';
 
@@ -34,6 +35,14 @@ const SMART_BLOCKS = [
   { id: 'new', emoji: '🆕', label: 'Новые места', filter: { sort: 'new' } },
   { id: 'top', emoji: '⭐', label: 'Топ рейтинг', filter: { sort: 'rating' } },
   { id: 'games', emoji: '⚽', label: 'Игры сегодня', filter: { type: 'games' } },
+];
+
+const RECENT_SEARCHES_KEY = 'recent_searches';
+const QUICK_CATEGORIES = [
+  { emoji: '🍽️', label: 'Поесть', match: ['Еда и напитки', 'Кофейни'] },
+  { emoji: '⚽', label: 'Спорт', match: ['Спорт'] },
+  { emoji: '🏨', label: 'Пожить', match: ['Жильё', 'Жилье', 'Отели', 'Проживание'] },
+  { emoji: '💇', label: 'Красота', match: ['Красота'] },
 ];
 
 interface SmartBottomSheetProps {
@@ -64,6 +73,7 @@ const SmartBottomSheet = ({
   const { t } = usePreferences();
   const navigate = useNavigate();
   const { favoriteIds } = useFavorites();
+  const { categories } = useCategories();
   const [state, setState] = useState<SheetState>('half');
   const [query, setQuery] = useState('');
   const [mapDark, setMapDark] = useState(() => localStorage.getItem('tutgo_map_dark') !== 'false');
@@ -74,6 +84,49 @@ const SmartBottomSheet = ({
   const debounceRef = useRef<ReturnType<typeof setTimeout>>();
   const [visibleCount, setVisibleCount] = useState(5);
   const [activeBlock, setActiveBlock] = useState<string | null>(null);
+
+  // Search overlay sheet
+  const [searchSheetOpen, setSearchSheetOpen] = useState(false);
+  const [recentSearches, setRecentSearches] = useState<string[]>(() => {
+    try {
+      const stored = localStorage.getItem(RECENT_SEARCHES_KEY);
+      if (stored) return JSON.parse(stored);
+    } catch {}
+    return [];
+  });
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  const saveRecentSearch = useCallback((q: string) => {
+    const trimmed = q.trim();
+    if (trimmed.length < 2) return;
+    setRecentSearches(prev => {
+      const next = [trimmed, ...prev.filter(s => s.toLowerCase() !== trimmed.toLowerCase())].slice(0, 5);
+      try { localStorage.setItem(RECENT_SEARCHES_KEY, JSON.stringify(next)); } catch {}
+      return next;
+    });
+  }, []);
+
+  const handleQuickCategory = (qc: typeof QUICK_CATEGORIES[number]) => {
+    haptic();
+    const cat = categories.find(c => qc.match.some(m => c.name.toLowerCase().includes(m.toLowerCase())));
+    if (cat) {
+      onCategorySelect(cat.id);
+    }
+    setSearchSheetOpen(false);
+  };
+
+  const handleRecentClick = (q: string) => {
+    haptic();
+    setQuery(q);
+    onSearch(q);
+    saveRecentSearch(q);
+    setSearchSheetOpen(false);
+    setStateWithHaptic('full');
+  };
+
+  const closeSearchSheet = () => {
+    setSearchSheetOpen(false);
+  };
 
   const STORAGE_KEY = 'tutgo_smart_blocks';
   const ALL_BLOCK_IDS = SMART_BLOCKS.map(b => b.id);
@@ -272,10 +325,18 @@ const SmartBottomSheet = ({
           <div className="flex items-center gap-2 bg-secondary/60 rounded-xl px-3 py-2.5">
             <Search className="w-4 h-4 text-muted-foreground flex-shrink-0" />
             <input
+              ref={searchInputRef}
               value={query}
               onChange={e => { setQuery(e.target.value); onSearch(e.target.value); }}
-              onFocus={() => { if (state !== 'full') setStateWithHaptic('full'); }}
-              onKeyDown={e => e.key === 'Escape' && setStateWithHaptic('half')}
+              onFocus={() => { setSearchSheetOpen(true); }}
+              onKeyDown={e => {
+                if (e.key === 'Escape') { setStateWithHaptic('half'); closeSearchSheet(); }
+                if (e.key === 'Enter' && query.trim().length >= 2) {
+                  saveRecentSearch(query);
+                  setSearchSheetOpen(false);
+                  setStateWithHaptic('full');
+                }
+              }}
               placeholder={t('index.search_placeholder')}
               className="flex-1 bg-transparent text-sm outline-none text-foreground placeholder:text-muted-foreground"
             />
@@ -543,6 +604,152 @@ const SmartBottomSheet = ({
                   </button>
                 );
               })}
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
+
+      {/* Search Bottom Sheet overlay */}
+      {searchSheetOpen && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-[1500] flex flex-col justify-end bg-black/50"
+          onClick={closeSearchSheet}
+        >
+          <motion.div
+            initial={{ y: 400 }}
+            animate={{ y: 0 }}
+            transition={{ type: 'spring', damping: 28, stiffness: 320 }}
+            onClick={e => e.stopPropagation()}
+            className="bg-card rounded-t-3xl border-t border-border flex flex-col"
+            style={{ maxHeight: '85vh', paddingBottom: keyboardHeight }}
+          >
+            {/* Drag handle */}
+            <div className="w-full flex justify-center pt-2 pb-1 flex-shrink-0">
+              <div className="w-10 h-1 rounded-full bg-muted-foreground/30" />
+            </div>
+
+            {/* Search input + cancel */}
+            <div className="flex items-center gap-2 px-4 pt-2 pb-3 flex-shrink-0">
+              <div className="flex-1 flex items-center gap-2 bg-secondary/60 rounded-xl px-3 py-2.5">
+                <Search className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                <input
+                  autoFocus
+                  value={query}
+                  onChange={e => { setQuery(e.target.value); onSearch(e.target.value); }}
+                  onKeyDown={e => {
+                    if (e.key === 'Enter' && query.trim().length >= 2) {
+                      saveRecentSearch(query);
+                      setSearchSheetOpen(false);
+                      setStateWithHaptic('full');
+                    }
+                  }}
+                  placeholder={t('index.search_placeholder')}
+                  className="flex-1 bg-transparent text-sm outline-none text-foreground placeholder:text-muted-foreground"
+                />
+                {query.length > 0 && (
+                  <button onClick={() => { setQuery(''); onSearch(''); }} className="p-0.5">
+                    <X className="w-4 h-4 text-muted-foreground" />
+                  </button>
+                )}
+              </div>
+              <button
+                onClick={closeSearchSheet}
+                className="text-sm font-medium text-primary px-2 py-1 flex-shrink-0"
+              >
+                Отмена
+              </button>
+            </div>
+
+            {/* Content */}
+            <div className="overflow-y-auto flex-1 px-4 pb-6">
+              {query.trim().length >= 2 ? (
+                // Search results
+                <div className="space-y-3 pt-1">
+                  {loading ? (
+                    <SkeletonList count={4} />
+                  ) : sortedLocations.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center py-16 gap-3">
+                      <Search className="w-10 h-10 text-muted-foreground/40" />
+                      <span className="text-muted-foreground text-sm">{t('index.nothing_found')}</span>
+                    </div>
+                  ) : (
+                    sortedLocations.slice(0, 10).map((loc: any, i: number) => (
+                      <ServiceCard
+                        key={loc.id}
+                        service={loc}
+                        index={i}
+                        onClick={() => {
+                          saveRecentSearch(query);
+                          setSearchSheetOpen(false);
+                          onServiceClick(loc);
+                        }}
+                        isFavorite={isFavorite(loc.id)}
+                        onToggleFavorite={onToggleFavorite}
+                        compact
+                      />
+                    ))
+                  )}
+                </div>
+              ) : (
+                <>
+                  {/* Quick categories */}
+                  <div className="pt-2 pb-4">
+                    <div className="text-xs font-medium text-muted-foreground mb-3 px-1">
+                      Быстрые категории
+                    </div>
+                    <div className="grid grid-cols-4 gap-2">
+                      {QUICK_CATEGORIES.map(qc => (
+                        <motion.button
+                          key={qc.label}
+                          whileTap={{ scale: 0.94 }}
+                          onClick={() => handleQuickCategory(qc)}
+                          className="flex flex-col items-center justify-center gap-1.5 p-3 rounded-2xl bg-secondary/60 border border-border/50"
+                        >
+                          <span className="text-2xl">{qc.emoji}</span>
+                          <span className="text-[11px] font-medium text-foreground text-center leading-tight">
+                            {qc.label}
+                          </span>
+                        </motion.button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Recent searches */}
+                  {recentSearches.length > 0 && (
+                    <div className="pb-4">
+                      <div className="flex items-center justify-between mb-2 px-1">
+                        <span className="text-xs font-medium text-muted-foreground">
+                          Недавние запросы
+                        </span>
+                        <button
+                          onClick={() => {
+                            setRecentSearches([]);
+                            try { localStorage.removeItem(RECENT_SEARCHES_KEY); } catch {}
+                          }}
+                          className="text-xs text-primary"
+                        >
+                          Очистить
+                        </button>
+                      </div>
+                      <div className="space-y-1">
+                        {recentSearches.map(r => (
+                          <button
+                            key={r}
+                            onClick={() => handleRecentClick(r)}
+                            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-secondary/60 transition-colors text-left"
+                          >
+                            <Clock className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                            <span className="text-sm text-foreground truncate">{r}</span>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </>
+              )}
             </div>
           </motion.div>
         </motion.div>
