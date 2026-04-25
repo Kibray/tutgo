@@ -10,6 +10,11 @@ import { usePreferences } from '@/hooks/usePreferences';
 import { useCategories } from '@/hooks/useCategories';
 import { getServiceEmoji } from '@/lib/types';
 import type { LocationItem } from '@/lib/types';
+import catBarbershop from '@/assets/cat-barbershop.png';
+import catSalon from '@/assets/cat-salon.png';
+import catDeals from '@/assets/cat-deals.png';
+import catNew from '@/assets/cat-new.png';
+import catTop from '@/assets/cat-top.png';
 
 type SheetState = 'peek' | 'half' | 'full';
 
@@ -29,12 +34,12 @@ const formatDistance = (km: number): string => {
 const ADDRESS_HINT_RE = /\d|улиц|ул\.|кўча|kucha|street|avenue|пр\.|просп/i;
 
 const SMART_BLOCKS = [
-  { id: 'barbershop', emoji: '💈', label: 'Барбершопы', filter: { business_type: 'beauty', sub_category: 'barbershop' } },
-  { id: 'salon', emoji: '✂️', label: 'Салоны красоты', filter: { business_type: 'beauty', sub_category: 'salon' } },
-  { id: 'deals', emoji: '🔥', label: 'Акции', filter: { is_promoted: true } },
-  { id: 'new', emoji: '🆕', label: 'Новые места', filter: { sort: 'new' } },
-  { id: 'top', emoji: '⭐', label: 'Топ рейтинг', filter: { sort: 'rating' } },
-  { id: 'games', emoji: '⚽', label: 'Игры сегодня', filter: { type: 'games' } },
+  { id: 'barbershop', emoji: '💈', image: catBarbershop, label: 'Барбершопы', filter: { business_type: 'beauty', sub_category: 'barbershop' } },
+  { id: 'salon', emoji: '✂️', image: catSalon, label: 'Салоны красоты', filter: { business_type: 'beauty', sub_category: 'salon' } },
+  { id: 'deals', emoji: '🔥', image: catDeals, label: 'Акции', filter: { is_promoted: true } },
+  { id: 'new', emoji: '🆕', image: catNew, label: 'Новые места', filter: { sort: 'new' } },
+  { id: 'top', emoji: '⭐', image: catTop, label: 'Топ рейтинг', filter: { sort: 'rating' } },
+  { id: 'games', emoji: '⚽', image: null as string | null, label: 'Игры сегодня', filter: { type: 'games' } },
 ];
 
 const RECENT_SEARCHES_KEY = 'recent_searches';
