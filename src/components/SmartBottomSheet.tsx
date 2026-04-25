@@ -325,10 +325,18 @@ const SmartBottomSheet = ({
           <div className="flex items-center gap-2 bg-secondary/60 rounded-xl px-3 py-2.5">
             <Search className="w-4 h-4 text-muted-foreground flex-shrink-0" />
             <input
+              ref={searchInputRef}
               value={query}
               onChange={e => { setQuery(e.target.value); onSearch(e.target.value); }}
-              onFocus={() => { if (state !== 'full') setStateWithHaptic('full'); }}
-              onKeyDown={e => e.key === 'Escape' && setStateWithHaptic('half')}
+              onFocus={() => { setSearchSheetOpen(true); }}
+              onKeyDown={e => {
+                if (e.key === 'Escape') { setStateWithHaptic('half'); closeSearchSheet(); }
+                if (e.key === 'Enter' && query.trim().length >= 2) {
+                  saveRecentSearch(query);
+                  setSearchSheetOpen(false);
+                  setStateWithHaptic('full');
+                }
+              }}
               placeholder={t('index.search_placeholder')}
               className="flex-1 bg-transparent text-sm outline-none text-foreground placeholder:text-muted-foreground"
             />
