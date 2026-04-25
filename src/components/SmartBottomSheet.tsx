@@ -559,7 +559,7 @@ const SmartBottomSheet = ({
             transition={{ type: 'spring', damping: 25 }}
             onClick={e => e.stopPropagation()}
             className="bg-card rounded-t-3xl border-t border-border"
-            style={{ display: 'flex', flexDirection: 'column', maxHeight: '90vh' }}
+            style={{ display: 'flex', flexDirection: 'column', height: '90vh' }}
           >
             {/* Header - fixed */}
             <div className="flex items-center justify-between p-5 pb-2 flex-shrink-0">
@@ -570,8 +570,8 @@ const SmartBottomSheet = ({
             </p>
             {/* Scrollable list */}
             <div
-              className="overflow-y-scroll px-5 pb-3 space-y-2 flex-1 min-h-0"
-              style={{ WebkitOverflowScrolling: 'touch', overscrollBehavior: 'contain', touchAction: 'pan-y' }}
+              className="overflow-y-scroll px-5 pb-3 space-y-2 flex-1 min-h-0 overscroll-contain"
+              style={{ maxHeight: '60vh', WebkitOverflowScrolling: 'touch', touchAction: 'pan-y' }}
             >
               {SMART_BLOCKS.map(block => {
                 const isEnabled = enabledBlocks.includes(block.id);
@@ -605,7 +605,7 @@ const SmartBottomSheet = ({
             {/* Divider */}
             <div className="h-px bg-border flex-shrink-0" />
             {/* Fixed bottom action */}
-            <div className="px-5 pt-4 flex-shrink-0" style={{ paddingBottom: '80px' }}>
+            <div className="px-5 pt-4 flex-shrink-0" style={{ paddingBottom: 'calc(80px + env(safe-area-inset-bottom))' }}>
               <button
                 onClick={() => setShowBlockEditor(false)}
                 className="w-full bg-primary text-primary-foreground text-sm font-semibold py-3 rounded-xl active:scale-[0.98] transition-transform"
