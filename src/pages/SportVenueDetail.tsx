@@ -51,7 +51,8 @@ const SportVenueDetail = () => {
         .select('*, sport_courts(*)')
         .eq('location_id', id)
         .eq('status', 'open')
-        .order('created_at', { ascending: false })
+        .eq('game_date', new Date().toISOString().slice(0, 10))
+        .order('start_time', { ascending: true })
         .limit(3);
       setGames(data ?? []);
     })();
