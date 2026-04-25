@@ -559,7 +559,7 @@ const SmartBottomSheet = ({
             transition={{ type: 'spring', damping: 25 }}
             onClick={e => e.stopPropagation()}
             className="bg-card rounded-t-3xl border-t border-border"
-            style={{ display: 'flex', flexDirection: 'column' }}
+            style={{ display: 'flex', flexDirection: 'column', maxHeight: '90vh' }}
           >
             {/* Header - fixed */}
             <div className="flex items-center justify-between p-5 pb-2 flex-shrink-0">
@@ -569,7 +569,10 @@ const SmartBottomSheet = ({
               Выбери что показывать на главном экране
             </p>
             {/* Scrollable list */}
-            <div className="overflow-y-scroll px-5 pb-3 space-y-2" style={{ maxHeight: '60vh', WebkitOverflowScrolling: 'touch' }}>
+            <div
+              className="overflow-y-scroll px-5 pb-3 space-y-2 flex-1 min-h-0"
+              style={{ WebkitOverflowScrolling: 'touch', overscrollBehavior: 'contain', touchAction: 'pan-y' }}
+            >
               {SMART_BLOCKS.map(block => {
                 const isEnabled = enabledBlocks.includes(block.id);
                 return (
