@@ -292,7 +292,7 @@ const SmartBottomSheet = ({
       animate={{ height: HEIGHT_MAP[state] }}
       transition={{ type: 'spring', stiffness: 500, damping: 36, mass: 0.6 }}
       className="absolute left-0 right-0 z-[1000] bg-[#1a1c23]/98 backdrop-blur-xl rounded-t-2xl border-t border-white/5 flex flex-col"
-      style={{ overflow: 'hidden', bottom: `${BOTTOM_NAV_HEIGHT}px` }}
+      style={{ overflow: 'visible', bottom: `${BOTTOM_NAV_HEIGHT}px` }}
     >
       {/* Drag handle ONLY */}
       <motion.div
