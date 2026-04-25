@@ -124,10 +124,23 @@ const CreateGame = () => {
       location_id: locationId,
       court_id: courtId,
     };
-    const { error } = await (supabase.from('sport_games' as any) as any).insert(payload);
+    const { data: newGame, error } = await (supabase.from('sport_games' as any) as any)
+      .insert(payload)
+      .select('id')
+      .single();
+    if (error || !newGame) {
+      setSubmitting(false);
+      toast.error(error?.message || 'Не удалось создать игру');
+      return;
+    }
+    const { error: participantError } = await (supabase.from('game_participants' as any) as any).insert({
+      game_id: newGame.id,
+      user_id: user.id,
+      status: 'joined',
+    });
     setSubmitting(false);
-    if (error) {
-      toast.error(error.message || 'Не удалось создать игру');
+    if (participantError) {
+      toast.error(participantError.message || 'Игра создана, но не удалось добавить вас как участника');
       return;
     }
     toast.success('Игра создана!');
