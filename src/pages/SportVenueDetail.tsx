@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ChevronLeft, MapPin, Star, Users, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import BottomNav from '@/components/BottomNav';
 import { supabase } from '@/integrations/supabase/client';
 import { useSportCourts } from '@/hooks/useSportCourts';
@@ -23,6 +24,9 @@ const SportVenueDetail = () => {
   const [loading, setLoading] = useState(true);
   const [activePhoto, setActivePhoto] = useState(0);
   const [games, setGames] = useState<any[]>([]);
+  const [pickerCourt, setPickerCourt] = useState<any>(null);
+  const [pickerDate, setPickerDate] = useState<string>(() => new Date().toISOString().slice(0, 10));
+  const [pickerTime, setPickerTime] = useState<string>('');
 
   const { courts, isLoading: courtsLoading } = useSportCourts(id);
 
@@ -193,11 +197,10 @@ const SportVenueDetail = () => {
                   </div>
                   <Button
                     size="sm"
-                    onClick={() =>
-                      navigate('/booking-confirm', {
-                        state: { location, service: c },
-                      })
-                    }
+                    onClick={() => {
+                      setPickerCourt(c);
+                      setPickerTime('');
+                    }}
                     className="bg-gradient-to-r from-primary to-blue-600 text-white text-xs rounded-xl shrink-0"
                   >
                     Забронировать
@@ -252,6 +255,100 @@ const SportVenueDetail = () => {
       </div>
 
       <BottomNav />
+
+      <Sheet open={!!pickerCourt} onOpenChange={(o) => !o && setPickerCourt(null)}>
+        <SheetContent side="bottom" className="rounded-t-3xl max-h-[85vh] overflow-y-auto">
+          <SheetHeader>
+            <SheetTitle className="text-left font-[Syne]">
+              Выберите дату и время
+            </SheetTitle>
+          </SheetHeader>
+
+          {pickerCourt && (
+            <div className="mt-4 space-y-5">
+              <div className="bg-card border border-border rounded-2xl p-3 flex items-center gap-2">
+                <span className="text-xl">{SPORT_EMOJI[pickerCourt.sport_type] || '🏅'}</span>
+                <div className="min-w-0">
+                  <div className="font-semibold text-foreground line-clamp-1">{pickerCourt.name}</div>
+                  <div className="text-xs text-muted-foreground">
+                    {Number(pickerCourt.price_per_hour).toLocaleString()} {pickerCourt.currency}/час
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-xs font-medium text-muted-foreground">Дата</label>
+                <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1">
+                  {Array.from({ length: 7 }).map((_, i) => {
+                    const d = new Date();
+                    d.setDate(d.getDate() + i);
+                    const iso = d.toISOString().slice(0, 10);
+                    const isActive = iso === pickerDate;
+                    return (
+                      <button
+                        key={iso}
+                        onClick={() => setPickerDate(iso)}
+                        className={`shrink-0 px-3 py-2 rounded-xl border text-xs font-medium transition-colors ${
+                          isActive
+                            ? 'bg-primary text-primary-foreground border-primary'
+                            : 'bg-card border-border text-foreground'
+                        }`}
+                      >
+                        <div className="text-[10px] opacity-70 uppercase">
+                          {d.toLocaleDateString('ru', { weekday: 'short' })}
+                        </div>
+                        <div className="text-sm font-bold">{d.getDate()}</div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-xs font-medium text-muted-foreground">Время</label>
+                <div className="grid grid-cols-4 gap-2">
+                  {Array.from({ length: 14 }).map((_, i) => {
+                    const hour = 8 + i;
+                    const t = `${String(hour).padStart(2, '0')}:00`;
+                    const isActive = t === pickerTime;
+                    return (
+                      <button
+                        key={t}
+                        onClick={() => setPickerTime(t)}
+                        className={`px-2 py-2 rounded-xl border text-sm font-medium transition-colors ${
+                          isActive
+                            ? 'bg-primary text-primary-foreground border-primary'
+                            : 'bg-card border-border text-foreground'
+                        }`}
+                      >
+                        {t}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <Button
+                disabled={!pickerDate || !pickerTime}
+                onClick={() => {
+                  navigate('/booking-confirm', {
+                    state: {
+                      location,
+                      service: pickerCourt,
+                      date: pickerDate,
+                      time: pickerTime,
+                    },
+                  });
+                  setPickerCourt(null);
+                }}
+                className="w-full bg-gradient-to-r from-primary to-blue-600 text-white rounded-xl"
+              >
+                Продолжить
+              </Button>
+            </div>
+          )}
+        </SheetContent>
+      </Sheet>
     </div>
   );
 };
