@@ -22,7 +22,11 @@ export const useSportGames = (filters: SportGamesFilters = {}) => {
 
       if (filters.sport_type) query = query.eq('sport_type', filters.sport_type);
       if (filters.skill_level) query = query.eq('skill_level', filters.skill_level);
-      if (filters.date) query = query.eq('game_date', filters.date);
+      if (filters.date) {
+        query = query.eq('game_date', filters.date);
+      } else {
+        query = query.gte('game_date', new Date().toISOString().slice(0, 10));
+      }
 
       const { data, error } = await query;
       if (error) throw error;
@@ -86,6 +90,18 @@ export const useSportGames = (filters: SportGamesFilters = {}) => {
         .eq('game_id', gameId)
         .eq('user_id', user.id);
       if (error) throw error;
+
+      // Decrement player count and reopen game
+      const { data: game } = await (supabase.from('sport_games' as any) as any)
+        .select('current_players')
+        .eq('id', gameId)
+        .single();
+      if (game) {
+        const newCount = Math.max((game.current_players || 1) - 1, 0);
+        await (supabase.from('sport_games' as any) as any)
+          .update({ current_players: newCount, status: 'open' })
+          .eq('id', gameId);
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['sport_games'] });
