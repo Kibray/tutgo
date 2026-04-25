@@ -534,14 +534,28 @@ const SmartBottomSheet = ({
                       setActiveBlock(isActive ? null : block.id);
                       if (!isActive) setStateWithHaptic('full');
                     }}
-                    className={`flex flex-col items-center justify-center gap-1.5 p-3 rounded-2xl border transition-colors ${
-                      isActive
-                        ? 'bg-primary/20 border-primary/50 text-primary'
-                        : 'bg-secondary/60 border-border/50 text-foreground'
+                    className={`relative overflow-hidden flex items-end justify-center transition-all h-[90px] md:h-[110px] ${
+                      isActive ? 'ring-2 ring-primary' : ''
                     }`}
+                    style={{ borderRadius: '16px' }}
                   >
-                    <span className="text-2xl">{block.emoji}</span>
-                    <span className="text-[11px] font-medium text-center leading-tight">
+                    {block.image ? (
+                      <>
+                        <div
+                          className="absolute inset-0 bg-cover bg-center"
+                          style={{ backgroundImage: `url(${block.image})` }}
+                        />
+                        <div
+                          className="absolute inset-0"
+                          style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.7) 100%)' }}
+                        />
+                      </>
+                    ) : (
+                      <div className="absolute inset-0 bg-secondary/60 flex items-center justify-center">
+                        <span className="text-3xl">{block.emoji}</span>
+                      </div>
+                    )}
+                    <span className="relative z-10 text-[12px] font-bold text-white text-center leading-tight px-2 pb-2 drop-shadow-md">
                       {block.label}
                     </span>
                   </motion.button>
