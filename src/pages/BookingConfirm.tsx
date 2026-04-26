@@ -67,7 +67,6 @@ const BookingConfirm = () => {
 
     setSaving(false);
     if (error) {
-      toast({ title: 'Ошибка при создании записи', description: error.message, variant: 'destructive' });
       toast({ title: t('common.error'), description: error.message.includes('Double booking') ? t('booking.time_taken') : error.message, variant: 'destructive' });
     } else {
       setConfirmed(true);
