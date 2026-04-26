@@ -128,7 +128,11 @@ const Bookings = () => {
     new Date(d).toLocaleTimeString(lang === 'uz' ? 'uz' : lang === 'en' ? 'en' : 'ru', { hour: '2-digit', minute: '2-digit' });
 
   const upcoming = appointments.filter(a => new Date(a.start_time) >= new Date() && a.status !== 'cancelled' && a.status !== 'completed');
-  const past = appointments.filter(a => new Date(a.start_time) < new Date() || a.status === 'completed');
+  const past = appointments.filter(a =>
+    new Date(a.start_time) < new Date() ||
+    a.status === 'completed' ||
+    a.status === 'cancelled'
+  );
 
   return (
     <div className="min-h-screen bg-background pb-24">
