@@ -52,6 +52,12 @@ const BookingConfirm = () => {
     const durationMin = service?.duration_minutes || 60;
     const endTime = new Date(startTime.getTime() + durationMin * 60000);
 
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('phone')
+      .eq('user_id', user.id)
+      .single();
+
     const insertData = {
       location_id: location.id,
       service_id: (service?.price_per_hour !== undefined || service?.sport_type !== undefined)
@@ -60,6 +66,7 @@ const BookingConfirm = () => {
       staff_id: staffId || null,
       client_user_id: user.id,
       client_name: user.user_metadata?.display_name || null,
+      client_phone: profile?.phone || null,
       start_time: startTime.toISOString(),
       end_time: endTime.toISOString(),
       status: 'pending',
