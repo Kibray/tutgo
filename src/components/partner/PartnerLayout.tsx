@@ -8,6 +8,7 @@ import {
 import { useIsDesktop } from '@/hooks/useIsDesktop';
 import { usePreferences } from '@/hooks/usePreferences';
 import { useAuth } from '@/hooks/useAuth';
+import { usePartnerLocation } from '@/contexts/PartnerLocationContext';
 import { Button } from '@/components/ui/button';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import PartnerBottomNav from './PartnerBottomNav';
@@ -25,6 +26,25 @@ const PartnerLayout = ({ children, title, showBackToPartner = true, headerRight 
   const isDesktop = useIsDesktop();
   const { t } = usePreferences();
   const { user, isPartner, loading } = useAuth();
+  const { locations, selectedLocationId, setSelectedLocationId } = usePartnerLocation();
+
+  const showLocationSelector = locations.length > 1;
+  const LocationSelector = showLocationSelector ? (
+    <div className="relative">
+      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm pointer-events-none">📍</span>
+      <select
+        value={selectedLocationId ?? ''}
+        onChange={(e) => setSelectedLocationId(e.target.value)}
+        className="w-full text-sm rounded-xl bg-card/60 backdrop-blur-md border border-border/60 pl-8 pr-3 py-2 text-foreground appearance-none focus:outline-none focus:ring-2 focus:ring-primary/40"
+      >
+        {locations.map((loc) => (
+          <option key={loc.id} value={loc.id}>
+            {loc.name}{loc.city ? ` — ${loc.city}` : ''}
+          </option>
+        ))}
+      </select>
+    </div>
+  ) : null;
 
   useEffect(() => {
     if (!loading && !user) navigate('/auth');
@@ -106,6 +126,9 @@ const PartnerLayout = ({ children, title, showBackToPartner = true, headerRight 
             {title && <h1 className="text-sm font-semibold text-foreground">{title}</h1>}
           </header>
           <main className="flex-1 overflow-y-auto">
+            {LocationSelector && (
+              <div className="px-4 pt-3">{LocationSelector}</div>
+            )}
             {children}
           </main>
         </div>
@@ -134,6 +157,9 @@ const PartnerLayout = ({ children, title, showBackToPartner = true, headerRight 
             {headerRight}
           </div>
         </div>
+      )}
+      {LocationSelector && (
+        <div className="px-4 pt-2 pb-1">{LocationSelector}</div>
       )}
       {children}
       <PartnerBottomNav />
