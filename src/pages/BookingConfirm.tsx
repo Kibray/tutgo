@@ -54,7 +54,9 @@ const BookingConfirm = () => {
 
     const insertData = {
       location_id: location.id,
-      service_id: service?.id || null,
+      service_id: (service?.price_per_hour !== undefined || service?.sport_type !== undefined)
+        ? null
+        : (service?.id || null),
       staff_id: staffId || null,
       client_user_id: user.id,
       client_name: user.user_metadata?.display_name || null,
