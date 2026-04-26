@@ -4,7 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { useLocation } from "react-router-dom";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import { PreferencesProvider } from "@/hooks/usePreferences";
 import TermsAcceptanceModal from "./components/TermsAcceptanceModal";
@@ -164,7 +164,7 @@ const App = () => (
                   <Route path="/sport" element={<Sport />} />
                   <Route path="/sport/games" element={<FindGame />} />
                   <Route path="/games/create" element={<CreateGame />} />
-                  <Route path="/sport/venues" element={<Sport />} />
+                 <Route path="/sport/venues" element={<Navigate to="/sport" replace />} />
                   <Route path="/sport/venue/:id" element={<SportVenueDetail />} />
                   <Route path="/transport" element={<Transport />} />
                   <Route path="/transport/results" element={<TransportResults />} />
