@@ -4,6 +4,7 @@ import { ArrowLeft, Clock, Volume2, VolumeX } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
+import { usePartnerLocation } from '@/contexts/PartnerLocationContext';
 import { useToast } from '@/hooks/use-toast';
 import { formatPrice } from '@/lib/types';
 import PartnerLayout from '@/components/partner/PartnerLayout';
@@ -18,32 +19,35 @@ const statusConfig: Record<string, { label: string; color: string; next: string 
 
 const PartnerOrders = () => {
   const { user } = useAuth();
+  const { selectedLocationId } = usePartnerLocation();
   const { toast } = useToast();
   const navigate = useNavigate();
   const [orders, setOrders] = useState<any[]>([]);
-  const [locationId, setLocationId] = useState<string | null>(null);
+  const locationId = selectedLocationId;
   const [loading, setLoading] = useState(true);
   const [soundEnabled, setSoundEnabled] = useState(true);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
     if (!user) return;
-    const fetch = async () => {
-      const { data: loc } = await supabase.from('locations').select('id').eq('owner_id', user.id).eq('business_type', 'cafe').limit(1).single();
-      if (loc) {
-        setLocationId(loc.id);
-        const { data } = await supabase
-          .from('cafe_orders')
-          .select('*')
-          .eq('location_id', loc.id)
-          .in('status', ['new', 'preparing', 'ready', 'served'])
-          .order('created_at', { ascending: true });
-        setOrders(data || []);
-      }
+    if (!locationId) {
+      setOrders([]);
+      setLoading(false);
+      return;
+    }
+    const run = async () => {
+      setLoading(true);
+      const { data } = await supabase
+        .from('cafe_orders')
+        .select('*')
+        .eq('location_id', locationId)
+        .in('status', ['new', 'preparing', 'ready', 'served'])
+        .order('created_at', { ascending: true });
+      setOrders(data || []);
       setLoading(false);
     };
-    fetch();
-  }, [user]);
+    run();
+  }, [user, locationId]);
 
   // Realtime
   useEffect(() => {
@@ -80,6 +84,13 @@ const PartnerOrders = () => {
   };
 
   if (loading) return <div className="min-h-screen bg-background flex items-center justify-center text-muted-foreground">Загрузка...</div>;
+  if (!locationId) return (
+    <PartnerLayout title="🍳 Кухня">
+      <div className="flex items-center justify-center px-4 py-16">
+        <p className="text-muted-foreground text-sm text-center">Выберите заведение в верхней части панели</p>
+      </div>
+    </PartnerLayout>
+  );
 
   const activeOrders = orders.filter(o => ['new', 'preparing', 'ready', 'served'].includes(o.status));
 
