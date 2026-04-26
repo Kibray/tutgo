@@ -53,19 +53,29 @@ export const useSportGames = (filters: SportGamesFilters = {}) => {
 
       // 3. Prevent duplicate participation
       const { data: existing } = await (supabase.from('game_participants' as any) as any)
-        .select('id')
+        .select('id, status')
         .eq('game_id', gameId)
         .eq('user_id', user.id)
         .maybeSingle();
-      if (existing) throw new Error('Вы уже в этой игре');
+      if (existing && existing.status === 'joined') {
+        throw new Error('Вы уже в этой игре');
+      }
 
-      // 4. Insert participant
-      const { error } = await (supabase.from('game_participants' as any) as any).insert({
-        game_id: gameId,
-        user_id: user.id,
-        status: 'joined',
-      });
-      if (error) throw error;
+      if (existing && existing.status === 'left') {
+        // Re-join: flip status back to 'joined', skip insert
+        const { error: updateError } = await (supabase.from('game_participants' as any) as any)
+          .update({ status: 'joined' })
+          .eq('id', existing.id);
+        if (updateError) throw updateError;
+      } else {
+        // 4. Insert participant
+        const { error } = await (supabase.from('game_participants' as any) as any).insert({
+          game_id: gameId,
+          user_id: user.id,
+          status: 'joined',
+        });
+        if (error) throw error;
+      }
 
       // 5. Update game player count + status
       const newCount = (game.current_players || 0) + 1;
