@@ -4,6 +4,7 @@ import { ArrowLeft, Plus, Trash2, QrCode, Download, Users } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
+import { usePartnerLocation } from '@/contexts/PartnerLocationContext';
 import { useToast } from '@/hooks/use-toast';
 import PartnerLayout from '@/components/partner/PartnerLayout';
 
@@ -16,11 +17,12 @@ const statusColors: Record<string, { bg: string; label: string; emoji: string }>
 
 const PartnerTables = () => {
   const { user } = useAuth();
+  const { selectedLocationId, selectedLocation } = usePartnerLocation();
   const { toast } = useToast();
   const navigate = useNavigate();
   const [tables, setTables] = useState<any[]>([]);
-  const [locationId, setLocationId] = useState<string | null>(null);
-  const [locationSlug, setLocationSlug] = useState<string>('');
+  const locationId = selectedLocationId;
+  const locationSlug = (selectedLocation as any)?.slug || '';
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [newNum, setNewNum] = useState('');
@@ -28,17 +30,18 @@ const PartnerTables = () => {
 
   useEffect(() => {
     if (!user) return;
-    const fetch = async () => {
-      const { data: loc } = await supabase.from('locations').select('id, slug').eq('owner_id', user.id).eq('business_type', 'cafe').limit(1).single();
-      if (loc) {
-        setLocationId(loc.id);
-        setLocationSlug(loc.slug || '');
-        await fetchTables(loc.id);
-      }
+    if (!locationId) {
+      setTables([]);
+      setLoading(false);
+      return;
+    }
+    const run = async () => {
+      setLoading(true);
+      await fetchTables(locationId);
       setLoading(false);
     };
-    fetch();
-  }, [user]);
+    run();
+  }, [user, locationId]);
 
   // Realtime table status
   useEffect(() => {
@@ -92,6 +95,13 @@ const PartnerTables = () => {
   };
 
   if (loading) return <div className="min-h-screen bg-background flex items-center justify-center text-muted-foreground">Загрузка...</div>;
+  if (!locationId) return (
+    <PartnerLayout title="🪑 Столики">
+      <div className="flex items-center justify-center px-4 py-16">
+        <p className="text-muted-foreground text-sm text-center">Выберите заведение в верхней части панели</p>
+      </div>
+    </PartnerLayout>
+  );
 
   return (
     <PartnerLayout title="🪑 Столики">

@@ -4,6 +4,7 @@ import { ArrowLeft, Plus, Trash2, Edit, Eye, EyeOff, GripVertical, Image } from 
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
+import { usePartnerLocation } from '@/contexts/PartnerLocationContext';
 import { useToast } from '@/hooks/use-toast';
 import { formatPrice } from '@/lib/types';
 import PartnerLayout from '@/components/partner/PartnerLayout';
@@ -11,9 +12,10 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 
 const PartnerMenu = () => {
   const { user } = useAuth();
+  const { selectedLocationId } = usePartnerLocation();
   const { toast } = useToast();
   const navigate = useNavigate();
-  const [locationId, setLocationId] = useState<string | null>(null);
+  const locationId = selectedLocationId;
   const [categories, setCategories] = useState<any[]>([]);
   const [items, setItems] = useState<any[]>([]);
   const [combos, setCombos] = useState<any[]>([]);
@@ -45,16 +47,20 @@ const PartnerMenu = () => {
 
   useEffect(() => {
     if (!user) return;
-    const fetchLoc = async () => {
-      const { data } = await supabase.from('locations').select('id').eq('owner_id', user.id).eq('business_type', 'cafe').limit(1).single();
-      if (data) {
-        setLocationId(data.id);
-        await fetchAll(data.id);
-      }
+    if (!locationId) {
+      setCategories([]);
+      setItems([]);
+      setCombos([]);
+      setLoading(false);
+      return;
+    }
+    const run = async () => {
+      setLoading(true);
+      await fetchAll(locationId);
       setLoading(false);
     };
-    fetchLoc();
-  }, [user]);
+    run();
+  }, [user, locationId]);
 
   const fetchAll = async (locId: string) => {
     const [catRes, itemRes, comboRes] = await Promise.all([
@@ -150,10 +156,7 @@ const PartnerMenu = () => {
   if (!locationId) return (
     <PartnerLayout title="Управление меню">
       <div className="flex items-center justify-center px-4 py-16">
-        <div className="text-center space-y-2">
-          <p className="text-muted-foreground text-sm">Создайте кафе/ресторан чтобы управлять меню</p>
-          <button onClick={() => navigate('/partner/settings')} className="text-primary text-sm font-medium">Настройки компании →</button>
-        </div>
+        <p className="text-muted-foreground text-sm text-center">Выберите заведение в верхней части панели</p>
       </div>
     </PartnerLayout>
   );
