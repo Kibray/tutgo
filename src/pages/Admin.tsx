@@ -155,7 +155,7 @@ const Admin = () => {
           await supabase
             .from('locations')
             .update({ verified: true })
-            .eq('id', locations[0].id);
+            .eq('owner_id', app.user_id);
         }
 
         const approvedBody = customMessage || `Ваша компания "${app.company_name}" подтверждена на TutGo!`;
@@ -199,7 +199,7 @@ const Admin = () => {
           await supabase
             .from('locations')
             .update({ verified: false, is_promoted: false })
-            .eq('id', locations[0].id);
+            .eq('owner_id', app.user_id);
         }
 
         const { data: profile } = await supabase
