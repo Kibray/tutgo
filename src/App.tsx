@@ -7,6 +7,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import { PreferencesProvider } from "@/hooks/usePreferences";
+import { PartnerLocationProvider } from "@/contexts/PartnerLocationContext";
 import TermsAcceptanceModal from "./components/TermsAcceptanceModal";
 import { useAuth } from "./hooks/useAuth";
 
@@ -132,21 +133,21 @@ const App = () => (
                   <Route path="/settings" element={<Settings />} />
                   <Route path="/help" element={<Help />} />
                   <Route path="/auth" element={<Auth />} />
-                  <Route path="/partner" element={<Partner />} />
-                  <Route path="/partner/bookings" element={<PartnerBookings />} />
-                  <Route path="/partner/clients" element={<PartnerClients />} />
-                  <Route path="/partner/analytics" element={<PartnerAnalytics />} />
-                  <Route path="/partner/services" element={<PartnerServices />} />
-                  <Route path="/partner/staff" element={<PartnerStaff />} />
-                  <Route path="/partner/settings" element={<PartnerCompanySettings />} />
-                  <Route path="/partner/deals" element={<PartnerDeals />} />
-                  <Route path="/partner/queue" element={<PartnerQueue />} />
-                  <Route path="/partner/finance" element={<PartnerFinance />} />
-                  <Route path="/partner/inventory" element={<PartnerInventory />} />
-                  <Route path="/partner/menu" element={<PartnerMenu />} />
-                  <Route path="/partner/orders" element={<PartnerOrders />} />
-                  <Route path="/partner/tables" element={<PartnerTables />} />
-                  <Route path="/partner/reviews" element={<PartnerReviews />} />
+                  <Route path="/partner" element={<PartnerLocationProvider><Partner /></PartnerLocationProvider>} />
+                  <Route path="/partner/bookings" element={<PartnerLocationProvider><PartnerBookings /></PartnerLocationProvider>} />
+                  <Route path="/partner/clients" element={<PartnerLocationProvider><PartnerClients /></PartnerLocationProvider>} />
+                  <Route path="/partner/analytics" element={<PartnerLocationProvider><PartnerAnalytics /></PartnerLocationProvider>} />
+                  <Route path="/partner/services" element={<PartnerLocationProvider><PartnerServices /></PartnerLocationProvider>} />
+                  <Route path="/partner/staff" element={<PartnerLocationProvider><PartnerStaff /></PartnerLocationProvider>} />
+                  <Route path="/partner/settings" element={<PartnerLocationProvider><PartnerCompanySettings /></PartnerLocationProvider>} />
+                  <Route path="/partner/deals" element={<PartnerLocationProvider><PartnerDeals /></PartnerLocationProvider>} />
+                  <Route path="/partner/queue" element={<PartnerLocationProvider><PartnerQueue /></PartnerLocationProvider>} />
+                  <Route path="/partner/finance" element={<PartnerLocationProvider><PartnerFinance /></PartnerLocationProvider>} />
+                  <Route path="/partner/inventory" element={<PartnerLocationProvider><PartnerInventory /></PartnerLocationProvider>} />
+                  <Route path="/partner/menu" element={<PartnerLocationProvider><PartnerMenu /></PartnerLocationProvider>} />
+                  <Route path="/partner/orders" element={<PartnerLocationProvider><PartnerOrders /></PartnerLocationProvider>} />
+                  <Route path="/partner/tables" element={<PartnerLocationProvider><PartnerTables /></PartnerLocationProvider>} />
+                  <Route path="/partner/reviews" element={<PartnerLocationProvider><PartnerReviews /></PartnerLocationProvider>} />
                   <Route path="/cafe/:slug/table/:tableNum" element={<CafeTable />} />
                   <Route path="/partner-landing" element={<PartnerLanding />} />
                   <Route path="/auth/partner" element={<AuthPartner />} />
