@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { Calendar, Users, BarChart3, List, UserCog, Building2, ArrowLeft, Store, Percent, Hash, Wallet, Package } from 'lucide-react';
+import { Calendar, Users, BarChart3, List, UserCog, Building2, ArrowLeft, Store, Percent, Hash, Wallet, Package, ShoppingBag, UtensilsCrossed, LayoutGrid } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { usePreferences } from '@/hooks/usePreferences';
 import { useNavigate } from 'react-router-dom';
@@ -15,8 +15,9 @@ import { startOfDay, endOfDay, format } from 'date-fns';
 import PartnerOnboarding from '@/components/partner/PartnerOnboarding';
 import { useSubscription } from '@/hooks/useSubscription';
 import InstagramConnectCard from '@/components/partner/InstagramConnectCard';
+import { usePartnerLocation } from '@/contexts/PartnerLocationContext';
 
-const dashboardItems = [
+const allDashboardItems = [
   { id: 'bookings', icon: Calendar, labelKey: 'partner.journal', route: '/partner/bookings', badgeKey: 'bookings' },
   { id: 'clients', icon: Users, labelKey: 'partner.clients', route: '/partner/clients', badgeKey: 'clients' },
   { id: 'analytics', icon: BarChart3, labelKey: 'partner.analytics', route: '/partner/analytics', badgeKey: '' },
@@ -29,12 +30,58 @@ const dashboardItems = [
   { id: 'queue', icon: Hash, labelKey: 'Живая очередь', route: '/partner/queue', badgeKey: 'queue' },
 ];
 
+const cafeOnlyItems = [
+  { id: 'orders', icon: ShoppingBag, labelKey: 'Заказы', route: '/partner/orders', badgeKey: '' },
+  { id: 'menu', icon: UtensilsCrossed, labelKey: 'Меню', route: '/partner/menu', badgeKey: '' },
+  { id: 'tables', icon: LayoutGrid, labelKey: 'Столы', route: '/partner/tables', badgeKey: '' },
+];
+
+const tourServicesItem = { id: 'services', icon: List, labelKey: 'Туры', route: '/partner/services', badgeKey: 'services' };
+
+const pickItems = (ids: string[], pool: any[]) =>
+  ids.map(id => pool.find(i => i.id === id)).filter(Boolean) as typeof allDashboardItems;
+
+const getItemsForBusinessType = (bizType?: string | null) => {
+  const pool = [...allDashboardItems, ...cafeOnlyItems];
+  switch (bizType) {
+    case 'cafe':
+    case 'restaurant':
+    case 'food':
+      return pickItems(['orders', 'menu', 'tables', 'clients', 'queue', 'deals', 'analytics', 'finance', 'company'], pool);
+    case 'beauty':
+    case 'medical':
+    case 'auto':
+    case 'education':
+    case 'service':
+      return pickItems(['bookings', 'clients', 'services', 'staff', 'queue', 'deals', 'analytics', 'finance', 'inventory', 'company'], pool);
+    case 'sport':
+      return pickItems(['bookings', 'clients', 'analytics', 'finance', 'deals', 'company'], pool);
+    case 'tour':
+      return [
+        pool.find(i => i.id === 'bookings'),
+        pool.find(i => i.id === 'clients'),
+        tourServicesItem,
+        pool.find(i => i.id === 'analytics'),
+        pool.find(i => i.id === 'finance'),
+        pool.find(i => i.id === 'company'),
+      ].filter(Boolean) as typeof allDashboardItems;
+    default:
+      return allDashboardItems;
+  }
+};
+
 const Partner = () => {
   const { user, isPartner, loading: authLoading } = useAuth();
   const { t } = usePreferences();
   const navigate = useNavigate();
   const isDesktop = useIsDesktop();
   const { plan, isEarlyAdopter, daysLeft } = useSubscription();
+  const { selectedLocation, locationsLoading } = usePartnerLocation();
+
+  const dashboardItems = useMemo(() => {
+    if (locationsLoading || !selectedLocation) return allDashboardItems;
+    return getItemsForBusinessType(selectedLocation.business_type);
+  }, [selectedLocation, locationsLoading]);
 
   const [badges, setBadges] = useState<Record<string, number>>({});
   const [todayRevenue, setTodayRevenue] = useState(0);
