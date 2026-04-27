@@ -134,6 +134,13 @@ const Bookings = () => {
     a.status === 'cancelled'
   );
 
+  const STATUS_LABELS: Record<string, string> = {
+    pending: 'Ожидает',
+    confirmed: 'Подтверждена',
+    cancelled: 'Отменена',
+    completed: 'Завершена',
+  };
+
   return (
     <div className="min-h-screen bg-background pb-24">
       <div className="px-4 pt-6">
@@ -166,7 +173,7 @@ const Bookings = () => {
                         <h3 className="text-sm font-semibold text-foreground">{b.services?.name || b.locations?.name}</h3>
                         <p className="text-xs text-muted-foreground mt-0.5">{b.locations?.name}</p>
                       </div>
-                      <span className="text-[10px] font-medium px-2 py-1 rounded-md bg-primary/15 text-primary capitalize">{b.status}</span>
+                      <span className="text-[10px] font-medium px-2 py-1 rounded-md bg-primary/15 text-primary capitalize">{STATUS_LABELS[b.status] || b.status}</span>
                     </div>
                     <div className="flex items-center gap-4 mt-3 text-xs text-muted-foreground">
                       <span className="flex items-center gap-1"><Calendar className="w-3 h-3" />{dateFmt(b.start_time, { month: 'short', day: 'numeric' })}</span>
@@ -204,7 +211,7 @@ const Bookings = () => {
                         <h3 className="text-sm font-semibold text-foreground">{b.services?.name || b.locations?.name}</h3>
                         <p className="text-xs text-muted-foreground mt-0.5">{dateFmt(b.start_time, { year: 'numeric', month: 'short', day: 'numeric' })}</p>
                       </div>
-                      <span className="text-[10px] font-medium px-2 py-1 rounded-md bg-muted text-muted-foreground capitalize">{b.status}</span>
+                      <span className="text-[10px] font-medium px-2 py-1 rounded-md bg-muted text-muted-foreground capitalize">{STATUS_LABELS[b.status] || b.status}</span>
                     </div>
                     {(b.status === 'completed' || new Date(b.end_time) < new Date()) && !reviewedIds.has(b.id) && (
                       <button onClick={() => { setReviewingAppointment(b); setReviewRating(5); setReviewComment(''); }}
