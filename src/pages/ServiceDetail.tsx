@@ -276,10 +276,17 @@ const ServiceDetail = () => {
     }
   };
 
-  const handleCallWaiter = () => {
+  const handleCallWaiter = async () => {
     const tg = (window as any).Telegram?.WebApp;
     tg?.HapticFeedback?.notificationOccurred('success');
     toast({ title: '📲 Официант вызван!', description: 'Скоро подойдём к вашему столику' });
+    await supabase.from('notifications').insert({
+      user_id: location?.owner_id,
+      title: 'Вызов официанта',
+      body: `Стол запрашивает обслуживание`,
+      type: 'waiter_call',
+      metadata: { location_id: location?.id }
+    } as any);
   };
 
   const ratingDist = [5, 4, 3, 2, 1].map(star => ({
