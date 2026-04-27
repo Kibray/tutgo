@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Sprout, Loader2, ExternalLink, AlertTriangle } from 'lucide-react';
 import { seedDemoData } from '@/scripts/seedDemoData';
 import { useAuth } from '@/hooks/useAuth';
+import { supabase } from '@/integrations/supabase/client';
 
 const SeedDemo = () => {
   const navigate = useNavigate();
@@ -15,7 +16,22 @@ const SeedDemo = () => {
 
   useEffect(() => {
     if (authLoading) return;
-    if (!user || user.email !== 'demo@tutgo.uz') navigate('/');
+    if (!user || user.email !== 'demo@tutgo.uz') {
+      navigate('/');
+      return;
+    }
+    (async () => {
+      const { data: roleData } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', user.id)
+        .eq('role', 'admin')
+        .maybeSingle();
+      if (!roleData) {
+        navigate('/');
+        return;
+      }
+    })();
   }, [user, authLoading]);
 
   if (authLoading) return (
