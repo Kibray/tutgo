@@ -6,7 +6,6 @@
   "nav.business": "Biznes",
   "nav.profile": "Profil",
   "nav.favorites": "Sevimlilar",
-
   "btn.book": "Yozilish",
   "btn.confirm": "Tasdiqlash",
   "btn.cancel": "Bekor qilish",
@@ -19,7 +18,6 @@
   "btn.back": "Orqaga",
   "btn.next": "Keyingi",
   "btn.details": "Batafsil",
-
   "index.popular_nearby": "Yaqin atrofdagi mashhurlar",
   "index.all_categories": "Barcha kategoriyalar",
   "index.near_you": "Yaqiningizda",
@@ -32,7 +30,6 @@
   "index.collapse": "Yig'ish",
   "index.expand": "Ochish",
   "index.search_placeholder": "Xizmatlar, manzillar qidiruvi...",
-
   "cat.all": "Hammasi",
   "cat.medicine": "Tibbiyot",
   "cat.beauty": "Go'zallik",
@@ -43,7 +40,6 @@
   "cat.auto": "Avtoservis",
   "cat.sport": "Sport",
   "cat.education": "Ta'lim",
-
   "card.open": "Ochiq",
   "card.closed": "Yopiq",
   "card.reviews": "sharhlar",
@@ -55,7 +51,6 @@
   "card.view": "Ko'rish",
   "card.seats": "o'rin",
   "card.no_seats": "O'rin yo'q",
-
   "detail.about": "Biz haqimizda",
   "detail.services": "Xizmatlar",
   "detail.reviews": "Sharhlar",
@@ -72,7 +67,6 @@
   "detail.share_copied": "Yuborish uchun nusxalandi",
   "detail.loading": "Yuklanmoqda...",
   "detail.not_found": "Xizmat topilmadi",
-
   "booking.choose_service": "Xizmatni tanlang",
   "booking.choose_master": "Ustani tanlang",
   "booking.choose_date": "Sanani tanlang",
@@ -94,7 +88,6 @@
   "booking.any_master": "Ixtiyoriy usta",
   "booking.fraud_title": "Firibgarlikdan himoya",
   "booking.fraud_body": "Tashrif oldidan ustaga pul to'lamang. TutGo pul hisob-kitoblarida ishtirok etmaydi va oldindan to'lov talab qilmaydi. Agar kimdir xizmat ko'rsatilgunga qadar karta yoki messenger orqali pul o'tkazishni talab qilsa — bu servis qoidalarini buzish va firibgarlik belgisidir. To'lov faqat xizmatdan so'ng muassasada amalga oshiriladi.",
-
   "bookings.title": "Shaxsiy kabinet",
   "bookings.subtitle": "Yozuvlar va sevimlilar",
   "bookings.my_bookings": "Mening yozuvlarim",
@@ -107,7 +100,6 @@
   "bookings.review_placeholder": "Tajribangiz haqida gapirib bering (ixtiyoriy)",
   "bookings.send": "Yuborish",
   "bookings.fav_empty": "Yoqtirgan joylarni saqlang va tez toping",
-
   "cafe.menu": "Menyu",
   "cafe.add_to_cart": "Savatga qo'shish",
   "cafe.order": "Buyurtma berish",
@@ -127,7 +119,6 @@
   "cafe.place_order": "Buyurtma berish",
   "cafe.split_bill": "Hisobni bo'lish",
   "cafe.repeat_order": "Buyurtmani takrorlash",
-
   "partner.panel": "Hamkor paneli",
   "partner.login_prompt": "Biznesni boshqarish uchun kiring",
   "partner.not_partner": "Siz hali hamkor emassiz",
@@ -196,7 +187,6 @@
   "partner.nav_bookings": "Yozuvlar",
   "partner.nav_queue": "Navbat",
   "partner.nav_profile": "Profil",
-
   "auth.login_title": "TUTGO ga kirish",
   "auth.register_title": "Ro'yxatdan o'tish",
   "auth.login_subtitle": "Yozuvlarni boshqarish uchun kiring",
@@ -222,7 +212,6 @@
   "auth.logging_telegram": "Telegram orqali kirish...",
   "auth.attention": "Diqqat",
   "auth.confirm_age_terms": "Yoshingizni tasdiqlang va shartlarni qabul qiling",
-
   "notifications.title": "Bildirishnomalar",
   "notifications.read_all": "Hammasini o'qish",
   "notifications.empty": "Hozircha bildirishnomalar yo'q",
@@ -231,7 +220,6 @@
   "notifications.cancelled": "Yozuv bekor qilindi",
   "notifications.reminder": "Eslatma",
   "notifications.in": "orqali",
-
   "profile.title": "Mening profilim",
   "profile.guest": "Mehmon",
   "profile.login_full": "To'liq kirish uchun tizimga kiring",
@@ -265,7 +253,6 @@
   "profile.tg_connected_desc": "Bildirishnomalar botga keladi",
   "profile.tg_connect_desc": "Telegramda bildirishnomalar oling",
   "profile.invite_friends": "Do'stlarni taklif qilish",
-
   "settings.title": "Sozlamalar",
   "settings.dark_mode": "Qorong'i rejim",
   "settings.dark_mode_desc": "Ilovaning qorong'i interfeysi",
@@ -282,7 +269,6 @@
   "settings.notif_cancelled_desc": "Bekor qilish haqida bildirishnoma",
   "settings.notif_deals": "Yaqin atrofdagi aksiyalar",
   "settings.notif_deals_desc": "Yaqin kompaniyalar aksiyalari",
-
   "edit.title": "Profilni tahrirlash",
   "edit.name": "Ism",
   "edit.phone": "Telefon",
@@ -290,7 +276,6 @@
   "edit.save": "Saqlash",
   "edit.saved": "Profil yangilandi",
   "edit.upload_avatar": "Rasm yuklash",
-
   "help.title": "Yordam va FAQ",
   "help.q1": "Xizmatga qanday yozilish mumkin?",
   "help.a1": "Xaritada biznesni tanlang, kartochkasini oching va «Yozilish» tugmasini bosing.",
@@ -299,26 +284,21 @@
   "help.q3": "Qo'llab-quvvatlash bilan qanday bog'lanish mumkin?",
   "help.a3": "Bizga Telegram orqali yozing: @tutgo_support",
   "help.contact_support": "Qo'llab-quvvatlashga yozish",
-
   "deals.title": "Aksiyalar",
   "deals.subtitle": "Eng yaxshi takliflar va chegirmalar",
   "deals.empty": "Hozircha aksiyalar yo'q",
   "deals.empty_desc": "Bu yerda kompaniyalar chegirmalari va maxsus takliflari bo'ladi",
   "deals.until": "gacha",
-
   "legal.terms": "Foydalanuvchi shartnomasi",
   "legal.privacy": "Maxfiylik siyosati",
   "legal.how_it_works": "Bu qanday ishlaydi",
-
   "profile.how_it_works": "TutGo dan qanday foydalanish",
   "profile.how_it_works_desc": "Xizmat imkoniyatlari haqida",
-
   "common.error": "Xatolik",
   "common.loading": "Yuklanmoqda...",
   "common.back": "Orqaga",
   "common.today": "Bugun",
   "common.cancel": "Bekor qilish",
-
   "partner_landing.title": "Biznes uchun TUTGO",
   "partner_landing.subtitle": "Telegram orqali mijozlarni jalb qiling",
   "partner_landing.benefit1": "Biznesingizni Toshkent xaritasida ko'rsating",
@@ -349,5 +329,9 @@
   "sport.create_game": "O'yin yaratish",
   "sport.skill_beginner": "Boshlang'ich",
   "sport.skill_amateur": "Havaskor",
-  "sport.skill_pro": "Professional"
+  "sport.skill_pro": "Professional",
+  "booking.route": "Yo'nalish",
+  "booking.add_to_calendar": "Kalendarga qo'shish",
+  "booking.share": "Ulashish",
+  "booking.copied": "Nusxalandi"
 }
