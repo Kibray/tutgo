@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ChevronLeft, Plus, MapPin, Clock, Calendar } from 'lucide-react';
@@ -8,6 +8,7 @@ import BottomNav from '@/components/BottomNav';
 import { useSportGames } from '@/hooks/useSportGames';
 import { useAuth } from '@/hooks/useAuth';
 import { usePreferences } from '@/hooks/usePreferences';
+import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
 const SPORTS = [
@@ -59,6 +60,19 @@ const FindGame = () => {
   const { user } = useAuth();
   usePreferences();
 
+  const [myGameIds, setMyGameIds] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (!user) return;
+    supabase.from('game_participants' as any)
+      .select('game_id')
+      .eq('user_id', user.id)
+      .eq('status', 'joined')
+      .then(({ data }) => {
+        if (data) setMyGameIds(data.map((d: any) => d.game_id));
+      });
+  }, [user]);
+
   const [sport, setSport] = useState('all');
   const [skill, setSkill] = useState('all');
   const [dateFilter, setDateFilter] = useState('all');
@@ -73,7 +87,7 @@ const FindGame = () => {
     return undefined;
   }, [dateFilter]);
 
-  const { games, isLoading, joinGame } = useSportGames({
+  const { games, isLoading, joinGame, leaveGame } = useSportGames({
     sport_type: sport !== 'all' ? sport : undefined,
     skill_level: skill !== 'all' ? skill : undefined,
     date: dateValue,
@@ -266,18 +280,34 @@ const FindGame = () => {
                         </>
                       )}
                     </div>
-                    <Button
-                      size="sm"
-                      disabled={isFull || isCancelled}
-                      onClick={() => handleJoin(g.id)}
-                      className={`text-xs rounded-xl ${
-                        isFull
-                          ? 'bg-muted text-muted-foreground'
-                          : 'bg-gradient-to-r from-purple-600 to-blue-600 text-white'
-                      }`}
-                    >
-                      {isFull ? 'Заполнено' : 'Присоединиться'}
-                    </Button>
+                    {myGameIds.includes(g.id) ? (
+                      <Button
+                        size="sm"
+                        onClick={() => {
+                          leaveGame(g.id);
+                          setMyGameIds(prev => prev.filter(id => id !== g.id));
+                        }}
+                        className={`text-xs rounded-xl bg-gradient-to-r from-purple-600 to-blue-600 text-white`}
+                      >
+                        Покинуть
+                      </Button>
+                    ) : (
+                      <Button
+                        size="sm"
+                        disabled={isFull || isCancelled}
+                        onClick={() => {
+                          joinGame(g.id);
+                          setMyGameIds(prev => [...prev, g.id]);
+                        }}
+                        className={`text-xs rounded-xl ${
+                          isFull
+                            ? 'bg-muted text-muted-foreground'
+                            : 'bg-gradient-to-r from-purple-600 to-blue-600 text-white'
+                        }`}
+                      >
+                        {isFull ? 'Заполнено' : 'Присоединиться'}
+                      </Button>
+                    )}
                   </div>
                 </motion.div>
               );
