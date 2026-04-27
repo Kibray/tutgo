@@ -14,6 +14,7 @@ interface Props {
   currency: string;
   cartItems: CartItem[];
   cartTotal: number;
+  onClearCart: () => void;
 }
 
 const timeSlots = (() => {
@@ -26,7 +27,7 @@ const timeSlots = (() => {
   return slots;
 })();
 
-const ReservationTab = ({ locationId, locationName, currency, cartItems, cartTotal }: Props) => {
+const ReservationTab = ({ locationId, locationName, currency, cartItems, cartTotal, onClearCart }: Props) => {
   const { user } = useAuth();
   const { toast } = useToast();
   const [selectedDate, setSelectedDate] = useState(0);
@@ -87,6 +88,7 @@ const ReservationTab = ({ locationId, locationName, currency, cartItems, cartTot
     } else {
       toast({ title: '✅ Столик забронирован!', description: `${locationName} · ${dateStr} в ${selectedTime}` });
       tg?.HapticFeedback?.notificationOccurred('success');
+      onClearCart();
       setSelectedTime(null);
       setNotes('');
     }

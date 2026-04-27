@@ -431,6 +431,7 @@ const ServiceDetail = () => {
                 currency={location.currency || 'сум'}
                 cartItems={cart.items}
                 cartTotal={cart.totalAmount}
+                onClearCart={() => cart.clear()}
               />
             </TabsContent>
 
