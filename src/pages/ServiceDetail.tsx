@@ -403,10 +403,12 @@ const ServiceDetail = () => {
           className="glass rounded-xl py-3 flex flex-col items-center gap-1.5">
           <Share2 className="w-5 h-5 text-primary" /><span className="text-[10px] font-medium text-foreground">Поделиться</span>
         </motion.button>
-        <motion.button whileTap={{ scale: 0.95 }} onClick={handleClaimBusiness} disabled={claimSubmitting}
-          className="glass rounded-xl py-3 flex flex-col items-center gap-1.5 disabled:opacity-50">
-          <span className="text-lg">🏢</span><span className="text-[10px] font-medium text-foreground">{claimSubmitting ? '...' : 'Мой бизнес'}</span>
-        </motion.button>
+        {!location?.owner_id && (
+          <motion.button whileTap={{ scale: 0.95 }} onClick={handleClaimBusiness} disabled={claimSubmitting}
+            className="glass rounded-xl py-3 flex flex-col items-center gap-1.5 disabled:opacity-50">
+            <span className="text-lg">🏢</span><span className="text-[10px] font-medium text-foreground">{claimSubmitting ? '...' : 'Мой бизнес'}</span>
+          </motion.button>
+        )}
       </div>
 
       {/* CAFE MODE */}
