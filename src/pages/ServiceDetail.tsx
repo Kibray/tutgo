@@ -519,7 +519,7 @@ const ServiceDetail = () => {
             onClear={cart.clear}
             onCheckout={() => {
               // Switch to reservation tab with pre-order
-              const tabTrigger = document.querySelector('[data-state][value="reserve"]') as HTMLElement;
+              const tabTrigger = document.querySelector('[data-value="reserve"]') as HTMLElement;
               if (tabTrigger) tabTrigger.click();
             }}
           />
