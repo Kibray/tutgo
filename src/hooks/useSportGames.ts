@@ -76,15 +76,6 @@ export const useSportGames = (filters: SportGamesFilters = {}) => {
         });
         if (error) throw error;
       }
-
-      // 5. Update game player count + status
-      const newCount = (game.current_players || 0) + 1;
-      await (supabase.from('sport_games' as any) as any)
-        .update({
-          current_players: newCount,
-          status: newCount >= game.max_players ? 'full' : 'open',
-        })
-        .eq('id', gameId);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['sport_games'] });
@@ -100,18 +91,6 @@ export const useSportGames = (filters: SportGamesFilters = {}) => {
         .eq('game_id', gameId)
         .eq('user_id', user.id);
       if (error) throw error;
-
-      // Decrement player count and reopen game
-      const { data: game } = await (supabase.from('sport_games' as any) as any)
-        .select('current_players')
-        .eq('id', gameId)
-        .single();
-      if (game) {
-        const newCount = Math.max((game.current_players || 1) - 1, 0);
-        await (supabase.from('sport_games' as any) as any)
-          .update({ current_players: newCount, status: 'open' })
-          .eq('id', gameId);
-      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['sport_games'] });
