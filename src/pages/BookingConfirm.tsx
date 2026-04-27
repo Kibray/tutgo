@@ -105,7 +105,7 @@ const BookingConfirm = () => {
         try { await navigator.share({ text: shareText }); } catch {}
       } else {
         navigator.clipboard.writeText(shareText);
-        toast({ title: 'Скопировано' });
+        toast({ title: t('booking.copied') });
       }
     };
 
@@ -132,7 +132,7 @@ const BookingConfirm = () => {
               <span className="text-xs text-muted-foreground w-20">{t('booking.address')}</span>
               <span className="text-xs text-foreground font-medium flex-1 truncate">{fullAddress}</span>
               {location.lat && location.lng && (
-                <button onClick={handleRoute} className="text-[10px] text-primary font-semibold whitespace-nowrap">Маршрут</button>
+                <button onClick={handleRoute} className="text-[10px] text-primary font-semibold whitespace-nowrap">{t('booking.route')}</button>
               )}
             </div>
             {staffMember && <Row icon={User} label={t('booking.specialist')} value={staffMember.full_name} />}
@@ -149,17 +149,17 @@ const BookingConfirm = () => {
           <motion.button whileTap={{ scale: 0.98 }} onClick={handleAddCalendar}
             className="flex-1 glass rounded-lg py-3 flex flex-col items-center gap-1 text-foreground">
             <CalendarDays className="w-4 h-4 text-primary" />
-            <span className="text-[10px] font-semibold">В календарь</span>
+            <span className="text-[10px] font-semibold">{t('booking.add_to_calendar')}</span>
           </motion.button>
           <motion.button whileTap={{ scale: 0.98 }} onClick={handleRoute} disabled={!location.lat || !location.lng}
             className="flex-1 glass rounded-lg py-3 flex flex-col items-center gap-1 text-foreground disabled:opacity-40">
             <Navigation className="w-4 h-4 text-primary" />
-            <span className="text-[10px] font-semibold">Маршрут</span>
+            <span className="text-[10px] font-semibold">{t('booking.route')}</span>
           </motion.button>
           <motion.button whileTap={{ scale: 0.98 }} onClick={handleShare}
             className="flex-1 glass rounded-lg py-3 flex flex-col items-center gap-1 text-foreground">
             <Share2 className="w-4 h-4 text-primary" />
-            <span className="text-[10px] font-semibold">Поделиться</span>
+            <span className="text-[10px] font-semibold">{t('booking.share')}</span>
           </motion.button>
         </div>
 
