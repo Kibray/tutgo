@@ -6,7 +6,6 @@
   "nav.business": "Бизнес",
   "nav.profile": "Профиль",
   "nav.favorites": "Избранное",
-
   "btn.book": "Записаться",
   "btn.confirm": "Подтвердить",
   "btn.cancel": "Отменить",
@@ -19,7 +18,6 @@
   "btn.back": "Назад",
   "btn.next": "Далее",
   "btn.details": "Подробнее",
-
   "index.popular_nearby": "Популярное рядом",
   "index.all_categories": "Все категории",
   "index.near_you": "Рядом с вами",
@@ -32,7 +30,6 @@
   "index.collapse": "Свернуть",
   "index.expand": "Развернуть",
   "index.search_placeholder": "Поиск услуг, адресов, мест...",
-
   "cat.all": "Все",
   "cat.medicine": "Медицина",
   "cat.beauty": "Красота",
@@ -43,7 +40,6 @@
   "cat.auto": "Автосервис",
   "cat.sport": "Спорт",
   "cat.education": "Обучение",
-
   "card.open": "Открыто",
   "card.closed": "Закрыто",
   "card.reviews": "отзывов",
@@ -55,7 +51,6 @@
   "card.view": "Посмотреть",
   "card.seats": "мест",
   "card.no_seats": "Нет мест",
-
   "detail.about": "О нас",
   "detail.services": "Услуги",
   "detail.reviews": "Отзывы",
@@ -72,7 +67,6 @@
   "detail.share_copied": "Скопировано для отправки",
   "detail.loading": "Загрузка...",
   "detail.not_found": "Услуга не найдена",
-
   "booking.choose_service": "Выберите услугу",
   "booking.choose_master": "Выберите мастера",
   "booking.choose_date": "Выберите дату",
@@ -92,9 +86,8 @@
   "booking.login_required": "Войдите в аккаунт для записи",
   "booking.time_taken": "Это время уже занято",
   "booking.any_master": "Любой мастер",
- "booking.fraud_title": "Защита от мошенничества",
- "booking.fraud_body": "Не платите мастеру до визита. TutGo не участвует в денежных расчётах и не просит предоплату. Если кто-то требует перевод на карту или в мессенджере до оказания услуги — это нарушение правил сервиса и признак мошенничества. Оплата производится лично в заведении после получения услуги.",
-
+  "booking.fraud_title": "Защита от мошенничества",
+  "booking.fraud_body": "Не платите мастеру до визита. TutGo не участвует в денежных расчётах и не просит предоплату. Если кто-то требует перевод на карту или в мессенджере до оказания услуги — это нарушение правил сервиса и признак мошенничества. Оплата производится лично в заведении после получения услуги.",
   "bookings.title": "Личный кабинет",
   "bookings.subtitle": "Записи и избранное",
   "bookings.my_bookings": "Мои записи",
@@ -107,7 +100,6 @@
   "bookings.review_placeholder": "Расскажите о вашем опыте (необязательно)",
   "bookings.send": "Отправить",
   "bookings.fav_empty": "Сохраняй понравившиеся места чтобы быстро найти их снова",
-
   "cafe.menu": "Меню",
   "cafe.add_to_cart": "Добавить в корзину",
   "cafe.order": "Заказать",
@@ -127,7 +119,6 @@
   "cafe.place_order": "Заказать",
   "cafe.split_bill": "Разделить счёт",
   "cafe.repeat_order": "Повторить заказ",
-
   "partner.panel": "Панель партнёра",
   "partner.login_prompt": "Войдите, чтобы управлять бизнесом",
   "partner.not_partner": "Вы ещё не партнёр",
@@ -196,7 +187,6 @@
   "partner.nav_bookings": "Записи",
   "partner.nav_queue": "Очередь",
   "partner.nav_profile": "Профиль",
-
   "auth.login_title": "Вход в TUTGO",
   "auth.register_title": "Регистрация",
   "auth.login_subtitle": "Войдите, чтобы управлять записями",
@@ -222,7 +212,6 @@
   "auth.logging_telegram": "Входим через Telegram...",
   "auth.attention": "Внимание",
   "auth.confirm_age_terms": "Подтвердите возраст и примите условия",
-
   "notifications.title": "Уведомления",
   "notifications.read_all": "Прочитать все",
   "notifications.empty": "Пока нет уведомлений",
@@ -231,7 +220,6 @@
   "notifications.cancelled": "Запись отменена",
   "notifications.reminder": "Напоминание",
   "notifications.in": "через",
-
   "profile.title": "Мой профиль",
   "profile.guest": "Гость",
   "profile.login_full": "Войдите для полного доступа",
@@ -265,7 +253,6 @@
   "profile.tg_connected_desc": "Уведомления приходят в бот",
   "profile.tg_connect_desc": "Получайте уведомления в Telegram",
   "profile.invite_friends": "Пригласить друзей",
-
   "settings.title": "Настройки",
   "settings.dark_mode": "Тёмная тема",
   "settings.dark_mode_desc": "Тёмный интерфейс приложения",
@@ -282,7 +269,6 @@
   "settings.notif_cancelled_desc": "Уведомление об отмене записи",
   "settings.notif_deals": "Новые акции рядом",
   "settings.notif_deals_desc": "Акции от компаний поблизости",
-
   "edit.title": "Редактировать профиль",
   "edit.name": "Имя",
   "edit.phone": "Телефон",
@@ -290,7 +276,6 @@
   "edit.save": "Сохранить",
   "edit.saved": "Профиль обновлён",
   "edit.upload_avatar": "Загрузить фото",
-
   "help.title": "Помощь и FAQ",
   "help.q1": "Как записаться на услугу?",
   "help.a1": "Выберите бизнес на карте, откройте его карточку и нажмите «Записаться». Выберите дату, время и подтвердите.",
@@ -299,26 +284,21 @@
   "help.q3": "Как связаться с поддержкой?",
   "help.a3": "Напишите нам в Telegram: @tutgo_support",
   "help.contact_support": "Написать в поддержку",
-
   "deals.title": "Акции",
   "deals.subtitle": "Лучшие предложения и скидки",
   "deals.empty": "Акций пока нет",
   "deals.empty_desc": "Здесь будут скидки и спецпредложения от компаний",
   "deals.until": "до",
-
   "legal.terms": "Пользовательское соглашение",
   "legal.privacy": "Политика конфиденциальности",
   "legal.how_it_works": "Как это работает",
-
   "profile.how_it_works": "Как пользоваться TutGo",
   "profile.how_it_works_desc": "Обзор возможностей сервиса",
-
   "common.error": "Ошибка",
   "common.loading": "Загрузка...",
   "common.back": "Назад",
   "common.today": "Сегодня",
   "common.cancel": "Отмена",
-
   "partner_landing.title": "TUTGO для бизнеса",
   "partner_landing.subtitle": "Привлекайте клиентов через Telegram",
   "partner_landing.benefit1": "Покажите бизнес на карте Ташкента",
@@ -349,5 +329,9 @@
   "sport.create_game": "Создать игру",
   "sport.skill_beginner": "Начинающий",
   "sport.skill_amateur": "Любитель",
-  "sport.skill_pro": "Про"
+  "sport.skill_pro": "Про",
+  "booking.route": "Маршрут",
+  "booking.add_to_calendar": "В календарь",
+  "booking.share": "Поделиться",
+  "booking.copied": "Скопировано"
 }

@@ -6,7 +6,6 @@
   "nav.business": "Business",
   "nav.profile": "Profile",
   "nav.favorites": "Favorites",
-
   "btn.book": "Book now",
   "btn.confirm": "Confirm",
   "btn.cancel": "Cancel",
@@ -19,7 +18,6 @@
   "btn.back": "Back",
   "btn.next": "Next",
   "btn.details": "Details",
-
   "index.popular_nearby": "Popular nearby",
   "index.all_categories": "All categories",
   "index.near_you": "Near you",
@@ -32,7 +30,6 @@
   "index.collapse": "Collapse",
   "index.expand": "Expand",
   "index.search_placeholder": "Search services, addresses, places...",
-
   "cat.all": "All",
   "cat.medicine": "Medicine",
   "cat.beauty": "Beauty",
@@ -43,7 +40,6 @@
   "cat.auto": "Auto service",
   "cat.sport": "Sport",
   "cat.education": "Education",
-
   "card.open": "Open",
   "card.closed": "Closed",
   "card.reviews": "reviews",
@@ -55,7 +51,6 @@
   "card.view": "View",
   "card.seats": "seats",
   "card.no_seats": "No seats",
-
   "detail.about": "About us",
   "detail.services": "Services",
   "detail.reviews": "Reviews",
@@ -72,7 +67,6 @@
   "detail.share_copied": "Copied for sharing",
   "detail.loading": "Loading...",
   "detail.not_found": "Service not found",
-
   "booking.choose_service": "Choose service",
   "booking.choose_master": "Choose master",
   "booking.choose_date": "Choose date",
@@ -94,7 +88,6 @@
   "booking.any_master": "Any master",
   "booking.fraud_title": "Fraud protection",
   "booking.fraud_body": "Do not pay the specialist before your visit. TutGo is not involved in payments and never requests advance payment. If anyone demands a transfer by card or messenger before the service is provided — this is a violation of TutGo's terms and a sign of fraud. Payment is made in person at the venue after the service.",
-
   "bookings.title": "My Account",
   "bookings.subtitle": "Bookings and favorites",
   "bookings.my_bookings": "My bookings",
@@ -107,7 +100,6 @@
   "bookings.review_placeholder": "Tell us about your experience (optional)",
   "bookings.send": "Submit",
   "bookings.fav_empty": "Save places you like to find them quickly later",
-
   "cafe.menu": "Menu",
   "cafe.add_to_cart": "Add to cart",
   "cafe.order": "Order",
@@ -127,7 +119,6 @@
   "cafe.place_order": "Place order",
   "cafe.split_bill": "Split bill",
   "cafe.repeat_order": "Repeat order",
-
   "partner.panel": "Partner Panel",
   "partner.login_prompt": "Sign in to manage your business",
   "partner.not_partner": "You are not a partner yet",
@@ -196,7 +187,6 @@
   "partner.nav_bookings": "Bookings",
   "partner.nav_queue": "Queue",
   "partner.nav_profile": "Profile",
-
   "auth.login_title": "Sign in to TUTGO",
   "auth.register_title": "Register",
   "auth.login_subtitle": "Sign in to manage your bookings",
@@ -222,7 +212,6 @@
   "auth.logging_telegram": "Signing in via Telegram...",
   "auth.attention": "Attention",
   "auth.confirm_age_terms": "Confirm your age and accept the terms",
-
   "notifications.title": "Notifications",
   "notifications.read_all": "Read all",
   "notifications.empty": "No notifications yet",
@@ -231,7 +220,6 @@
   "notifications.cancelled": "Booking cancelled",
   "notifications.reminder": "Reminder",
   "notifications.in": "in",
-
   "profile.title": "My Profile",
   "profile.guest": "Guest",
   "profile.login_full": "Sign in for full access",
@@ -265,7 +253,6 @@
   "profile.tg_connected_desc": "Notifications are sent to the bot",
   "profile.tg_connect_desc": "Get notifications in Telegram",
   "profile.invite_friends": "Invite friends",
-
   "settings.title": "Settings",
   "settings.dark_mode": "Dark Mode",
   "settings.dark_mode_desc": "Dark app interface",
@@ -282,7 +269,6 @@
   "settings.notif_cancelled_desc": "Cancellation notification",
   "settings.notif_deals": "New deals nearby",
   "settings.notif_deals_desc": "Deals from nearby companies",
-
   "edit.title": "Edit Profile",
   "edit.name": "Name",
   "edit.phone": "Phone",
@@ -290,7 +276,6 @@
   "edit.save": "Save",
   "edit.saved": "Profile updated",
   "edit.upload_avatar": "Upload photo",
-
   "help.title": "Help & FAQ",
   "help.q1": "How to book a service?",
   "help.a1": "Select a business on the map, open its card and tap \"Book\". Choose date, time and confirm.",
@@ -299,26 +284,21 @@
   "help.q3": "How to contact support?",
   "help.a3": "Write to us on Telegram: @tutgo_support",
   "help.contact_support": "Contact Support",
-
   "deals.title": "Promotions",
   "deals.subtitle": "Best offers and discounts",
   "deals.empty": "No promotions yet",
   "deals.empty_desc": "Discounts and special offers from companies will appear here",
   "deals.until": "until",
-
   "legal.terms": "Terms of Service",
   "legal.privacy": "Privacy Policy",
   "legal.how_it_works": "How it works",
-
   "profile.how_it_works": "How to use TutGo",
   "profile.how_it_works_desc": "Overview of service features",
-
   "common.error": "Error",
   "common.loading": "Loading...",
   "common.back": "Back",
   "common.today": "Today",
   "common.cancel": "Cancel",
-
   "partner_landing.title": "TUTGO for Business",
   "partner_landing.subtitle": "Attract customers via Telegram",
   "partner_landing.benefit1": "Show your business on Tashkent map",
@@ -349,5 +329,9 @@
   "sport.create_game": "Create game",
   "sport.skill_beginner": "Beginner",
   "sport.skill_amateur": "Amateur",
-  "sport.skill_pro": "Pro"
+  "sport.skill_pro": "Pro",
+  "booking.route": "Route",
+  "booking.add_to_calendar": "Add to calendar",
+  "booking.share": "Share",
+  "booking.copied": "Copied"
 }
