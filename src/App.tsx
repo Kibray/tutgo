@@ -7,6 +7,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import { PreferencesProvider } from "@/hooks/usePreferences";
+import { CartProvider } from "@/hooks/useCart";
 import { PartnerLocationProvider } from "@/contexts/PartnerLocationContext";
 import TermsAcceptanceModal from "./components/TermsAcceptanceModal";
 import { useAuth } from "./hooks/useAuth";
@@ -116,6 +117,7 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
+      <CartProvider>
       <BrowserRouter>
         <AuthProvider>
           <PreferencesProvider>
@@ -183,6 +185,7 @@ const App = () => (
           </PreferencesProvider>
         </AuthProvider>
       </BrowserRouter>
+      </CartProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );
