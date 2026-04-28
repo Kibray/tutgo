@@ -46,41 +46,31 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     let mounted = true;
 
     const initUser = async (userId: string) => {
-      await Promise.all([checkPartnerRole(userId), checkTermsAccepted(userId)]);
-      if (mounted) setLoading(false);
+      try {
+        await Promise.all([checkPartnerRole(userId), checkTermsAccepted(userId)]);
+      } finally {
+        if (mounted) setLoading(false);
+      }
     };
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      if (_event === 'PASSWORD_RECOVERY') {
-        setIsRecovery(true);
-      }
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'PASSWORD_RECOVERY') setIsRecovery(true);
       setSession(session);
       setUser(session?.user ?? null);
-      if (session?.user) {
-        if (!initialized.current) {
-          initialized.current = true;
-          await initUser(session.user.id);
-        }
-      } else {
+      if (session?.user && !initialized.current) {
+        initialized.current = true;
+        setTimeout(() => initUser(session.user.id), 0);
+      } else if (!session) {
         initialized.current = false;
         setIsPartner(false);
         setTermsAccepted(true);
         setPartnerTermsAccepted(true);
-        if (mounted) setLoading(false);
+        setLoading(false);
       }
     });
 
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        if (!initialized.current) {
-          initialized.current = true;
-          await initUser(session.user.id);
-        }
-      } else {
-        if (mounted) setLoading(false);
-      }
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!session) setLoading(false);
     });
 
     return () => {
