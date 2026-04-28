@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
@@ -58,16 +57,16 @@ const TermsAcceptanceModal = ({ open, userId, onAccepted, variant = 'client' }: 
               {isPartner ? (
                 <>
                   Я принимаю{' '}
-                  <Link to="/terms-partner" className="text-primary hover:underline font-medium">Соглашение с партнёрами</Link>
+                  <a href="/terms-partner" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline font-medium">Соглашение с партнёрами</a>
                   {' '}и{' '}
-                  <Link to="/privacy" className="text-primary hover:underline font-medium">Политику конфиденциальности</Link>
+                  <a href="/privacy" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline font-medium">Политику конфиденциальности</a>
                 </>
               ) : (
                 <>
                   Мне исполнилось 18 лет, и я принимаю{' '}
-                  <Link to="/terms" className="text-primary hover:underline font-medium">Условия использования</Link>
+                  <a href="/terms" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline font-medium">Условия использования</a>
                   {' '}и{' '}
-                  <Link to="/privacy" className="text-primary hover:underline font-medium">Политику конфиденциальности</Link>
+                  <a href="/privacy" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline font-medium">Политику конфиденциальности</a>
                 </>
               )}
             </span>
