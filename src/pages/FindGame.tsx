@@ -300,7 +300,7 @@ const FindGame = () => {
                             await joinGame(g.id);
                             setMyGameIds(prev => [...prev, g.id]);
                           } catch {
-                            toast({ title: 'Не удалось присоединиться', variant: 'destructive' });
+                            toast.error('Не удалось присоединиться');
                           }
                         }}
                         className={`text-xs rounded-xl ${
