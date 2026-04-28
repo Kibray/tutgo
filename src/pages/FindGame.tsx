@@ -295,9 +295,13 @@ const FindGame = () => {
                       <Button
                         size="sm"
                         disabled={isFull || isCancelled}
-                        onClick={() => {
-                          joinGame(g.id);
-                          setMyGameIds(prev => [...prev, g.id]);
+                        onClick={async () => {
+                          try {
+                            await joinGame(g.id);
+                            setMyGameIds(prev => [...prev, g.id]);
+                          } catch {
+                            toast.error('Не удалось присоединиться');
+                          }
                         }}
                         className={`text-xs rounded-xl ${
                           isFull
