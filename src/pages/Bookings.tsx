@@ -86,6 +86,7 @@ const Bookings = () => {
       user_id: user.id,
       rating: reviewRating,
       comment: reviewComment || null,
+      staff_id: reviewingAppointment?.staff_id || null,
     });
     setSubmittingReview(false);
     if (error) {
