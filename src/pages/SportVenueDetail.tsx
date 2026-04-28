@@ -308,9 +308,17 @@ const SportVenueDetail = () => {
               <div className="space-y-2">
                 <label className="text-xs font-medium text-muted-foreground">Время</label>
                 <div className="grid grid-cols-4 gap-2">
-                  {Array.from({ length: 14 }).map((_, i) => {
-                    const hour = 8 + i;
-                    const t = `${String(hour).padStart(2, '0')}:00`;
+                  {(() => {
+                    const startHour = pickerCourt?.working_hours?.open
+                      ? parseInt(pickerCourt.working_hours.open.split(':')[0])
+                      : 8;
+                    const endHour = pickerCourt?.working_hours?.close
+                      ? parseInt(pickerCourt.working_hours.close.split(':')[0])
+                      : 21;
+                    const count = Math.max(0, endHour - startHour + 1);
+                    return Array.from({ length: count }).map((_, i) => {
+                      const hour = startHour + i;
+                      const t = `${String(hour).padStart(2, '0')}:00`;
                     const isActive = t === pickerTime;
                     return (
                       <button
@@ -325,7 +333,8 @@ const SportVenueDetail = () => {
                         {t}
                       </button>
                     );
-                  })}
+                    });
+                  })()}
                 </div>
               </div>
 
