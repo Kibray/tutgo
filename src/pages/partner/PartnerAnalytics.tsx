@@ -32,7 +32,7 @@ const PartnerAnalytics = () => {
       const [apptRes, svcRes] = await Promise.all([
         supabase.from('appointments').select('*')
           .in('location_id', locIds)
-          .in('status', ['pending', 'confirmed', 'completed'])
+          .in('status', ['confirmed', 'completed'])
           .gte('start_time', monthStart.toISOString()),
         supabase.from('services').select('id, price').in('location_id', locIds),
       ]);
