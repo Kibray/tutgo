@@ -1,4 +1,4 @@
-import { useState, useEffect, createContext, useContext, ReactNode } from 'react';
+import { useState, useEffect, useRef, createContext, useContext, ReactNode } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import type { User, Session } from '@supabase/supabase-js';
 
@@ -29,6 +29,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isRecovery, setIsRecovery] = useState(false);
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [partnerTermsAccepted, setPartnerTermsAccepted] = useState(false);
+  const initialized = useRef(false);
 
   const checkPartnerRole = async (userId: string) => {
     const { data } = await supabase.rpc('has_role', { _user_id: userId, _role: 'partner' });
@@ -49,15 +50,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       if (mounted) setLoading(false);
     };
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
       if (_event === 'PASSWORD_RECOVERY') {
         setIsRecovery(true);
       }
       setSession(session);
       setUser(session?.user ?? null);
       if (session?.user) {
-        initUser(session.user.id);
+        if (!initialized.current) {
+          initialized.current = true;
+          await initUser(session.user.id);
+        }
       } else {
+        initialized.current = false;
         setIsPartner(false);
         setTermsAccepted(true);
         setPartnerTermsAccepted(true);
@@ -65,11 +70,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       }
     });
 
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
       if (session?.user) {
-        initUser(session.user.id);
+        if (!initialized.current) {
+          initialized.current = true;
+          await initUser(session.user.id);
+        }
       } else {
         if (mounted) setLoading(false);
       }
