@@ -283,9 +283,13 @@ const FindGame = () => {
                     {myGameIds.includes(g.id) ? (
                       <Button
                         size="sm"
-                        onClick={() => {
-                          leaveGame(g.id);
-                          setMyGameIds(prev => prev.filter(id => id !== g.id));
+                        onClick={async () => {
+                          try {
+                            await leaveGame(g.id);
+                            setMyGameIds(prev => prev.filter(id => id !== g.id));
+                          } catch {
+                            toast.error('Не удалось покинуть игру');
+                          }
                         }}
                         className={`text-xs rounded-xl bg-gradient-to-r from-purple-600 to-blue-600 text-white`}
                       >
