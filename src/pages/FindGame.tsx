@@ -103,16 +103,6 @@ const FindGame = () => {
     });
   }, [games, dateFilter]);
 
-  const handleJoin = async (gameId: string) => {
-    if (!user) { navigate('/auth'); return; }
-    try {
-      await joinGame(gameId);
-      toast.success('Вы присоединились к игре');
-    } catch (e: any) {
-      toast.error(e?.message || 'Не удалось присоединиться');
-    }
-  };
-
   return (
     <div className="min-h-screen bg-background pb-24">
       {/* Header */}
