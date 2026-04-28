@@ -32,7 +32,6 @@ const Profile = () => {
   };
 
   const systemItems = [
-    { icon: Globe, label: t('profile.language'), desc: t('profile.lang_options'), route: '/settings' },
     { icon: Settings, label: t('profile.settings'), desc: t('profile.settings_desc'), route: '/settings' },
     { icon: HelpCircle, label: t('profile.help'), desc: t('profile.help_desc'), route: '/help' },
     { icon: Lightbulb, label: t('profile.how_it_works'), desc: t('profile.how_it_works_desc'), route: '/how-it-works' },
