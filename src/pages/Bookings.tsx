@@ -213,7 +213,7 @@ const Bookings = () => {
                       </div>
                       <span className="text-[10px] font-medium px-2 py-1 rounded-md bg-muted text-muted-foreground capitalize">{STATUS_LABELS[b.status] || b.status}</span>
                     </div>
-                    {(b.status === 'completed' || new Date(b.end_time) < new Date()) && !reviewedIds.has(b.id) && (
+                    {(b.status === 'completed' || new Date(b.end_time) < new Date()) && b.status !== 'cancelled' && !reviewedIds.has(b.id) && (
                       <button onClick={() => { setReviewingAppointment(b); setReviewRating(5); setReviewComment(''); }}
                         className="mt-3 pt-3 border-t border-border w-full flex items-center justify-center gap-2 text-xs text-primary font-medium">
                         <Star className="w-3.5 h-3.5" />{t('detail.leave_review')}
