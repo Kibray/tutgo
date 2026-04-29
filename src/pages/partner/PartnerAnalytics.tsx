@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { CalendarCheck, CalendarDays, TrendingUp, BarChart3 } from 'lucide-react';
+import { CalendarCheck, CalendarDays, TrendingUp, BarChart3, Users, Award, Clock } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { useAuth } from '@/hooks/useAuth';
 import { usePreferences } from '@/hooks/usePreferences';
@@ -15,6 +15,7 @@ const PartnerAnalytics = () => {
   const [bizCount, setBizCount] = useState(0);
   const [appointments, setAppointments] = useState<any[]>([]);
   const [services, setServices] = useState<any[]>([]);
+  const [staff, setStaff] = useState<any[]>([]);
 
   useEffect(() => {
     if (!user) return;
@@ -29,15 +30,17 @@ const PartnerAnalytics = () => {
       monthStart.setDate(1);
       monthStart.setHours(0, 0, 0, 0);
 
-      const [apptRes, svcRes] = await Promise.all([
+      const [apptRes, svcRes, staffRes] = await Promise.all([
         supabase.from('appointments').select('*')
           .in('location_id', locIds)
           .in('status', ['confirmed', 'completed'])
           .gte('start_time', monthStart.toISOString()),
         supabase.from('services').select('id, price').in('location_id', locIds),
+        supabase.from('staff').select('id, full_name').in('location_id', locIds),
       ]);
       setAppointments(apptRes.data || []);
       setServices(svcRes.data || []);
+      setStaff(staffRes.data || []);
       setLoading(false);
     };
     load();
@@ -86,6 +89,43 @@ const PartnerAnalytics = () => {
     { icon: BarChart3, label: t('partner.stat_listings'), value: String(bizCount) },
   ];
 
+  const retention = useMemo(() => {
+    const counts: Record<string, number> = {};
+    appointments.forEach(a => {
+      if (a.client_user_id) counts[a.client_user_id] = (counts[a.client_user_id] || 0) + 1;
+    });
+    const ids = Object.keys(counts);
+    const returning = ids.filter(id => counts[id] > 1).length;
+    return { returning, total: ids.length };
+  }, [appointments]);
+
+  const topStaff = useMemo(() => {
+    const revBy: Record<string, number> = {};
+    appointments.forEach(a => {
+      if (!a.staff_id) return;
+      revBy[a.staff_id] = (revBy[a.staff_id] || 0) + (serviceMap[a.service_id] || 0);
+    });
+    const nameMap: Record<string, string> = {};
+    staff.forEach(s => { nameMap[s.id] = s.full_name; });
+    return Object.entries(revBy)
+      .map(([id, revenue]) => ({ id, name: nameMap[id] || '—', revenue }))
+      .sort((a, b) => b.revenue - a.revenue)
+      .slice(0, 3);
+  }, [appointments, serviceMap, staff]);
+
+  const peakHours = useMemo(() => {
+    const byHour: Record<number, number> = {};
+    appointments.forEach(a => {
+      if (!a.start_time) return;
+      const h = new Date(a.start_time).getHours();
+      byHour[h] = (byHour[h] || 0) + 1;
+    });
+    return Object.entries(byHour)
+      .map(([hour, count]) => ({ hour: Number(hour), count }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 3);
+  }, [appointments]);
+
   return (
     <PartnerLayout title={t('partner.analytics')}>
       <div className="px-4">
@@ -121,6 +161,80 @@ const PartnerAnalytics = () => {
             </AreaChart>
           </ResponsiveContainer>
         </div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="glass rounded-2xl p-4 mt-4"
+        >
+          <div className="flex items-center gap-2 mb-3">
+            <Users className="w-4 h-4 text-primary" />
+            <p className="text-sm font-medium text-foreground">Возвращаемость клиентов</p>
+          </div>
+          {loading ? (
+            <div className="w-40 h-5 rounded bg-muted animate-pulse" />
+          ) : (
+            <p className="text-base font-semibold text-foreground">
+              {retention.returning} из {retention.total} клиентов вернулись
+            </p>
+          )}
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.16 }}
+          className="glass rounded-2xl p-4 mt-4"
+        >
+          <div className="flex items-center gap-2 mb-3">
+            <Award className="w-4 h-4 text-primary" />
+            <p className="text-sm font-medium text-foreground">Топ сотрудников по доходу</p>
+          </div>
+          {loading ? (
+            <div className="space-y-2">
+              {[0, 1, 2].map(i => <div key={i} className="w-full h-5 rounded bg-muted animate-pulse" />)}
+            </div>
+          ) : topStaff.length ? (
+            <div className="space-y-2">
+              {topStaff.map((s, i) => (
+                <div key={s.id} className="flex items-center justify-between text-sm">
+                  <span className="text-foreground">{i + 1}. {s.name}</span>
+                  <span className="text-muted-foreground">{formatPrice(s.revenue)} сум</span>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-sm text-muted-foreground">Нет данных</p>
+          )}
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.22 }}
+          className="glass rounded-2xl p-4 mt-4 mb-4"
+        >
+          <div className="flex items-center gap-2 mb-3">
+            <Clock className="w-4 h-4 text-primary" />
+            <p className="text-sm font-medium text-foreground">Часы пик</p>
+          </div>
+          {loading ? (
+            <div className="space-y-2">
+              {[0, 1, 2].map(i => <div key={i} className="w-full h-5 rounded bg-muted animate-pulse" />)}
+            </div>
+          ) : peakHours.length ? (
+            <div className="space-y-2">
+              {peakHours.map(h => (
+                <p key={h.hour} className="text-sm text-foreground">
+                  {String(h.hour).padStart(2, '0')}:00 — {h.count} записей
+                </p>
+              ))}
+            </div>
+          ) : (
+            <p className="text-sm text-muted-foreground">Нет данных</p>
+          )}
+        </motion.div>
       </div>
     </PartnerLayout>
   );
