@@ -160,6 +160,12 @@ const BookingConfirm = () => {
           )}
         </motion.div>
 
+        {countdown && (
+          <div className="mt-3 w-full max-w-sm px-3 py-2 rounded-lg bg-yellow-500/10 border border-yellow-500/20 text-xs text-yellow-600 font-medium text-center">
+            {countdown}
+          </div>
+        )}
+
         <div className="flex gap-2 mt-4 w-full max-w-sm">
           <motion.button whileTap={{ scale: 0.98 }} onClick={handleAddCalendar}
             className="flex-1 glass rounded-lg py-3 flex flex-col items-center gap-1 text-foreground">
@@ -184,11 +190,6 @@ const BookingConfirm = () => {
           <motion.button whileTap={{ scale: 0.98 }} onClick={() => navigate('/')}
             className="flex-1 py-3.5 bg-primary text-accent-foreground rounded-lg font-semibold text-sm glow-green">{t('booking.to_home')}</motion.button>
         </div>
-        {countdown && (
-          <div className="mt-3 w-full max-w-sm px-3 py-2 rounded-lg bg-yellow-500/10 border border-yellow-500/20 text-xs text-yellow-600 font-medium text-center">
-            {countdown}
-          </div>
-        )}
         {showMap && location.lat && location.lng && (
           <div className="fixed inset-0 z-50 flex items-end" onClick={() => setShowMap(false)}>
             <div className="w-full glass rounded-t-2xl p-5 space-y-3" onClick={e => e.stopPropagation()}>
