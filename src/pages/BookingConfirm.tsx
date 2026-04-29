@@ -111,6 +111,19 @@ const BookingConfirm = () => {
       }
     };
 
+    useEffect(() => {
+      const update = () => {
+        const diff = startCal.getTime() - Date.now();
+        if (diff <= 0) { setCountdown(''); return; }
+        const days = Math.floor(diff / 86400000);
+        const hours = Math.floor((diff % 86400000) / 3600000);
+        setCountdown(days > 0 ? `До записи ${days} дн. ${hours} ч.` : `До записи ${hours} ч.`);
+      };
+      update();
+      const id = setInterval(update, 60000);
+      return () => clearInterval(id);
+    }, []);
+
     return (
       <div className="min-h-screen bg-background flex flex-col items-center justify-center px-6">
         <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ type: 'spring', duration: 0.5 }}
@@ -153,7 +166,7 @@ const BookingConfirm = () => {
             <CalendarDays className="w-4 h-4 text-primary" />
             <span className="text-[10px] font-semibold">{t('booking.add_to_calendar')}</span>
           </motion.button>
-          <motion.button whileTap={{ scale: 0.98 }} onClick={handleRoute} disabled={!location.lat || !location.lng}
+          <motion.button whileTap={{ scale: 0.98 }} onClick={() => setShowMap(true)} disabled={!location.lat || !location.lng}
             className="flex-1 glass rounded-lg py-3 flex flex-col items-center gap-1 text-foreground disabled:opacity-40">
             <Navigation className="w-4 h-4 text-primary" />
             <span className="text-[10px] font-semibold">{t('booking.route')}</span>
@@ -171,6 +184,28 @@ const BookingConfirm = () => {
           <motion.button whileTap={{ scale: 0.98 }} onClick={() => navigate('/')}
             className="flex-1 py-3.5 bg-primary text-accent-foreground rounded-lg font-semibold text-sm glow-green">{t('booking.to_home')}</motion.button>
         </div>
+        {countdown && (
+          <div className="mt-3 w-full max-w-sm px-3 py-2 rounded-lg bg-yellow-500/10 border border-yellow-500/20 text-xs text-yellow-600 font-medium text-center">
+            {countdown}
+          </div>
+        )}
+        {showMap && location.lat && location.lng && (
+          <div className="fixed inset-0 z-50 flex items-end" onClick={() => setShowMap(false)}>
+            <div className="w-full glass rounded-t-2xl p-5 space-y-3" onClick={e => e.stopPropagation()}>
+              <p className="text-sm font-semibold text-center">Открыть в...</p>
+              {[
+                { label: 'Google Maps', url: `https://maps.google.com/?q=${location.lat},${location.lng}` },
+                { label: 'Яндекс Карты', url: `https://maps.yandex.ru/?pt=${location.lng},${location.lat}&z=16` },
+                { label: '2GIS', url: `https://2gis.uz/search/${location.lat}%2C${location.lng}` },
+              ].map(({ label, url }) => (
+                <button key={label} onClick={() => window.open(url, '_blank')}
+                  className="w-full py-3 glass rounded-lg text-sm font-medium">
+                  {label}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     );
   }
