@@ -1,5 +1,5 @@
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Check, Calendar, Clock, MapPin, User, Loader2, CalendarDays, Share2, Navigation } from 'lucide-react';
 import { formatPrice, openDirections } from '@/lib/types';
@@ -16,6 +16,8 @@ const BookingConfirm = () => {
   const { toast } = useToast();
   const [saving, setSaving] = useState(false);
   const [confirmed, setConfirmed] = useState(false);
+  const [countdown, setCountdown] = useState('');
+  const [showMap, setShowMap] = useState(false);
 
   const locale = lang === 'uz' ? 'uz' : lang === 'en' ? 'en' : 'ru';
 
