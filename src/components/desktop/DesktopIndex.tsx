@@ -1,13 +1,13 @@
-import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
+import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Locate, ChevronUp, ChevronDown, Plus, Minus } from 'lucide-react';
 import CategoryChips from '@/components/CategoryChips';
 import ServiceCard from '@/components/ServiceCard';
 import { SkeletonList } from '@/components/SkeletonCard';
-import MapView from '@/components/MapView';
 import BusinessSheet from '@/components/BusinessSheet';
-import AiAssistantFab from '@/components/AiAssistantFab';
+const MapView = React.lazy(() => import('@/components/MapView'));
+const AiAssistantFab = React.lazy(() => import('@/components/AiAssistantFab'));
 import DesktopHeader from '@/components/desktop/DesktopHeader';
 import DesktopSidebar from '@/components/desktop/DesktopSidebar';
 import { useLocations } from '@/hooks/useLocations';
@@ -149,13 +149,15 @@ const DesktopIndex = () => {
         <div className="flex-1 relative">
           {/* Map */}
           <div className="absolute inset-0">
-            <MapView
-              services={mapLocations}
-              onMarkerClick={handleMarkerClick}
-              center={mapCenter}
-              nearbyMode={nearbyMode}
-              userLocation={userLocation}
-            />
+            <React.Suspense fallback={null}>
+              <MapView
+                services={mapLocations}
+                onMarkerClick={handleMarkerClick}
+                center={mapCenter}
+                nearbyMode={nearbyMode}
+                userLocation={userLocation}
+              />
+            </React.Suspense>
           </div>
 
           {/* Floating categories over map */}
@@ -167,32 +169,32 @@ const DesktopIndex = () => {
 
           {/* Online indicator */}
           <div className="absolute top-3 left-4 z-[1000] mt-14">
-            <div className="flex items-center gap-1.5 bg-card/90 backdrop-blur-sm rounded-full px-3 py-1.5 border border-border/50">
-              <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+            <div className="flex items-center gap-1.5 bg-card shadow-md rounded-full px-3 py-1.5 border border-border/50">
+              <span className="w-2 h-2 rounded-full bg-green-500" />
               <span className="text-xs text-muted-foreground font-medium">Онлайн</span>
             </div>
           </div>
 
           {/* Right controls: zoom + geolocation */}
           <div className="absolute right-4 top-1/2 -translate-y-1/2 z-[1000] flex flex-col gap-2">
-            <button className="w-9 h-9 bg-card/90 backdrop-blur-sm rounded-lg border border-border/50 flex items-center justify-center hover:bg-card transition-colors">
+            <button className="w-9 h-9 bg-card shadow-md rounded-lg border border-border/50 flex items-center justify-center hover:bg-card transition-colors">
               <Plus className="w-4 h-4 text-foreground" />
             </button>
-            <button className="w-9 h-9 bg-card/90 backdrop-blur-sm rounded-lg border border-border/50 flex items-center justify-center hover:bg-card transition-colors">
+            <button className="w-9 h-9 bg-card shadow-md rounded-lg border border-border/50 flex items-center justify-center hover:bg-card transition-colors">
               <Minus className="w-4 h-4 text-foreground" />
             </button>
             <div className="h-px" />
             {nearbyMode && (
               <button
                 onClick={handleDisableNearby}
-                className="w-9 h-9 bg-card/90 backdrop-blur-sm rounded-lg border border-border/50 flex items-center justify-center hover:bg-card transition-colors"
+                className="w-9 h-9 bg-card shadow-md rounded-lg border border-border/50 flex items-center justify-center hover:bg-card transition-colors"
               >
                 <span className="text-xs">✕</span>
               </button>
             )}
             <button
               onClick={handleCenterOnMe}
-              className={`w-9 h-9 bg-card/90 backdrop-blur-sm rounded-lg border border-border/50 flex items-center justify-center hover:bg-card transition-colors ${nearbyMode ? 'ring-2 ring-primary bg-primary/20' : ''}`}
+              className={`w-9 h-9 bg-card shadow-md rounded-lg border border-border/50 flex items-center justify-center hover:bg-card transition-colors ${nearbyMode ? 'ring-2 ring-primary bg-primary/20' : ''}`}
             >
               <Locate className="w-4 h-4 text-primary" />
             </button>
@@ -202,7 +204,7 @@ const DesktopIndex = () => {
           <motion.div
             animate={{ height: drawerExpanded ? '280px' : '48px' }}
             transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-            className="absolute bottom-0 left-0 right-0 z-[1000] bg-card/95 backdrop-blur-xl rounded-t-xl border-t border-border overflow-hidden"
+            className="absolute bottom-0 left-0 right-0 z-[1000] bg-card rounded-t-xl border-t border-border overflow-hidden"
           >
             <button
               onClick={() => setDrawerExpanded(!drawerExpanded)}
@@ -266,14 +268,16 @@ const DesktopIndex = () => {
 
       <BusinessSheet service={sheetService} open={!!sheetService} onClose={() => setSheetService(null)}
         onFullPage={() => { if (sheetService) { navigate(`/service/${sheetService.id}`); setSheetService(null); } }} />
-      <AiAssistantFab onShowOnMap={(locs) => {
-        if (locs.length === 1 && locs[0].lat && locs[0].lng) {
-          setMapCenter([locs[0].lat, locs[0].lng]);
-        } else if (locs.length > 0) {
-          const first = locs.find(l => l.lat && l.lng);
-          if (first) setMapCenter([first.lat!, first.lng!]);
-        }
-      }} />
+      <React.Suspense fallback={null}>
+        <AiAssistantFab onShowOnMap={(locs) => {
+          if (locs.length === 1 && locs[0].lat && locs[0].lng) {
+            setMapCenter([locs[0].lat, locs[0].lng]);
+          } else if (locs.length > 0) {
+            const first = locs.find(l => l.lat && l.lng);
+            if (first) setMapCenter([first.lat!, first.lng!]);
+          }
+        }} />
+      </React.Suspense>
     </div>
   );
 };
