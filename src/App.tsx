@@ -177,6 +177,9 @@ const App = () => (
                   <Route path="/stay/:id" element={<StayDetail />} />
                   <Route path="/reviews" element={<Reviews />} />
                   <Route path="/seed-demo" element={<SeedDemo />} />
+                  <Route path="/seed" element={<SeedDemo />} />
+                  <Route path="/seed demo" element={<SeedDemo />} />
+                  <Route path="/seed%20demo" element={<SeedDemo />} />
                   <Route path="/instagram-callback" element={<InstagramCallback />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
