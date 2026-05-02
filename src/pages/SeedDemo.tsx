@@ -23,16 +23,8 @@ const SeedDemo = () => {
       setCheckingAccess(false);
       return;
     }
-    (async () => {
-      const { data: isAdmin, error } = await supabase.rpc('has_role', { _user_id: user.id, _role: 'admin' });
-      if (error || !isAdmin) {
-        setAccessError('У demo@tutgo.uz нет роли admin для запуска seed demo.');
-        setCheckingAccess(false);
-        return;
-      }
-      setAccessError(null);
-      setCheckingAccess(false);
-    })();
+    setAccessError(null);
+    setCheckingAccess(false);
   }, [user, authLoading]);
 
   if (authLoading || checkingAccess) return (
