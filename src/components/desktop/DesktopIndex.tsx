@@ -171,15 +171,17 @@ const DesktopIndex = () => {
             {/* Hero */}
             <div style={{
               borderRadius: 16,
-              background: 'linear-gradient(135deg, #0f172a 0%, #1e40af 100%)',
+              overflow: 'hidden',
+              background: 'linear-gradient(rgba(0,0,0,0.55),rgba(0,0,0,0.7)), url(https://images.unsplash.com/photo-1585747860715-2ba37e788b70?w=1200) center/cover no-repeat',
               padding: 36, minHeight: 280, color: '#fff',
               display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
+              position: 'relative',
             }}>
               <div>
-                <h1 style={{ fontSize: 32, fontWeight: 800, margin: 0, lineHeight: 1.15 }}>
+                <h1 style={{ fontSize: 32, fontWeight: 800, margin: 0, lineHeight: 1.15, color: '#fff' }}>
                   Красота и забота<br />рядом с вами
                 </h1>
-                <p style={{ marginTop: 14, fontSize: 14, color: 'rgba(255,255,255,0.75)', maxWidth: 480, lineHeight: 1.5 }}>
+                <p style={{ marginTop: 14, fontSize: 15, color: 'rgba(255,255,255,0.75)', maxWidth: 480, lineHeight: 1.5 }}>
                   Находите лучшие места, проверяйте свободное время и записывайтесь онлайн
                 </p>
               </div>
@@ -237,30 +239,32 @@ const DesktopIndex = () => {
 
             {/* Sidebar */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-              <div style={{ ...card, padding: 16, display: 'flex', flexDirection: 'column', gap: 10 }}>
-                <div style={{ fontSize: 14, fontWeight: 700, color: COLORS.text }}>Посмотрите места на карте</div>
-                <div style={{ fontSize: 12, color: COLORS.muted, lineHeight: 1.5 }}>
-                  Удобный поиск рядом с вами и актуальная информация о свободном времени
+              <div style={{ ...card, padding: 20, display: 'flex', flexDirection: 'column', gap: 10, alignItems: 'flex-start' }}>
+                <div style={{
+                  width: 80, height: 80, borderRadius: 16, alignSelf: 'center',
+                  background: COLORS.accentBg,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  position: 'relative',
+                }}>
+                  <MapPin size={40} color={COLORS.accent} strokeWidth={2.2} fill={COLORS.accent} />
                 </div>
-                <div style={{ height: 110, borderRadius: 8, overflow: 'hidden', border: `1px solid ${COLORS.border}` }}>
-                  <React.Suspense fallback={<div style={{ background: '#f3f4f6', width: '100%', height: '100%' }} />}>
-                    <MapView services={allLocations.slice(0, 30)} onMarkerClick={() => setView('results')} center={mapCenter} userLocation={userLocation} nearbyMode={false} />
-                  </React.Suspense>
+                <div style={{ fontSize: 15, fontWeight: 600, color: COLORS.text }}>Посмотрите места на карте</div>
+                <div style={{ fontSize: 13, color: COLORS.muted, lineHeight: 1.5 }}>
+                  Удобный поиск рядом с вами и актуальная информация о свободном времени
                 </div>
                 <button
                   onClick={() => setView('results')}
                   style={{
                     background: '#fff', color: COLORS.accent, border: `1px solid ${COLORS.accent}`,
-                    borderRadius: 8, padding: '8px 14px', fontSize: 13, fontWeight: 600, cursor: 'pointer',
-                    alignSelf: 'flex-start',
+                    borderRadius: 8, padding: '8px 16px', fontSize: 13, fontWeight: 600, cursor: 'pointer',
                   }}
                 >
                   Открыть карту →
                 </button>
               </div>
 
-              <div style={{ ...card, padding: 20, display: 'flex', flexDirection: 'column', gap: 8 }}>
-                <div style={{ fontSize: 28 }}>🎁</div>
+              <div style={{ ...card, padding: 20, display: 'flex', flexDirection: 'column', gap: 8, alignItems: 'flex-start' }}>
+                <div style={{ fontSize: 40, lineHeight: 1 }}>🎁</div>
                 <div style={{ fontWeight: 700, fontSize: 15, color: COLORS.text }}>Дарим 10% на первое посещение</div>
                 <div style={{ fontSize: 13, color: COLORS.muted, lineHeight: 1.5 }}>
                   Зарегистрируйтесь и получите скидку на любую услугу в вашем городе
@@ -269,8 +273,8 @@ const DesktopIndex = () => {
                   onClick={() => navigate('/auth')}
                   style={{
                     background: '#fff', color: COLORS.accent, border: `1px solid ${COLORS.accent}`,
-                    borderRadius: 8, padding: '8px 14px', fontSize: 13, fontWeight: 600, cursor: 'pointer',
-                    alignSelf: 'flex-start', marginTop: 4,
+                    borderRadius: 8, padding: '8px 16px', fontSize: 13, fontWeight: 600, cursor: 'pointer',
+                    marginTop: 4,
                   }}
                 >
                   Получить скидку
@@ -446,7 +450,7 @@ const DesktopIndex = () => {
           </div>
 
           {/* SECTION 4 — Trust strip */}
-          <div style={{ ...card, padding: '24px 32px', display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 24, marginBottom: 40 }}>
+          <div style={{ ...card, padding: 28, display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 24, marginBottom: 40 }}>
             {[
               { icon: <ShieldCheck size={20} />, title: 'Проверенные заведения', sub: 'Только реальные отзывы и рейтинги' },
               { icon: <CalendarCheck size={20} />, title: 'Онлайн-запись', sub: 'Мгновенное подтверждение и напоминания' },
@@ -455,7 +459,7 @@ const DesktopIndex = () => {
             ].map((t, i) => (
               <div key={i} style={{ display: 'flex', gap: 14, alignItems: 'flex-start' }}>
                 <div style={{
-                  width: 40, height: 40, borderRadius: '50%',
+                  width: 44, height: 44, borderRadius: '50%',
                   background: COLORS.accentBg, color: COLORS.accent,
                   display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
                 }}>{t.icon}</div>
