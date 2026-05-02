@@ -19,10 +19,11 @@ export const useLocations = (categoryName?: string, subcategory?: string, search
 
   useEffect(() => { fetchLocations(); }, []);
 
-  // Realtime subscription for locations
+  // Realtime subscription for locations (unique channel per hook instance to avoid
+  // "cannot add postgres_changes callbacks after subscribe()" when the hook is mounted twice)
   useEffect(() => {
     const channel = supabase
-      .channel('locations-realtime')
+      .channel(`locations-realtime-${Math.random().toString(36).slice(2)}`)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'locations' },
         () => fetchLocations()
       )
