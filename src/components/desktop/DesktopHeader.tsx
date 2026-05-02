@@ -2,7 +2,6 @@ import { Search, Heart, Bell, ChevronDown, MapPin, User } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { useNotifications } from '@/hooks/useNotifications';
-import { useAuth } from '@/hooks/useAuth';
 
 interface DesktopHeaderProps {
   searchValue?: string;
@@ -13,7 +12,6 @@ interface DesktopHeaderProps {
 const DesktopHeader = ({ searchValue = '', onSearch, onSearchSubmit }: DesktopHeaderProps) => {
   const navigate = useNavigate();
   const { unreadCount } = useNotifications();
-  const { user } = useAuth();
   const [query, setQuery] = useState(searchValue);
 
   useEffect(() => { setQuery(searchValue); }, [searchValue]);
