@@ -43,11 +43,11 @@ const Index = () => {
     setShowOnboarding(false);
   }, []);
 
+  if (isDesktop) return <Suspense fallback={null}><DesktopIndex /></Suspense>;
+
   if (showOnboarding) {
     return <Suspense fallback={null}><OnboardingFlow onComplete={completeOnboarding} /></Suspense>;
   }
-
-  if (isDesktop) return <Suspense fallback={null}><DesktopIndex /></Suspense>;
 
   return <MobileIndex />;
 };
