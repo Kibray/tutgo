@@ -5,7 +5,6 @@ import {
   Search, MapPin, Calendar, Star, Gift, ShieldCheck, Clock, CalendarCheck, Filter,
   ChevronDown, ChevronLeft, List, LayoutGrid, Map as MapIcon, Locate, BadgeCheck,
 } from 'lucide-react';
-import ServiceCard from '@/components/ServiceCard';
 import BusinessSheet from '@/components/BusinessSheet';
 const MapView = React.lazy(() => import('@/components/MapView'));
 const AiAssistantFab = React.lazy(() => import('@/components/AiAssistantFab'));
