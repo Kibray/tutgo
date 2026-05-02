@@ -2,7 +2,7 @@ import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
-  Search, MapPin, Calendar, Star, Gift, ShieldCheck, Clock, CalendarCheck, Filter,
+  Search, MapPin, Calendar, Star, ShieldCheck, Clock, CalendarCheck, Filter,
   ChevronDown, ChevronLeft, List, LayoutGrid, Map as MapIcon, Locate, BadgeCheck,
 } from 'lucide-react';
 import BusinessSheet from '@/components/BusinessSheet';
@@ -11,7 +11,6 @@ const AiAssistantFab = React.lazy(() => import('@/components/AiAssistantFab'));
 import DesktopHeader from '@/components/desktop/DesktopHeader';
 import { useLocations } from '@/hooks/useLocations';
 import { useCategories } from '@/hooks/useCategories';
-import { useFavorites } from '@/hooks/useFavorites';
 import type { LocationItem } from '@/lib/types';
 import { getBizType } from '@/lib/categories';
 
@@ -62,7 +61,6 @@ const DesktopIndex = () => {
   const [landingCategory, setLandingCategory] = useState('all');
 
   const { categories } = useCategories();
-  const { isFavorite, toggleFavorite } = useFavorites();
 
   const autoGeolocated = useRef(false);
   useEffect(() => {
