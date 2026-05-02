@@ -13,28 +13,29 @@ const SeedDemo = () => {
   const [done, setDone] = useState(false);
   const [needsConfirm, setNeedsConfirm] = useState(false);
   const [existingCount, setExistingCount] = useState(0);
+  const [accessError, setAccessError] = useState<string | null>(null);
+  const [checkingAccess, setCheckingAccess] = useState(true);
 
   useEffect(() => {
     if (authLoading) return;
     if (!user || user.email !== 'demo@tutgo.uz') {
-      navigate('/');
+      setAccessError('Войдите под demo@tutgo.uz, чтобы открыть seed demo.');
+      setCheckingAccess(false);
       return;
     }
     (async () => {
-      const { data: roleData } = await supabase
-        .from('user_roles')
-        .select('role')
-        .eq('user_id', user.id)
-        .eq('role', 'admin')
-        .maybeSingle();
-      if (!roleData) {
-        navigate('/');
+      const { data: isAdmin, error } = await supabase.rpc('has_role', { _user_id: user.id, _role: 'admin' });
+      if (error || !isAdmin) {
+        setAccessError('У demo@tutgo.uz нет роли admin для запуска seed demo.');
+        setCheckingAccess(false);
         return;
       }
+      setAccessError(null);
+      setCheckingAccess(false);
     })();
   }, [user, authLoading]);
 
-  if (authLoading) return (
+  if (authLoading || checkingAccess) return (
     <div className="min-h-screen bg-background flex items-center justify-center">
       <Loader2 className="w-8 h-8 animate-spin text-primary" />
     </div>
@@ -67,7 +68,13 @@ const SeedDemo = () => {
           <p className="text-sm text-muted-foreground mt-1">Только для demo@tutgo.uz</p>
         </div>
 
-        {!running && !done && !needsConfirm && (
+        {accessError && (
+          <div className="rounded-xl border border-destructive/30 bg-destructive/10 p-4 mb-4 text-sm text-destructive">
+            {accessError}
+          </div>
+        )}
+
+        {!accessError && !running && !done && !needsConfirm && (
           <button
             onClick={() => run(false)}
             className="w-full bg-primary text-primary-foreground rounded-xl py-4 font-semibold hover:bg-primary/90 transition-colors"
@@ -76,7 +83,7 @@ const SeedDemo = () => {
           </button>
         )}
 
-        {needsConfirm && (
+        {!accessError && needsConfirm && (
           <div className="rounded-xl border border-border bg-card p-4 mb-4">
             <div className="flex items-start gap-3">
               <AlertTriangle className="w-5 h-5 text-destructive shrink-0 mt-0.5" />
@@ -120,7 +127,7 @@ const SeedDemo = () => {
           </div>
         )}
 
-        {done && (
+        {!accessError && done && (
           <button
             onClick={() => navigate('/partner')}
             className="w-full mt-4 bg-primary text-primary-foreground rounded-xl py-4 font-semibold hover:bg-primary/90 transition-colors flex items-center justify-center gap-2"
