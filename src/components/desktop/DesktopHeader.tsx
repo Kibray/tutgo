@@ -93,7 +93,7 @@ const DesktopHeader = ({ searchValue = '', onSearch, onSearchSubmit }: DesktopHe
       </div>
 
       {/* Right actions */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginLeft: 'auto' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginLeft: 'auto' }}>
         <button
           onClick={() => navigate('/bookings')}
           style={{
@@ -121,8 +121,8 @@ const DesktopHeader = ({ searchValue = '', onSearch, onSearchSubmit }: DesktopHe
           Уведомления
           {unreadCount > 0 && (
             <span style={{
-              position: 'absolute', top: 4, left: 22,
-              minWidth: 16, height: 16, padding: '0 4px',
+              position: 'absolute', top: 2, left: 20,
+              minWidth: 16, height: 16, padding: '0 3px',
               background: '#ef4444', color: '#fff',
               borderRadius: 8, fontSize: 10, fontWeight: 700,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
