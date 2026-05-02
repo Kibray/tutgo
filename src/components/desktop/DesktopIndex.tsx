@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   Search, MapPin, Calendar, Star, ShieldCheck, Clock, CalendarCheck, Filter,
-  ChevronDown, ChevronLeft, List, LayoutGrid, Map as MapIcon, Locate, BadgeCheck,
+  ChevronDown, ChevronLeft, List, LayoutGrid, Map as MapIcon, Locate, BadgeCheck, Heart,
 } from 'lucide-react';
 import BusinessSheet from '@/components/BusinessSheet';
 const MapView = React.lazy(() => import('@/components/MapView'));
@@ -18,18 +18,19 @@ const TASHKENT: [number, number] = [41.3111, 69.2797];
 
 const COLORS = {
   bg: '#f9fafb',
-  card: '#fff',
+  card: '#ffffff',
   border: '#e5e7eb',
   accent: '#2563EB',
   accentBg: '#eff6ff',
-  text: '#111',
+  text: '#111111',
   text2: '#374151',
   muted: '#6b7280',
+  green: '#10b981',
   shadow: '0 1px 3px rgba(0,0,0,0.06)',
   font: 'system-ui, sans-serif',
 };
 
-const card = {
+const card: React.CSSProperties = {
   background: COLORS.card,
   border: `1px solid ${COLORS.border}`,
   borderRadius: 12,
@@ -44,6 +45,27 @@ const getDistanceKm = (lat1: number, lng1: number, lat2: number, lng2: number) =
   const a = Math.sin(dLat / 2) ** 2 + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLng / 2) ** 2;
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 };
+
+const TIME_PILLS = ['14:00', '15:30', '17:00'];
+
+const PhotoPlaceholder: React.FC<{ size?: number }> = ({ size = 32 }) => (
+  <div style={{
+    width: '100%', height: '100%',
+    background: 'linear-gradient(135deg,#e5e7eb,#f3f4f6)',
+    display: 'flex', alignItems: 'center', justifyContent: 'center',
+    fontSize: size, color: '#9ca3af',
+  }}>📷</div>
+);
+
+const TimePill: React.FC<{ t: string; muted?: boolean }> = ({ t, muted }) => (
+  <span style={{
+    fontSize: 11, padding: '3px 8px', borderRadius: 6,
+    background: muted ? '#f3f4f6' : COLORS.accentBg,
+    color: muted ? COLORS.muted : COLORS.accent,
+    border: muted ? `1px solid ${COLORS.border}` : `1px solid ${COLORS.accent}33`,
+    fontWeight: 600, whiteSpace: 'nowrap',
+  }}>{t}</span>
+);
 
 const DesktopIndex = () => {
   const navigate = useNavigate();
@@ -88,11 +110,15 @@ const DesktopIndex = () => {
     search
   );
 
-  const landingSelectedCat = categories.find((c) => c.id === landingCategory);
-  const { locations: landingFiltered } = useLocations(
-    landingCategory === 'all' ? 'all' : (landingSelectedCat ? getBizType(landingSelectedCat.name) : 'all'),
-    'all',
-    ''
+  const { locations: allLocations } = useLocations('all', 'all', '');
+
+  const popular = useMemo(
+    () => [...allLocations].sort((a, b) => (b.rating || 0) - (a.rating || 0)).slice(0, 4),
+    [allLocations]
+  );
+  const freeNow = useMemo(
+    () => [...allLocations].sort((a, b) => (b.rating || 0) - (a.rating || 0)).slice(4, 8),
+    [allLocations]
   );
 
   const enriched = useMemo(() => {
@@ -102,6 +128,14 @@ const DesktopIndex = () => {
       _distance: l.lat && l.lng ? getDistanceKm(userLocation[0], userLocation[1], l.lat, l.lng) : null,
     }));
   }, [filtered, userLocation]);
+
+  const popularEnriched = useMemo(() => {
+    if (!userLocation) return popular.map((l) => ({ ...l, _distance: null as number | null }));
+    return popular.map((l) => ({
+      ...l,
+      _distance: l.lat && l.lng ? getDistanceKm(userLocation[0], userLocation[1], l.lat, l.lng) : null,
+    }));
+  }, [popular, userLocation]);
 
   const handleCenterOnMe = useCallback(() => {
     setGeolocating(true);
@@ -121,18 +155,8 @@ const DesktopIndex = () => {
   const isBookable = (s: LocationItem) =>
     ['beauty', 'medical', 'tour', 'service'].includes(s.business_type);
 
-  const handleMarkerClick = (s: LocationItem) => {
-    setActiveCard(s.id);
-    if (view === 'landing') {
-      if (isBookable(s)) navigate(`/service/${s.id}`); else setSheetService(s);
-    }
-  };
-
   // ============ LANDING VIEW ============
   if (view === 'landing') {
-    const popular = landingFiltered.slice(0, 4);
-    const freeNow = landingFiltered.slice(4, 10);
-
     return (
       <div style={{ minHeight: '100vh', background: COLORS.bg, fontFamily: COLORS.font, color: COLORS.text }}>
         <DesktopHeader
@@ -142,75 +166,68 @@ const DesktopIndex = () => {
         />
 
         <div style={{ maxWidth: 1280, margin: '0 auto', padding: 24 }}>
-          {/* Section 1 — Hero + sidebar */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: 20 }}>
+          {/* SECTION 1 — Hero + sidebar */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: 20, marginBottom: 24 }}>
             {/* Hero */}
-            <div
-              style={{
-                borderRadius: 16,
-                background: 'linear-gradient(135deg, #0f172a, #1e40af)',
-                padding: 36,
-                minHeight: 280,
-                color: '#fff',
-                display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
-              }}
-            >
+            <div style={{
+              borderRadius: 16,
+              background: 'linear-gradient(135deg, #0f172a 0%, #1e40af 100%)',
+              padding: 36, minHeight: 280, color: '#fff',
+              display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
+            }}>
               <div>
                 <h1 style={{ fontSize: 32, fontWeight: 800, margin: 0, lineHeight: 1.15 }}>
-                  Красота и забота рядом с вами
+                  Красота и забота<br />рядом с вами
                 </h1>
-                <p style={{ marginTop: 12, fontSize: 15, color: 'rgba(255,255,255,0.7)', maxWidth: 520 }}>
-                  Найдите лучшие места, проверяйте свободное время и записывайтесь онлайн
+                <p style={{ marginTop: 14, fontSize: 14, color: 'rgba(255,255,255,0.75)', maxWidth: 480, lineHeight: 1.5 }}>
+                  Находите лучшие места, проверяйте свободное время и записывайтесь онлайн
                 </p>
               </div>
 
               {/* Search form */}
-              <div
-                style={{
-                  marginTop: 24,
-                  background: '#fff',
-                  borderRadius: 12,
-                  padding: 8,
-                  display: 'grid',
-                  gridTemplateColumns: '1.4fr 1fr 0.9fr 0.9fr auto',
-                  gap: 8,
-                  alignItems: 'center',
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '0 10px', borderRight: `1px solid ${COLORS.border}` }}>
+              <div style={{
+                background: '#fff', borderRadius: 12, padding: 8,
+                display: 'grid', gridTemplateColumns: '1.5fr 1fr 0.9fr 0.9fr auto',
+                alignItems: 'center',
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '0 12px', height: 44, borderRight: `1px solid ${COLORS.border}` }}>
                   <Search size={16} color={COLORS.muted} />
                   <input
                     placeholder="Что ищете?"
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                     onKeyDown={(e) => { if (e.key === 'Enter') setView('results'); }}
-                    style={{ border: 'none', outline: 'none', flex: 1, fontSize: 14, color: COLORS.text, height: 40, fontFamily: COLORS.font, background: 'transparent' }}
+                    style={{ border: 'none', outline: 'none', flex: 1, fontSize: 14, color: COLORS.text, background: 'transparent', fontFamily: COLORS.font, minWidth: 0 }}
                   />
                 </div>
-                <select
-                  value={landingCategory}
-                  onChange={(e) => setLandingCategory(e.target.value)}
-                  style={{
-                    border: 'none', outline: 'none', height: 40, fontSize: 14, color: COLORS.text2,
-                    background: 'transparent', padding: '0 8px', borderRight: `1px solid ${COLORS.border}`, cursor: 'pointer',
-                  }}
-                >
-                  <option value="all">Все категории</option>
-                  {categories.map((c) => (
-                    <option key={c.id} value={c.id}>{c.icon} {c.name}</option>
-                  ))}
-                </select>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '0 10px', color: COLORS.text2, fontSize: 14, borderRight: `1px solid ${COLORS.border}` }}>
-                  <MapPin size={14} color={COLORS.accent} /> Ташкент
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '0 12px', height: 44, borderRight: `1px solid ${COLORS.border}` }}>
+                  <span style={{ fontSize: 14, color: COLORS.muted }}>▦</span>
+                  <select
+                    value={landingCategory}
+                    onChange={(e) => setLandingCategory(e.target.value)}
+                    style={{
+                      border: 'none', outline: 'none', fontSize: 13, color: COLORS.text2,
+                      background: 'transparent', width: '100%', cursor: 'pointer', fontFamily: COLORS.font,
+                    }}
+                  >
+                    <option value="all">Категория</option>
+                    {categories.map((c) => (
+                      <option key={c.id} value={c.id}>{c.icon} {c.name}</option>
+                    ))}
+                  </select>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '0 10px', color: COLORS.text2, fontSize: 14 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '0 12px', height: 44, color: COLORS.muted, fontSize: 13, borderRight: `1px solid ${COLORS.border}` }}>
+                  <MapPin size={14} color={COLORS.accent} /> Где вы?
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '0 12px', height: 44, color: COLORS.muted, fontSize: 13 }}>
                   <Calendar size={14} color={COLORS.accent} /> Сегодня
                 </div>
                 <button
                   onClick={() => setView('results')}
                   style={{
                     background: COLORS.accent, color: '#fff', border: 'none', borderRadius: 8,
-                    height: 40, padding: '0 18px', fontWeight: 600, fontSize: 14, cursor: 'pointer',
+                    height: 44, padding: '0 20px', fontWeight: 600, fontSize: 14, cursor: 'pointer',
+                    whiteSpace: 'nowrap', marginLeft: 8,
                   }}
                 >
                   Найти места
@@ -218,35 +235,42 @@ const DesktopIndex = () => {
               </div>
             </div>
 
-            {/* Sidebar — 2 cards */}
+            {/* Sidebar */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
               <div style={{ ...card, padding: 16, display: 'flex', flexDirection: 'column', gap: 10 }}>
-                <div style={{ fontSize: 14, fontWeight: 600 }}>Посмотрите места на карте</div>
+                <div style={{ fontSize: 14, fontWeight: 700, color: COLORS.text }}>Посмотрите места на карте</div>
+                <div style={{ fontSize: 12, color: COLORS.muted, lineHeight: 1.5 }}>
+                  Удобный поиск рядом с вами и актуальная информация о свободном времени
+                </div>
                 <div style={{ height: 110, borderRadius: 8, overflow: 'hidden', border: `1px solid ${COLORS.border}` }}>
                   <React.Suspense fallback={<div style={{ background: '#f3f4f6', width: '100%', height: '100%' }} />}>
-                    <MapView services={landingFiltered.slice(0, 30)} onMarkerClick={() => setView('results')} center={mapCenter} userLocation={userLocation} nearbyMode={false} />
+                    <MapView services={allLocations.slice(0, 30)} onMarkerClick={() => setView('results')} center={mapCenter} userLocation={userLocation} nearbyMode={false} />
                   </React.Suspense>
                 </div>
                 <button
                   onClick={() => setView('results')}
                   style={{
                     background: '#fff', color: COLORS.accent, border: `1px solid ${COLORS.accent}`,
-                    borderRadius: 8, padding: '8px 12px', fontSize: 13, fontWeight: 600, cursor: 'pointer',
+                    borderRadius: 8, padding: '8px 14px', fontSize: 13, fontWeight: 600, cursor: 'pointer',
+                    alignSelf: 'flex-start',
                   }}
                 >
                   Открыть карту →
                 </button>
               </div>
 
-              <div style={{ ...card, padding: 16, display: 'flex', flexDirection: 'column', gap: 8 }}>
-                <div style={{ fontSize: 24 }}>🎁</div>
-                <div style={{ fontWeight: 700, fontSize: 15 }}>Дарим 10% на первое посещение</div>
-                <div style={{ fontSize: 13, color: COLORS.muted }}>Зарегистрируйтесь и получите промокод на первую запись</div>
+              <div style={{ ...card, padding: 20, display: 'flex', flexDirection: 'column', gap: 8 }}>
+                <div style={{ fontSize: 28 }}>🎁</div>
+                <div style={{ fontWeight: 700, fontSize: 15, color: COLORS.text }}>Дарим 10% на первое посещение</div>
+                <div style={{ fontSize: 13, color: COLORS.muted, lineHeight: 1.5 }}>
+                  Зарегистрируйтесь и получите скидку на любую услугу в вашем городе
+                </div>
                 <button
                   onClick={() => navigate('/auth')}
                   style={{
                     background: '#fff', color: COLORS.accent, border: `1px solid ${COLORS.accent}`,
-                    borderRadius: 8, padding: '8px 12px', fontSize: 13, fontWeight: 600, cursor: 'pointer', marginTop: 4,
+                    borderRadius: 8, padding: '8px 14px', fontSize: 13, fontWeight: 600, cursor: 'pointer',
+                    alignSelf: 'flex-start', marginTop: 4,
                   }}
                 >
                   Получить скидку
@@ -255,9 +279,9 @@ const DesktopIndex = () => {
             </div>
           </div>
 
-          {/* Section 2 — Category tabs */}
-          <div style={{ ...card, marginTop: 24, padding: '0 8px', overflowX: 'auto' }}>
-            <div style={{ display: 'flex', gap: 4, minWidth: 'fit-content' }}>
+          {/* SECTION 2 — Category tabs */}
+          <div style={{ ...card, padding: '0 8px', overflowX: 'auto', marginBottom: 24 }}>
+            <div style={{ display: 'flex', gap: 0, minWidth: 'fit-content' }}>
               {[{ id: 'all', name: 'Все категории', icon: '🏠' }, ...categories].map((c) => {
                 const active = landingCategory === c.id;
                 return (
@@ -270,130 +294,178 @@ const DesktopIndex = () => {
                       fontSize: 13, fontWeight: active ? 700 : 500,
                       color: active ? COLORS.accent : COLORS.text2,
                       borderBottom: active ? `2px solid ${COLORS.accent}` : '2px solid transparent',
-                      whiteSpace: 'nowrap',
+                      whiteSpace: 'nowrap', fontFamily: COLORS.font,
+                      display: 'flex', alignItems: 'center', gap: 6,
                     }}
                   >
-                    {c.name} {c.icon}
+                    <span>{c.icon}</span> {c.name}
                   </button>
                 );
               })}
             </div>
           </div>
 
-          {/* Section 3 — Content + map sidebar */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: 24, marginTop: 24 }}>
+          {/* SECTION 3 — Popular + Free + Map */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: 24, marginBottom: 24 }}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+              {/* Popular */}
               <div>
-                <h2 style={{ fontSize: 18, fontWeight: 700, margin: '0 0 12px' }}>Популярно сейчас 🔥</h2>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+                  <h2 style={{ fontSize: 18, fontWeight: 700, margin: 0, color: COLORS.text }}>Популярно сейчас 🔥</h2>
+                  <button
+                    onClick={() => setView('results')}
+                    style={{ background: 'none', border: 'none', color: COLORS.accent, fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
+                  >Смотреть все</button>
+                </div>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }}>
-                  {popular.map((loc) => (
-                    <div
+                  {popularEnriched.map((loc, idx) => (
+                    <motion.div
                       key={loc.id}
+                      whileHover={{ y: -2 }}
                       onClick={() => navigate(`/service/${loc.id}`)}
                       style={{ ...card, overflow: 'hidden', cursor: 'pointer', display: 'flex', flexDirection: 'column' }}
                     >
                       <div style={{
-                        height: 160, background: loc.gallery?.[0] ? `url(${loc.gallery[0]}) center/cover` : '#e5e7eb',
-                      }} />
-                      <div style={{ padding: 12, display: 'flex', flexDirection: 'column', gap: 6 }}>
+                        height: 160, position: 'relative', overflow: 'hidden',
+                        background: loc.gallery?.[0] ? `url(${loc.gallery[0]}) center/cover no-repeat` : undefined,
+                      }}>
+                        {!loc.gallery?.[0] && <PhotoPlaceholder />}
+                        {(loc.is_promoted || idx === 0) && (
+                          <div style={{
+                            position: 'absolute', top: 8, left: 8,
+                            background: COLORS.accent, color: '#fff',
+                            fontSize: 11, fontWeight: 700, padding: '3px 8px', borderRadius: 6,
+                          }}>Популярное</div>
+                        )}
+                        {loc._distance != null && (
+                          <div style={{
+                            position: 'absolute', bottom: 6, left: 6,
+                            background: 'rgba(0,0,0,0.65)', color: '#fff',
+                            fontSize: 10, fontWeight: 600, padding: '2px 6px', borderRadius: 6,
+                            display: 'flex', alignItems: 'center', gap: 3,
+                          }}><MapPin size={10} /> {formatDistance(loc._distance)}</div>
+                        )}
+                        <div
+                          onClick={(e) => { e.stopPropagation(); }}
+                          style={{
+                            position: 'absolute', top: 8, right: 8,
+                            width: 28, height: 28, borderRadius: '50%',
+                            background: 'rgba(255,255,255,0.9)',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            cursor: 'pointer',
+                          }}>
+                          <Heart size={14} color={COLORS.text2} />
+                        </div>
+                      </div>
+                      <div style={{ padding: 12, display: 'flex', flexDirection: 'column', gap: 5, flex: 1 }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                          <span style={{ fontWeight: 600, fontSize: 14, color: COLORS.text, flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{loc.name}</span>
+                          <span style={{ fontWeight: 700, fontSize: 14, color: COLORS.text, flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{loc.name}</span>
                           {loc.verified && <BadgeCheck size={14} color={COLORS.accent} />}
                         </div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, color: COLORS.text2 }}>
-                          <Star size={12} fill="#f59e0b" color="#f59e0b" /> {loc.rating?.toFixed(1) || '—'}
+                          <Star size={12} fill="#f59e0b" color="#f59e0b" />
+                          <span style={{ fontWeight: 600 }}>{loc.rating?.toFixed(1) || 'Новое'}</span>
                           <span style={{ color: COLORS.muted }}>({loc.review_count || 0})</span>
+                          <span style={{ color: COLORS.muted }}>•</span>
+                          <span style={{ color: COLORS.muted, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{loc.sub_category || loc.city || ''}</span>
                         </div>
-                        <div style={{ fontSize: 12, color: COLORS.muted, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                          {loc.address || '—'}
+                        {loc.price_from ? (
+                          <div style={{ fontSize: 14, fontWeight: 700, color: COLORS.text }}>
+                            от {loc.price_from.toLocaleString('ru-RU')} сум
+                          </div>
+                        ) : null}
+                        <div style={{ fontSize: 12, color: COLORS.green, fontWeight: 600 }}>Открыто до 23:00</div>
+                        <div style={{ display: 'flex', gap: 4, marginTop: 4 }}>
+                          {TIME_PILLS.map((t) => <TimePill key={t} t={t} />)}
+                          <TimePill t="+3" muted />
                         </div>
-                        <div style={{ fontSize: 13, fontWeight: 700, color: COLORS.text }}>
-                          {loc.price_from ? `от ${loc.price_from.toLocaleString('ru-RU')} сум` : ''}
-                        </div>
-                        <div style={{ fontSize: 12, color: '#10b981', fontWeight: 600 }}>Открыто до 23:00</div>
                       </div>
-                    </div>
+                    </motion.div>
                   ))}
-                  {popular.length === 0 && !loading && (
-                    <div style={{ gridColumn: '1 / -1', color: COLORS.muted, fontSize: 13, padding: 24, textAlign: 'center' }}>
-                      Ничего не найдено
-                    </div>
-                  )}
                 </div>
               </div>
 
+              {/* Free time */}
               <div>
-                <h2 style={{ fontSize: 18, fontWeight: 700, margin: '0 0 12px' }}>Свободное время сегодня</h2>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+                  <h2 style={{ fontSize: 18, fontWeight: 700, margin: 0, color: COLORS.text }}>Свободное время сегодня</h2>
+                  <button
+                    onClick={() => setView('results')}
+                    style={{ background: 'none', border: 'none', color: COLORS.accent, fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
+                  >Смотреть все</button>
+                </div>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 12 }}>
                   {freeNow.map((loc) => (
-                    <div
+                    <motion.div
                       key={loc.id}
+                      whileHover={{ y: -1 }}
                       onClick={() => navigate(`/service/${loc.id}`)}
                       style={{ ...card, padding: 12, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 12 }}
                     >
                       <div style={{
-                        width: 52, height: 52, borderRadius: 8, flexShrink: 0,
-                        background: loc.gallery?.[0] ? `url(${loc.gallery[0]}) center/cover` : '#e5e7eb',
-                      }} />
+                        width: 64, height: 64, borderRadius: 8, flexShrink: 0, overflow: 'hidden',
+                        background: loc.gallery?.[0] ? `url(${loc.gallery[0]}) center/cover` : undefined,
+                      }}>
+                        {!loc.gallery?.[0] && <PhotoPlaceholder size={20} />}
+                      </div>
                       <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontSize: 13, fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{loc.name}</div>
-                        <div style={{ display: 'flex', gap: 6, marginTop: 6 }}>
-                          {['14:00', '15:30', '17:00'].map((t) => (
-                            <span key={t} style={{
-                              fontSize: 11, padding: '2px 8px', borderRadius: 6,
-                              background: COLORS.accentBg, color: COLORS.accent,
-                              border: `1px solid ${COLORS.accent}40`, fontWeight: 600,
-                            }}>{t}</span>
-                          ))}
+                        <div style={{ fontSize: 13, fontWeight: 600, color: COLORS.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{loc.name}</div>
+                        <div style={{ display: 'flex', gap: 5, marginTop: 8, flexWrap: 'wrap' }}>
+                          {TIME_PILLS.map((t) => <TimePill key={t} t={t} />)}
+                          <TimePill t="+2" muted />
                         </div>
                       </div>
-                    </div>
+                    </motion.div>
                   ))}
                 </div>
               </div>
             </div>
 
-            {/* Right column — map sidebar */}
+            {/* Right map sidebar */}
             <div>
               <div style={{ ...card, padding: 16 }}>
-                <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 10 }}>Места рядом с вами</div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+                  <div style={{ fontSize: 14, fontWeight: 700, color: COLORS.text }}>Места рядом с вами</div>
+                  <button
+                    onClick={() => setView('results')}
+                    style={{ background: 'none', border: 'none', color: COLORS.accent, fontSize: 12, fontWeight: 600, cursor: 'pointer' }}
+                  >Смотреть на карте →</button>
+                </div>
                 <div style={{ height: 200, borderRadius: 8, overflow: 'hidden', border: `1px solid ${COLORS.border}` }}>
                   <React.Suspense fallback={<div style={{ background: '#f3f4f6', width: '100%', height: '100%' }} />}>
-                    <MapView services={landingFiltered.slice(0, 50)} onMarkerClick={() => setView('results')} center={mapCenter} userLocation={userLocation} nearbyMode={false} />
+                    <MapView services={allLocations.slice(0, 50)} onMarkerClick={() => setView('results')} center={mapCenter} userLocation={userLocation} nearbyMode={false} />
                   </React.Suspense>
                 </div>
-                <div style={{ display: 'flex', gap: 12, marginTop: 12, fontSize: 12, color: COLORS.text2 }}>
-                  <span>🟢 Свободно</span>
-                  <span>🟡 Скоро</span>
-                  <span>🔴 Занято</span>
+                <div style={{ display: 'flex', gap: 14, marginTop: 12, fontSize: 12, color: COLORS.muted, flexWrap: 'wrap' }}>
+                  <span>🟢 Есть места</span>
+                  <span>🟡 Скоро освободится</span>
+                  <span>🔴 Нет мест</span>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Section 4 — Trust strip */}
-          <div style={{ ...card, marginTop: 24, padding: '24px 28px', display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 24 }}>
+          {/* SECTION 4 — Trust strip */}
+          <div style={{ ...card, padding: '24px 32px', display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 24, marginBottom: 40 }}>
             {[
-              { icon: <ShieldCheck size={18} />, title: 'Проверенные заведения', sub: 'Только верифицированные партнёры' },
-              { icon: <CalendarCheck size={18} />, title: 'Онлайн-запись', sub: 'Бронируйте за пару секунд' },
-              { icon: <Clock size={18} />, title: 'Актуальное расписание', sub: 'Реальное свободное время' },
-              { icon: <Search size={18} />, title: 'Удобный поиск', sub: 'Категории, фильтры и карта' },
+              { icon: <ShieldCheck size={20} />, title: 'Проверенные заведения', sub: 'Только реальные отзывы и рейтинги' },
+              { icon: <CalendarCheck size={20} />, title: 'Онлайн-запись', sub: 'Мгновенное подтверждение и напоминания' },
+              { icon: <Clock size={20} />, title: 'Актуальное расписание', sub: 'Только актуальное свободное время в реальном времени' },
+              { icon: <Search size={20} />, title: 'Удобный поиск', sub: 'Фильтры, карта и многое другое для вашего комфорта' },
             ].map((t, i) => (
-              <div key={i} style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
+              <div key={i} style={{ display: 'flex', gap: 14, alignItems: 'flex-start' }}>
                 <div style={{
-                  width: 36, height: 36, borderRadius: '50%',
+                  width: 40, height: 40, borderRadius: '50%',
                   background: COLORS.accentBg, color: COLORS.accent,
                   display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
                 }}>{t.icon}</div>
                 <div>
                   <div style={{ fontSize: 14, fontWeight: 700, color: COLORS.text }}>{t.title}</div>
-                  <div style={{ fontSize: 12, color: COLORS.muted, marginTop: 2 }}>{t.sub}</div>
+                  <div style={{ fontSize: 12, color: COLORS.muted, marginTop: 4, lineHeight: 1.5 }}>{t.sub}</div>
                 </div>
               </div>
             ))}
           </div>
-
-          <div style={{ height: 40 }} />
         </div>
 
         <BusinessSheet service={sheetService} open={!!sheetService} onClose={() => setSheetService(null)}
@@ -417,13 +489,13 @@ const DesktopIndex = () => {
       <DesktopHeader
         searchValue={search}
         onSearch={setSearch}
-        onSearchSubmit={setSearch}
+        onSearchSubmit={(q) => { setSearch(q); setView('results'); }}
       />
 
       {/* Sub-header */}
       <div style={{
         background: '#fff', borderBottom: `1px solid ${COLORS.border}`,
-        padding: '10px 24px', display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap',
+        padding: '10px 24px', display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap',
       }}>
         <button
           onClick={() => setView('landing')}
@@ -436,26 +508,32 @@ const DesktopIndex = () => {
           <ChevronLeft size={16} /> Назад
         </button>
 
-        <div style={{ fontSize: 14, fontWeight: 600, color: COLORS.text }}>
-          {search ? `«${search}»` : selectedCat?.name || 'Все места'} — {filtered.length}
+        <div style={{ fontSize: 15, fontWeight: 700, color: COLORS.text }}>
+          {search ? `«${search}» — ` : ''}{filtered.length} заведений
         </div>
 
-        <div style={{ display: 'flex', gap: 6, marginLeft: 12, flexWrap: 'wrap' }}>
-          {[
-            { label: 'Фильтры', icon: <Filter size={12} /> },
-            { label: 'Цена', drop: true },
-            { label: 'Рейтинг', drop: true },
-          ].map((f) => (
-            <button
-              key={f.label}
-              style={{
-                display: 'flex', alignItems: 'center', gap: 4,
-                height: 32, padding: '0 12px',
-                border: `1px solid ${COLORS.border}`, borderRadius: 8,
-                background: '#fff', fontSize: 12, color: COLORS.text2, cursor: 'pointer',
-              }}
-            >
-              {f.icon} {f.label} {f.drop && <ChevronDown size={12} />}
+        <div style={{ display: 'flex', gap: 6, flex: 1, marginLeft: 8, flexWrap: 'wrap' }}>
+          <button style={{
+            display: 'flex', alignItems: 'center', gap: 5,
+            height: 34, padding: '0 12px',
+            border: `1px solid ${COLORS.border}`, borderRadius: 8,
+            background: '#fff', fontSize: 12, color: COLORS.text2, cursor: 'pointer',
+          }}>
+            <Filter size={12} /> Фильтры
+            <span style={{
+              background: COLORS.accent, color: '#fff', borderRadius: 8,
+              fontSize: 10, fontWeight: 700, padding: '0 5px', minWidth: 16, height: 16,
+              display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+            }}>2</span>
+          </button>
+          {[{ label: 'Цена' }, { label: 'Рейтинг' }].map((f) => (
+            <button key={f.label} style={{
+              display: 'flex', alignItems: 'center', gap: 5,
+              height: 34, padding: '0 12px',
+              border: `1px solid ${COLORS.border}`, borderRadius: 8,
+              background: '#fff', fontSize: 12, color: COLORS.text2, cursor: 'pointer',
+            }}>
+              {f.label} <ChevronDown size={12} />
             </button>
           ))}
 
@@ -463,7 +541,7 @@ const DesktopIndex = () => {
             onClick={() => setOpenNow(!openNow)}
             style={{
               display: 'flex', alignItems: 'center', gap: 6,
-              height: 32, padding: '0 12px',
+              height: 34, padding: '0 12px',
               border: `1px solid ${openNow ? COLORS.accent : COLORS.border}`, borderRadius: 8,
               background: openNow ? COLORS.accentBg : '#fff',
               fontSize: 12, color: openNow ? COLORS.accent : COLORS.text2, cursor: 'pointer', fontWeight: 600,
@@ -471,25 +549,24 @@ const DesktopIndex = () => {
           >
             Открыто сейчас
             <span style={{
-              width: 22, height: 12, borderRadius: 6,
+              width: 28, height: 16, borderRadius: 8,
               background: openNow ? COLORS.accent : '#d1d5db',
-              position: 'relative', transition: 'background 0.2s',
+              position: 'relative', transition: 'background 0.15s',
             }}>
               <span style={{
-                position: 'absolute', top: 1, left: openNow ? 11 : 1,
+                position: 'absolute', top: 3, left: openNow ? 13 : 3,
                 width: 10, height: 10, borderRadius: '50%', background: '#fff',
-                transition: 'left 0.2s',
+                transition: 'left 0.15s',
               }} />
             </span>
           </button>
 
-          <button
-            style={{
-              height: 32, padding: '0 12px', border: `1px solid ${COLORS.border}`,
-              borderRadius: 8, background: '#fff', fontSize: 12, color: COLORS.text2, cursor: 'pointer',
-            }}
-          >
-            Ещё фильтры
+          <button style={{
+            display: 'flex', alignItems: 'center', gap: 5,
+            height: 34, padding: '0 12px', border: `1px solid ${COLORS.border}`,
+            borderRadius: 8, background: '#fff', fontSize: 12, color: COLORS.text2, cursor: 'pointer',
+          }}>
+            Ещё фильтры <ChevronDown size={12} />
           </button>
         </div>
 
@@ -502,7 +579,7 @@ const DesktopIndex = () => {
             { mode: 'list' as const, icon: <List size={14} />, label: 'Список' },
             { mode: 'split' as const, icon: <LayoutGrid size={14} />, label: 'Список + карта' },
             { mode: 'map' as const, icon: <MapIcon size={14} />, label: 'Только карта' },
-          ].map((v) => {
+          ].map((v, i, arr) => {
             const active = resultsMode === v.mode;
             return (
               <button
@@ -510,10 +587,11 @@ const DesktopIndex = () => {
                 onClick={() => setResultsMode(v.mode)}
                 style={{
                   display: 'flex', alignItems: 'center', gap: 6,
-                  height: 32, padding: '0 12px',
+                  height: 34, padding: '0 14px',
                   background: active ? COLORS.accentBg : '#fff',
-                  color: active ? COLORS.accent : COLORS.text2,
-                  border: 'none', borderRight: `1px solid ${COLORS.border}`,
+                  color: active ? COLORS.accent : COLORS.muted,
+                  border: 'none',
+                  borderRight: i < arr.length - 1 ? `1px solid ${COLORS.border}` : 'none',
                   fontSize: 12, fontWeight: 600, cursor: 'pointer',
                 }}
               >
@@ -526,7 +604,6 @@ const DesktopIndex = () => {
 
       {/* Body */}
       <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
-        {/* Left list panel */}
         {showList && (
           <div style={{
             width: resultsMode === 'list' ? '100%' : 460,
@@ -539,100 +616,104 @@ const DesktopIndex = () => {
 
             <div style={{ flex: 1, overflowY: 'auto', padding: '4px 16px 16px' }}>
               {loading ? (
-                <div style={{ padding: 24, textAlign: 'center', color: COLORS.muted, fontSize: 13 }}>Загрузка…</div>
+                <div style={{ padding: 32, textAlign: 'center', color: COLORS.muted, fontSize: 14 }}>Загрузка…</div>
               ) : enriched.length === 0 ? (
-                <div style={{ padding: 24, textAlign: 'center', color: COLORS.muted, fontSize: 13 }}>Ничего не найдено</div>
+                <div style={{ padding: 32, textAlign: 'center', color: COLORS.muted, fontSize: 14 }}>Ничего не найдено</div>
               ) : (
-                <div style={{
-                  display: resultsMode === 'list' ? 'grid' : 'flex',
-                  gridTemplateColumns: resultsMode === 'list' ? 'repeat(auto-fill, minmax(420px, 1fr))' : undefined,
-                  flexDirection: resultsMode === 'list' ? undefined : 'column',
-                  gap: 10,
-                }}>
-                  {enriched.map((loc) => {
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  {enriched.map((loc, idx) => {
                     const active = activeCard === loc.id;
                     return (
                       <motion.div
                         key={loc.id}
                         whileHover={{ y: -1 }}
-                        onClick={() => { setActiveCard(loc.id); navigate(`/service/${loc.id}`); }}
+                        onClick={() => {
+                          setActiveCard(loc.id);
+                          if (isBookable(loc)) navigate(`/service/${loc.id}`); else setSheetService(loc);
+                        }}
                         style={{
                           display: 'flex', gap: 12, padding: 10,
                           background: active ? COLORS.accentBg : '#fff',
                           border: active ? `2px solid ${COLORS.accent}` : `1px solid ${COLORS.border}`,
                           borderRadius: 10, cursor: 'pointer',
                           boxShadow: COLORS.shadow,
+                          transition: 'box-shadow 0.15s',
                         }}
                       >
                         <div style={{
-                          position: 'relative',
-                          width: 120, height: 90, borderRadius: 8, flexShrink: 0,
-                          background: loc.gallery?.[0] ? `url(${loc.gallery[0]}) center/cover` : '#e5e7eb',
+                          position: 'relative', width: 120, height: 90, borderRadius: 8, flexShrink: 0, overflow: 'hidden',
+                          background: loc.gallery?.[0] ? `url(${loc.gallery[0]}) center/cover no-repeat` : undefined,
                         }}>
+                          {!loc.gallery?.[0] && <PhotoPlaceholder size={22} />}
+                          {(loc.is_promoted || idx === 0) && (
+                            <div style={{
+                              position: 'absolute', top: 6, left: 6,
+                              background: COLORS.accent, color: '#fff',
+                              fontSize: 9, fontWeight: 700, padding: '2px 6px', borderRadius: 5,
+                            }}>Популярное</div>
+                          )}
                           {loc._distance != null && (
                             <div style={{
                               position: 'absolute', bottom: 4, left: 4,
-                              background: 'rgba(17,17,17,0.75)', color: '#fff',
-                              fontSize: 10, padding: '2px 6px', borderRadius: 6, fontWeight: 600,
-                            }}>{formatDistance(loc._distance)}</div>
+                              background: 'rgba(0,0,0,0.65)', color: '#fff',
+                              fontSize: 10, padding: '2px 6px', borderRadius: 5, fontWeight: 600,
+                              display: 'flex', alignItems: 'center', gap: 3,
+                            }}><MapPin size={9} /> {formatDistance(loc._distance)}</div>
                           )}
                         </div>
                         <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 4 }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                            <span style={{ fontSize: 14, fontWeight: 600, color: COLORS.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>{loc.name}</span>
+                            <span style={{ fontSize: 14, fontWeight: 700, color: COLORS.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>{loc.name}</span>
                             {loc.verified && <BadgeCheck size={14} color={COLORS.accent} />}
+                            <Heart size={14} color={COLORS.muted} style={{ cursor: 'pointer' }} onClick={(e) => e.stopPropagation()} />
                           </div>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: COLORS.text2 }}>
-                            <Star size={12} fill="#f59e0b" color="#f59e0b" /> {loc.rating?.toFixed(1) || '—'}
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 12, color: COLORS.text2 }}>
+                            <Star size={12} fill="#f59e0b" color="#f59e0b" />
+                            <span style={{ fontWeight: 600 }}>{loc.rating?.toFixed(1) || 'Новое'}</span>
                             <span style={{ color: COLORS.muted }}>({loc.review_count || 0})</span>
-                            <span style={{ color: COLORS.muted, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>· {loc.address || '—'}</span>
+                            <span style={{ color: COLORS.muted }}>•</span>
+                            <span style={{ color: COLORS.muted, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{loc.address || loc.city || ''}</span>
                           </div>
-                          <div style={{ fontSize: 13, fontWeight: 700, color: COLORS.text }}>
+                          <div style={{ fontSize: 14, fontWeight: 700, color: COLORS.text }}>
                             {loc.price_from ? `от ${loc.price_from.toLocaleString('ru-RU')} сум` : ''}
                           </div>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                            <span style={{ fontSize: 11, color: '#10b981', fontWeight: 600 }}>Открыто до 23:00</span>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+                            <span style={{ fontSize: 11, color: COLORS.green, fontWeight: 600 }}>Открыто до 23:00</span>
                             <div style={{ display: 'flex', gap: 4 }}>
-                              {['14:00', '15:30', '17:00'].map((t) => (
-                                <span key={t} style={{
-                                  fontSize: 10, padding: '1px 6px', borderRadius: 5,
-                                  background: COLORS.accentBg, color: COLORS.accent,
-                                  border: `1px solid ${COLORS.accent}40`, fontWeight: 600,
-                                }}>{t}</span>
-                              ))}
+                              {TIME_PILLS.map((t) => <TimePill key={t} t={t} />)}
+                              <TimePill t="+3" muted />
                             </div>
                           </div>
                         </div>
                       </motion.div>
                     );
                   })}
-                </div>
-              )}
 
-              {enriched.length > 0 && (
-                <button style={{
-                  marginTop: 16, width: '100%',
-                  background: '#fff', border: `1px solid ${COLORS.border}`, borderRadius: 8,
-                  padding: '10px', fontSize: 13, fontWeight: 600, color: COLORS.text2, cursor: 'pointer',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4,
-                }}>
-                  Показать ещё <ChevronDown size={14} />
-                </button>
+                  {enriched.length > 0 && (
+                    <button style={{
+                      marginTop: 8, width: '100%',
+                      background: '#fff', border: `1px solid ${COLORS.border}`, borderRadius: 8,
+                      padding: 10, fontSize: 13, fontWeight: 600, color: COLORS.accent, cursor: 'pointer',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4,
+                    }}>
+                      Показать ещё {Math.max(0, enriched.length - 5)} заведений <ChevronDown size={14} />
+                    </button>
+                  )}
+                </div>
               )}
             </div>
 
             <div style={{
               padding: '10px 20px', borderTop: `1px solid ${COLORS.border}`,
-              display: 'flex', gap: 14, fontSize: 11, color: COLORS.muted,
+              display: 'flex', gap: 16, fontSize: 11, color: COLORS.muted, flexWrap: 'wrap',
             }}>
-              <span>🟢 Свободно</span>
-              <span>🟡 Скоро</span>
-              <span>🔴 Занято</span>
+              <span>🟢 Есть места</span>
+              <span>🟡 Скоро освободится</span>
+              <span>🔴 Нет мест</span>
             </div>
           </div>
         )}
 
-        {/* Map panel */}
         {showMap && (
           <div style={{ flex: 1, position: 'relative' }}>
             <React.Suspense fallback={<div style={{ background: '#f3f4f6', width: '100%', height: '100%' }} />}>
