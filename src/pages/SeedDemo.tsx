@@ -68,7 +68,13 @@ const SeedDemo = () => {
           <p className="text-sm text-muted-foreground mt-1">Только для demo@tutgo.uz</p>
         </div>
 
-        {!running && !done && !needsConfirm && (
+        {accessError && (
+          <div className="rounded-xl border border-destructive/30 bg-destructive/10 p-4 mb-4 text-sm text-destructive">
+            {accessError}
+          </div>
+        )}
+
+        {!accessError && !running && !done && !needsConfirm && (
           <button
             onClick={() => run(false)}
             className="w-full bg-primary text-primary-foreground rounded-xl py-4 font-semibold hover:bg-primary/90 transition-colors"
@@ -77,7 +83,7 @@ const SeedDemo = () => {
           </button>
         )}
 
-        {needsConfirm && (
+        {!accessError && needsConfirm && (
           <div className="rounded-xl border border-border bg-card p-4 mb-4">
             <div className="flex items-start gap-3">
               <AlertTriangle className="w-5 h-5 text-destructive shrink-0 mt-0.5" />
@@ -121,7 +127,7 @@ const SeedDemo = () => {
           </div>
         )}
 
-        {done && (
+        {!accessError && done && (
           <button
             onClick={() => navigate('/partner')}
             className="w-full mt-4 bg-primary text-primary-foreground rounded-xl py-4 font-semibold hover:bg-primary/90 transition-colors flex items-center justify-center gap-2"
