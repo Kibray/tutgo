@@ -81,11 +81,12 @@ const DesktopProfile = () => {
               Выберите тип аккаунта, чтобы получить доступ к возможностям TutGo
             </p>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, width: '100%', maxWidth: 760 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, width: '100%', maxWidth: 920 }}>
               {[
                 {
-                  icon: <User size={26} color="#fff" />,
+                  icon: <User size={32} color="#fff" />,
                   iconBg: 'linear-gradient(135deg, #667eea, #764ba2)',
+                  glow: 'rgba(118, 75, 162, 0.25)',
                   title: 'Пользователь',
                   subtitle: 'Ищите и бронируйте лучшие услуги рядом с вами',
                   features: ['Поиск услуг и заведений', 'Онлайн-запись в пару кликов', 'Отзывы и рейтинги', 'Удобное управление записями'],
@@ -93,8 +94,9 @@ const DesktopProfile = () => {
                   route: '/auth',
                 },
                 {
-                  icon: <Briefcase size={26} color="#fff" />,
+                  icon: <Briefcase size={32} color="#fff" />,
                   iconBg: 'linear-gradient(135deg, #4facfe, #00f2fe)',
+                  glow: 'rgba(79, 172, 254, 0.25)',
                   title: 'Бизнес',
                   subtitle: 'Управляйте своей компанией и привлекайте клиентов',
                   features: ['Управление записями и клиентами', 'Аналитика и статистика', 'Продвижение и акции', 'Увеличение потока клиентов'],
@@ -105,28 +107,29 @@ const DesktopProfile = () => {
                 <div
                   key={card.title}
                   onClick={() => navigate(card.route)}
-                  onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 30px rgba(0,0,0,0.12)'; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 20px rgba(0,0,0,0.06)'; }}
-                  style={{ background: '#fff', borderRadius: 20, padding: '24px 20px', border: '1px solid #e5e7eb', boxShadow: '0 4px 20px rgba(0,0,0,0.06)', display: 'flex', flexDirection: 'column', alignItems: 'center', cursor: 'pointer', transition: 'transform 0.15s, box-shadow 0.15s' }}
+                  onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = `0 20px 50px -12px ${card.glow}, 0 8px 24px rgba(0,0,0,0.08)`; e.currentTarget.style.borderColor = 'rgba(37,99,235,0.18)'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 8px 28px rgba(17,24,39,0.06), 0 2px 6px rgba(17,24,39,0.04)'; e.currentTarget.style.borderColor = 'rgba(229,231,235,0.9)'; }}
+                  style={{ position: 'relative', background: '#fff', borderRadius: 24, padding: '36px 32px', border: '1px solid rgba(229,231,235,0.9)', boxShadow: '0 8px 28px rgba(17,24,39,0.06), 0 2px 6px rgba(17,24,39,0.04)', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', cursor: 'pointer', transition: 'transform 0.2s ease, box-shadow 0.25s ease, border-color 0.2s ease', overflow: 'hidden' }}
                 >
-                  <div style={{ width: 56, height: 56, borderRadius: '50%', background: card.iconBg, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
+                  <div aria-hidden style={{ position: 'absolute', top: -60, right: -60, width: 180, height: 180, borderRadius: '50%', background: card.iconBg, opacity: 0.08, filter: 'blur(8px)' }} />
+                  <div style={{ width: 64, height: 64, borderRadius: 18, background: card.iconBg, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 18, boxShadow: `0 10px 24px -6px ${card.glow}` }}>
                     {card.icon}
                   </div>
-                  <h3 style={{ fontSize: 18, fontWeight: 700, color: '#111', marginBottom: 6, textAlign: 'center' }}>{card.title}</h3>
-                  <p style={{ fontSize: 13, color: '#6b7280', textAlign: 'center', marginBottom: 14, lineHeight: 1.4 }}>{card.subtitle}</p>
-                  <div style={{ alignSelf: 'stretch', display: 'flex', flexDirection: 'column', gap: 7, marginBottom: 18 }}>
+                  <h3 style={{ fontSize: 22, fontWeight: 700, color: '#0f172a', marginBottom: 8, letterSpacing: '-0.02em' }}>{card.title}</h3>
+                  <p style={{ fontSize: 14, color: '#64748b', marginBottom: 22, lineHeight: 1.5 }}>{card.subtitle}</p>
+                  <div style={{ alignSelf: 'stretch', display: 'flex', flexDirection: 'column', gap: 11, marginBottom: 24 }}>
                     {card.features.map((f) => (
-                      <div key={f} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                        <CheckCircle2 size={14} color="#2563EB" />
-                        <span style={{ fontSize: 13, color: '#374151' }}>{f}</span>
+                      <div key={f} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                        <CheckCircle2 size={16} color="#2563EB" strokeWidth={2.4} />
+                        <span style={{ fontSize: 14, color: '#334155', fontWeight: 500 }}>{f}</span>
                       </div>
                     ))}
                   </div>
                   <button
                     onClick={(e) => { e.stopPropagation(); navigate(card.route); }}
-                    onMouseEnter={(e) => { e.currentTarget.style.filter = 'brightness(1.08)'; e.currentTarget.style.transform = 'scale(1.01)'; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.filter = 'none'; e.currentTarget.style.transform = 'scale(1)'; }}
-                    style={{ marginTop: 'auto', width: '100%', height: 44, background: 'linear-gradient(135deg, #2563EB, #1d4ed8)', color: '#fff', border: 'none', borderRadius: 12, fontSize: 14, fontWeight: 600, cursor: 'pointer', transition: 'transform 0.15s, filter 0.15s' }}
+                    onMouseEnter={(e) => { e.currentTarget.style.filter = 'brightness(1.08)'; e.currentTarget.style.boxShadow = '0 10px 24px -6px rgba(37,99,235,0.45)'; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.filter = 'none'; e.currentTarget.style.boxShadow = '0 6px 16px -4px rgba(37,99,235,0.35)'; }}
+                    style={{ marginTop: 'auto', width: '100%', height: 50, background: 'linear-gradient(135deg, #2563EB, #1d4ed8)', color: '#fff', border: 'none', borderRadius: 14, fontSize: 15, fontWeight: 600, cursor: 'pointer', transition: 'filter 0.15s ease, box-shadow 0.2s ease', boxShadow: '0 6px 16px -4px rgba(37,99,235,0.35)', letterSpacing: '0.01em' }}
                   >
                     {card.btn}
                   </button>
