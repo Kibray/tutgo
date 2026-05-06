@@ -1,3 +1,4 @@
+import { lazy, Suspense } from 'react';
 import { motion } from 'framer-motion';
 import LegalFooter from '@/components/LegalFooter';
 import { User, Settings, Globe, HelpCircle, ChevronRight, LogOut, Briefcase, Store, BookOpen, Lightbulb } from 'lucide-react';
@@ -11,12 +12,21 @@ import BottomNav from '@/components/BottomNav';
 import TelegramLinkBlock from '@/components/TelegramLinkBlock';
 import ReferralSection from '@/components/ReferralSection';
 import InstagramConnectCard from '@/components/partner/InstagramConnectCard';
+import { useIsDesktop } from '@/hooks/useIsDesktop';
+
+const DesktopProfile = lazy(() => import('@/components/desktop/DesktopProfile'));
 
 const Profile = () => {
   const { user, isPartner, signOut, becomePartner } = useAuth();
   const { t } = usePreferences();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const isDesktop = useIsDesktop();
+  if (isDesktop) return (
+    <Suspense fallback={null}>
+      <DesktopProfile />
+    </Suspense>
+  );
 
   const handleSignOut = async () => {
     await signOut();
