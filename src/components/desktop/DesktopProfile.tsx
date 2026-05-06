@@ -73,8 +73,8 @@ const DesktopProfile = () => {
       {/* MAIN */}
       {!user ? (
         <div style={{ flex: 1, position: 'relative', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px 24px' }}>
-          <div style={{ position: 'absolute', inset: 0, zIndex: 0, backgroundImage: "url(https://images.unsplash.com/photo-1585747860715-2ba37e788b70?w=1600)", backgroundSize: 'cover', backgroundPosition: 'center' }} />
-          <div style={{ position: 'absolute', inset: 0, zIndex: 1, background: 'rgba(255,255,255,0.88)' }} />
+          <div style={{ position: 'absolute', inset: 0, zIndex: 0, backgroundImage: "url(https://images.unsplash.com/photo-1560066984-138dadb4c035?w=1600)", backgroundSize: 'cover', backgroundPosition: 'center' }} />
+          <div style={{ position: 'absolute', inset: 0, zIndex: 1, background: 'rgba(255,255,255,0.85)' }} />
           <div style={{ position: 'relative', zIndex: 2, width: '100%', maxWidth: 900, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <h1 style={{ fontSize: 28, fontWeight: 800, color: '#111', textAlign: 'center', marginBottom: 8 }}>Кто вы?</h1>
             <p style={{ fontSize: 15, color: '#6b7280', textAlign: 'center', marginBottom: 24, maxWidth: 440, lineHeight: 1.6 }}>
@@ -84,7 +84,8 @@ const DesktopProfile = () => {
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, width: '100%', maxWidth: 820 }}>
               {[
                 {
-                  icon: <User size={28} color="#2563EB" />,
+                  icon: <User size={28} color="#fff" />,
+                  iconBg: 'linear-gradient(135deg, #667eea, #764ba2)',
                   title: 'Пользователь',
                   subtitle: 'Ищите и бронируйте лучшие услуги рядом с вами',
                   features: ['Поиск услуг и заведений', 'Онлайн-запись в пару кликов', 'Отзывы и рейтинги', 'Удобное управление записями'],
@@ -92,7 +93,8 @@ const DesktopProfile = () => {
                   route: '/auth',
                 },
                 {
-                  icon: <Briefcase size={28} color="#2563EB" />,
+                  icon: <Briefcase size={28} color="#fff" />,
+                  iconBg: 'linear-gradient(135deg, #4facfe, #00f2fe)',
                   title: 'Бизнес',
                   subtitle: 'Управляйте своей компанией и привлекайте клиентов',
                   features: ['Управление записями и клиентами', 'Аналитика и статистика', 'Продвижение и акции', 'Увеличение потока клиентов'],
@@ -101,7 +103,7 @@ const DesktopProfile = () => {
                 },
               ].map((card) => (
                 <div key={card.title} onClick={() => navigate(card.route)} style={{ background: '#fff', borderRadius: 16, padding: '24px 24px', border: '1px solid #e5e7eb', boxShadow: '0 4px 24px rgba(0,0,0,0.06)', display: 'flex', flexDirection: 'column', alignItems: 'center', cursor: 'pointer' }}>
-                  <div style={{ width: 64, height: 64, borderRadius: '50%', background: '#eff6ff', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 20 }}>
+                  <div style={{ width: 64, height: 64, borderRadius: '50%', background: card.iconBg, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 20 }}>
                     {card.icon}
                   </div>
                   <h3 style={{ fontSize: 18, fontWeight: 700, color: '#111', marginBottom: 6, textAlign: 'center' }}>{card.title}</h3>
@@ -121,7 +123,42 @@ const DesktopProfile = () => {
               ))}
             </div>
 
-            <div style={{ marginTop: 20, display: 'flex', alignItems: 'center', gap: 14, justifyContent: 'center' }}>
+            <div style={{
+              display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)',
+              gap: 12, width: '100%', maxWidth: 820, marginTop: 16
+            }}>
+              {systemItems.map((item) => {
+                const styles: Record<string, { bg: string; color: string }> = {
+                  '/settings': { bg: '#eff6ff', color: '#2563EB' },
+                  '/help': { bg: '#f3e8ff', color: '#7c3aed' },
+                  '/how-it-works': { bg: '#fef3c7', color: '#d97706' },
+                };
+                const s = styles[item.route];
+                return (
+                  <div
+                    key={item.route}
+                    onClick={() => navigate(item.route)}
+                    style={{
+                      background: '#fff', borderRadius: 12,
+                      border: '1px solid #e5e7eb', padding: '16px',
+                      display: 'flex', alignItems: 'center', gap: 12,
+                      cursor: 'pointer'
+                    }}
+                  >
+                    <div style={{ width: 40, height: 40, borderRadius: '50%', background: s.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                      <item.icon size={18} color={s.color} />
+                    </div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: 14, fontWeight: 600, color: '#111' }}>{item.label}</div>
+                      <div style={{ fontSize: 12, color: '#6b7280', marginTop: 2 }}>{item.desc}</div>
+                    </div>
+                    <ChevronRight size={14} color="#9ca3af" />
+                  </div>
+                );
+              })}
+            </div>
+
+            <div style={{ marginTop: 24, display: 'flex', alignItems: 'center', gap: 14, justifyContent: 'center' }}>
               <div style={{ display: 'flex' }}>
                 {avatars.map((a, i) => (
                   <div key={i} style={{ width: 30, height: 30, borderRadius: '50%', border: '2px solid #fff', marginLeft: i > 0 ? -10 : 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 600, color: '#fff', background: a.bg }}>
@@ -132,37 +169,6 @@ const DesktopProfile = () => {
               <div style={{ fontSize: 13, color: '#374151' }}>
                 Более <span style={{ color: '#2563EB', fontWeight: 700 }}>10 000</span> пользователей доверяют TutGo
               </div>
-            </div>
-
-            <div style={{
-              width: '100%', maxWidth: 820, marginTop: 16,
-              background: '#fff', border: '1px solid #e5e7eb',
-              borderRadius: 12, overflow: 'hidden'
-            }}>
-              {systemItems.map((item, i) => (
-                <div
-                  key={item.route}
-                  onClick={() => navigate(item.route)}
-                  style={{
-                    padding: '10px 16px', display: 'flex',
-                    alignItems: 'center', gap: 12, cursor: 'pointer',
-                    borderBottom: i < systemItems.length - 1
-                      ? '1px solid #e5e7eb' : 'none',
-                    background: '#fff'
-                  }}
-                >
-                  <item.icon size={16} color="#6b7280" />
-                  <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: 13, fontWeight: 500, color: '#111' }}>
-                      {item.label}
-                    </div>
-                    <div style={{ fontSize: 11, color: '#6b7280', marginTop: 2 }}>
-                      {item.desc}
-                    </div>
-                  </div>
-                  <ChevronRight size={16} color="#9ca3af" />
-                </div>
-              ))}
             </div>
           </div>
         </div>
