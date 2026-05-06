@@ -109,15 +109,15 @@ const DesktopProfile = () => {
                   onClick={() => navigate(card.route)}
                   onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = `0 20px 50px -12px ${card.glow}, 0 8px 24px rgba(0,0,0,0.08)`; e.currentTarget.style.borderColor = 'rgba(37,99,235,0.18)'; }}
                   onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 8px 28px rgba(17,24,39,0.06), 0 2px 6px rgba(17,24,39,0.04)'; e.currentTarget.style.borderColor = 'rgba(229,231,235,0.9)'; }}
-                  style={{ position: 'relative', background: '#fff', borderRadius: 24, padding: '36px 32px', border: '1px solid rgba(229,231,235,0.9)', boxShadow: '0 8px 28px rgba(17,24,39,0.06), 0 2px 6px rgba(17,24,39,0.04)', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', cursor: 'pointer', transition: 'transform 0.2s ease, box-shadow 0.25s ease, border-color 0.2s ease', overflow: 'hidden' }}
+                  style={{ position: 'relative', background: '#fff', borderRadius: 24, padding: '56px 32px', border: '1px solid rgba(229,231,235,0.9)', boxShadow: '0 8px 28px rgba(17,24,39,0.06), 0 2px 6px rgba(17,24,39,0.04)', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', cursor: 'pointer', transition: 'transform 0.2s ease, box-shadow 0.25s ease, border-color 0.2s ease', overflow: 'hidden' }}
                 >
                   <div aria-hidden style={{ position: 'absolute', top: -60, right: -60, width: 180, height: 180, borderRadius: '50%', background: card.iconBg, opacity: 0.08, filter: 'blur(8px)' }} />
-                  <div style={{ width: 64, height: 64, borderRadius: 18, background: card.iconBg, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 18, boxShadow: `0 10px 24px -6px ${card.glow}` }}>
+                  <div style={{ width: 64, height: 64, borderRadius: 18, background: card.iconBg, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 28, boxShadow: `0 10px 24px -6px ${card.glow}` }}>
                     {card.icon}
                   </div>
-                  <h3 style={{ fontSize: 22, fontWeight: 700, color: '#0f172a', marginBottom: 8, letterSpacing: '-0.02em' }}>{card.title}</h3>
-                  <p style={{ fontSize: 14, color: '#64748b', marginBottom: 22, lineHeight: 1.5 }}>{card.subtitle}</p>
-                  <div style={{ alignSelf: 'stretch', display: 'flex', flexDirection: 'column', gap: 11, marginBottom: 24 }}>
+                  <h3 style={{ fontSize: 22, fontWeight: 700, color: '#0f172a', marginBottom: 10, letterSpacing: '-0.02em' }}>{card.title}</h3>
+                  <p style={{ fontSize: 14, color: '#64748b', marginBottom: 32, lineHeight: 1.5 }}>{card.subtitle}</p>
+                  <div style={{ alignSelf: 'stretch', display: 'flex', flexDirection: 'column', gap: 16, marginBottom: 36 }}>
                     {card.features.map((f) => (
                       <div key={f} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                         <CheckCircle2 size={16} color="#2563EB" strokeWidth={2.4} />
