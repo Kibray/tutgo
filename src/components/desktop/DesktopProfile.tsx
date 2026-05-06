@@ -72,19 +72,19 @@ const DesktopProfile = () => {
 
       {/* MAIN */}
       {!user ? (
-        <div style={{ flex: 1, position: 'relative', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px 24px' }}>
+        <div style={{ minHeight: 'calc(100vh - 60px)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '24px 24px 16px', position: 'relative', overflow: 'hidden' }}>
           <div style={{ position: 'absolute', inset: 0, zIndex: 0, backgroundImage: "url(https://images.unsplash.com/photo-1560066984-138dadb4c035?w=1600)", backgroundSize: 'cover', backgroundPosition: 'center' }} />
-          <div style={{ position: 'absolute', inset: 0, zIndex: 1, background: 'rgba(255,255,255,0.85)' }} />
-          <div style={{ position: 'relative', zIndex: 2, width: '100%', maxWidth: 900, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            <h1 style={{ fontSize: 28, fontWeight: 800, color: '#111', textAlign: 'center', marginBottom: 8 }}>Кто вы?</h1>
-            <p style={{ fontSize: 15, color: '#6b7280', textAlign: 'center', marginBottom: 24, maxWidth: 440, lineHeight: 1.6 }}>
+          <div style={{ position: 'absolute', inset: 0, zIndex: 1, background: 'rgba(255,255,255,0.82)' }} />
+          <div style={{ position: 'relative', zIndex: 2, width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <h1 style={{ fontSize: 28, fontWeight: 800, color: '#111', textAlign: 'center', marginBottom: 6 }}>Кто вы?</h1>
+            <p style={{ fontSize: 14, color: '#6b7280', textAlign: 'center', marginBottom: 24, maxWidth: 360 }}>
               Выберите тип аккаунта, чтобы получить доступ к возможностям TutGo
             </p>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, width: '100%', maxWidth: 820 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, width: '100%', maxWidth: 760 }}>
               {[
                 {
-                  icon: <User size={28} color="#fff" />,
+                  icon: <User size={26} color="#fff" />,
                   iconBg: 'linear-gradient(135deg, #667eea, #764ba2)',
                   title: 'Пользователь',
                   subtitle: 'Ищите и бронируйте лучшие услуги рядом с вами',
@@ -93,7 +93,7 @@ const DesktopProfile = () => {
                   route: '/auth',
                 },
                 {
-                  icon: <Briefcase size={28} color="#fff" />,
+                  icon: <Briefcase size={26} color="#fff" />,
                   iconBg: 'linear-gradient(135deg, #4facfe, #00f2fe)',
                   title: 'Бизнес',
                   subtitle: 'Управляйте своей компанией и привлекайте клиентов',
@@ -102,66 +102,65 @@ const DesktopProfile = () => {
                   route: '/auth/partner',
                 },
               ].map((card) => (
-                <div key={card.title} onClick={() => navigate(card.route)} style={{ background: '#fff', borderRadius: 16, padding: '24px 24px', border: '1px solid #e5e7eb', boxShadow: '0 4px 24px rgba(0,0,0,0.06)', display: 'flex', flexDirection: 'column', alignItems: 'center', cursor: 'pointer' }}>
-                  <div style={{ width: 64, height: 64, borderRadius: '50%', background: card.iconBg, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 20 }}>
+                <div
+                  key={card.title}
+                  onClick={() => navigate(card.route)}
+                  onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 30px rgba(0,0,0,0.12)'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 20px rgba(0,0,0,0.06)'; }}
+                  style={{ background: '#fff', borderRadius: 20, padding: '24px 20px', border: '1px solid #e5e7eb', boxShadow: '0 4px 20px rgba(0,0,0,0.06)', display: 'flex', flexDirection: 'column', alignItems: 'center', cursor: 'pointer', transition: 'transform 0.15s, box-shadow 0.15s' }}
+                >
+                  <div style={{ width: 56, height: 56, borderRadius: '50%', background: card.iconBg, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
                     {card.icon}
                   </div>
                   <h3 style={{ fontSize: 18, fontWeight: 700, color: '#111', marginBottom: 6, textAlign: 'center' }}>{card.title}</h3>
-                  <p style={{ fontSize: 14, color: '#6b7280', textAlign: 'center', marginBottom: 16, lineHeight: 1.5 }}>{card.subtitle}</p>
-                  <div style={{ alignSelf: 'stretch', display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 24 }}>
+                  <p style={{ fontSize: 13, color: '#6b7280', textAlign: 'center', marginBottom: 14, lineHeight: 1.4 }}>{card.subtitle}</p>
+                  <div style={{ alignSelf: 'stretch', display: 'flex', flexDirection: 'column', gap: 7, marginBottom: 18 }}>
                     {card.features.map((f) => (
-                      <div key={f} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                        <CheckCircle2 size={15} color="#2563EB" />
+                      <div key={f} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <CheckCircle2 size={14} color="#2563EB" />
                         <span style={{ fontSize: 13, color: '#374151' }}>{f}</span>
                       </div>
                     ))}
                   </div>
-                  <button onClick={(e) => { e.stopPropagation(); navigate(card.route); }} style={{ width: '100%', background: '#2563EB', color: '#fff', border: 'none', borderRadius: 10, padding: 10, fontSize: 14, fontWeight: 600, cursor: 'pointer', marginTop: 'auto' }}>
+                  <button
+                    onClick={(e) => { e.stopPropagation(); navigate(card.route); }}
+                    onMouseEnter={(e) => { e.currentTarget.style.filter = 'brightness(1.08)'; e.currentTarget.style.transform = 'scale(1.01)'; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.filter = 'none'; e.currentTarget.style.transform = 'scale(1)'; }}
+                    style={{ marginTop: 'auto', width: '100%', height: 44, background: 'linear-gradient(135deg, #2563EB, #1d4ed8)', color: '#fff', border: 'none', borderRadius: 12, fontSize: 14, fontWeight: 600, cursor: 'pointer', transition: 'transform 0.15s, filter 0.15s' }}
+                  >
                     {card.btn}
                   </button>
                 </div>
               ))}
             </div>
 
-            <div style={{
-              display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)',
-              gap: 12, width: '100%', maxWidth: 820, marginTop: 16
-            }}>
-              {systemItems.map((item) => {
-                const styles: Record<string, { bg: string; color: string }> = {
-                  '/settings': { bg: '#eff6ff', color: '#2563EB' },
-                  '/help': { bg: '#f3e8ff', color: '#7c3aed' },
-                  '/how-it-works': { bg: '#fef3c7', color: '#d97706' },
-                };
-                const s = styles[item.route];
-                return (
-                  <div
-                    key={item.route}
+            <div style={{ display: 'flex', gap: 24, marginTop: 16, alignItems: 'center', justifyContent: 'center' }}>
+              {systemItems.map((item, idx) => (
+                <span key={item.route} style={{ display: 'inline-flex', alignItems: 'center', gap: 24 }}>
+                  <span
                     onClick={() => navigate(item.route)}
-                    style={{
-                      background: '#fff', borderRadius: 12,
-                      border: '1px solid #e5e7eb', padding: '16px',
-                      display: 'flex', alignItems: 'center', gap: 12,
-                      cursor: 'pointer'
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.color = '#2563EB';
+                      const svg = e.currentTarget.querySelector('svg'); if (svg) (svg as SVGElement).style.color = '#2563EB';
                     }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.color = '#6b7280';
+                      const svg = e.currentTarget.querySelector('svg'); if (svg) (svg as SVGElement).style.color = '#9ca3af';
+                    }}
+                    style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', fontSize: 13, color: '#6b7280' }}
                   >
-                    <div style={{ width: 40, height: 40, borderRadius: '50%', background: s.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                      <item.icon size={18} color={s.color} />
-                    </div>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: 14, fontWeight: 600, color: '#111' }}>{item.label}</div>
-                      <div style={{ fontSize: 12, color: '#6b7280', marginTop: 2 }}>{item.desc}</div>
-                    </div>
-                    <ChevronRight size={14} color="#9ca3af" />
-                  </div>
-                );
-              })}
+                    <item.icon size={14} color="#9ca3af" />
+                    {item.label}
+                  </span>
+                  {idx < systemItems.length - 1 && <span style={{ color: '#d1d5db', fontSize: 12 }}>•</span>}
+                </span>
+              ))}
             </div>
 
-            <div style={{ marginTop: 24, display: 'flex', alignItems: 'center', gap: 14, justifyContent: 'center' }}>
+            <div style={{ marginTop: 14, display: 'flex', alignItems: 'center', gap: 10, justifyContent: 'center' }}>
               <div style={{ display: 'flex' }}>
                 {avatars.map((a, i) => (
-                  <div key={i} style={{ width: 30, height: 30, borderRadius: '50%', border: '2px solid #fff', marginLeft: i > 0 ? -10 : 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 600, color: '#fff', background: a.bg }}>
+                  <div key={i} style={{ width: 28, height: 28, borderRadius: '50%', border: '2px solid #fff', marginLeft: i > 0 ? -8 : 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 600, color: '#fff', background: a.bg }}>
                     {a.letter}
                   </div>
                 ))}
