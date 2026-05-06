@@ -133,6 +133,37 @@ const DesktopProfile = () => {
                 Более <span style={{ color: '#2563EB', fontWeight: 700 }}>10 000</span> пользователей доверяют TutGo
               </div>
             </div>
+
+            <div style={{
+              width: '100%', maxWidth: 820, marginTop: 24,
+              background: '#fff', border: '1px solid #e5e7eb',
+              borderRadius: 12, overflow: 'hidden'
+            }}>
+              {systemItems.map((item, i) => (
+                <div
+                  key={item.route}
+                  onClick={() => navigate(item.route)}
+                  style={{
+                    padding: '14px 20px', display: 'flex',
+                    alignItems: 'center', gap: 12, cursor: 'pointer',
+                    borderBottom: i < systemItems.length - 1
+                      ? '1px solid #e5e7eb' : 'none',
+                    background: '#fff'
+                  }}
+                >
+                  <item.icon size={18} color="#6b7280" />
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: 14, fontWeight: 500, color: '#111' }}>
+                      {item.label}
+                    </div>
+                    <div style={{ fontSize: 12, color: '#6b7280', marginTop: 2 }}>
+                      {item.desc}
+                    </div>
+                  </div>
+                  <ChevronRight size={16} color="#9ca3af" />
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       ) : (
