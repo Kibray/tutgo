@@ -161,7 +161,7 @@ const Auth = () => {
     setTelegramLoading(false);
   };
 
-  if (isDesktop && !isTelegram) {
+  if (isDesktop && !isTelegram && telegramStep === 'idle') {
     return (
       <DesktopAuthLayout
         isLogin={isLogin}
