@@ -6,6 +6,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { usePreferences } from '@/hooks/usePreferences';
 import { useTelegram } from '@/hooks/useTelegram';
+import { useIsDesktop } from '@/hooks/useIsDesktop';
 import { useToast } from '@/hooks/use-toast';
 import { lovable } from '@/integrations/lovable/index';
 import { supabase } from '@/integrations/supabase/client';
@@ -31,6 +32,7 @@ const AuthPartner = () => {
   const { signUp, user } = useAuth();
   const { t } = usePreferences();
   const { isTelegram, ready: tgReady } = useTelegram();
+  const isDesktop = useIsDesktop();
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -39,6 +41,12 @@ const AuthPartner = () => {
       navigate('/partner-landing', { replace: true });
     }
   }, [user, navigate]);
+
+  useEffect(() => {
+    if (isDesktop && !isTelegram) {
+      navigate('/auth?role=partner', { replace: true });
+    }
+  }, [isDesktop, isTelegram, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
