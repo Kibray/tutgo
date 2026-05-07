@@ -694,11 +694,14 @@ function DesktopAuthLayout(props: any) {
           ) : (
             <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
               <input type="text" placeholder={t('auth.your_name')} value={name} onChange={(e) => setName(e.target.value)}
-                style={{ width: '100%', padding: '12px 14px', border: `1px solid ${BORDER}`, borderRadius: 10, fontSize: 14, outline: 'none' }} />
+                onFocus={(e) => { e.currentTarget.style.borderColor = '#2563EB'; }} onBlur={(e) => { e.currentTarget.style.borderColor = '#e5e7eb'; }}
+                style={{ width: '100%', background: '#f9fafb', border: '1px solid #e5e7eb', color: '#111827', borderRadius: 8, padding: '12px 16px', fontSize: 14, outline: 'none' }} />
               <input type="email" placeholder={t('auth.email')} required value={email} onChange={(e) => setEmail(e.target.value)}
-                style={{ width: '100%', padding: '12px 14px', border: `1px solid ${BORDER}`, borderRadius: 10, fontSize: 14, outline: 'none' }} />
+                onFocus={(e) => { e.currentTarget.style.borderColor = '#2563EB'; }} onBlur={(e) => { e.currentTarget.style.borderColor = '#e5e7eb'; }}
+                style={{ width: '100%', background: '#f9fafb', border: '1px solid #e5e7eb', color: '#111827', borderRadius: 8, padding: '12px 16px', fontSize: 14, outline: 'none' }} />
               <input type="password" placeholder={t('auth.password')} required minLength={6} value={password} onChange={(e) => setPassword(e.target.value)}
-                style={{ width: '100%', padding: '12px 14px', border: `1px solid ${BORDER}`, borderRadius: 10, fontSize: 14, outline: 'none' }} />
+                onFocus={(e) => { e.currentTarget.style.borderColor = '#2563EB'; }} onBlur={(e) => { e.currentTarget.style.borderColor = '#e5e7eb'; }}
+                style={{ width: '100%', background: '#f9fafb', border: '1px solid #e5e7eb', color: '#111827', borderRadius: 8, padding: '12px 16px', fontSize: 14, outline: 'none' }} />
               <label style={{ display: 'flex', gap: 10, alignItems: 'flex-start', fontSize: 12, color: MUTED, lineHeight: 1.5 }}>
                 <Checkbox checked={termsAccepted} onCheckedChange={(v) => setTermsAccepted(v === true)} style={{ marginTop: 2 }} />
                 <span>
