@@ -503,7 +503,7 @@ function DesktopAuthLayout(props: any) {
     isLogin, setIsLogin, email, setEmail, password, setPassword,
     name, setName, loading, termsAccepted, setTermsAccepted,
     googleLoading, setGoogleLoading, handleSubmit,
-    setTelegramStep, isPartner, toast, t,
+    handleTelegramLogin, setTelegramStep, isPartner, toast, t,
   } = props;
 
   const BLUE = '#2563EB';
@@ -677,6 +677,28 @@ function DesktopAuthLayout(props: any) {
                 <span style={{ fontSize: 12, color: MUTED }}>или</span>
                 <div style={{ flex: 1, height: 1, background: BORDER }} />
               </div>
+
+              {isPartner && (
+                <>
+                  <div style={cardStyle} onMouseEnter={(e) => onCardHover(e, true)} onMouseLeave={(e) => onCardHover(e, false)}
+                    onClick={handleTelegramLogin}>
+                    <div style={iconCircle('linear-gradient(135deg, #2AABEE, #0088cc)')}>
+                      <Send size={22} color="#fff" />
+                    </div>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontSize: 15, fontWeight: 600, color: '#111' }}>Войти через Telegram</div>
+                      <div style={{ fontSize: 13, color: MUTED, marginTop: 2 }}>Получите код подтверждения в Telegram</div>
+                    </div>
+                    <ChevronRight size={18} color="#9ca3af" />
+                  </div>
+                  <div
+                    onClick={() => setTelegramStep('phone_input')}
+                    style={{ textAlign: 'center', fontSize: 13, color: '#2AABEE', cursor: 'pointer', marginTop: 8, marginBottom: 16 }}
+                  >
+                    📱 или по номеру телефона
+                  </div>
+                </>
+              )}
 
               <button onClick={() => setIsLogin(false)} style={{
                 width: '100%', height: 48, borderRadius: 10, border: `1px solid ${BLUE}`,
