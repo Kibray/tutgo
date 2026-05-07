@@ -635,16 +635,21 @@ function DesktopAuthLayout(props: any) {
           {isLogin ? (
             <>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                <div style={cardStyle} onMouseEnter={(e) => onCardHover(e, true)} onMouseLeave={(e) => onCardHover(e, false)}
-                  onClick={handleTelegramLogin}>
-                  <div style={iconCircle('linear-gradient(135deg, #2AABEE, #0088cc)')}>
-                    <Send size={22} color="#fff" />
-                  </div>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: 15, fontWeight: 600, color: '#111' }}>Войти через Telegram</div>
-                    <div style={{ fontSize: 13, color: MUTED, marginTop: 2 }}>Получите код подтверждения в Telegram</div>
-                  </div>
-                  <ChevronRight size={18} color="#9ca3af" />
+                <div style={{ border: '1px solid #2AABEE33', borderRadius: 12, overflow: 'hidden' }}>
+                  <button
+                    style={{ width: '100%', padding: '14px 20px', background: 'white', border: 'none', borderBottom: `1px solid ${BORDER}`, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, fontSize: 14, fontWeight: 600, color: '#111827' }}
+                    onClick={handleTelegramLogin}
+                  >
+                    <Send size={18} color="#2AABEE" />
+                    Войти через Telegram
+                  </button>
+                  <button
+                    style={{ width: '100%', padding: '10px 20px', background: 'white', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, fontSize: 13, color: '#2AABEE' }}
+                    onClick={() => setTelegramStep('phone_input')}
+                  >
+                    <Phone size={14} color="#2AABEE" />
+                    или по номеру телефона
+                  </button>
                 </div>
 
                 <div style={cardStyle} onMouseEnter={(e) => onCardHover(e, true)} onMouseLeave={(e) => onCardHover(e, false)}
@@ -672,13 +677,6 @@ function DesktopAuthLayout(props: any) {
                 </div>
               </div>
 
-              <div
-                onClick={() => setTelegramStep('phone_input')}
-                style={{ textAlign: 'center', fontSize: 13, color: '#2AABEE', cursor: 'pointer', marginTop: 4 }}
-              >
-                📱 или по номеру телефона
-              </div>
-
               <div style={{ display: 'flex', alignItems: 'center', gap: 12, margin: '24px 0' }}>
                 <div style={{ flex: 1, height: 1, background: BORDER }} />
                 <span style={{ fontSize: 12, color: MUTED }}>или</span>
@@ -696,11 +694,14 @@ function DesktopAuthLayout(props: any) {
           ) : (
             <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
               <input type="text" placeholder={t('auth.your_name')} value={name} onChange={(e) => setName(e.target.value)}
-                style={{ width: '100%', padding: '12px 14px', border: `1px solid ${BORDER}`, borderRadius: 10, fontSize: 14, outline: 'none' }} />
+                onFocus={(e) => { e.currentTarget.style.borderColor = '#2563EB'; }} onBlur={(e) => { e.currentTarget.style.borderColor = '#e5e7eb'; }}
+                style={{ width: '100%', background: '#f9fafb', border: '1px solid #e5e7eb', color: '#111827', borderRadius: 8, padding: '12px 16px', fontSize: 14, outline: 'none' }} />
               <input type="email" placeholder={t('auth.email')} required value={email} onChange={(e) => setEmail(e.target.value)}
-                style={{ width: '100%', padding: '12px 14px', border: `1px solid ${BORDER}`, borderRadius: 10, fontSize: 14, outline: 'none' }} />
+                onFocus={(e) => { e.currentTarget.style.borderColor = '#2563EB'; }} onBlur={(e) => { e.currentTarget.style.borderColor = '#e5e7eb'; }}
+                style={{ width: '100%', background: '#f9fafb', border: '1px solid #e5e7eb', color: '#111827', borderRadius: 8, padding: '12px 16px', fontSize: 14, outline: 'none' }} />
               <input type="password" placeholder={t('auth.password')} required minLength={6} value={password} onChange={(e) => setPassword(e.target.value)}
-                style={{ width: '100%', padding: '12px 14px', border: `1px solid ${BORDER}`, borderRadius: 10, fontSize: 14, outline: 'none' }} />
+                onFocus={(e) => { e.currentTarget.style.borderColor = '#2563EB'; }} onBlur={(e) => { e.currentTarget.style.borderColor = '#e5e7eb'; }}
+                style={{ width: '100%', background: '#f9fafb', border: '1px solid #e5e7eb', color: '#111827', borderRadius: 8, padding: '12px 16px', fontSize: 14, outline: 'none' }} />
               <label style={{ display: 'flex', gap: 10, alignItems: 'flex-start', fontSize: 12, color: MUTED, lineHeight: 1.5 }}>
                 <Checkbox checked={termsAccepted} onCheckedChange={(v) => setTermsAccepted(v === true)} style={{ marginTop: 2 }} />
                 <span>
