@@ -636,13 +636,13 @@ function DesktopAuthLayout(props: any) {
             <>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                 <div style={cardStyle} onMouseEnter={(e) => onCardHover(e, true)} onMouseLeave={(e) => onCardHover(e, false)}
-                  onClick={() => setTelegramStep('phone_input')}>
-                  <div style={iconCircle('linear-gradient(135deg, #667eea, #764ba2)')}>
-                    <Phone size={22} color="#fff" />
+                  onClick={handleTelegramLogin}>
+                  <div style={iconCircle('linear-gradient(135deg, #2AABEE, #0088cc)')}>
+                    <Send size={22} color="#fff" />
                   </div>
                   <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: 15, fontWeight: 600, color: '#111' }}>Войти по телефону</div>
-                    <div style={{ fontSize: 13, color: MUTED, marginTop: 2 }}>Мы отправим код подтверждения на ваш номер телефона</div>
+                    <div style={{ fontSize: 15, fontWeight: 600, color: '#111' }}>Войти через Telegram</div>
+                    <div style={{ fontSize: 13, color: MUTED, marginTop: 2 }}>Получите код подтверждения в Telegram</div>
                   </div>
                   <ChevronRight size={18} color="#9ca3af" />
                 </div>
@@ -672,33 +672,18 @@ function DesktopAuthLayout(props: any) {
                 </div>
               </div>
 
+              <div
+                onClick={() => setTelegramStep('phone_input')}
+                style={{ textAlign: 'center', fontSize: 13, color: '#2AABEE', cursor: 'pointer', marginTop: 4 }}
+              >
+                📱 или по номеру телефона
+              </div>
+
               <div style={{ display: 'flex', alignItems: 'center', gap: 12, margin: '24px 0' }}>
                 <div style={{ flex: 1, height: 1, background: BORDER }} />
                 <span style={{ fontSize: 12, color: MUTED }}>или</span>
                 <div style={{ flex: 1, height: 1, background: BORDER }} />
               </div>
-
-              {isPartner && (
-                <>
-                  <div style={cardStyle} onMouseEnter={(e) => onCardHover(e, true)} onMouseLeave={(e) => onCardHover(e, false)}
-                    onClick={handleTelegramLogin}>
-                    <div style={iconCircle('linear-gradient(135deg, #2AABEE, #0088cc)')}>
-                      <Send size={22} color="#fff" />
-                    </div>
-                    <div style={{ flex: 1 }}>
-                      <div style={{ fontSize: 15, fontWeight: 600, color: '#111' }}>Войти через Telegram</div>
-                      <div style={{ fontSize: 13, color: MUTED, marginTop: 2 }}>Получите код подтверждения в Telegram</div>
-                    </div>
-                    <ChevronRight size={18} color="#9ca3af" />
-                  </div>
-                  <div
-                    onClick={() => setTelegramStep('phone_input')}
-                    style={{ textAlign: 'center', fontSize: 13, color: '#2AABEE', cursor: 'pointer', marginTop: 8, marginBottom: 16 }}
-                  >
-                    📱 или по номеру телефона
-                  </div>
-                </>
-              )}
 
               <button onClick={() => setIsLogin(false)} style={{
                 width: '100%', height: 48, borderRadius: 10, border: `1px solid ${BLUE}`,
