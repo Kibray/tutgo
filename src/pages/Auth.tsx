@@ -161,6 +161,32 @@ const Auth = () => {
     setTelegramLoading(false);
   };
 
+  if (isDesktop && !isTelegram) {
+    return (
+      <DesktopAuthLayout
+        isLogin={isLogin}
+        setIsLogin={setIsLogin}
+        email={email}
+        setEmail={setEmail}
+        password={password}
+        setPassword={setPassword}
+        name={name}
+        setName={setName}
+        loading={loading}
+        termsAccepted={termsAccepted}
+        setTermsAccepted={setTermsAccepted}
+        googleLoading={googleLoading}
+        setGoogleLoading={setGoogleLoading}
+        handleSubmit={handleSubmit}
+        handleTelegramLogin={handleTelegramLogin}
+        setTelegramStep={setTelegramStep}
+        isPartner={isPartner}
+        toast={toast}
+        t={t}
+      />
+    );
+  }
+
   if (isRecovery) {
     return (
       <div className="min-h-screen bg-background flex flex-col items-center justify-center px-6 relative">
