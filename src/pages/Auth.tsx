@@ -1,11 +1,12 @@
 import { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Send, Phone, KeyRound } from 'lucide-react';
+import { ArrowLeft, Send, Phone, KeyRound, MapPin, Calendar, Shield, ChevronRight, UserPlus, Star } from 'lucide-react';
 import PhoneCountrySelect, { COUNTRIES, type Country } from '@/components/auth/PhoneCountrySelect';
 import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { usePreferences } from '@/hooks/usePreferences';
 import { useTelegram } from '@/hooks/useTelegram';
+import { useIsDesktop } from '@/hooks/useIsDesktop';
 import { useToast } from '@/hooks/use-toast';
 import { lovable } from '@/integrations/lovable/index';
 import { supabase } from '@/integrations/supabase/client';
@@ -36,6 +37,7 @@ const Auth = () => {
   const [recoverySuccess, setRecoverySuccess] = useState(false);
   const { t } = usePreferences();
   const { isTelegram, ready: tgReady } = useTelegram();
+  const isDesktop = useIsDesktop();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [searchParams] = useSearchParams();
