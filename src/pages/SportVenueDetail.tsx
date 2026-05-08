@@ -343,6 +343,10 @@ const SportVenueDetail = () => {
               <Button
                 disabled={!pickerDate || !pickerTime}
                 onClick={() => {
+                  if (!user) {
+                    navigate('/auth', { state: { returnTo: window.location.pathname } });
+                    return;
+                  }
                   navigate('/booking-confirm', {
                     state: {
                       location,
