@@ -77,6 +77,13 @@ const FindGame = () => {
   const [skill, setSkill] = useState('all');
   const [dateFilter, setDateFilter] = useState('all');
 
+  // Current city — no centralized city state exists in the app yet,
+  // so we read from localStorage (set by future city picker). When null
+  // we skip the filter and show a banner.
+  const currentCity = typeof window !== 'undefined'
+    ? (localStorage.getItem('selected_city') || '').trim() || null
+    : null;
+
   const dateValue = useMemo(() => {
     const now = new Date();
     if (dateFilter === 'today') return now.toISOString().slice(0, 10);
