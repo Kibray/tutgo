@@ -97,6 +97,17 @@ const Bookings = () => {
       setReviewingAppointment(null);
       setReviewComment('');
       setReviewRating(5);
+      const { data: reviews } = await supabase
+        .from('reviews')
+        .select('rating')
+        .eq('location_id', locationId);
+      if (reviews && reviews.length > 0) {
+        const avg = reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length;
+        await supabase
+          .from('locations')
+          .update({ rating: Math.round(avg * 10) / 10 })
+          .eq('id', locationId);
+      }
     }
   };
 
