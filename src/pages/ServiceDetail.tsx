@@ -195,6 +195,10 @@ const ServiceDetail = () => {
   const lng = location.lng || 69.2797;
 
   const handleBook = () => {
+    if (!user) {
+      navigate('/auth', { state: { returnTo: window.location.pathname } });
+      return;
+    }
     const tg = (window as any).Telegram?.WebApp;
     tg?.HapticFeedback?.impactOccurred('medium');
     const svc = services.find(s => s.id === selectedService);

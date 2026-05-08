@@ -7,6 +7,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sh
 import BottomNav from '@/components/BottomNav';
 import { supabase } from '@/integrations/supabase/client';
 import { useSportCourts } from '@/hooks/useSportCourts';
+import { useAuth } from '@/hooks/useAuth';
 
 const SPORT_EMOJI: Record<string, string> = {
   football: '⚽',
@@ -20,6 +21,7 @@ const SPORT_EMOJI: Record<string, string> = {
 const SportVenueDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [location, setLocation] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [activePhoto, setActivePhoto] = useState(0);
@@ -341,6 +343,10 @@ const SportVenueDetail = () => {
               <Button
                 disabled={!pickerDate || !pickerTime}
                 onClick={() => {
+                  if (!user) {
+                    navigate('/auth', { state: { returnTo: window.location.pathname } });
+                    return;
+                  }
                   navigate('/booking-confirm', {
                     state: {
                       location,
