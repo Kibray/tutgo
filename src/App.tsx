@@ -179,6 +179,9 @@ const App = () => (
                   <Route path="/stay" element={<Stay />} />
                   <Route path="/stay/:id" element={<StayDetail />} />
                   <Route path="/reviews" element={<Reviews />} />
+                  <Route path="/favorites" element={<Favorites />} />
+                  <Route path="/queue" element={<Queue />} />
+                  <Route path="/friends" element={<Friends />} />
                   <Route path="/seed-demo" element={<SeedDemo />} />
                   <Route path="/seed" element={<SeedDemo />} />
                   <Route path="/seed demo" element={<SeedDemo />} />
