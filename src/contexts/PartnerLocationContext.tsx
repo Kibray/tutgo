@@ -1,6 +1,8 @@
 import { createContext, useContext, useEffect, useMemo, useState, ReactNode } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
+import { useToast } from '@/hooks/use-toast';
 
 const STORAGE_KEY = 'partner_selected_location';
 
