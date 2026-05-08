@@ -77,6 +77,13 @@ const FindGame = () => {
   const [skill, setSkill] = useState('all');
   const [dateFilter, setDateFilter] = useState('all');
 
+  // Current city — no centralized city state exists in the app yet,
+  // so we read from localStorage (set by future city picker). When null
+  // we skip the filter and show a banner.
+  const currentCity = typeof window !== 'undefined'
+    ? (localStorage.getItem('selected_city') || '').trim() || null
+    : null;
+
   const dateValue = useMemo(() => {
     const now = new Date();
     if (dateFilter === 'today') return now.toISOString().slice(0, 10);
@@ -94,14 +101,20 @@ const FindGame = () => {
   });
 
   const filteredGames = useMemo(() => {
-    if (dateFilter !== 'week') return games;
-    const now = new Date();
-    const weekEnd = new Date(now); weekEnd.setDate(weekEnd.getDate() + 7);
-    return (games as any[]).filter((g) => {
-      const gd = new Date(g.game_date);
-      return gd >= new Date(now.toDateString()) && gd <= weekEnd;
-    });
-  }, [games, dateFilter]);
+    let list = games as any[];
+    if (dateFilter === 'week') {
+      const now = new Date();
+      const weekEnd = new Date(now); weekEnd.setDate(weekEnd.getDate() + 7);
+      list = list.filter((g) => {
+        const gd = new Date(g.game_date);
+        return gd >= new Date(now.toDateString()) && gd <= weekEnd;
+      });
+    }
+    if (currentCity) {
+      list = list.filter((g) => (g.locations?.city || '').toLowerCase() === currentCity.toLowerCase());
+    }
+    return list;
+  }, [games, dateFilter, currentCity]);
 
   return (
     <div className="min-h-screen bg-background pb-24">
@@ -179,6 +192,11 @@ const FindGame = () => {
         </div>
 
         {/* List */}
+        {!currentCity && (
+          <div className="text-sm text-muted-foreground text-center py-2">
+            Показаны игры из всех городов. Выберите город в профиле.
+          </div>
+        )}
         {isLoading ? (
           <div className="space-y-3">
             {[1, 2, 3].map((i) => (
