@@ -68,7 +68,11 @@ const Stay = lazy(() => import("./pages/Stay"));
 const StayDetail = lazy(() => import("./pages/StayDetail"));
 const Reviews = lazy(() => import("./pages/Reviews"));
 const SeedDemo = lazy(() => import("./pages/SeedDemo"));
+const SeedDemo = lazy(() => import("./pages/SeedDemo"));
 const InstagramCallback = lazy(() => import("./pages/InstagramCallback"));
+const Favorites = lazy(() => import("./pages/Favorites"));
+const Queue = lazy(() => import("./pages/Queue"));
+const Friends = lazy(() => import("./pages/Friends"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
