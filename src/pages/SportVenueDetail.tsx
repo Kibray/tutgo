@@ -21,6 +21,7 @@ const SPORT_EMOJI: Record<string, string> = {
 const SportVenueDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [location, setLocation] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [activePhoto, setActivePhoto] = useState(0);
