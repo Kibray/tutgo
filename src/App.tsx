@@ -72,10 +72,6 @@ const InstagramCallback = lazy(() => import("./pages/InstagramCallback"));
 const Favorites = lazy(() => import("./pages/Favorites"));
 const Queue = lazy(() => import("./pages/Queue"));
 const Friends = lazy(() => import("./pages/Friends"));
-const InstagramCallback = lazy(() => import("./pages/InstagramCallback"));
-const Favorites = lazy(() => import("./pages/Favorites"));
-const Queue = lazy(() => import("./pages/Queue"));
-const Friends = lazy(() => import("./pages/Friends"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
