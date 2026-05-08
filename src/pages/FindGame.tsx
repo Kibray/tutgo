@@ -94,14 +94,20 @@ const FindGame = () => {
   });
 
   const filteredGames = useMemo(() => {
-    if (dateFilter !== 'week') return games;
-    const now = new Date();
-    const weekEnd = new Date(now); weekEnd.setDate(weekEnd.getDate() + 7);
-    return (games as any[]).filter((g) => {
-      const gd = new Date(g.game_date);
-      return gd >= new Date(now.toDateString()) && gd <= weekEnd;
-    });
-  }, [games, dateFilter]);
+    let list = games as any[];
+    if (dateFilter === 'week') {
+      const now = new Date();
+      const weekEnd = new Date(now); weekEnd.setDate(weekEnd.getDate() + 7);
+      list = list.filter((g) => {
+        const gd = new Date(g.game_date);
+        return gd >= new Date(now.toDateString()) && gd <= weekEnd;
+      });
+    }
+    if (currentCity) {
+      list = list.filter((g) => (g.locations?.city || '').toLowerCase() === currentCity.toLowerCase());
+    }
+    return list;
+  }, [games, dateFilter, currentCity]);
 
   return (
     <div className="min-h-screen bg-background pb-24">
