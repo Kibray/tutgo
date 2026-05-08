@@ -192,6 +192,11 @@ const FindGame = () => {
         </div>
 
         {/* List */}
+        {!currentCity && (
+          <div className="text-sm text-muted-foreground text-center py-2">
+            Показаны игры из всех городов. Выберите город в профиле.
+          </div>
+        )}
         {isLoading ? (
           <div className="space-y-3">
             {[1, 2, 3].map((i) => (
