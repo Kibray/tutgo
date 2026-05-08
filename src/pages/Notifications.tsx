@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Bell, CheckCheck, BellOff } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -19,6 +19,12 @@ const Notifications = () => {
   const { t, lang } = usePreferences();
   const { notifications, loading, markAsRead, markAllAsRead, unreadCount } = useNotifications();
   const locale = lang === 'uz' ? 'uz' : lang === 'en' ? 'en' : 'ru';
+
+  // Auto-mark all as read when the page mounts so the bell badge clears
+  useEffect(() => {
+    markAllAsRead();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className="min-h-screen bg-background pb-24">
