@@ -7,6 +7,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sh
 import BottomNav from '@/components/BottomNav';
 import { supabase } from '@/integrations/supabase/client';
 import { useSportCourts } from '@/hooks/useSportCourts';
+import { useAuth } from '@/hooks/useAuth';
 
 const SPORT_EMOJI: Record<string, string> = {
   football: '⚽',
