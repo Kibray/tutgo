@@ -19,6 +19,24 @@ const BookingConfirm = () => {
   const [countdown, setCountdown] = useState('');
   const [showMap, setShowMap] = useState(false);
 
+  useEffect(() => {
+    if (!confirmed || !state?.date) return;
+    const [hours, minutes] = (time || '00:00').split(':').map(Number);
+    const startCal = new Date(date);
+    startCal.setHours(hours, minutes, 0, 0);
+
+    const update = () => {
+      const diff = startCal.getTime() - Date.now();
+      if (diff <= 0) { setCountdown(''); return; }
+      const days = Math.floor(diff / 86400000);
+      const hours = Math.floor((diff % 86400000) / 3600000);
+      setCountdown(days > 0 ? `До записи ${days} дн. ${hours} ч.` : `До записи ${hours} ч.`);
+    };
+    update();
+    const id = setInterval(update, 60000);
+    return () => clearInterval(id);
+  }, [confirmed]);
+
   const locale = lang === 'uz' ? 'uz' : lang === 'en' ? 'en' : 'ru';
 
   if (!state?.location) {
@@ -110,19 +128,6 @@ const BookingConfirm = () => {
         toast({ title: t('booking.copied') });
       }
     };
-
-    useEffect(() => {
-      const update = () => {
-        const diff = startCal.getTime() - Date.now();
-        if (diff <= 0) { setCountdown(''); return; }
-        const days = Math.floor(diff / 86400000);
-        const hours = Math.floor((diff % 86400000) / 3600000);
-        setCountdown(days > 0 ? `До записи ${days} дн. ${hours} ч.` : `До записи ${hours} ч.`);
-      };
-      update();
-      const id = setInterval(update, 60000);
-      return () => clearInterval(id);
-    }, []);
 
     return (
       <div className="min-h-screen bg-background flex flex-col items-center justify-center px-6">
