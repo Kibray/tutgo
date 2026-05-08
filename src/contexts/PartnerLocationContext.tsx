@@ -25,6 +25,8 @@ const PartnerLocationContext = createContext<PartnerLocationContextValue | undef
 
 export const PartnerLocationProvider = ({ children }: { children: ReactNode }) => {
   const { user } = useAuth();
+  const navigate = useNavigate();
+  const { toast } = useToast();
   const [locations, setLocations] = useState<PartnerLocation[]>([]);
   const [locationsLoading, setLocationsLoading] = useState(true);
   const [selectedLocationId, setSelectedLocationIdState] = useState<string | null>(() => {
