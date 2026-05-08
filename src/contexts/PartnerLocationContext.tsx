@@ -1,6 +1,8 @@
 import { createContext, useContext, useEffect, useMemo, useState, ReactNode } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
+import { useToast } from '@/hooks/use-toast';
 
 const STORAGE_KEY = 'partner_selected_location';
 
@@ -23,6 +25,8 @@ const PartnerLocationContext = createContext<PartnerLocationContextValue | undef
 
 export const PartnerLocationProvider = ({ children }: { children: ReactNode }) => {
   const { user } = useAuth();
+  const navigate = useNavigate();
+  const { toast } = useToast();
   const [locations, setLocations] = useState<PartnerLocation[]>([]);
   const [locationsLoading, setLocationsLoading] = useState(true);
   const [selectedLocationId, setSelectedLocationIdState] = useState<string | null>(() => {
@@ -77,6 +81,26 @@ export const PartnerLocationProvider = ({ children }: { children: ReactNode }) =
       cancelled = true;
     };
   }, [user?.id]);
+
+  // Verify ownership whenever selectedLocationId is set externally
+  useEffect(() => {
+    if (!selectedLocationId || !user || locationsLoading) return;
+    const verify = async () => {
+      const { data } = await supabase
+        .from('locations')
+        .select('*')
+        .eq('id', selectedLocationId)
+        .eq('owner_id', user.id)
+        .single();
+      if (!data) {
+        setSelectedLocationIdState(null);
+        if (typeof window !== 'undefined') localStorage.removeItem(STORAGE_KEY);
+        toast({ title: 'Нет доступа', description: 'У вас нет доступа к этому заведению', variant: 'destructive' });
+        navigate('/partner');
+      }
+    };
+    verify();
+  }, [selectedLocationId, user?.id, locationsLoading]);
 
   const selectedLocation = useMemo(
     () => locations.find(l => l.id === selectedLocationId) ?? null,
