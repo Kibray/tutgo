@@ -69,6 +69,9 @@ const StayDetail = lazy(() => import("./pages/StayDetail"));
 const Reviews = lazy(() => import("./pages/Reviews"));
 const SeedDemo = lazy(() => import("./pages/SeedDemo"));
 const InstagramCallback = lazy(() => import("./pages/InstagramCallback"));
+const Favorites = lazy(() => import("./pages/Favorites"));
+const Queue = lazy(() => import("./pages/Queue"));
+const Friends = lazy(() => import("./pages/Friends"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -176,6 +179,9 @@ const App = () => (
                   <Route path="/stay" element={<Stay />} />
                   <Route path="/stay/:id" element={<StayDetail />} />
                   <Route path="/reviews" element={<Reviews />} />
+                  <Route path="/favorites" element={<Favorites />} />
+                  <Route path="/queue" element={<Queue />} />
+                  <Route path="/friends" element={<Friends />} />
                   <Route path="/seed-demo" element={<SeedDemo />} />
                   <Route path="/seed" element={<SeedDemo />} />
                   <Route path="/seed demo" element={<SeedDemo />} />
