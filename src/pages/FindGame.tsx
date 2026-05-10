@@ -5,6 +5,7 @@ import { ChevronLeft, Plus, MapPin, Clock, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import BottomNav from '@/components/BottomNav';
+import { useIsDesktop } from '@/hooks/useIsDesktop';
 import { useSportGames } from '@/hooks/useSportGames';
 import { useAuth } from '@/hooks/useAuth';
 import { usePreferences } from '@/hooks/usePreferences';
@@ -57,6 +58,7 @@ const formatDate = (d: string) => {
 
 const FindGame = () => {
   const navigate = useNavigate();
+  const isDesktop = useIsDesktop();
   const { user } = useAuth();
   usePreferences();
 
@@ -332,7 +334,7 @@ const FindGame = () => {
         )}
       </div>
 
-      <BottomNav />
+      {!isDesktop && <BottomNav />}
     </div>
   );
 };

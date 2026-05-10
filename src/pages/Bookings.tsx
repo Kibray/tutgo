@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Calendar, Clock, MapPin, ChevronRight, Star, Loader2, Heart, X, AlertTriangle } from 'lucide-react';
 import BottomNav from '@/components/BottomNav';
+import { useIsDesktop } from '@/hooks/useIsDesktop';
 import ServiceCard from '@/components/ServiceCard';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -14,6 +15,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 
 const Bookings = () => {
   const { user } = useAuth();
+  const isDesktop = useIsDesktop();
   const { toast } = useToast();
   const { t, lang } = usePreferences();
   const { favoriteIds, isFavorite, toggleFavorite } = useFavorites();
@@ -363,7 +365,7 @@ const Bookings = () => {
         )}
       </AnimatePresence>
 
-      <BottomNav />
+      {!isDesktop && <BottomNav />}
     </div>
   );
 };

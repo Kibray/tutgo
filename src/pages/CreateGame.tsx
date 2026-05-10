@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import BottomNav from '@/components/BottomNav';
+import { useIsDesktop } from '@/hooks/useIsDesktop';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -27,6 +28,7 @@ const today = () => new Date().toISOString().slice(0, 10);
 
 const CreateGame = () => {
   const navigate = useNavigate();
+  const isDesktop = useIsDesktop();
   const { user } = useAuth();
 
   const [sportType, setSportType] = useState('football');
@@ -328,7 +330,7 @@ const CreateGame = () => {
         </Button>
       </form>
 
-      <BottomNav />
+      {!isDesktop && <BottomNav />}
     </div>
   );
 };

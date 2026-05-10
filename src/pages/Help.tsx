@@ -4,9 +4,11 @@ import { useNavigate } from 'react-router-dom';
 import { usePreferences } from '@/hooks/usePreferences';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import BottomNav from '@/components/BottomNav';
+import { useIsDesktop } from '@/hooks/useIsDesktop';
 
 const Help = () => {
   const navigate = useNavigate();
+  const isDesktop = useIsDesktop();
   const { t } = usePreferences();
 
   const faqs = [
@@ -47,7 +49,7 @@ const Help = () => {
           {t('help.contact_support')}
         </motion.button>
       </div>
-      <BottomNav />
+      {!isDesktop && <BottomNav />}
     </div>
   );
 };

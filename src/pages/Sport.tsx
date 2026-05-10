@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { ChevronLeft, MapPin, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import BottomNav from '@/components/BottomNav';
+import { useIsDesktop } from '@/hooks/useIsDesktop';
 import { useLocations } from '@/hooks/useLocations';
 
 const SPORTS = [
@@ -18,6 +19,7 @@ const SPORTS = [
 
 const Sport = () => {
   const navigate = useNavigate();
+  const isDesktop = useIsDesktop();
   const [sport, setSport] = useState('all');
   const { locations, loading } = useLocations('sport');
 
@@ -133,7 +135,7 @@ const Sport = () => {
         )}
       </div>
 
-      <BottomNav />
+      {!isDesktop && <BottomNav />}
     </div>
   );
 };

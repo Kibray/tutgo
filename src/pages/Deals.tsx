@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Tag, Clock, ChevronRight, Sparkles } from 'lucide-react';
 import BottomNav from '@/components/BottomNav';
+import { useIsDesktop } from '@/hooks/useIsDesktop';
 import { formatPrice, getServiceEmoji } from '@/lib/types';
 import { useCategories } from '@/hooks/useCategories';
 import { usePreferences } from '@/hooks/usePreferences';
@@ -32,6 +33,7 @@ interface Deal {
 
 const Deals = () => {
   const navigate = useNavigate();
+  const isDesktop = useIsDesktop();
   const { t, lang } = usePreferences();
   const [filter, setFilter] = useState('all');
   const [deals, setDeals] = useState<Deal[]>([]);
@@ -158,7 +160,7 @@ const Deals = () => {
           </div>
         )}
       </div>
-      <BottomNav />
+      {!isDesktop && <BottomNav />}
     </motion.div>
   );
 };
