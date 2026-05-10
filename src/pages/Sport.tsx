@@ -49,23 +49,21 @@ const Sport = () => {
           <motion.button
             whileTap={{ scale: 0.97 }}
             onClick={() => navigate('/sport/games')}
-            className="rounded-2xl border p-4 text-left flex flex-col gap-1.5"
-            style={{ backgroundColor: '#EEEDFE', borderColor: '#AFA9EC' }}
+            className="rounded-2xl border p-4 text-left flex flex-col gap-1.5 bg-violet-100 border-violet-300 dark:bg-violet-900/30 dark:border-violet-700"
           >
             <div className="text-3xl">⚽</div>
-            <div className="font-bold text-base" style={{ color: '#3F3A8C' }}>Найти игру</div>
-            <div className="text-xs" style={{ color: '#5C57A8' }}>Играй с другими</div>
+            <div className="font-bold text-base text-violet-900 dark:text-violet-200">Найти игру</div>
+            <div className="text-xs text-violet-700 dark:text-violet-400">Играй с другими</div>
           </motion.button>
 
           <motion.button
             whileTap={{ scale: 0.97 }}
             onClick={() => navigate('/sport/venues')}
-            className="rounded-2xl border p-4 text-left flex flex-col gap-1.5"
-            style={{ backgroundColor: '#E1F5EE', borderColor: '#5DCAA5' }}
+            className="rounded-2xl border p-4 text-left flex flex-col gap-1.5 bg-emerald-100 border-emerald-300 dark:bg-emerald-900/30 dark:border-emerald-700"
           >
             <div className="text-3xl">🏟</div>
-            <div className="font-bold text-base" style={{ color: '#1F6B52' }}>Забронировать</div>
-            <div className="text-xs" style={{ color: '#3A8B6F' }}>Выбери корт</div>
+            <div className="font-bold text-base text-emerald-900 dark:text-emerald-200">Забронировать</div>
+            <div className="text-xs text-emerald-700 dark:text-emerald-400">Выбери корт</div>
           </motion.button>
         </div>
 
