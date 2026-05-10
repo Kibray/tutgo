@@ -9,9 +9,11 @@ import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/hooks/use-toast';
 import { Lang, LANG_LABELS } from '@/lib/i18n';
 import BottomNav from '@/components/BottomNav';
+import { useIsDesktop } from '@/hooks/useIsDesktop';
 
 const Settings = () => {
   const navigate = useNavigate();
+  const isDesktop = useIsDesktop();
   const { user } = useAuth();
   const { t, lang, setLang, darkMode, setDarkMode, notifications, setNotifications } = usePreferences();
   const { toast } = useToast();
@@ -157,7 +159,7 @@ const Settings = () => {
           </div>
         </div>
       </div>
-      <BottomNav />
+      {!isDesktop && <BottomNav />}
     </div>
   );
 };

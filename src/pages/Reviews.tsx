@@ -6,10 +6,12 @@ import { useAuth } from '@/hooks/useAuth';
 import { usePreferences } from '@/hooks/usePreferences';
 import { useToast } from '@/hooks/use-toast';
 import BottomNav from '@/components/BottomNav';
+import { useIsDesktop } from '@/hooks/useIsDesktop';
 import { Button } from '@/components/ui/button';
 
 const Reviews = () => {
   const { user, loading: authLoading } = useAuth();
+  const isDesktop = useIsDesktop();
   const { t } = usePreferences();
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -104,7 +106,7 @@ const Reviews = () => {
         )}
       </div>
 
-      <BottomNav />
+      {!isDesktop && <BottomNav />}
     </div>
   );
 };

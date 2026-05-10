@@ -7,9 +7,11 @@ import { usePreferences } from '@/hooks/usePreferences';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import BottomNav from '@/components/BottomNav';
+import { useIsDesktop } from '@/hooks/useIsDesktop';
 
 const EditProfile = () => {
   const navigate = useNavigate();
+  const isDesktop = useIsDesktop();
   const { user } = useAuth();
   const { t } = usePreferences();
   const { toast } = useToast();
@@ -111,7 +113,7 @@ const EditProfile = () => {
           {saving ? t('common.loading') : t('edit.save')}
         </motion.button>
       </div>
-      <BottomNav />
+      {!isDesktop && <BottomNav />}
     </div>
   );
 };

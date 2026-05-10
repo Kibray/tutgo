@@ -8,6 +8,7 @@ import { formatPrice, openDirections, copyAddress, categoryEmoji } from '@/lib/t
 import type { LocationItem } from '@/lib/types';
 import { supabase } from '@/integrations/supabase/client';
 import BottomNav from '@/components/BottomNav';
+import { useIsDesktop } from '@/hooks/useIsDesktop';
 import DateChip from '@/components/DateChip';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
@@ -28,6 +29,7 @@ const pluralReviews = (n: number) => {
 
 const ServiceDetail = () => {
   const { id } = useParams();
+  const isDesktop = useIsDesktop();
   const navigate = useNavigate();
   const { toast } = useToast();
   const { user } = useAuth();
@@ -830,7 +832,7 @@ const ServiceDetail = () => {
           </div>
         </div>
       )}
-      <BottomNav />
+      {!isDesktop && <BottomNav />}
     </div>
   );
 };

@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { useNotifications } from '@/hooks/useNotifications';
 import { usePreferences } from '@/hooks/usePreferences';
 import BottomNav from '@/components/BottomNav';
+import { useIsDesktop } from '@/hooks/useIsDesktop';
 
 const typeIcon: Record<string, string> = {
   confirmed: '✅',
@@ -16,6 +17,7 @@ const typeIcon: Record<string, string> = {
 
 const Notifications = () => {
   const navigate = useNavigate();
+  const isDesktop = useIsDesktop();
   const { t, lang } = usePreferences();
   const { notifications, loading, markAsRead, markAllAsRead, unreadCount } = useNotifications();
   const locale = lang === 'uz' ? 'uz' : lang === 'en' ? 'en' : 'ru';
@@ -94,7 +96,7 @@ const Notifications = () => {
           </div>
         )}
       </div>
-      <BottomNav />
+      {!isDesktop && <BottomNav />}
     </div>
   );
 };

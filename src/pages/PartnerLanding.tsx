@@ -8,6 +8,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useCategories } from '@/hooks/useCategories';
 import { supabase } from '@/integrations/supabase/client';
 import BottomNav from '@/components/BottomNav';
+import { useIsDesktop } from '@/hooks/useIsDesktop';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -22,6 +23,7 @@ const benefits = [
 
 const PartnerLanding = () => {
   const navigate = useNavigate();
+  const isDesktop = useIsDesktop();
   const { user, becomePartner } = useAuth();
   const { t } = usePreferences();
   const { toast } = useToast();
@@ -326,7 +328,7 @@ const PartnerLanding = () => {
           </motion.div>
         )}
       </div>
-      <BottomNav />
+      {!isDesktop && <BottomNav />}
     </div>
   );
 };
