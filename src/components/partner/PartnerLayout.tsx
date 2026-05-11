@@ -3,7 +3,8 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   LayoutDashboard, Calendar, Users, Wallet, List, UserCog, Package, Percent,
-  Hash, Building2, ArrowLeft, Globe, UtensilsCrossed, ShoppingBag, ClipboardList, Star
+  Hash, Building2, ArrowLeft, Globe, UtensilsCrossed, ShoppingBag, ClipboardList, Star,
+  BarChart3, LayoutGrid
 } from 'lucide-react';
 import { useIsDesktop } from '@/hooks/useIsDesktop';
 import { usePreferences } from '@/hooks/usePreferences';
@@ -20,13 +21,66 @@ interface PartnerLayoutProps {
   headerRight?: ReactNode;
 }
 
+const allDashboardItems = [
+  { id: 'bookings', icon: Calendar, labelKey: 'partner.journal', route: '/partner/bookings', badgeKey: 'bookings' },
+  { id: 'clients', icon: Users, labelKey: 'partner.clients', route: '/partner/clients', badgeKey: 'clients' },
+  { id: 'analytics', icon: BarChart3, labelKey: 'partner.analytics', route: '/partner/analytics', badgeKey: '' },
+  { id: 'services', icon: List, labelKey: 'partner.services', route: '/partner/services', badgeKey: 'services' },
+  { id: 'staff', icon: UserCog, labelKey: 'partner.staff', route: '/partner/staff', badgeKey: 'staff' },
+  { id: 'company', icon: Building2, labelKey: 'partner.company_profile', route: '/partner/settings', badgeKey: '' },
+  { id: 'deals', icon: Percent, labelKey: 'partner.deals', route: '/partner/deals', badgeKey: 'deals' },
+  { id: 'finance', icon: Wallet, labelKey: 'Финансы', route: '/partner/finance', badgeKey: '' },
+  { id: 'inventory', icon: Package, labelKey: 'Склад', route: '/partner/inventory', badgeKey: 'lowStock' },
+  { id: 'queue', icon: Hash, labelKey: 'Живая очередь', route: '/partner/queue', badgeKey: 'queue' },
+];
+
+const cafeOnlyItems = [
+  { id: 'orders', icon: ShoppingBag, labelKey: 'Заказы', route: '/partner/orders', badgeKey: '' },
+  { id: 'menu', icon: UtensilsCrossed, labelKey: 'Меню', route: '/partner/menu', badgeKey: '' },
+  { id: 'tables', icon: LayoutGrid, labelKey: 'Столы', route: '/partner/tables', badgeKey: '' },
+];
+
+const tourServicesItem = { id: 'services', icon: List, labelKey: 'Туры', route: '/partner/services', badgeKey: 'services' };
+
+const pickItems = (ids: string[], pool: any[]) =>
+  ids.map(id => pool.find(i => i.id === id)).filter(Boolean) as typeof allDashboardItems;
+
+const getItemsForBusinessType = (bizType?: string | null) => {
+  const pool = [...allDashboardItems, ...cafeOnlyItems];
+  switch (bizType) {
+    case 'cafe':
+    case 'restaurant':
+    case 'food':
+      return pickItems(['orders', 'menu', 'tables', 'clients', 'queue', 'deals', 'analytics', 'finance', 'company'], pool);
+    case 'beauty':
+    case 'medical':
+    case 'auto':
+    case 'education':
+    case 'service':
+      return pickItems(['bookings', 'clients', 'services', 'staff', 'queue', 'deals', 'analytics', 'finance', 'inventory', 'company'], pool);
+    case 'sport':
+      return pickItems(['bookings', 'clients', 'analytics', 'finance', 'deals', 'company'], pool);
+    case 'tour':
+      return [
+        pool.find(i => i.id === 'bookings'),
+        pool.find(i => i.id === 'clients'),
+        tourServicesItem,
+        pool.find(i => i.id === 'analytics'),
+        pool.find(i => i.id === 'finance'),
+        pool.find(i => i.id === 'company'),
+      ].filter(Boolean) as typeof allDashboardItems;
+    default:
+      return allDashboardItems;
+  }
+};
+
 const PartnerLayout = ({ children, title, showBackToPartner = true, headerRight }: PartnerLayoutProps) => {
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const isDesktop = useIsDesktop();
   const { t } = usePreferences();
   const { user, isPartner, loading } = useAuth();
-  const { locations, selectedLocationId, setSelectedLocationId } = usePartnerLocation();
+  const { locations, selectedLocationId, setSelectedLocationId, selectedLocation } = usePartnerLocation();
 
   const showLocationSelector = locations.length > 1;
   const LocationSelector = showLocationSelector ? (
@@ -70,6 +124,12 @@ const PartnerLayout = ({ children, title, showBackToPartner = true, headerRight 
     { id: '/partner/settings', icon: Building2, label: t('partner.company_profile') },
   ];
 
+  const filteredSidebarItems = selectedLocation
+    ? getItemsForBusinessType(selectedLocation.business_type)
+        .map(item => sidebarItems.find(si => si.id === item.route))
+        .filter((item): item is NonNullable<typeof item> => Boolean(item))
+    : sidebarItems;
+
   if (isDesktop) {
     return (
       <div className="flex h-screen bg-background overflow-hidden">
@@ -82,7 +142,7 @@ const PartnerLayout = ({ children, title, showBackToPartner = true, headerRight 
           </div>
 
           <nav className="flex-1 py-3 px-3 space-y-0.5 overflow-y-auto">
-            {sidebarItems.map((item) => {
+            {filteredSidebarItems.map((item) => {
               const active = pathname === item.id;
               const Icon = item.icon;
               return (
