@@ -21,6 +21,59 @@ interface PartnerLayoutProps {
   headerRight?: ReactNode;
 }
 
+const allDashboardItems = [
+  { id: 'bookings', icon: Calendar, labelKey: 'partner.journal', route: '/partner/bookings', badgeKey: 'bookings' },
+  { id: 'clients', icon: Users, labelKey: 'partner.clients', route: '/partner/clients', badgeKey: 'clients' },
+  { id: 'analytics', icon: BarChart3, labelKey: 'partner.analytics', route: '/partner/analytics', badgeKey: '' },
+  { id: 'services', icon: List, labelKey: 'partner.services', route: '/partner/services', badgeKey: 'services' },
+  { id: 'staff', icon: UserCog, labelKey: 'partner.staff', route: '/partner/staff', badgeKey: 'staff' },
+  { id: 'company', icon: Building2, labelKey: 'partner.company_profile', route: '/partner/settings', badgeKey: '' },
+  { id: 'deals', icon: Percent, labelKey: 'partner.deals', route: '/partner/deals', badgeKey: 'deals' },
+  { id: 'finance', icon: Wallet, labelKey: 'Финансы', route: '/partner/finance', badgeKey: '' },
+  { id: 'inventory', icon: Package, labelKey: 'Склад', route: '/partner/inventory', badgeKey: 'lowStock' },
+  { id: 'queue', icon: Hash, labelKey: 'Живая очередь', route: '/partner/queue', badgeKey: 'queue' },
+];
+
+const cafeOnlyItems = [
+  { id: 'orders', icon: ShoppingBag, labelKey: 'Заказы', route: '/partner/orders', badgeKey: '' },
+  { id: 'menu', icon: UtensilsCrossed, labelKey: 'Меню', route: '/partner/menu', badgeKey: '' },
+  { id: 'tables', icon: LayoutGrid, labelKey: 'Столы', route: '/partner/tables', badgeKey: '' },
+];
+
+const tourServicesItem = { id: 'services', icon: List, labelKey: 'Туры', route: '/partner/services', badgeKey: 'services' };
+
+const pickItems = (ids: string[], pool: any[]) =>
+  ids.map(id => pool.find(i => i.id === id)).filter(Boolean) as typeof allDashboardItems;
+
+const getItemsForBusinessType = (bizType?: string | null) => {
+  const pool = [...allDashboardItems, ...cafeOnlyItems];
+  switch (bizType) {
+    case 'cafe':
+    case 'restaurant':
+    case 'food':
+      return pickItems(['orders', 'menu', 'tables', 'clients', 'queue', 'deals', 'analytics', 'finance', 'company'], pool);
+    case 'beauty':
+    case 'medical':
+    case 'auto':
+    case 'education':
+    case 'service':
+      return pickItems(['bookings', 'clients', 'services', 'staff', 'queue', 'deals', 'analytics', 'finance', 'inventory', 'company'], pool);
+    case 'sport':
+      return pickItems(['bookings', 'clients', 'analytics', 'finance', 'deals', 'company'], pool);
+    case 'tour':
+      return [
+        pool.find(i => i.id === 'bookings'),
+        pool.find(i => i.id === 'clients'),
+        tourServicesItem,
+        pool.find(i => i.id === 'analytics'),
+        pool.find(i => i.id === 'finance'),
+        pool.find(i => i.id === 'company'),
+      ].filter(Boolean) as typeof allDashboardItems;
+    default:
+      return allDashboardItems;
+  }
+};
+
 const PartnerLayout = ({ children, title, showBackToPartner = true, headerRight }: PartnerLayoutProps) => {
   const navigate = useNavigate();
   const { pathname } = useLocation();
