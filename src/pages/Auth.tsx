@@ -47,7 +47,7 @@ const Auth = () => {
 
   useEffect(() => {
     if (isTelegram && tgReady && user) {
-      navigate('/profile', { replace: true });
+      navigate(returnTo || '/profile', { replace: true });
     }
   }, [isTelegram, tgReady, user, navigate]);
 
