@@ -3,7 +3,8 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   LayoutDashboard, Calendar, Users, Wallet, List, UserCog, Package, Percent,
-  Hash, Building2, ArrowLeft, Globe, UtensilsCrossed, ShoppingBag, ClipboardList, Star
+  Hash, Building2, ArrowLeft, Globe, UtensilsCrossed, ShoppingBag, ClipboardList, Star,
+  BarChart3, LayoutGrid
 } from 'lucide-react';
 import { useIsDesktop } from '@/hooks/useIsDesktop';
 import { usePreferences } from '@/hooks/usePreferences';
