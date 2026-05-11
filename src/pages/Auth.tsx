@@ -71,7 +71,7 @@ const Auth = () => {
     toast({ title: 'Пароль обновлён', description: 'Вход выполнен' });
     setTimeout(() => {
       setIsRecovery(false);
-      navigate('/profile', { replace: true });
+      navigate(returnTo || '/profile', { replace: true });
     }, 1200);
   };
 
