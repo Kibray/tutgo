@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Send, Phone, KeyRound, MapPin, Calendar, Shield, ChevronRight, UserPlus, Star } from 'lucide-react';
 import PhoneCountrySelect, { COUNTRIES, type Country } from '@/components/auth/PhoneCountrySelect';
-import { useNavigate, Link, useSearchParams } from 'react-router-dom';
+import { useNavigate, Link, useSearchParams, useLocation } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { usePreferences } from '@/hooks/usePreferences';
 import { useTelegram } from '@/hooks/useTelegram';
