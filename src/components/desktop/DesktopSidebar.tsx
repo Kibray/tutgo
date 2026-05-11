@@ -1,10 +1,9 @@
-import { Home, Map, Tag, Calendar, Heart, Users, Star, MessageSquare, Plus, Globe, Bus, Plane, Hotel } from 'lucide-react';
+import { Home, Tag, Calendar, Heart, Users, Star, MessageSquare, Plus, Globe, Bus, Plane, Hotel } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 
 const menuItems = [
   { id: '/', icon: Home, label: 'Главная' },
-  { id: '/map', icon: Map, label: 'Карта', isMapActive: true },
   { id: '/tours', icon: Globe, label: 'Туры' },
   { id: '/transport', icon: Bus, label: 'Транспорт' },
   { id: '/flights', icon: Plane, label: 'Билеты' },
@@ -24,24 +23,18 @@ const DesktopSidebar = () => {
   const navigate = useNavigate();
   const { pathname } = useLocation();
 
-  const isActive = (id: string, item?: any) => {
-    if (item?.isMapActive && pathname === '/') return true;
-    return pathname === id;
-  };
+  const isActive = (id: string) => pathname === id;
 
   return (
     <aside className="w-[220px] flex-shrink-0 bg-card/95 backdrop-blur-xl border-r border-border flex flex-col h-full">
       <nav className="flex-1 py-4 px-3 space-y-1">
         {menuItems.map((item) => {
-          const active = isActive(item.id, item);
+          const active = isActive(item.id);
           const Icon = item.icon;
           return (
             <button
               key={item.id}
-              onClick={() => {
-                if (item.id === '/map' || item.id === '/') navigate('/');
-                else navigate(item.id);
-              }}
+              onClick={() => navigate(item.id)}
               className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
                 active
                   ? 'bg-primary/15 text-primary'
