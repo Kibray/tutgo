@@ -154,7 +154,7 @@ const Auth = () => {
           refresh_token: res.data.session.refresh_token,
         });
         toast({ title: t('auth.welcome') });
-        navigate('/profile');
+        navigate(returnTo || '/profile', { replace: true });
       }
     } catch (err) {
       toast({ title: t('common.error'), description: 'Network error', variant: 'destructive' });
