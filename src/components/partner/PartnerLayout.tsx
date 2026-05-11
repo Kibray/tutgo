@@ -124,6 +124,12 @@ const PartnerLayout = ({ children, title, showBackToPartner = true, headerRight 
     { id: '/partner/settings', icon: Building2, label: t('partner.company_profile') },
   ];
 
+  const filteredSidebarItems = selectedLocation
+    ? getItemsForBusinessType(selectedLocation.business_type)
+        .map(item => sidebarItems.find(si => si.id === item.route))
+        .filter((item): item is NonNullable<typeof item> => Boolean(item))
+    : sidebarItems;
+
   if (isDesktop) {
     return (
       <div className="flex h-screen bg-background overflow-hidden">
