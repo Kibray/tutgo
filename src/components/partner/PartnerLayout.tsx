@@ -80,7 +80,7 @@ const PartnerLayout = ({ children, title, showBackToPartner = true, headerRight 
   const isDesktop = useIsDesktop();
   const { t } = usePreferences();
   const { user, isPartner, loading } = useAuth();
-  const { locations, selectedLocationId, setSelectedLocationId } = usePartnerLocation();
+  const { locations, selectedLocationId, setSelectedLocationId, selectedLocation } = usePartnerLocation();
 
   const showLocationSelector = locations.length > 1;
   const LocationSelector = showLocationSelector ? (
