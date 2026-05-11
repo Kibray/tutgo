@@ -99,7 +99,7 @@ const Auth = () => {
     } else {
       if (isLogin) {
         toast({ title: t('auth.welcome') });
-        navigate('/profile');
+        navigate(returnTo || '/profile', { replace: true });
       } else {
         toast({ title: t('auth.check_email'), description: t('auth.email_sent') });
         setConfirmationSent(true);
