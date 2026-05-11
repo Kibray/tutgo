@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Send, Phone, KeyRound, MapPin, Calendar, Shield, ChevronRight, UserPlus, Star } from 'lucide-react';
 import PhoneCountrySelect, { COUNTRIES, type Country } from '@/components/auth/PhoneCountrySelect';
-import { useNavigate, Link, useSearchParams } from 'react-router-dom';
+import { useNavigate, Link, useSearchParams, useLocation } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { usePreferences } from '@/hooks/usePreferences';
 import { useTelegram } from '@/hooks/useTelegram';
@@ -39,13 +39,15 @@ const Auth = () => {
   const { isTelegram, ready: tgReady } = useTelegram();
   const isDesktop = useIsDesktop();
   const navigate = useNavigate();
+  const location = useLocation();
+  const returnTo = (location.state as any)?.returnTo;
   const { toast } = useToast();
   const [searchParams] = useSearchParams();
   const isPartner = searchParams.get('role') === 'partner';
 
   useEffect(() => {
     if (isTelegram && tgReady && user) {
-      navigate('/profile', { replace: true });
+      navigate(returnTo || '/profile', { replace: true });
     }
   }, [isTelegram, tgReady, user, navigate]);
 
@@ -69,7 +71,7 @@ const Auth = () => {
     toast({ title: 'Пароль обновлён', description: 'Вход выполнен' });
     setTimeout(() => {
       setIsRecovery(false);
-      navigate('/profile', { replace: true });
+      navigate(returnTo || '/profile', { replace: true });
     }, 1200);
   };
 
@@ -97,7 +99,7 @@ const Auth = () => {
     } else {
       if (isLogin) {
         toast({ title: t('auth.welcome') });
-        navigate('/profile');
+        navigate(returnTo || '/profile', { replace: true });
       } else {
         toast({ title: t('auth.check_email'), description: t('auth.email_sent') });
         setConfirmationSent(true);
@@ -152,7 +154,7 @@ const Auth = () => {
           refresh_token: res.data.session.refresh_token,
         });
         toast({ title: t('auth.welcome') });
-        navigate('/profile');
+        navigate(returnTo || '/profile', { replace: true });
       }
     } catch (err) {
       toast({ title: t('common.error'), description: 'Network error', variant: 'destructive' });
