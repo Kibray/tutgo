@@ -23,10 +23,7 @@ const DesktopSidebar = () => {
   const navigate = useNavigate();
   const { pathname } = useLocation();
 
-  const isActive = (id: string, item?: any) => {
-    if (item?.isMapActive && pathname === '/') return true;
-    return pathname === id;
-  };
+  const isActive = (id: string) => pathname === id;
 
   return (
     <aside className="w-[220px] flex-shrink-0 bg-card/95 backdrop-blur-xl border-r border-border flex flex-col h-full">
