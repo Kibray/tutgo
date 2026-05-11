@@ -29,15 +29,12 @@ const DesktopSidebar = () => {
     <aside className="w-[220px] flex-shrink-0 bg-card/95 backdrop-blur-xl border-r border-border flex flex-col h-full">
       <nav className="flex-1 py-4 px-3 space-y-1">
         {menuItems.map((item) => {
-          const active = isActive(item.id, item);
+          const active = isActive(item.id);
           const Icon = item.icon;
           return (
             <button
               key={item.id}
-              onClick={() => {
-                if (item.id === '/map' || item.id === '/') navigate('/');
-                else navigate(item.id);
-              }}
+              onClick={() => navigate(item.id)}
               className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
                 active
                   ? 'bg-primary/15 text-primary'
