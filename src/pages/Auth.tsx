@@ -39,6 +39,8 @@ const Auth = () => {
   const { isTelegram, ready: tgReady } = useTelegram();
   const isDesktop = useIsDesktop();
   const navigate = useNavigate();
+  const location = useLocation();
+  const returnTo = (location.state as any)?.returnTo;
   const { toast } = useToast();
   const [searchParams] = useSearchParams();
   const isPartner = searchParams.get('role') === 'partner';
