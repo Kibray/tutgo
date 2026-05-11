@@ -142,7 +142,7 @@ const PartnerLayout = ({ children, title, showBackToPartner = true, headerRight 
           </div>
 
           <nav className="flex-1 py-3 px-3 space-y-0.5 overflow-y-auto">
-            {sidebarItems.map((item) => {
+            {filteredSidebarItems.map((item) => {
               const active = pathname === item.id;
               const Icon = item.icon;
               return (
