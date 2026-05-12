@@ -4,6 +4,8 @@ import { Building2, Camera, Send, PartyPopper, ArrowRight, ArrowLeft, Upload, X 
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 
 const TOTAL_STEPS = 5;
 
