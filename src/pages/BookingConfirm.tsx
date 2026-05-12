@@ -250,8 +250,8 @@ const BookingConfirm = () => {
           </svg>
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-xs font-bold" style={{ color: '#633806' }}>{t('booking.fraud_title')}</p>
-          <p className="text-[11px] font-medium mt-1 leading-snug" style={{ color: '#8a5a1f' }}>{t('booking.fraud_body')}</p>
+          <p className="text-xs font-bold text-amber-900 dark:text-amber-200">{t('booking.fraud_title')}</p>
+          <p className="text-[11px] font-medium mt-1 leading-snug text-amber-800 dark:text-amber-300">{t('booking.fraud_body')}</p>
         </div>
       </div>
 
