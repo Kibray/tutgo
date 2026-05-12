@@ -238,8 +238,7 @@ const BookingConfirm = () => {
       </div>
 
       <div
-        className="mt-4 w-full max-w-sm rounded-xl border p-3 flex gap-3"
-        style={{ backgroundColor: '#FAEEDA', borderColor: '#FAC775' }}
+        className="mt-4 w-full max-w-sm rounded-xl border p-3 flex gap-3 bg-amber-50 border-amber-200 dark:bg-amber-900/20 dark:border-amber-700"
       >
         <div
           className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
