@@ -20,6 +20,7 @@ const Bookings = () => {
   const { toast } = useToast();
   const { t, lang } = usePreferences();
   const { favoriteIds, isFavorite, toggleFavorite } = useFavorites();
+  const navigate = useNavigate();
   const [appointments, setAppointments] = useState<any[]>([]);
   const [favoriteLocations, setFavoriteLocations] = useState<LocationItem[]>([]);
   const [loading, setLoading] = useState(true);
