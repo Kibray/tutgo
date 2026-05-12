@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Calendar, Clock, MapPin, ChevronRight, Star, Loader2, Heart, X, AlertTriangle } from 'lucide-react';
 import BottomNav from '@/components/BottomNav';
@@ -19,6 +20,7 @@ const Bookings = () => {
   const { toast } = useToast();
   const { t, lang } = usePreferences();
   const { favoriteIds, isFavorite, toggleFavorite } = useFavorites();
+  const navigate = useNavigate();
   const [appointments, setAppointments] = useState<any[]>([]);
   const [favoriteLocations, setFavoriteLocations] = useState<LocationItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -160,6 +162,22 @@ const Bookings = () => {
       <div className="px-4 pt-6">
         <h1 className="text-lg font-bold font-display text-foreground mb-1">{t('bookings.title')}</h1>
         <p className="text-xs text-muted-foreground mb-4">{t('bookings.subtitle')}</p>
+
+        {!user && (
+          <div className="flex flex-col items-center justify-center py-20 text-center px-6">
+            <div className="w-16 h-16 rounded-full bg-muted/50 flex items-center justify-center mb-4">
+              <Calendar className="w-7 h-7 text-muted-foreground" />
+            </div>
+            <p className="text-sm font-semibold text-foreground mb-2">Войдите чтобы видеть записи</p>
+            <p className="text-xs text-muted-foreground mb-6">Здесь будут все ваши бронирования</p>
+            <button
+              onClick={() => navigate('/auth')}
+              className="px-6 py-3 rounded-xl bg-primary text-primary-foreground font-semibold text-sm"
+            >
+              Войти
+            </button>
+          </div>
+        )}
 
         <Tabs defaultValue="bookings" className="w-full">
           <TabsList className="w-full mb-4">
