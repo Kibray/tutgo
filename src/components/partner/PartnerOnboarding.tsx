@@ -4,6 +4,8 @@ import { Building2, Camera, Send, PartyPopper, ArrowRight, ArrowLeft, Upload, X 
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 
 const TOTAL_STEPS = 5;
 
@@ -168,11 +170,27 @@ const PartnerOnboarding = ({ open, onComplete }: PartnerOnboardingProps) => {
   const [dir, setDir] = useState(1);
   const [companyData, setCompanyData] = useState<Record<string, string>>({});
   const [socialData, setSocialData] = useState<Record<string, string>>({});
+  const { user } = useAuth();
 
   const next = () => { setDir(1); setStep(s => s + 1); };
   const back = () => { setDir(-1); setStep(s => s - 1); };
 
-  const handleComplete = () => {
+  const handleComplete = async () => {
+    if (user && companyData.name) {
+      try {
+        await supabase.from('locations').insert({
+          owner_id: user.id,
+          name: companyData.name || 'Моя компания',
+          phone: companyData.phone || null,
+          address: companyData.address || null,
+          description: companyData.description || null,
+          business_type: 'service',
+          city: 'Ташкент',
+        });
+      } catch (e) {
+        console.error('Onboarding save error:', e);
+      }
+    }
     localStorage.setItem('partner_onboarding_done', 'true');
     onComplete();
   };
