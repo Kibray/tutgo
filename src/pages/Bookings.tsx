@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Calendar, Clock, MapPin, ChevronRight, Star, Loader2, Heart, X, AlertTriangle } from 'lucide-react';
 import BottomNav from '@/components/BottomNav';
