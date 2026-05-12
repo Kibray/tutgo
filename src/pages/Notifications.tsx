@@ -68,7 +68,16 @@ const Notifications = () => {
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.03 }}
-                  onClick={() => { if (!n.read) markAsRead(n.id); }}
+                  onClick={() => {
+                    if (!n.read) markAsRead(n.id);
+                    if (
+                      n.type === 'confirmed' ||
+                      n.type === 'cancelled' ||
+                      n.type === 'reminder'
+                    ) {
+                      navigate('/bookings');
+                    }
+                  }}
                   className={`glass rounded-xl p-4 cursor-pointer transition-colors ${!n.read ? 'ring-1 ring-primary/20 bg-primary/5' : ''}`}
                 >
                   <div className="flex gap-3">
