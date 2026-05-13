@@ -94,9 +94,10 @@ const BookingConfirm = () => {
 
     const { data, error } = await supabase.from('appointments').insert(insertData).select();
 
-    setSaving(false);
+  setSaving(false);
     if (error) {
-      toast({ title: t('common.error'), description: error.message.includes('Double booking') ? t('booking.time_taken') : error.message, variant: 'destructive' });
+      toast({ title: t('common.error'), description: 'Это время уже занято или произошла ошибка. Пожалуйста, выберите другое время.', variant: 'destructive' });
+      navigate(-1);
     } else {
       setConfirmed(true);
       toast({ title: t('booking.created') });
