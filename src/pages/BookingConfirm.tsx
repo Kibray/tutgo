@@ -101,6 +101,7 @@ const BookingConfirm = () => {
       navigate(-1);
     } else {
       setConfirmed(true);
+      setAppointmentData(data?.[0] || null);
       toast({ title: t('booking.created') });
     }
   };
