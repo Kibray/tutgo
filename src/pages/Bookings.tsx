@@ -225,7 +225,8 @@ const Bookings = () => {
               <div className="space-y-3 mb-6">
                 {upcoming.map((b, i) => (
                   <motion.div key={b.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.08 }}
-                    className="glass rounded-lg p-4">
+                    id={`appointment-${b.id}`}
+                    className={`glass rounded-lg p-4 ${highlightId === b.id ? 'ring-2 ring-primary ring-offset-2' : ''}`}>
                     <div className="flex items-start justify-between">
                       <div>
                         <h3 className="text-sm font-semibold text-foreground">{b.services?.name || b.locations?.name}</h3>
