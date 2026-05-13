@@ -15,6 +15,7 @@ import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'rec
 import { format, subDays, startOfDay, endOfDay } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import InstagramConnectCard from '@/components/partner/InstagramConnectCard';
+import SkeletonCard from '@/components/SkeletonCard';
 
 /* ─── Sidebar items ─── */
 const sidebarItems = [
