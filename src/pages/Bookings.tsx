@@ -73,6 +73,12 @@ const Bookings = () => {
   useEffect(() => { fetchAppointments(); }, [user]);
 
   useEffect(() => {
+    if (!highlightId || appointments.length === 0) return;
+    const el = document.getElementById(`appointment-${highlightId}`);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, [appointments, highlightId]);
+
+  useEffect(() => {
     if (!user) return;
     const channel = supabase
       .channel('my-appointments')
