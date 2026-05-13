@@ -676,9 +676,9 @@ const DesktopIndex = () => {
                           <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 12, color: COLORS.text2 }}>
                             <Star size={12} fill="#f59e0b" color="#f59e0b" />
                             <span style={{ fontWeight: 600 }}>{loc.rating?.toFixed(1) || 'Новое'}</span>
-                            <span style={{ color: COLORS.muted }}>({loc.review_count || 0})</span>
-                            <span style={{ color: COLORS.muted }}>•</span>
-                            <span style={{ color: COLORS.muted, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{loc.address || loc.city || ''}</span>
+                            <span className="text-muted-foreground">({loc.review_count || 0})</span>
+                            <span className="text-muted-foreground">•</span>
+                            <span className="text-muted-foreground" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{loc.address || loc.city || ''}</span>
                           </div>
                           <div className="text-foreground" style={{ fontSize: 14, fontWeight: 700 }}>
                             {loc.price_from ? `от ${loc.price_from.toLocaleString('ru-RU')} сум` : ''}
