@@ -7,6 +7,7 @@ import { supabase } from '@/integrations/supabase/client';
 import PartnerLayout from '@/components/partner/PartnerLayout';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, Area, AreaChart } from 'recharts';
 import { formatPrice } from '@/lib/types';
+import { startOfDay, endOfDay, startOfMonth, subDays } from 'date-fns';
 
 const PartnerFinance = () => {
   const navigate = useNavigate();
@@ -15,6 +16,8 @@ const PartnerFinance = () => {
   const [appointments, setAppointments] = useState<any[]>([]);
   const [services, setServices] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [dateFrom, setDateFrom] = useState<Date>(subDays(new Date(), 30));
+  const [dateTo, setDateTo] = useState<Date>(new Date());
 
   useEffect(() => {
     if (!user) return;
@@ -29,7 +32,8 @@ const PartnerFinance = () => {
         supabase.from('appointments').select('*')
           .in('location_id', locIds)
           .in('status', ['confirmed', 'completed'])
-          .gte('start_time', new Date(Date.now() - 30 * 86400000).toISOString()),
+          .gte('start_time', startOfDay(dateFrom).toISOString())
+          .lte('start_time', endOfDay(dateTo).toISOString()),
         supabase.from('services').select('*').in('location_id', locIds),
       ]);
       setAppointments(apptRes.data || []);
@@ -37,7 +41,7 @@ const PartnerFinance = () => {
       setLoading(false);
     };
     load();
-  }, [user]);
+  }, [user, dateFrom, dateTo]);
 
   const serviceMap = useMemo(() => {
     const m: Record<string, any> = {};
@@ -139,6 +143,35 @@ const PartnerFinance = () => {
   return (
     <PartnerLayout title="Финансы">
       <div className="px-4 overflow-y-auto">
+
+        {/* Date range presets */}
+        <div className="flex gap-2 mb-4 overflow-x-auto pb-1">
+          {(() => {
+            const today = new Date();
+            const presets = [
+              { label: 'Сегодня', from: today, to: today },
+              { label: '7 дней', from: subDays(today, 7), to: today },
+              { label: '30 дней', from: subDays(today, 30), to: today },
+              { label: 'Этот месяц', from: startOfMonth(today), to: today },
+            ];
+            return presets.map((p) => {
+              const active =
+                startOfDay(dateFrom).getTime() === startOfDay(p.from).getTime() &&
+                startOfDay(dateTo).getTime() === startOfDay(p.to).getTime();
+              return (
+                <button
+                  key={p.label}
+                  onClick={() => { setDateFrom(p.from); setDateTo(p.to); }}
+                  className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition ${
+                    active ? 'bg-primary text-primary-foreground' : 'glass text-muted-foreground'
+                  }`}
+                >
+                  {p.label}
+                </button>
+              );
+            });
+          })()}
+        </div>
 
         {/* Stats Cards */}
         <div className="grid grid-cols-2 gap-3 mb-6">
