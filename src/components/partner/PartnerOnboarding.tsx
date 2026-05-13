@@ -59,35 +59,58 @@ const StepWelcome = ({ onNext }: { onNext: () => void }) => (
 /* ─── Step 2: Company Info ─── */
 const StepCompanyInfo = ({ data, setData, onNext, onBack }: {
   data: Record<string, string>; setData: (d: Record<string, string>) => void; onNext: () => void; onBack: () => void;
-}) => (
-  <div className="flex flex-col gap-4">
-    <div className="text-center mb-2">
-      <Building2 className="w-10 h-10 text-primary mx-auto mb-2" />
-      <h2 className="text-lg font-bold text-foreground">О компании</h2>
-      <p className="text-xs text-muted-foreground">Базовая информация для вашего профиля</p>
+}) => {
+  const [showError, setShowError] = useState(false);
+  const nameEmpty = !(data.name || '').trim();
+  const addressEmpty = !(data.address || '').trim();
+  const handleNext = () => {
+    if (nameEmpty || addressEmpty) {
+      setShowError(true);
+      return;
+    }
+    setShowError(false);
+    onNext();
+  };
+  return (
+    <div className="flex flex-col gap-4">
+      <div className="text-center mb-2">
+        <Building2 className="w-10 h-10 text-primary mx-auto mb-2" />
+        <h2 className="text-lg font-bold text-foreground">О компании</h2>
+        <p className="text-xs text-muted-foreground">Базовая информация для вашего профиля</p>
+      </div>
+      <div className="space-y-3">
+        <div>
+          <Input placeholder="Название компании *" value={data.name || ''} onChange={e => setData({ ...data, name: e.target.value })}
+            className={`bg-secondary border-border ${showError && nameEmpty ? 'ring-2 ring-destructive' : ''}`} />
+          {showError && nameEmpty && (
+            <p className="text-xs text-destructive mt-1">Заполните обязательные поля</p>
+          )}
+        </div>
+        <Input placeholder="Категория (напр. Барбершоп)" value={data.category || ''} onChange={e => setData({ ...data, category: e.target.value })}
+          className="bg-secondary border-border" />
+        <Input placeholder="Телефон" value={data.phone || ''} onChange={e => setData({ ...data, phone: e.target.value })}
+          className="bg-secondary border-border" />
+        <div>
+          <Input placeholder="Адрес *" value={data.address || ''} onChange={e => setData({ ...data, address: e.target.value })}
+            className={`bg-secondary border-border ${showError && addressEmpty ? 'ring-2 ring-destructive' : ''}`} />
+          {showError && addressEmpty && (
+            <p className="text-xs text-destructive mt-1">Заполните обязательные поля</p>
+          )}
+        </div>
+        <textarea placeholder="Краткое описание" value={data.description || ''} onChange={e => setData({ ...data, description: e.target.value })}
+          className="w-full rounded-md border border-border bg-secondary px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring min-h-[72px] resize-none" />
+      </div>
+      <div className="flex gap-3 mt-2">
+        <button onClick={onBack} className="flex-1 py-3 rounded-xl bg-secondary text-foreground font-semibold text-sm flex items-center justify-center gap-1 active:scale-[0.97] transition-transform">
+          <ArrowLeft className="w-4 h-4" /> Назад
+        </button>
+        <button onClick={handleNext} className="flex-1 py-3 rounded-xl bg-primary text-primary-foreground font-semibold text-sm flex items-center justify-center gap-1 active:scale-[0.97] transition-transform">
+          Далее <ArrowRight className="w-4 h-4" />
+        </button>
+      </div>
     </div>
-    <div className="space-y-3">
-      <Input placeholder="Название компании" value={data.name || ''} onChange={e => setData({ ...data, name: e.target.value })}
-        className="bg-secondary border-border" />
-      <Input placeholder="Категория (напр. Барбершоп)" value={data.category || ''} onChange={e => setData({ ...data, category: e.target.value })}
-        className="bg-secondary border-border" />
-      <Input placeholder="Телефон" value={data.phone || ''} onChange={e => setData({ ...data, phone: e.target.value })}
-        className="bg-secondary border-border" />
-      <Input placeholder="Адрес" value={data.address || ''} onChange={e => setData({ ...data, address: e.target.value })}
-        className="bg-secondary border-border" />
-      <textarea placeholder="Краткое описание" value={data.description || ''} onChange={e => setData({ ...data, description: e.target.value })}
-        className="w-full rounded-md border border-border bg-secondary px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring min-h-[72px] resize-none" />
-    </div>
-    <div className="flex gap-3 mt-2">
-      <button onClick={onBack} className="flex-1 py-3 rounded-xl bg-secondary text-foreground font-semibold text-sm flex items-center justify-center gap-1 active:scale-[0.97] transition-transform">
-        <ArrowLeft className="w-4 h-4" /> Назад
-      </button>
-      <button onClick={onNext} className="flex-1 py-3 rounded-xl bg-primary text-primary-foreground font-semibold text-sm flex items-center justify-center gap-1 active:scale-[0.97] transition-transform">
-        Далее <ArrowRight className="w-4 h-4" />
-      </button>
-    </div>
-  </div>
-);
+  );
+};
 
 /* ─── Step 3: Photo & Social ─── */
 const StepPhotoSocial = ({ data, setData, onNext, onBack }: {
