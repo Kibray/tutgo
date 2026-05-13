@@ -18,6 +18,7 @@ const BookingConfirm = () => {
   const [confirmed, setConfirmed] = useState(false);
   const [countdown, setCountdown] = useState('');
   const [showMap, setShowMap] = useState(false);
+  const [appointmentData, setAppointmentData] = useState<any>(null);
 
   useEffect(() => {
     if (!confirmed || !state?.date) return;
@@ -100,6 +101,7 @@ const BookingConfirm = () => {
       navigate(-1);
     } else {
       setConfirmed(true);
+      setAppointmentData(data?.[0] || null);
       toast({ title: t('booking.created') });
     }
   };
@@ -127,6 +129,16 @@ const BookingConfirm = () => {
       } else {
         navigator.clipboard.writeText(shareText);
         toast({ title: t('booking.copied') });
+      }
+    };
+    const handleCancel = async () => {
+      if (!appointmentData?.id) return;
+      const { error } = await supabase.from('appointments').update({ status: 'cancelled' }).eq('id', appointmentData.id);
+      if (error) {
+        toast({ title: t('common.error'), description: error.message, variant: 'destructive' });
+      } else {
+        toast({ title: 'Запись отменена' });
+        navigate('/');
       }
     };
 
@@ -189,6 +201,11 @@ const BookingConfirm = () => {
             <span className="text-[10px] font-semibold">{t('booking.share')}</span>
           </motion.button>
         </div>
+
+        <motion.button whileTap={{ scale: 0.98 }} onClick={handleCancel}
+          className="w-full max-w-sm py-3.5 rounded-lg border border-border font-semibold text-sm text-muted-foreground mt-4">
+          Отменить запись
+        </motion.button>
 
         <div className="flex gap-3 mt-4 w-full max-w-sm">
           <motion.button whileTap={{ scale: 0.98 }} onClick={() => navigate('/bookings')}
