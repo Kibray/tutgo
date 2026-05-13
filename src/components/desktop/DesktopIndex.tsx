@@ -158,7 +158,7 @@ const DesktopIndex = () => {
   // ============ LANDING VIEW ============
   if (view === 'landing') {
     return (
-      <div style={{ minHeight: '100vh', background: COLORS.bg, fontFamily: COLORS.font, color: COLORS.text }}>
+      <div className="min-h-screen bg-background text-foreground font-sans">
         <DesktopHeader
           searchValue={search}
           onSearch={setSearch}
