@@ -489,7 +489,7 @@ const DesktopIndex = () => {
   const showMap = resultsMode === 'map' || resultsMode === 'split';
 
   return (
-    <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', overflow: 'hidden', background: COLORS.bg, fontFamily: COLORS.font, color: COLORS.text }}>
+    <div className="min-h-screen bg-background text-foreground font-sans" style={{ height: '100vh', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
       <DesktopHeader
         searchValue={search}
         onSearch={setSearch}
