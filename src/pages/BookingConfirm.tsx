@@ -130,6 +130,15 @@ const BookingConfirm = () => {
         navigator.clipboard.writeText(shareText);
         toast({ title: t('booking.copied') });
       }
+    const handleCancel = async () => {
+      if (!appointmentData?.id) return;
+      const { error } = await supabase.from('appointments').update({ status: 'cancelled' }).eq('id', appointmentData.id);
+      if (error) {
+        toast({ title: t('common.error'), description: error.message, variant: 'destructive' });
+      } else {
+        toast({ title: 'Запись отменена' });
+        navigate('/');
+      }
     };
 
     return (
