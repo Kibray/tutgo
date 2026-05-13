@@ -803,7 +803,7 @@ const ServiceDetail = () => {
           </div>
 
           {/* Fixed CTA */}
-          <div className="fixed bottom-16 left-0 right-0 px-4 py-3 glass-strong z-40">
+          <div className="fixed bottom-0 left-0 right-0 px-4 py-3 glass-strong z-40" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 64px)' }}>
             {allStepsDone && summaryParts.length > 0 && (
               <p className="text-[11px] text-muted-foreground text-center mb-2 truncate">
                 {summaryParts.join(' · ')}
