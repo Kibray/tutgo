@@ -18,6 +18,7 @@ const BookingConfirm = () => {
   const [confirmed, setConfirmed] = useState(false);
   const [countdown, setCountdown] = useState('');
   const [showMap, setShowMap] = useState(false);
+  const [appointmentData, setAppointmentData] = useState<any>(null);
 
   useEffect(() => {
     if (!confirmed || !state?.date) return;
