@@ -264,7 +264,7 @@ const Bookings = () => {
             ) : (
               <div className="space-y-3">
                 {past.map((b) => (
-                  <div key={b.id} className="glass rounded-lg p-4">
+                  <div key={b.id} id={`appointment-${b.id}`} className={`glass rounded-lg p-4 ${highlightId === b.id ? 'ring-2 ring-primary ring-offset-2' : ''}`}>
                     <div className="flex items-start justify-between">
                       <div>
                         <h3 className="text-sm font-semibold text-foreground">{b.services?.name || b.locations?.name}</h3>
