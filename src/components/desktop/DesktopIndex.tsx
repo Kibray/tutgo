@@ -364,7 +364,7 @@ const DesktopIndex = () => {
                       </div>
                       <div style={{ padding: 12, display: 'flex', flexDirection: 'column', gap: 5, flex: 1 }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                          <span style={{ fontWeight: 700, fontSize: 14, color: COLORS.text, flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{loc.name}</span>
+                          <span className="text-foreground" style={{ fontWeight: 700, fontSize: 14, flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{loc.name}</span>
                           {loc.verified && <BadgeCheck size={14} color={COLORS.accent} />}
                         </div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, color: COLORS.text2 }}>
