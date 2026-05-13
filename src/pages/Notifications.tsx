@@ -75,7 +75,7 @@ const Notifications = () => {
                       n.type === 'cancelled' ||
                       n.type === 'reminder'
                     ) {
-                      navigate('/bookings');
+                      navigate('/bookings', { state: { highlightId: n.related_id } });
                     }
                   }}
                   className={`glass rounded-xl p-4 cursor-pointer transition-colors ${!n.read ? 'ring-1 ring-primary/20 bg-primary/5' : ''}`}

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Calendar, Clock, MapPin, ChevronRight, Star, Loader2, Heart, X, AlertTriangle } from 'lucide-react';
 import BottomNav from '@/components/BottomNav';
@@ -21,6 +21,8 @@ const Bookings = () => {
   const { t, lang } = usePreferences();
   const { favoriteIds, isFavorite, toggleFavorite } = useFavorites();
   const navigate = useNavigate();
+  const { state: routeState } = useLocation() as { state: { highlightId?: string } | null };
+  const highlightId = routeState?.highlightId;
   const [appointments, setAppointments] = useState<any[]>([]);
   const [favoriteLocations, setFavoriteLocations] = useState<LocationItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -69,6 +71,12 @@ const Bookings = () => {
   }, [favoriteIds]);
 
   useEffect(() => { fetchAppointments(); }, [user]);
+
+  useEffect(() => {
+    if (!highlightId || appointments.length === 0) return;
+    const el = document.getElementById(`appointment-${highlightId}`);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, [appointments, highlightId]);
 
   useEffect(() => {
     if (!user) return;
@@ -217,7 +225,8 @@ const Bookings = () => {
               <div className="space-y-3 mb-6">
                 {upcoming.map((b, i) => (
                   <motion.div key={b.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.08 }}
-                    className="glass rounded-lg p-4">
+                    id={`appointment-${b.id}`}
+                    className={`glass rounded-lg p-4 ${highlightId === b.id ? 'ring-2 ring-primary ring-offset-2' : ''}`}>
                     <div className="flex items-start justify-between">
                       <div>
                         <h3 className="text-sm font-semibold text-foreground">{b.services?.name || b.locations?.name}</h3>
@@ -255,7 +264,7 @@ const Bookings = () => {
             ) : (
               <div className="space-y-3">
                 {past.map((b) => (
-                  <div key={b.id} className="glass rounded-lg p-4">
+                  <div key={b.id} id={`appointment-${b.id}`} className={`glass rounded-lg p-4 ${highlightId === b.id ? 'ring-2 ring-primary ring-offset-2' : ''}`}>
                     <div className="flex items-start justify-between">
                       <div>
                         <h3 className="text-sm font-semibold text-foreground">{b.services?.name || b.locations?.name}</h3>
