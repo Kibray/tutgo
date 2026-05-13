@@ -375,7 +375,7 @@ const DesktopIndex = () => {
                           <span style={{ color: COLORS.muted, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{loc.sub_category || loc.city || ''}</span>
                         </div>
                         {loc.price_from ? (
-                          <div style={{ fontSize: 14, fontWeight: 700, color: COLORS.text }}>
+                          <div className="text-foreground" style={{ fontSize: 14, fontWeight: 700 }}>
                             от {loc.price_from.toLocaleString('ru-RU')} сум
                           </div>
                         ) : null}
