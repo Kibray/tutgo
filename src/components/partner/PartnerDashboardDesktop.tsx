@@ -15,6 +15,7 @@ import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'rec
 import { format, subDays, startOfDay, endOfDay } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import InstagramConnectCard from '@/components/partner/InstagramConnectCard';
+import SkeletonCard from '@/components/SkeletonCard';
 
 /* ─── Sidebar items ─── */
 const sidebarItems = [
@@ -46,80 +47,81 @@ const PartnerDashboardDesktop = () => {
   const [queueTickets, setQueueTickets] = useState<any[]>([]);
   const [weekRevenue, setWeekRevenue] = useState<{ day: string; revenue: number }[]>([]);
   const [topClients, setTopClients] = useState<{ name: string; total: number; count: number }[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const today = useMemo(() => new Date(), []);
   const todayStr = format(today, 'yyyy-MM-dd');
 
   // Load all data
   useEffect(() => {
-    if (!user) return;
+    if (!user) { setLoading(false); return; }
+    setLoading(true);
     const uid = user.id;
 
-    // Locations
-    supabase.from('locations').select('*').eq('owner_id', uid).then(({ data }) => {
-      setLocations(data || []);
-      const avg = (data || []).reduce((s, l) => s + (l.rating || 0), 0) / ((data || []).length || 1);
-      setAvgRating(Math.round(avg * 10) / 10);
-    });
+    const promises = [
+      // Locations
+      supabase.from('locations').select('*').eq('owner_id', uid).then(({ data }) => {
+        setLocations(data || []);
+        const avg = (data || []).reduce((s, l) => s + (l.rating || 0), 0) / ((data || []).length || 1);
+        setAvgRating(Math.round(avg * 10) / 10);
+      }),
 
-    // Today's appointments
-    const dayStart = startOfDay(today).toISOString();
-    const dayEnd = endOfDay(today).toISOString();
+      // Today's appointments
+      supabase.from('appointments').select('*, services(name, price, currency), staff(full_name), locations!inner(owner_id)')
+        .eq('locations.owner_id', uid)
+        .gte('start_time', startOfDay(today).toISOString())
+        .lte('start_time', endOfDay(today).toISOString())
+        .order('start_time')
+        .then(({ data }) => setTodayAppointments(data || [])),
 
-    supabase.from('appointments').select('*, services(name, price, currency), staff(full_name), locations!inner(owner_id)')
-      .eq('locations.owner_id', uid)
-      .gte('start_time', dayStart)
-      .lte('start_time', dayEnd)
-      .order('start_time')
-      .then(({ data }) => setTodayAppointments(data || []));
+      // Last 7 days appointments for revenue chart
+      supabase.from('appointments').select('start_time, status, services(price), locations!inner(owner_id)')
+        .eq('locations.owner_id', uid)
+        .gte('start_time', startOfDay(subDays(today, 6)).toISOString())
+        .lte('start_time', endOfDay(today).toISOString())
+        .in('status', ['confirmed', 'completed'])
+        .then(({ data }) => {
+          setAllAppointments(data || []);
+          const map: Record<string, number> = {};
+          for (let i = 6; i >= 0; i--) {
+            const d = format(subDays(today, i), 'dd.MM');
+            map[d] = 0;
+          }
+          (data || []).forEach((a: any) => {
+            const d = format(new Date(a.start_time), 'dd.MM');
+            if (map[d] !== undefined) map[d] += a.services?.price || 0;
+          });
+          setWeekRevenue(Object.entries(map).map(([day, revenue]) => ({ day, revenue })));
+        }),
 
-    // Last 7 days appointments for revenue chart
-    const weekStart = subDays(today, 6);
-    supabase.from('appointments').select('start_time, status, services(price), locations!inner(owner_id)')
-      .eq('locations.owner_id', uid)
-      .gte('start_time', startOfDay(weekStart).toISOString())
-      .lte('start_time', dayEnd)
-      .in('status', ['confirmed', 'completed'])
-      .then(({ data }) => {
-        setAllAppointments(data || []);
-        // Build chart
-        const map: Record<string, number> = {};
-        for (let i = 6; i >= 0; i--) {
-          const d = format(subDays(today, i), 'dd.MM');
-          map[d] = 0;
-        }
-        (data || []).forEach((a: any) => {
-          const d = format(new Date(a.start_time), 'dd.MM');
-          if (map[d] !== undefined) map[d] += a.services?.price || 0;
-        });
-        setWeekRevenue(Object.entries(map).map(([day, revenue]) => ({ day, revenue })));
-      });
+      // Unique clients
+      supabase.from('appointments').select('client_user_id, client_name, services(price), locations!inner(owner_id)')
+        .eq('locations.owner_id', uid)
+        .not('client_user_id', 'is', null)
+        .then(({ data }) => {
+          const clients = new Map<string, { name: string; total: number; count: number }>();
+          (data || []).forEach((a: any) => {
+            const id = a.client_user_id;
+            const prev = clients.get(id) || { name: a.client_name || 'Клиент', total: 0, count: 0 };
+            prev.total += a.services?.price || 0;
+            prev.count += 1;
+            clients.set(id, prev);
+          });
+          setTotalClients(clients.size);
+          setTopClients(
+            [...clients.values()].sort((a, b) => b.total - a.total).slice(0, 5)
+          );
+        }),
 
-    // Unique clients
-    supabase.from('appointments').select('client_user_id, client_name, services(price), locations!inner(owner_id)')
-      .eq('locations.owner_id', uid)
-      .not('client_user_id', 'is', null)
-      .then(({ data }) => {
-        const clients = new Map<string, { name: string; total: number; count: number }>();
-        (data || []).forEach((a: any) => {
-          const id = a.client_user_id;
-          const prev = clients.get(id) || { name: a.client_name || 'Клиент', total: 0, count: 0 };
-          prev.total += a.services?.price || 0;
-          prev.count += 1;
-          clients.set(id, prev);
-        });
-        setTotalClients(clients.size);
-        setTopClients(
-          [...clients.values()].sort((a, b) => b.total - a.total).slice(0, 5)
-        );
-      });
+      // Queue tickets today
+      supabase.from('queue_tickets').select('*, locations!inner(owner_id)')
+        .eq('locations.owner_id', uid)
+        .eq('queue_date', todayStr)
+        .order('ticket_number')
+        .then(({ data }) => setQueueTickets(data || [])),
+    ];
 
-    // Queue tickets today
-    supabase.from('queue_tickets').select('*, locations!inner(owner_id)')
-      .eq('locations.owner_id', uid)
-      .eq('queue_date', todayStr)
-      .order('ticket_number')
-      .then(({ data }) => setQueueTickets(data || []));
+    Promise.all(promises).finally(() => setLoading(false));
   }, [user]);
 
   // Queue helpers
@@ -167,6 +169,23 @@ const PartnerDashboardDesktop = () => {
     completed: 'Завершён',
     cancelled: 'Отменён',
   };
+
+  if (todayAppointments.length === 0 && locations.length === 0 && loading) {
+    return (
+      <div className="flex h-screen bg-background overflow-hidden">
+        <div className="flex-1 flex flex-col overflow-hidden">
+          <main className="flex-1 overflow-y-auto p-6">
+            <div className="grid grid-cols-2 gap-4">
+              <SkeletonCard />
+              <SkeletonCard />
+              <SkeletonCard />
+              <SkeletonCard />
+            </div>
+          </main>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex h-screen bg-background overflow-hidden">
