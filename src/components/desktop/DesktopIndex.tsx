@@ -431,7 +431,7 @@ const DesktopIndex = () => {
             <div>
               <div className="bg-card border border-border rounded-xl shadow-sm" style={{ padding: 16 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-                  <div style={{ fontSize: 14, fontWeight: 700, color: COLORS.text }}>Места рядом с вами</div>
+                  <div className="text-foreground" style={{ fontSize: 14, fontWeight: 700 }}>Места рядом с вами</div>
                   <button
                     onClick={() => setView('results')}
                     style={{ background: 'none', border: 'none', color: COLORS.accent, fontSize: 12, fontWeight: 600, cursor: 'pointer' }}
@@ -466,7 +466,7 @@ const DesktopIndex = () => {
                   display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
                 }}>{t.icon}</div>
                 <div>
-                  <div style={{ fontSize: 14, fontWeight: 700, color: COLORS.text }}>{t.title}</div>
+                  <div className="text-foreground" style={{ fontSize: 14, fontWeight: 700 }}>{t.title}</div>
                   <div style={{ fontSize: 12, color: COLORS.muted, marginTop: 4, lineHeight: 1.5 }}>{t.sub}</div>
                 </div>
               </div>
@@ -514,7 +514,7 @@ const DesktopIndex = () => {
           <ChevronLeft size={16} /> Назад
         </button>
 
-        <div style={{ fontSize: 15, fontWeight: 700, color: COLORS.text }}>
+        <div className="text-foreground" style={{ fontSize: 15, fontWeight: 700 }}>
           {search ? `«${search}» — ` : ''}{filtered.length} заведений
         </div>
 
@@ -669,7 +669,7 @@ const DesktopIndex = () => {
                         </div>
                         <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 4 }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                            <span style={{ fontSize: 14, fontWeight: 700, color: COLORS.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>{loc.name}</span>
+                            <span className="text-foreground" style={{ fontSize: 14, fontWeight: 700, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>{loc.name}</span>
                             {loc.verified && <BadgeCheck size={14} color={COLORS.accent} />}
                             <Heart size={14} color={COLORS.muted} style={{ cursor: 'pointer' }} onClick={(e) => e.stopPropagation()} />
                           </div>
@@ -680,7 +680,7 @@ const DesktopIndex = () => {
                             <span style={{ color: COLORS.muted }}>•</span>
                             <span style={{ color: COLORS.muted, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{loc.address || loc.city || ''}</span>
                           </div>
-                          <div style={{ fontSize: 14, fontWeight: 700, color: COLORS.text }}>
+                          <div className="text-foreground" style={{ fontSize: 14, fontWeight: 700 }}>
                             {loc.price_from ? `от ${loc.price_from.toLocaleString('ru-RU')} сум` : ''}
                           </div>
                           <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
