@@ -9,6 +9,7 @@ const menuItems = [
   { id: '/flights', icon: Plane, label: 'Билеты' },
   { id: '/stay', icon: Hotel, label: 'Жильё' },
   { id: '/deals', icon: Tag, label: 'Акции' },
+  { id: '/sport', icon: Dumbbell, label: 'Спорт' },
   { id: '/bookings', icon: Calendar, label: 'Мои записи' },
   { id: '/favorites', icon: Heart, label: 'Избранное' },
 ];
