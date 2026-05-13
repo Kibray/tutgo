@@ -327,7 +327,8 @@ const DesktopIndex = () => {
                       key={loc.id}
                       whileHover={{ y: -2 }}
                       onClick={() => navigate(`/service/${loc.id}`)}
-                      style={{ ...card, overflow: 'hidden', cursor: 'pointer', display: 'flex', flexDirection: 'column' }}
+                      className="bg-card border border-border rounded-xl shadow-sm"
+                      style={{ overflow: 'hidden', cursor: 'pointer', display: 'flex', flexDirection: 'column' }}
                     >
                       <div style={{
                         height: 160, position: 'relative', overflow: 'hidden',
@@ -404,7 +405,8 @@ const DesktopIndex = () => {
                       key={loc.id}
                       whileHover={{ y: -1 }}
                       onClick={() => navigate(`/service/${loc.id}`)}
-                      style={{ ...card, padding: 12, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 12 }}
+                      className="bg-card border border-border rounded-xl shadow-sm"
+                      style={{ padding: 12, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 12 }}
                     >
                       <div style={{
                         width: 64, height: 64, borderRadius: 8, flexShrink: 0, overflow: 'hidden',
@@ -427,7 +429,7 @@ const DesktopIndex = () => {
 
             {/* Right map sidebar */}
             <div>
-              <div style={{ ...card, padding: 16 }}>
+              <div className="bg-card border border-border rounded-xl shadow-sm" style={{ padding: 16 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
                   <div style={{ fontSize: 14, fontWeight: 700, color: COLORS.text }}>Места рядом с вами</div>
                   <button
@@ -450,7 +452,7 @@ const DesktopIndex = () => {
           </div>
 
           {/* SECTION 4 — Trust strip */}
-          <div style={{ ...card, padding: 28, display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 24, marginBottom: 40 }}>
+          <div className="bg-card border border-border rounded-xl shadow-sm" style={{ padding: 28, display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 24, marginBottom: 40 }}>
             {[
               { icon: <ShieldCheck size={20} />, title: 'Проверенные заведения', sub: 'Только реальные отзывы и рейтинги' },
               { icon: <CalendarCheck size={20} />, title: 'Онлайн-запись', sub: 'Мгновенное подтверждение и напоминания' },
