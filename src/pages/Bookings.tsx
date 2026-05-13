@@ -157,6 +157,24 @@ const Bookings = () => {
     completed: 'Завершена',
   };
 
+  if (!user && !loading) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center text-center px-6">
+        <div className="w-16 h-16 rounded-full bg-muted/50 flex items-center justify-center mb-4">
+          <Calendar className="w-7 h-7 text-muted-foreground" />
+        </div>
+        <h2 className="text-sm font-semibold text-foreground mb-2">Войдите, чтобы увидеть свои записи</h2>
+        <p className="text-xs text-muted-foreground mb-6">Здесь будут все ваши бронирования</p>
+        <button
+          onClick={() => navigate('/auth')}
+          className="px-6 py-3 rounded-xl bg-primary text-primary-foreground font-semibold text-sm"
+        >
+          Войти
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background pb-24">
       <div className="px-4 pt-6">
