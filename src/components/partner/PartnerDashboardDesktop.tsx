@@ -170,6 +170,23 @@ const PartnerDashboardDesktop = () => {
     cancelled: 'Отменён',
   };
 
+  if (todayAppointments.length === 0 && locations.length === 0 && loading) {
+    return (
+      <div className="flex h-screen bg-background overflow-hidden">
+        <div className="flex-1 flex flex-col overflow-hidden">
+          <main className="flex-1 overflow-y-auto p-6">
+            <div className="grid grid-cols-2 gap-4">
+              <SkeletonCard />
+              <SkeletonCard />
+              <SkeletonCard />
+              <SkeletonCard />
+            </div>
+          </main>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex h-screen bg-background overflow-hidden">
       {/* ─── Sidebar ─── */}
