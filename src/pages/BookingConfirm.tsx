@@ -202,6 +202,11 @@ const BookingConfirm = () => {
           </motion.button>
         </div>
 
+        <motion.button whileTap={{ scale: 0.98 }} onClick={handleCancel}
+          className="w-full max-w-sm py-3.5 rounded-lg border border-border font-semibold text-sm text-muted-foreground mt-4">
+          Отменить запись
+        </motion.button>
+
         <div className="flex gap-3 mt-4 w-full max-w-sm">
           <motion.button whileTap={{ scale: 0.98 }} onClick={() => navigate('/bookings')}
             className="flex-1 py-3.5 glass rounded-lg font-semibold text-sm text-foreground">{t('booking.my_bookings')}</motion.button>
