@@ -158,7 +158,7 @@ const DesktopIndex = () => {
   // ============ LANDING VIEW ============
   if (view === 'landing') {
     return (
-      <div style={{ minHeight: '100vh', background: COLORS.bg, fontFamily: COLORS.font, color: COLORS.text }}>
+      <div className="min-h-screen bg-background text-foreground font-sans">
         <DesktopHeader
           searchValue={search}
           onSearch={setSearch}
@@ -239,7 +239,7 @@ const DesktopIndex = () => {
 
             {/* Sidebar */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-              <div style={{ ...card, padding: 20, display: 'flex', flexDirection: 'column', gap: 10, alignItems: 'flex-start' }}>
+              <div className="bg-card border border-border rounded-xl shadow-sm" style={{ padding: 20, display: 'flex', flexDirection: 'column', gap: 10, alignItems: 'flex-start' }}>
                 <div style={{
                   width: 80, height: 80, borderRadius: 16, alignSelf: 'center',
                   background: COLORS.accentBg,
@@ -248,8 +248,8 @@ const DesktopIndex = () => {
                 }}>
                   <MapPin size={40} color={COLORS.accent} strokeWidth={2.2} fill={COLORS.accent} />
                 </div>
-                <div style={{ fontSize: 15, fontWeight: 600, color: COLORS.text }}>Посмотрите места на карте</div>
-                <div style={{ fontSize: 13, color: COLORS.muted, lineHeight: 1.5 }}>
+                <div className="text-foreground" style={{ fontSize: 15, fontWeight: 600 }}>Посмотрите места на карте</div>
+                <div className="text-muted-foreground" style={{ fontSize: 13, lineHeight: 1.5 }}>
                   Удобный поиск рядом с вами и актуальная информация о свободном времени
                 </div>
                 <button
@@ -263,10 +263,10 @@ const DesktopIndex = () => {
                 </button>
               </div>
 
-              <div style={{ ...card, padding: 20, display: 'flex', flexDirection: 'column', gap: 8, alignItems: 'flex-start' }}>
+              <div className="bg-card border border-border rounded-xl shadow-sm" style={{ padding: 20, display: 'flex', flexDirection: 'column', gap: 8, alignItems: 'flex-start' }}>
                 <div style={{ fontSize: 40, lineHeight: 1 }}>🎁</div>
-                <div style={{ fontWeight: 700, fontSize: 15, color: COLORS.text }}>Дарим 10% на первое посещение</div>
-                <div style={{ fontSize: 13, color: COLORS.muted, lineHeight: 1.5 }}>
+                <div className="text-foreground" style={{ fontWeight: 700, fontSize: 15 }}>Дарим 10% на первое посещение</div>
+                <div className="text-muted-foreground" style={{ fontSize: 13, lineHeight: 1.5 }}>
                   Зарегистрируйтесь и получите скидку на любую услугу в вашем городе
                 </div>
                 <button
@@ -284,7 +284,7 @@ const DesktopIndex = () => {
           </div>
 
           {/* SECTION 2 — Category tabs */}
-          <div style={{ ...card, padding: '0 8px', overflowX: 'auto', marginBottom: 24 }}>
+          <div className="bg-card border border-border rounded-xl shadow-sm" style={{ padding: '0 8px', overflowX: 'auto', marginBottom: 24 }}>
             <div style={{ display: 'flex', gap: 0, minWidth: 'fit-content' }}>
               {[{ id: 'all', name: 'Все категории', icon: '🏠' }, ...categories].map((c) => {
                 const active = landingCategory === c.id;
@@ -315,7 +315,7 @@ const DesktopIndex = () => {
               {/* Popular */}
               <div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-                  <h2 style={{ fontSize: 18, fontWeight: 700, margin: 0, color: COLORS.text }}>Популярно сейчас 🔥</h2>
+                  <h2 className="text-foreground" style={{ fontSize: 18, fontWeight: 700, margin: 0 }}>Популярно сейчас 🔥</h2>
                   <button
                     onClick={() => setView('results')}
                     style={{ background: 'none', border: 'none', color: COLORS.accent, fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
@@ -327,7 +327,8 @@ const DesktopIndex = () => {
                       key={loc.id}
                       whileHover={{ y: -2 }}
                       onClick={() => navigate(`/service/${loc.id}`)}
-                      style={{ ...card, overflow: 'hidden', cursor: 'pointer', display: 'flex', flexDirection: 'column' }}
+                      className="bg-card border border-border rounded-xl shadow-sm"
+                      style={{ overflow: 'hidden', cursor: 'pointer', display: 'flex', flexDirection: 'column' }}
                     >
                       <div style={{
                         height: 160, position: 'relative', overflow: 'hidden',
@@ -363,18 +364,18 @@ const DesktopIndex = () => {
                       </div>
                       <div style={{ padding: 12, display: 'flex', flexDirection: 'column', gap: 5, flex: 1 }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                          <span style={{ fontWeight: 700, fontSize: 14, color: COLORS.text, flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{loc.name}</span>
+                          <span className="text-foreground" style={{ fontWeight: 700, fontSize: 14, flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{loc.name}</span>
                           {loc.verified && <BadgeCheck size={14} color={COLORS.accent} />}
                         </div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, color: COLORS.text2 }}>
                           <Star size={12} fill="#f59e0b" color="#f59e0b" />
                           <span style={{ fontWeight: 600 }}>{loc.rating?.toFixed(1) || 'Новое'}</span>
-                          <span style={{ color: COLORS.muted }}>({loc.review_count || 0})</span>
-                          <span style={{ color: COLORS.muted }}>•</span>
-                          <span style={{ color: COLORS.muted, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{loc.sub_category || loc.city || ''}</span>
+                          <span className="text-muted-foreground">({loc.review_count || 0})</span>
+                          <span className="text-muted-foreground">•</span>
+                          <span className="text-muted-foreground" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{loc.sub_category || loc.city || ''}</span>
                         </div>
                         {loc.price_from ? (
-                          <div style={{ fontSize: 14, fontWeight: 700, color: COLORS.text }}>
+                          <div className="text-foreground" style={{ fontSize: 14, fontWeight: 700 }}>
                             от {loc.price_from.toLocaleString('ru-RU')} сум
                           </div>
                         ) : null}
@@ -392,7 +393,7 @@ const DesktopIndex = () => {
               {/* Free time */}
               <div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-                  <h2 style={{ fontSize: 18, fontWeight: 700, margin: 0, color: COLORS.text }}>Свободное время сегодня</h2>
+                  <h2 className="text-foreground" style={{ fontSize: 18, fontWeight: 700, margin: 0 }}>Свободное время сегодня</h2>
                   <button
                     onClick={() => setView('results')}
                     style={{ background: 'none', border: 'none', color: COLORS.accent, fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
@@ -404,7 +405,8 @@ const DesktopIndex = () => {
                       key={loc.id}
                       whileHover={{ y: -1 }}
                       onClick={() => navigate(`/service/${loc.id}`)}
-                      style={{ ...card, padding: 12, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 12 }}
+                      className="bg-card border border-border rounded-xl shadow-sm"
+                      style={{ padding: 12, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 12 }}
                     >
                       <div style={{
                         width: 64, height: 64, borderRadius: 8, flexShrink: 0, overflow: 'hidden',
@@ -413,7 +415,7 @@ const DesktopIndex = () => {
                         {!loc.gallery?.[0] && <PhotoPlaceholder size={20} />}
                       </div>
                       <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontSize: 13, fontWeight: 600, color: COLORS.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{loc.name}</div>
+                        <div className="text-foreground" style={{ fontSize: 13, fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{loc.name}</div>
                         <div style={{ display: 'flex', gap: 5, marginTop: 8, flexWrap: 'wrap' }}>
                           {TIME_PILLS.map((t) => <TimePill key={t} t={t} />)}
                           <TimePill t="+2" muted />
@@ -427,9 +429,9 @@ const DesktopIndex = () => {
 
             {/* Right map sidebar */}
             <div>
-              <div style={{ ...card, padding: 16 }}>
+              <div className="bg-card border border-border rounded-xl shadow-sm" style={{ padding: 16 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-                  <div style={{ fontSize: 14, fontWeight: 700, color: COLORS.text }}>Места рядом с вами</div>
+                  <div className="text-foreground" style={{ fontSize: 14, fontWeight: 700 }}>Места рядом с вами</div>
                   <button
                     onClick={() => setView('results')}
                     style={{ background: 'none', border: 'none', color: COLORS.accent, fontSize: 12, fontWeight: 600, cursor: 'pointer' }}
@@ -440,7 +442,7 @@ const DesktopIndex = () => {
                     <MapView services={allLocations.slice(0, 50)} onMarkerClick={() => setView('results')} center={mapCenter} userLocation={userLocation} nearbyMode={false} />
                   </React.Suspense>
                 </div>
-                <div style={{ display: 'flex', gap: 14, marginTop: 12, fontSize: 12, color: COLORS.muted, flexWrap: 'wrap' }}>
+                <div className="text-muted-foreground" style={{ display: 'flex', gap: 14, marginTop: 12, fontSize: 12, flexWrap: 'wrap' }}>
                   <span>🟢 Есть места</span>
                   <span>🟡 Скоро освободится</span>
                   <span>🔴 Нет мест</span>
@@ -450,7 +452,7 @@ const DesktopIndex = () => {
           </div>
 
           {/* SECTION 4 — Trust strip */}
-          <div style={{ ...card, padding: 28, display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 24, marginBottom: 40 }}>
+          <div className="bg-card border border-border rounded-xl shadow-sm" style={{ padding: 28, display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 24, marginBottom: 40 }}>
             {[
               { icon: <ShieldCheck size={20} />, title: 'Проверенные заведения', sub: 'Только реальные отзывы и рейтинги' },
               { icon: <CalendarCheck size={20} />, title: 'Онлайн-запись', sub: 'Мгновенное подтверждение и напоминания' },
@@ -464,8 +466,8 @@ const DesktopIndex = () => {
                   display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
                 }}>{t.icon}</div>
                 <div>
-                  <div style={{ fontSize: 14, fontWeight: 700, color: COLORS.text }}>{t.title}</div>
-                  <div style={{ fontSize: 12, color: COLORS.muted, marginTop: 4, lineHeight: 1.5 }}>{t.sub}</div>
+                  <div className="text-foreground" style={{ fontSize: 14, fontWeight: 700 }}>{t.title}</div>
+                  <div className="text-muted-foreground" style={{ fontSize: 12, marginTop: 4, lineHeight: 1.5 }}>{t.sub}</div>
                 </div>
               </div>
             ))}
@@ -489,7 +491,7 @@ const DesktopIndex = () => {
   const showMap = resultsMode === 'map' || resultsMode === 'split';
 
   return (
-    <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', overflow: 'hidden', background: COLORS.bg, fontFamily: COLORS.font, color: COLORS.text }}>
+    <div className="min-h-screen bg-background text-foreground font-sans" style={{ height: '100vh', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
       <DesktopHeader
         searchValue={search}
         onSearch={setSearch}
@@ -512,7 +514,7 @@ const DesktopIndex = () => {
           <ChevronLeft size={16} /> Назад
         </button>
 
-        <div style={{ fontSize: 15, fontWeight: 700, color: COLORS.text }}>
+        <div className="text-foreground" style={{ fontSize: 15, fontWeight: 700 }}>
           {search ? `«${search}» — ` : ''}{filtered.length} заведений
         </div>
 
@@ -620,9 +622,9 @@ const DesktopIndex = () => {
 
             <div style={{ flex: 1, overflowY: 'auto', padding: '4px 16px 16px' }}>
               {loading ? (
-                <div style={{ padding: 32, textAlign: 'center', color: COLORS.muted, fontSize: 14 }}>Загрузка…</div>
+                <div className="text-muted-foreground" style={{ padding: 32, textAlign: 'center', fontSize: 14 }}>Загрузка…</div>
               ) : enriched.length === 0 ? (
-                <div style={{ padding: 32, textAlign: 'center', color: COLORS.muted, fontSize: 14 }}>Ничего не найдено</div>
+                <div className="text-muted-foreground" style={{ padding: 32, textAlign: 'center', fontSize: 14 }}>Ничего не найдено</div>
               ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                   {enriched.map((loc, idx) => {
@@ -667,18 +669,18 @@ const DesktopIndex = () => {
                         </div>
                         <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 4 }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                            <span style={{ fontSize: 14, fontWeight: 700, color: COLORS.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>{loc.name}</span>
+                            <span className="text-foreground" style={{ fontSize: 14, fontWeight: 700, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>{loc.name}</span>
                             {loc.verified && <BadgeCheck size={14} color={COLORS.accent} />}
                             <Heart size={14} color={COLORS.muted} style={{ cursor: 'pointer' }} onClick={(e) => e.stopPropagation()} />
                           </div>
                           <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 12, color: COLORS.text2 }}>
                             <Star size={12} fill="#f59e0b" color="#f59e0b" />
                             <span style={{ fontWeight: 600 }}>{loc.rating?.toFixed(1) || 'Новое'}</span>
-                            <span style={{ color: COLORS.muted }}>({loc.review_count || 0})</span>
-                            <span style={{ color: COLORS.muted }}>•</span>
-                            <span style={{ color: COLORS.muted, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{loc.address || loc.city || ''}</span>
+                            <span className="text-muted-foreground">({loc.review_count || 0})</span>
+                            <span className="text-muted-foreground">•</span>
+                            <span className="text-muted-foreground" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{loc.address || loc.city || ''}</span>
                           </div>
-                          <div style={{ fontSize: 14, fontWeight: 700, color: COLORS.text }}>
+                          <div className="text-foreground" style={{ fontSize: 14, fontWeight: 700 }}>
                             {loc.price_from ? `от ${loc.price_from.toLocaleString('ru-RU')} сум` : ''}
                           </div>
                           <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
@@ -707,9 +709,9 @@ const DesktopIndex = () => {
               )}
             </div>
 
-            <div style={{
+            <div className="text-muted-foreground" style={{
               padding: '10px 20px', borderTop: `1px solid ${COLORS.border}`,
-              display: 'flex', gap: 16, fontSize: 11, color: COLORS.muted, flexWrap: 'wrap',
+              display: 'flex', gap: 16, fontSize: 11, flexWrap: 'wrap',
             }}>
               <span>🟢 Есть места</span>
               <span>🟡 Скоро освободится</span>
