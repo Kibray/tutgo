@@ -130,6 +130,7 @@ const BookingConfirm = () => {
         navigator.clipboard.writeText(shareText);
         toast({ title: t('booking.copied') });
       }
+    };
     const handleCancel = async () => {
       if (!appointmentData?.id) return;
       const { error } = await supabase.from('appointments').update({ status: 'cancelled' }).eq('id', appointmentData.id);
