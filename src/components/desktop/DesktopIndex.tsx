@@ -709,9 +709,9 @@ const DesktopIndex = () => {
               )}
             </div>
 
-            <div style={{
+            <div className="text-muted-foreground" style={{
               padding: '10px 20px', borderTop: `1px solid ${COLORS.border}`,
-              display: 'flex', gap: 16, fontSize: 11, color: COLORS.muted, flexWrap: 'wrap',
+              display: 'flex', gap: 16, fontSize: 11, flexWrap: 'wrap',
             }}>
               <span>🟢 Есть места</span>
               <span>🟡 Скоро освободится</span>
