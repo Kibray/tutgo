@@ -248,7 +248,7 @@ const DesktopIndex = () => {
                 }}>
                   <MapPin size={40} color={COLORS.accent} strokeWidth={2.2} fill={COLORS.accent} />
                 </div>
-                <div style={{ fontSize: 15, fontWeight: 600, color: COLORS.text }}>Посмотрите места на карте</div>
+                <div className="text-foreground" style={{ fontSize: 15, fontWeight: 600 }}>Посмотрите места на карте</div>
                 <div style={{ fontSize: 13, color: COLORS.muted, lineHeight: 1.5 }}>
                   Удобный поиск рядом с вами и актуальная информация о свободном времени
                 </div>
@@ -265,7 +265,7 @@ const DesktopIndex = () => {
 
               <div className="bg-card border border-border rounded-xl shadow-sm" style={{ padding: 20, display: 'flex', flexDirection: 'column', gap: 8, alignItems: 'flex-start' }}>
                 <div style={{ fontSize: 40, lineHeight: 1 }}>🎁</div>
-                <div style={{ fontWeight: 700, fontSize: 15, color: COLORS.text }}>Дарим 10% на первое посещение</div>
+                <div className="text-foreground" style={{ fontWeight: 700, fontSize: 15 }}>Дарим 10% на первое посещение</div>
                 <div style={{ fontSize: 13, color: COLORS.muted, lineHeight: 1.5 }}>
                   Зарегистрируйтесь и получите скидку на любую услугу в вашем городе
                 </div>
@@ -315,7 +315,7 @@ const DesktopIndex = () => {
               {/* Popular */}
               <div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-                  <h2 style={{ fontSize: 18, fontWeight: 700, margin: 0, color: COLORS.text }}>Популярно сейчас 🔥</h2>
+                  <h2 className="text-foreground" style={{ fontSize: 18, fontWeight: 700, margin: 0 }}>Популярно сейчас 🔥</h2>
                   <button
                     onClick={() => setView('results')}
                     style={{ background: 'none', border: 'none', color: COLORS.accent, fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
@@ -393,7 +393,7 @@ const DesktopIndex = () => {
               {/* Free time */}
               <div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-                  <h2 style={{ fontSize: 18, fontWeight: 700, margin: 0, color: COLORS.text }}>Свободное время сегодня</h2>
+                  <h2 className="text-foreground" style={{ fontSize: 18, fontWeight: 700, margin: 0 }}>Свободное время сегодня</h2>
                   <button
                     onClick={() => setView('results')}
                     style={{ background: 'none', border: 'none', color: COLORS.accent, fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
@@ -415,7 +415,7 @@ const DesktopIndex = () => {
                         {!loc.gallery?.[0] && <PhotoPlaceholder size={20} />}
                       </div>
                       <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontSize: 13, fontWeight: 600, color: COLORS.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{loc.name}</div>
+                        <div className="text-foreground" style={{ fontSize: 13, fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{loc.name}</div>
                         <div style={{ display: 'flex', gap: 5, marginTop: 8, flexWrap: 'wrap' }}>
                           {TIME_PILLS.map((t) => <TimePill key={t} t={t} />)}
                           <TimePill t="+2" muted />
