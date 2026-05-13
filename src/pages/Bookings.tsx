@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Calendar, Clock, MapPin, ChevronRight, Star, Loader2, Heart, X, AlertTriangle } from 'lucide-react';
 import BottomNav from '@/components/BottomNav';
@@ -21,6 +21,8 @@ const Bookings = () => {
   const { t, lang } = usePreferences();
   const { favoriteIds, isFavorite, toggleFavorite } = useFavorites();
   const navigate = useNavigate();
+  const { state: routeState } = useLocation() as { state: { highlightId?: string } | null };
+  const highlightId = routeState?.highlightId;
   const [appointments, setAppointments] = useState<any[]>([]);
   const [favoriteLocations, setFavoriteLocations] = useState<LocationItem[]>([]);
   const [loading, setLoading] = useState(true);
