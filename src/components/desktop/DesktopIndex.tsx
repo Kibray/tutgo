@@ -239,7 +239,7 @@ const DesktopIndex = () => {
 
             {/* Sidebar */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-              <div style={{ ...card, padding: 20, display: 'flex', flexDirection: 'column', gap: 10, alignItems: 'flex-start' }}>
+              <div className="bg-card border border-border rounded-xl shadow-sm" style={{ padding: 20, display: 'flex', flexDirection: 'column', gap: 10, alignItems: 'flex-start' }}>
                 <div style={{
                   width: 80, height: 80, borderRadius: 16, alignSelf: 'center',
                   background: COLORS.accentBg,
@@ -263,7 +263,7 @@ const DesktopIndex = () => {
                 </button>
               </div>
 
-              <div style={{ ...card, padding: 20, display: 'flex', flexDirection: 'column', gap: 8, alignItems: 'flex-start' }}>
+              <div className="bg-card border border-border rounded-xl shadow-sm" style={{ padding: 20, display: 'flex', flexDirection: 'column', gap: 8, alignItems: 'flex-start' }}>
                 <div style={{ fontSize: 40, lineHeight: 1 }}>🎁</div>
                 <div style={{ fontWeight: 700, fontSize: 15, color: COLORS.text }}>Дарим 10% на первое посещение</div>
                 <div style={{ fontSize: 13, color: COLORS.muted, lineHeight: 1.5 }}>
@@ -284,7 +284,7 @@ const DesktopIndex = () => {
           </div>
 
           {/* SECTION 2 — Category tabs */}
-          <div style={{ ...card, padding: '0 8px', overflowX: 'auto', marginBottom: 24 }}>
+          <div className="bg-card border border-border rounded-xl shadow-sm" style={{ padding: '0 8px', overflowX: 'auto', marginBottom: 24 }}>
             <div style={{ display: 'flex', gap: 0, minWidth: 'fit-content' }}>
               {[{ id: 'all', name: 'Все категории', icon: '🏠' }, ...categories].map((c) => {
                 const active = landingCategory === c.id;
