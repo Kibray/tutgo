@@ -249,7 +249,7 @@ const DesktopIndex = () => {
                   <MapPin size={40} color={COLORS.accent} strokeWidth={2.2} fill={COLORS.accent} />
                 </div>
                 <div className="text-foreground" style={{ fontSize: 15, fontWeight: 600 }}>Посмотрите места на карте</div>
-                <div style={{ fontSize: 13, color: COLORS.muted, lineHeight: 1.5 }}>
+                <div className="text-muted-foreground" style={{ fontSize: 13, lineHeight: 1.5 }}>
                   Удобный поиск рядом с вами и актуальная информация о свободном времени
                 </div>
                 <button
@@ -266,7 +266,7 @@ const DesktopIndex = () => {
               <div className="bg-card border border-border rounded-xl shadow-sm" style={{ padding: 20, display: 'flex', flexDirection: 'column', gap: 8, alignItems: 'flex-start' }}>
                 <div style={{ fontSize: 40, lineHeight: 1 }}>🎁</div>
                 <div className="text-foreground" style={{ fontWeight: 700, fontSize: 15 }}>Дарим 10% на первое посещение</div>
-                <div style={{ fontSize: 13, color: COLORS.muted, lineHeight: 1.5 }}>
+                <div className="text-muted-foreground" style={{ fontSize: 13, lineHeight: 1.5 }}>
                   Зарегистрируйтесь и получите скидку на любую услугу в вашем городе
                 </div>
                 <button
@@ -370,9 +370,9 @@ const DesktopIndex = () => {
                         <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, color: COLORS.text2 }}>
                           <Star size={12} fill="#f59e0b" color="#f59e0b" />
                           <span style={{ fontWeight: 600 }}>{loc.rating?.toFixed(1) || 'Новое'}</span>
-                          <span style={{ color: COLORS.muted }}>({loc.review_count || 0})</span>
-                          <span style={{ color: COLORS.muted }}>•</span>
-                          <span style={{ color: COLORS.muted, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{loc.sub_category || loc.city || ''}</span>
+                          <span className="text-muted-foreground">({loc.review_count || 0})</span>
+                          <span className="text-muted-foreground">•</span>
+                          <span className="text-muted-foreground" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{loc.sub_category || loc.city || ''}</span>
                         </div>
                         {loc.price_from ? (
                           <div className="text-foreground" style={{ fontSize: 14, fontWeight: 700 }}>
@@ -442,7 +442,7 @@ const DesktopIndex = () => {
                     <MapView services={allLocations.slice(0, 50)} onMarkerClick={() => setView('results')} center={mapCenter} userLocation={userLocation} nearbyMode={false} />
                   </React.Suspense>
                 </div>
-                <div style={{ display: 'flex', gap: 14, marginTop: 12, fontSize: 12, color: COLORS.muted, flexWrap: 'wrap' }}>
+                <div className="text-muted-foreground" style={{ display: 'flex', gap: 14, marginTop: 12, fontSize: 12, flexWrap: 'wrap' }}>
                   <span>🟢 Есть места</span>
                   <span>🟡 Скоро освободится</span>
                   <span>🔴 Нет мест</span>
@@ -467,7 +467,7 @@ const DesktopIndex = () => {
                 }}>{t.icon}</div>
                 <div>
                   <div className="text-foreground" style={{ fontSize: 14, fontWeight: 700 }}>{t.title}</div>
-                  <div style={{ fontSize: 12, color: COLORS.muted, marginTop: 4, lineHeight: 1.5 }}>{t.sub}</div>
+                  <div className="text-muted-foreground" style={{ fontSize: 12, marginTop: 4, lineHeight: 1.5 }}>{t.sub}</div>
                 </div>
               </div>
             ))}
