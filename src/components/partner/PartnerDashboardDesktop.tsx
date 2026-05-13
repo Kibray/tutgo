@@ -47,6 +47,7 @@ const PartnerDashboardDesktop = () => {
   const [queueTickets, setQueueTickets] = useState<any[]>([]);
   const [weekRevenue, setWeekRevenue] = useState<{ day: string; revenue: number }[]>([]);
   const [topClients, setTopClients] = useState<{ name: string; total: number; count: number }[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const today = useMemo(() => new Date(), []);
   const todayStr = format(today, 'yyyy-MM-dd');
