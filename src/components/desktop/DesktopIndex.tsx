@@ -622,9 +622,9 @@ const DesktopIndex = () => {
 
             <div style={{ flex: 1, overflowY: 'auto', padding: '4px 16px 16px' }}>
               {loading ? (
-                <div style={{ padding: 32, textAlign: 'center', color: COLORS.muted, fontSize: 14 }}>Загрузка…</div>
+                <div className="text-muted-foreground" style={{ padding: 32, textAlign: 'center', fontSize: 14 }}>Загрузка…</div>
               ) : enriched.length === 0 ? (
-                <div style={{ padding: 32, textAlign: 'center', color: COLORS.muted, fontSize: 14 }}>Ничего не найдено</div>
+                <div className="text-muted-foreground" style={{ padding: 32, textAlign: 'center', fontSize: 14 }}>Ничего не найдено</div>
               ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                   {enriched.map((loc, idx) => {
