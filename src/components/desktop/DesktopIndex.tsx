@@ -552,7 +552,7 @@ const DesktopIndex = () => {
           {search ? `«${search}» — ` : ''}{filtered.length} заведений
         </div>
 
-        <div style={{ display: 'flex', gap: 6, flex: 1, marginLeft: 8, flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', gap: 6, flex: 1, marginLeft: 8, flexWrap: 'wrap', position: 'relative', zIndex: 9998 }}>
           <button
             onClick={() => setShowMoreFilters(true)}
             style={{
@@ -588,7 +588,7 @@ const DesktopIndex = () => {
             </button>
             {showPriceMenu && (
               <div style={{
-                position: 'absolute', top: 38, left: 0, zIndex: 50,
+                position: 'absolute', top: 38, left: 0, zIndex: 9999,
                 background: '#fff', border: `1px solid ${COLORS.border}`, borderRadius: 8,
                 boxShadow: '0 4px 12px rgba(0,0,0,0.1)', minWidth: 200, padding: 4,
               }}>
@@ -636,7 +636,7 @@ const DesktopIndex = () => {
             </button>
             {showRatingMenu && (
               <div style={{
-                position: 'absolute', top: 38, left: 0, zIndex: 50,
+                position: 'absolute', top: 38, left: 0, zIndex: 9999,
                 background: '#fff', border: `1px solid ${COLORS.border}`, borderRadius: 8,
                 boxShadow: '0 4px 12px rgba(0,0,0,0.1)', minWidth: 180, padding: 4,
               }}>
