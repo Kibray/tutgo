@@ -553,29 +553,117 @@ const DesktopIndex = () => {
         </div>
 
         <div style={{ display: 'flex', gap: 6, flex: 1, marginLeft: 8, flexWrap: 'wrap' }}>
-          <button style={{
-            display: 'flex', alignItems: 'center', gap: 5,
-            height: 34, padding: '0 12px',
-            border: `1px solid ${COLORS.border}`, borderRadius: 8,
-            background: '#fff', fontSize: 12, color: COLORS.text2, cursor: 'pointer',
-          }}>
-            <Filter size={12} /> Фильтры
-            <span style={{
-              background: COLORS.accent, color: '#fff', borderRadius: 8,
-              fontSize: 10, fontWeight: 700, padding: '0 5px', minWidth: 16, height: 16,
-              display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-            }}>2</span>
-          </button>
-          {[{ label: 'Цена' }, { label: 'Рейтинг' }].map((f) => (
-            <button key={f.label} style={{
+          <button
+            onClick={() => setShowMoreFilters(true)}
+            style={{
               display: 'flex', alignItems: 'center', gap: 5,
               height: 34, padding: '0 12px',
               border: `1px solid ${COLORS.border}`, borderRadius: 8,
               background: '#fff', fontSize: 12, color: COLORS.text2, cursor: 'pointer',
-            }}>
-              {f.label} <ChevronDown size={12} />
+            }}
+          >
+            <Filter size={12} /> Фильтры
+            {activeFilterCount > 0 && (
+              <span style={{
+                background: COLORS.accent, color: '#fff', borderRadius: 8,
+                fontSize: 10, fontWeight: 700, padding: '0 5px', minWidth: 16, height: 16,
+                display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+              }}>{activeFilterCount}</span>
+            )}
+          </button>
+
+          <div ref={priceMenuRef} style={{ position: 'relative' }}>
+            <button
+              onClick={() => { setShowPriceMenu((v) => !v); setShowRatingMenu(false); }}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 5,
+                height: 34, padding: '0 12px',
+                border: `1px solid ${priceSort ? COLORS.accent : COLORS.border}`, borderRadius: 8,
+                background: priceSort ? COLORS.accentBg : '#fff',
+                fontSize: 12, color: priceSort ? COLORS.accent : COLORS.text2, cursor: 'pointer',
+                fontWeight: priceSort ? 600 : 400,
+              }}
+            >
+              Цена{priceSort === 'asc' ? ' ↑' : priceSort === 'desc' ? ' ↓' : ''} <ChevronDown size={12} />
             </button>
-          ))}
+            {showPriceMenu && (
+              <div style={{
+                position: 'absolute', top: 38, left: 0, zIndex: 50,
+                background: '#fff', border: `1px solid ${COLORS.border}`, borderRadius: 8,
+                boxShadow: '0 4px 12px rgba(0,0,0,0.1)', minWidth: 200, padding: 4,
+              }}>
+                {[
+                  { v: 'asc' as const, label: 'Сначала дешевле' },
+                  { v: 'desc' as const, label: 'Сначала дороже' },
+                ].map((o) => (
+                  <button
+                    key={o.v}
+                    onClick={() => { setPriceSort(o.v); setShowPriceMenu(false); }}
+                    style={{
+                      display: 'block', width: '100%', textAlign: 'left',
+                      padding: '8px 10px', border: 'none', background: priceSort === o.v ? COLORS.accentBg : 'transparent',
+                      color: priceSort === o.v ? COLORS.accent : COLORS.text2,
+                      fontSize: 13, cursor: 'pointer', borderRadius: 6, fontWeight: priceSort === o.v ? 600 : 400,
+                    }}
+                  >{o.label}</button>
+                ))}
+                <button
+                  onClick={() => { setPriceSort(null); setShowPriceMenu(false); }}
+                  style={{
+                    display: 'block', width: '100%', textAlign: 'left',
+                    padding: '8px 10px', border: 'none', background: 'transparent',
+                    color: COLORS.muted, fontSize: 13, cursor: 'pointer', borderRadius: 6,
+                    borderTop: `1px solid ${COLORS.border}`, marginTop: 4,
+                  }}
+                >Сбросить</button>
+              </div>
+            )}
+          </div>
+
+          <div ref={ratingMenuRef} style={{ position: 'relative' }}>
+            <button
+              onClick={() => { setShowRatingMenu((v) => !v); setShowPriceMenu(false); }}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 5,
+                height: 34, padding: '0 12px',
+                border: `1px solid ${ratingMin ? COLORS.accent : COLORS.border}`, borderRadius: 8,
+                background: ratingMin ? COLORS.accentBg : '#fff',
+                fontSize: 12, color: ratingMin ? COLORS.accent : COLORS.text2, cursor: 'pointer',
+                fontWeight: ratingMin ? 600 : 400,
+              }}
+            >
+              Рейтинг{ratingMin ? ` ${ratingMin}+` : ''} <ChevronDown size={12} />
+            </button>
+            {showRatingMenu && (
+              <div style={{
+                position: 'absolute', top: 38, left: 0, zIndex: 50,
+                background: '#fff', border: `1px solid ${COLORS.border}`, borderRadius: 8,
+                boxShadow: '0 4px 12px rgba(0,0,0,0.1)', minWidth: 180, padding: 4,
+              }}>
+                {[4.0, 4.5].map((v) => (
+                  <button
+                    key={v}
+                    onClick={() => { setRatingMin(v); setShowRatingMenu(false); }}
+                    style={{
+                      display: 'block', width: '100%', textAlign: 'left',
+                      padding: '8px 10px', border: 'none', background: ratingMin === v ? COLORS.accentBg : 'transparent',
+                      color: ratingMin === v ? COLORS.accent : COLORS.text2,
+                      fontSize: 13, cursor: 'pointer', borderRadius: 6, fontWeight: ratingMin === v ? 600 : 400,
+                    }}
+                  >От {v.toFixed(1)} ★</button>
+                ))}
+                <button
+                  onClick={() => { setRatingMin(null); setShowRatingMenu(false); }}
+                  style={{
+                    display: 'block', width: '100%', textAlign: 'left',
+                    padding: '8px 10px', border: 'none', background: 'transparent',
+                    color: COLORS.muted, fontSize: 13, cursor: 'pointer', borderRadius: 6,
+                    borderTop: `1px solid ${COLORS.border}`, marginTop: 4,
+                  }}
+                >Сбросить</button>
+              </div>
+            )}
+          </div>
 
           <button
             onClick={() => setOpenNow(!openNow)}
@@ -601,11 +689,14 @@ const DesktopIndex = () => {
             </span>
           </button>
 
-          <button style={{
-            display: 'flex', alignItems: 'center', gap: 5,
-            height: 34, padding: '0 12px', border: `1px solid ${COLORS.border}`,
-            borderRadius: 8, background: '#fff', fontSize: 12, color: COLORS.text2, cursor: 'pointer',
-          }}>
+          <button
+            onClick={() => setShowMoreFilters(true)}
+            style={{
+              display: 'flex', alignItems: 'center', gap: 5,
+              height: 34, padding: '0 12px', border: `1px solid ${COLORS.border}`,
+              borderRadius: 8, background: '#fff', fontSize: 12, color: COLORS.text2, cursor: 'pointer',
+            }}
+          >
             Ещё фильтры <ChevronDown size={12} />
           </button>
         </div>
