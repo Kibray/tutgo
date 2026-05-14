@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   Search, MapPin, Calendar, Star, ShieldCheck, Clock, CalendarCheck, Filter,
-  ChevronDown, ChevronLeft, List, LayoutGrid, Map as MapIcon, Locate, BadgeCheck, Heart,
+  ChevronDown, ChevronLeft, List, LayoutGrid, Map as MapIcon, Locate, BadgeCheck, Heart, X,
 } from 'lucide-react';
 import BusinessSheet from '@/components/BusinessSheet';
 const MapView = React.lazy(() => import('@/components/MapView'));
@@ -82,6 +82,26 @@ const DesktopIndex = () => {
   const [openNow, setOpenNow] = useState(false);
   const [landingCategory, setLandingCategory] = useState('all');
 
+  // Filter bar state
+  const [priceSort, setPriceSort] = useState<'asc' | 'desc' | null>(null);
+  const [ratingMin, setRatingMin] = useState<number | null>(null);
+  const [showPriceMenu, setShowPriceMenu] = useState(false);
+  const [showRatingMenu, setShowRatingMenu] = useState(false);
+  const [showMoreFilters, setShowMoreFilters] = useState(false);
+  const priceMenuRef = useRef<HTMLDivElement | null>(null);
+  const ratingMenuRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const onDown = (e: MouseEvent) => {
+      if (priceMenuRef.current && !priceMenuRef.current.contains(e.target as Node)) setShowPriceMenu(false);
+      if (ratingMenuRef.current && !ratingMenuRef.current.contains(e.target as Node)) setShowRatingMenu(false);
+    };
+    document.addEventListener('mousedown', onDown);
+    return () => document.removeEventListener('mousedown', onDown);
+  }, []);
+
+  const activeFilterCount = (priceSort ? 1 : 0) + (ratingMin ? 1 : 0);
+
   const { categories } = useCategories();
 
   const autoGeolocated = useRef(false);
@@ -128,6 +148,20 @@ const DesktopIndex = () => {
       _distance: l.lat && l.lng ? getDistanceKm(userLocation[0], userLocation[1], l.lat, l.lng) : null,
     }));
   }, [filtered, userLocation]);
+
+  // Apply filter-bar filters to LIST only (map keeps all `filtered`).
+  const displayList = useMemo(() => {
+    let list = enriched;
+    if (ratingMin != null) list = list.filter((l) => (l.rating || 0) >= ratingMin);
+    if (priceSort) {
+      list = [...list].sort((a, b) => {
+        const ap = a.price_from ?? Number.POSITIVE_INFINITY;
+        const bp = b.price_from ?? Number.POSITIVE_INFINITY;
+        return priceSort === 'asc' ? ap - bp : bp - ap;
+      });
+    }
+    return list;
+  }, [enriched, ratingMin, priceSort]);
 
   const popularEnriched = useMemo(() => {
     if (!userLocation) return popular.map((l) => ({ ...l, _distance: null as number | null }));
@@ -519,29 +553,117 @@ const DesktopIndex = () => {
         </div>
 
         <div style={{ display: 'flex', gap: 6, flex: 1, marginLeft: 8, flexWrap: 'wrap' }}>
-          <button style={{
-            display: 'flex', alignItems: 'center', gap: 5,
-            height: 34, padding: '0 12px',
-            border: `1px solid ${COLORS.border}`, borderRadius: 8,
-            background: '#fff', fontSize: 12, color: COLORS.text2, cursor: 'pointer',
-          }}>
-            <Filter size={12} /> Фильтры
-            <span style={{
-              background: COLORS.accent, color: '#fff', borderRadius: 8,
-              fontSize: 10, fontWeight: 700, padding: '0 5px', minWidth: 16, height: 16,
-              display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-            }}>2</span>
-          </button>
-          {[{ label: 'Цена' }, { label: 'Рейтинг' }].map((f) => (
-            <button key={f.label} style={{
+          <button
+            onClick={() => setShowMoreFilters(true)}
+            style={{
               display: 'flex', alignItems: 'center', gap: 5,
               height: 34, padding: '0 12px',
               border: `1px solid ${COLORS.border}`, borderRadius: 8,
               background: '#fff', fontSize: 12, color: COLORS.text2, cursor: 'pointer',
-            }}>
-              {f.label} <ChevronDown size={12} />
+            }}
+          >
+            <Filter size={12} /> Фильтры
+            {activeFilterCount > 0 && (
+              <span style={{
+                background: COLORS.accent, color: '#fff', borderRadius: 8,
+                fontSize: 10, fontWeight: 700, padding: '0 5px', minWidth: 16, height: 16,
+                display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+              }}>{activeFilterCount}</span>
+            )}
+          </button>
+
+          <div ref={priceMenuRef} style={{ position: 'relative' }}>
+            <button
+              onClick={() => { setShowPriceMenu((v) => !v); setShowRatingMenu(false); }}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 5,
+                height: 34, padding: '0 12px',
+                border: `1px solid ${priceSort ? COLORS.accent : COLORS.border}`, borderRadius: 8,
+                background: priceSort ? COLORS.accentBg : '#fff',
+                fontSize: 12, color: priceSort ? COLORS.accent : COLORS.text2, cursor: 'pointer',
+                fontWeight: priceSort ? 600 : 400,
+              }}
+            >
+              Цена{priceSort === 'asc' ? ' ↑' : priceSort === 'desc' ? ' ↓' : ''} <ChevronDown size={12} />
             </button>
-          ))}
+            {showPriceMenu && (
+              <div style={{
+                position: 'absolute', top: 38, left: 0, zIndex: 50,
+                background: '#fff', border: `1px solid ${COLORS.border}`, borderRadius: 8,
+                boxShadow: '0 4px 12px rgba(0,0,0,0.1)', minWidth: 200, padding: 4,
+              }}>
+                {[
+                  { v: 'asc' as const, label: 'Сначала дешевле' },
+                  { v: 'desc' as const, label: 'Сначала дороже' },
+                ].map((o) => (
+                  <button
+                    key={o.v}
+                    onClick={() => { setPriceSort(o.v); setShowPriceMenu(false); }}
+                    style={{
+                      display: 'block', width: '100%', textAlign: 'left',
+                      padding: '8px 10px', border: 'none', background: priceSort === o.v ? COLORS.accentBg : 'transparent',
+                      color: priceSort === o.v ? COLORS.accent : COLORS.text2,
+                      fontSize: 13, cursor: 'pointer', borderRadius: 6, fontWeight: priceSort === o.v ? 600 : 400,
+                    }}
+                  >{o.label}</button>
+                ))}
+                <button
+                  onClick={() => { setPriceSort(null); setShowPriceMenu(false); }}
+                  style={{
+                    display: 'block', width: '100%', textAlign: 'left',
+                    padding: '8px 10px', border: 'none', background: 'transparent',
+                    color: COLORS.muted, fontSize: 13, cursor: 'pointer', borderRadius: 6,
+                    borderTop: `1px solid ${COLORS.border}`, marginTop: 4,
+                  }}
+                >Сбросить</button>
+              </div>
+            )}
+          </div>
+
+          <div ref={ratingMenuRef} style={{ position: 'relative' }}>
+            <button
+              onClick={() => { setShowRatingMenu((v) => !v); setShowPriceMenu(false); }}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 5,
+                height: 34, padding: '0 12px',
+                border: `1px solid ${ratingMin ? COLORS.accent : COLORS.border}`, borderRadius: 8,
+                background: ratingMin ? COLORS.accentBg : '#fff',
+                fontSize: 12, color: ratingMin ? COLORS.accent : COLORS.text2, cursor: 'pointer',
+                fontWeight: ratingMin ? 600 : 400,
+              }}
+            >
+              Рейтинг{ratingMin ? ` ${ratingMin}+` : ''} <ChevronDown size={12} />
+            </button>
+            {showRatingMenu && (
+              <div style={{
+                position: 'absolute', top: 38, left: 0, zIndex: 50,
+                background: '#fff', border: `1px solid ${COLORS.border}`, borderRadius: 8,
+                boxShadow: '0 4px 12px rgba(0,0,0,0.1)', minWidth: 180, padding: 4,
+              }}>
+                {[4.0, 4.5].map((v) => (
+                  <button
+                    key={v}
+                    onClick={() => { setRatingMin(v); setShowRatingMenu(false); }}
+                    style={{
+                      display: 'block', width: '100%', textAlign: 'left',
+                      padding: '8px 10px', border: 'none', background: ratingMin === v ? COLORS.accentBg : 'transparent',
+                      color: ratingMin === v ? COLORS.accent : COLORS.text2,
+                      fontSize: 13, cursor: 'pointer', borderRadius: 6, fontWeight: ratingMin === v ? 600 : 400,
+                    }}
+                  >От {v.toFixed(1)} ★</button>
+                ))}
+                <button
+                  onClick={() => { setRatingMin(null); setShowRatingMenu(false); }}
+                  style={{
+                    display: 'block', width: '100%', textAlign: 'left',
+                    padding: '8px 10px', border: 'none', background: 'transparent',
+                    color: COLORS.muted, fontSize: 13, cursor: 'pointer', borderRadius: 6,
+                    borderTop: `1px solid ${COLORS.border}`, marginTop: 4,
+                  }}
+                >Сбросить</button>
+              </div>
+            )}
+          </div>
 
           <button
             onClick={() => setOpenNow(!openNow)}
@@ -567,11 +689,14 @@ const DesktopIndex = () => {
             </span>
           </button>
 
-          <button style={{
-            display: 'flex', alignItems: 'center', gap: 5,
-            height: 34, padding: '0 12px', border: `1px solid ${COLORS.border}`,
-            borderRadius: 8, background: '#fff', fontSize: 12, color: COLORS.text2, cursor: 'pointer',
-          }}>
+          <button
+            onClick={() => setShowMoreFilters(true)}
+            style={{
+              display: 'flex', alignItems: 'center', gap: 5,
+              height: 34, padding: '0 12px', border: `1px solid ${COLORS.border}`,
+              borderRadius: 8, background: '#fff', fontSize: 12, color: COLORS.text2, cursor: 'pointer',
+            }}
+          >
             Ещё фильтры <ChevronDown size={12} />
           </button>
         </div>
@@ -617,17 +742,17 @@ const DesktopIndex = () => {
             display: 'flex', flexDirection: 'column', overflow: 'hidden',
           }}>
             <div style={{ padding: '14px 20px 8px', fontSize: 13, fontWeight: 600, color: COLORS.text2 }}>
-              {filtered.length} заведений в Ташкенте
+              {displayList.length} заведений в Ташкенте
             </div>
 
             <div style={{ flex: 1, overflowY: 'auto', padding: '4px 16px 16px' }}>
               {loading ? (
                 <div className="text-muted-foreground" style={{ padding: 32, textAlign: 'center', fontSize: 14 }}>Загрузка…</div>
-              ) : enriched.length === 0 ? (
+              ) : displayList.length === 0 ? (
                 <div className="text-muted-foreground" style={{ padding: 32, textAlign: 'center', fontSize: 14 }}>Ничего не найдено</div>
               ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                  {enriched.map((loc, idx) => {
+                  {displayList.map((loc, idx) => {
                     const active = activeCard === loc.id;
                     return (
                       <motion.div
@@ -695,14 +820,14 @@ const DesktopIndex = () => {
                     );
                   })}
 
-                  {enriched.length > 0 && (
+                  {displayList.length > 0 && (
                     <button style={{
                       marginTop: 8, width: '100%',
                       background: '#fff', border: `1px solid ${COLORS.border}`, borderRadius: 8,
                       padding: 10, fontSize: 13, fontWeight: 600, color: COLORS.accent, cursor: 'pointer',
                       display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4,
                     }}>
-                      Показать ещё {Math.max(0, enriched.length - 5)} заведений <ChevronDown size={14} />
+                      Показать ещё {Math.max(0, displayList.length - 5)} заведений <ChevronDown size={14} />
                     </button>
                   )}
                 </div>
@@ -751,6 +876,107 @@ const DesktopIndex = () => {
 
       <BusinessSheet service={sheetService} open={!!sheetService} onClose={() => setSheetService(null)}
         onFullPage={() => { if (sheetService) { navigate(`/service/${sheetService.id}`); setSheetService(null); } }} />
+
+      {showMoreFilters && (
+        <div
+          onClick={() => setShowMoreFilters(false)}
+          style={{
+            position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.45)',
+            zIndex: 2000, display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              background: '#fff', borderRadius: 14, width: 460, maxWidth: '92vw',
+              padding: 24, boxShadow: '0 12px 40px rgba(0,0,0,0.2)',
+              display: 'flex', flexDirection: 'column', gap: 20,
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div style={{ fontSize: 17, fontWeight: 700, color: COLORS.text }}>Все фильтры</div>
+              <button
+                onClick={() => setShowMoreFilters(false)}
+                style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: COLORS.muted }}
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              <div style={{ fontSize: 13, fontWeight: 600, color: COLORS.text2 }}>Сортировка по цене</div>
+              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                {[
+                  { v: null, label: 'Любая' },
+                  { v: 'asc' as const, label: 'Сначала дешевле' },
+                  { v: 'desc' as const, label: 'Сначала дороже' },
+                ].map((o) => {
+                  const active = priceSort === o.v;
+                  return (
+                    <button
+                      key={String(o.v)}
+                      onClick={() => setPriceSort(o.v)}
+                      style={{
+                        height: 34, padding: '0 14px', borderRadius: 8,
+                        border: `1px solid ${active ? COLORS.accent : COLORS.border}`,
+                        background: active ? COLORS.accentBg : '#fff',
+                        color: active ? COLORS.accent : COLORS.text2,
+                        fontSize: 13, fontWeight: active ? 600 : 500, cursor: 'pointer',
+                      }}
+                    >{o.label}</button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              <div style={{ fontSize: 13, fontWeight: 600, color: COLORS.text2 }}>Минимальный рейтинг</div>
+              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                {[
+                  { v: null, label: 'Любой' },
+                  { v: 4.0, label: 'От 4.0 ★' },
+                  { v: 4.5, label: 'От 4.5 ★' },
+                ].map((o) => {
+                  const active = ratingMin === o.v;
+                  return (
+                    <button
+                      key={String(o.v)}
+                      onClick={() => setRatingMin(o.v as number | null)}
+                      style={{
+                        height: 34, padding: '0 14px', borderRadius: 8,
+                        border: `1px solid ${active ? COLORS.accent : COLORS.border}`,
+                        background: active ? COLORS.accentBg : '#fff',
+                        color: active ? COLORS.accent : COLORS.text2,
+                        fontSize: 13, fontWeight: active ? 600 : 500, cursor: 'pointer',
+                      }}
+                    >{o.label}</button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'space-between', gap: 10, marginTop: 4 }}>
+              <button
+                onClick={() => { setPriceSort(null); setRatingMin(null); }}
+                style={{
+                  height: 38, padding: '0 16px', borderRadius: 8,
+                  border: `1px solid ${COLORS.border}`, background: '#fff',
+                  color: COLORS.text2, fontSize: 13, fontWeight: 600, cursor: 'pointer',
+                }}
+              >Сбросить всё</button>
+              <button
+                onClick={() => setShowMoreFilters(false)}
+                style={{
+                  height: 38, padding: '0 20px', borderRadius: 8,
+                  border: 'none', background: COLORS.accent,
+                  color: '#fff', fontSize: 13, fontWeight: 700, cursor: 'pointer',
+                }}
+              >Применить</button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <React.Suspense fallback={null}>
         <AiAssistantFab onShowOnMap={(locs) => {
           const first = locs.find((l) => l.lat && l.lng);
