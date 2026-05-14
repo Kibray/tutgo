@@ -742,17 +742,17 @@ const DesktopIndex = () => {
             display: 'flex', flexDirection: 'column', overflow: 'hidden',
           }}>
             <div style={{ padding: '14px 20px 8px', fontSize: 13, fontWeight: 600, color: COLORS.text2 }}>
-              {filtered.length} заведений в Ташкенте
+              {displayList.length} заведений в Ташкенте
             </div>
 
             <div style={{ flex: 1, overflowY: 'auto', padding: '4px 16px 16px' }}>
               {loading ? (
                 <div className="text-muted-foreground" style={{ padding: 32, textAlign: 'center', fontSize: 14 }}>Загрузка…</div>
-              ) : enriched.length === 0 ? (
+              ) : displayList.length === 0 ? (
                 <div className="text-muted-foreground" style={{ padding: 32, textAlign: 'center', fontSize: 14 }}>Ничего не найдено</div>
               ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                  {enriched.map((loc, idx) => {
+                  {displayList.map((loc, idx) => {
                     const active = activeCard === loc.id;
                     return (
                       <motion.div
@@ -820,14 +820,14 @@ const DesktopIndex = () => {
                     );
                   })}
 
-                  {enriched.length > 0 && (
+                  {displayList.length > 0 && (
                     <button style={{
                       marginTop: 8, width: '100%',
                       background: '#fff', border: `1px solid ${COLORS.border}`, borderRadius: 8,
                       padding: 10, fontSize: 13, fontWeight: 600, color: COLORS.accent, cursor: 'pointer',
                       display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4,
                     }}>
-                      Показать ещё {Math.max(0, enriched.length - 5)} заведений <ChevronDown size={14} />
+                      Показать ещё {Math.max(0, displayList.length - 5)} заведений <ChevronDown size={14} />
                     </button>
                   )}
                 </div>
@@ -876,6 +876,107 @@ const DesktopIndex = () => {
 
       <BusinessSheet service={sheetService} open={!!sheetService} onClose={() => setSheetService(null)}
         onFullPage={() => { if (sheetService) { navigate(`/service/${sheetService.id}`); setSheetService(null); } }} />
+
+      {showMoreFilters && (
+        <div
+          onClick={() => setShowMoreFilters(false)}
+          style={{
+            position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.45)',
+            zIndex: 2000, display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              background: '#fff', borderRadius: 14, width: 460, maxWidth: '92vw',
+              padding: 24, boxShadow: '0 12px 40px rgba(0,0,0,0.2)',
+              display: 'flex', flexDirection: 'column', gap: 20,
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div style={{ fontSize: 17, fontWeight: 700, color: COLORS.text }}>Все фильтры</div>
+              <button
+                onClick={() => setShowMoreFilters(false)}
+                style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: COLORS.muted }}
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              <div style={{ fontSize: 13, fontWeight: 600, color: COLORS.text2 }}>Сортировка по цене</div>
+              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                {[
+                  { v: null, label: 'Любая' },
+                  { v: 'asc' as const, label: 'Сначала дешевле' },
+                  { v: 'desc' as const, label: 'Сначала дороже' },
+                ].map((o) => {
+                  const active = priceSort === o.v;
+                  return (
+                    <button
+                      key={String(o.v)}
+                      onClick={() => setPriceSort(o.v)}
+                      style={{
+                        height: 34, padding: '0 14px', borderRadius: 8,
+                        border: `1px solid ${active ? COLORS.accent : COLORS.border}`,
+                        background: active ? COLORS.accentBg : '#fff',
+                        color: active ? COLORS.accent : COLORS.text2,
+                        fontSize: 13, fontWeight: active ? 600 : 500, cursor: 'pointer',
+                      }}
+                    >{o.label}</button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              <div style={{ fontSize: 13, fontWeight: 600, color: COLORS.text2 }}>Минимальный рейтинг</div>
+              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                {[
+                  { v: null, label: 'Любой' },
+                  { v: 4.0, label: 'От 4.0 ★' },
+                  { v: 4.5, label: 'От 4.5 ★' },
+                ].map((o) => {
+                  const active = ratingMin === o.v;
+                  return (
+                    <button
+                      key={String(o.v)}
+                      onClick={() => setRatingMin(o.v as number | null)}
+                      style={{
+                        height: 34, padding: '0 14px', borderRadius: 8,
+                        border: `1px solid ${active ? COLORS.accent : COLORS.border}`,
+                        background: active ? COLORS.accentBg : '#fff',
+                        color: active ? COLORS.accent : COLORS.text2,
+                        fontSize: 13, fontWeight: active ? 600 : 500, cursor: 'pointer',
+                      }}
+                    >{o.label}</button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'space-between', gap: 10, marginTop: 4 }}>
+              <button
+                onClick={() => { setPriceSort(null); setRatingMin(null); }}
+                style={{
+                  height: 38, padding: '0 16px', borderRadius: 8,
+                  border: `1px solid ${COLORS.border}`, background: '#fff',
+                  color: COLORS.text2, fontSize: 13, fontWeight: 600, cursor: 'pointer',
+                }}
+              >Сбросить всё</button>
+              <button
+                onClick={() => setShowMoreFilters(false)}
+                style={{
+                  height: 38, padding: '0 20px', borderRadius: 8,
+                  border: 'none', background: COLORS.accent,
+                  color: '#fff', fontSize: 13, fontWeight: 700, cursor: 'pointer',
+                }}
+              >Применить</button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <React.Suspense fallback={null}>
         <AiAssistantFab onShowOnMap={(locs) => {
           const first = locs.find((l) => l.lat && l.lng);
