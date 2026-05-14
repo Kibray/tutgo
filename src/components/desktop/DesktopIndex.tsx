@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   Search, MapPin, Calendar, Star, ShieldCheck, Clock, CalendarCheck, Filter,
-  ChevronDown, ChevronLeft, List, LayoutGrid, Map as MapIcon, Locate, BadgeCheck, Heart,
+  ChevronDown, ChevronLeft, List, LayoutGrid, Map as MapIcon, Locate, BadgeCheck, Heart, X,
 } from 'lucide-react';
 import BusinessSheet from '@/components/BusinessSheet';
 const MapView = React.lazy(() => import('@/components/MapView'));
@@ -82,6 +82,26 @@ const DesktopIndex = () => {
   const [openNow, setOpenNow] = useState(false);
   const [landingCategory, setLandingCategory] = useState('all');
 
+  // Filter bar state
+  const [priceSort, setPriceSort] = useState<'asc' | 'desc' | null>(null);
+  const [ratingMin, setRatingMin] = useState<number | null>(null);
+  const [showPriceMenu, setShowPriceMenu] = useState(false);
+  const [showRatingMenu, setShowRatingMenu] = useState(false);
+  const [showMoreFilters, setShowMoreFilters] = useState(false);
+  const priceMenuRef = useRef<HTMLDivElement | null>(null);
+  const ratingMenuRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const onDown = (e: MouseEvent) => {
+      if (priceMenuRef.current && !priceMenuRef.current.contains(e.target as Node)) setShowPriceMenu(false);
+      if (ratingMenuRef.current && !ratingMenuRef.current.contains(e.target as Node)) setShowRatingMenu(false);
+    };
+    document.addEventListener('mousedown', onDown);
+    return () => document.removeEventListener('mousedown', onDown);
+  }, []);
+
+  const activeFilterCount = (priceSort ? 1 : 0) + (ratingMin ? 1 : 0);
+
   const { categories } = useCategories();
 
   const autoGeolocated = useRef(false);
@@ -128,6 +148,20 @@ const DesktopIndex = () => {
       _distance: l.lat && l.lng ? getDistanceKm(userLocation[0], userLocation[1], l.lat, l.lng) : null,
     }));
   }, [filtered, userLocation]);
+
+  // Apply filter-bar filters to LIST only (map keeps all `filtered`).
+  const displayList = useMemo(() => {
+    let list = enriched;
+    if (ratingMin != null) list = list.filter((l) => (l.rating || 0) >= ratingMin);
+    if (priceSort) {
+      list = [...list].sort((a, b) => {
+        const ap = a.price_from ?? Number.POSITIVE_INFINITY;
+        const bp = b.price_from ?? Number.POSITIVE_INFINITY;
+        return priceSort === 'asc' ? ap - bp : bp - ap;
+      });
+    }
+    return list;
+  }, [enriched, ratingMin, priceSort]);
 
   const popularEnriched = useMemo(() => {
     if (!userLocation) return popular.map((l) => ({ ...l, _distance: null as number | null }));
