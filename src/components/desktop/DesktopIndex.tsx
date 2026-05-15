@@ -206,7 +206,7 @@ const DesktopIndex = () => {
   // ============ LANDING VIEW ============
   if (view === 'landing') {
     return (
-      <div className="min-h-screen bg-background text-foreground font-sans">
+      <div className="min-h-screen text-foreground font-sans" style={{ background: 'linear-gradient(135deg, #f5e6ee 0%, #e8ecf7 50%, #e0e8f5 100%)' }}>
         <DesktopHeader
           searchValue={search}
           onSearch={setSearch}
@@ -572,7 +572,7 @@ const DesktopIndex = () => {
   const showMap = resultsMode === 'map' || resultsMode === 'split';
 
   return (
-    <div className="min-h-screen bg-background text-foreground font-sans" style={{ height: '100vh', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+    <div className="min-h-screen text-foreground font-sans" style={{ background: 'linear-gradient(135deg, #f5e6ee 0%, #e8ecf7 50%, #e0e8f5 100%)' }} style={{ height: '100vh', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
       <DesktopHeader
         searchValue={search}
         onSearch={setSearch}
