@@ -80,7 +80,7 @@ const DesktopIndex = () => {
   const [activeCard, setActiveCard] = useState<string | null>(null);
   const [resultsMode, setResultsMode] = useState<'list' | 'split' | 'map'>('split');
   const [openNow, setOpenNow] = useState(false);
-  const [landingCategory, setLandingCategory] = useState('all');
+  // landingCategory removed — uses shared `category` state
 
   const HERO_IMAGES = [
     'https://images.unsplash.com/photo-1585747860715-2ba37e788b70?w=1600', // barbershop
@@ -266,8 +266,8 @@ const DesktopIndex = () => {
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '0 12px', height: 44, borderRight: `1px solid ${COLORS.border}` }}>
                   <span style={{ fontSize: 14, color: COLORS.muted }}>▦</span>
                   <select
-                    value={landingCategory}
-                    onChange={(e) => setLandingCategory(e.target.value)}
+                    value={category}
+                    onChange={(e) => setCategory(e.target.value)}
                     style={{
                       border: 'none', outline: 'none', fontSize: 13, color: COLORS.text2,
                       background: 'transparent', width: '100%', cursor: 'pointer', fontFamily: COLORS.font,
@@ -368,11 +368,11 @@ const DesktopIndex = () => {
           <div className="bg-card border border-border rounded-xl shadow-sm" style={{ padding: '0 8px', overflowX: 'auto', marginBottom: 24 }}>
             <div style={{ display: 'flex', gap: 0, minWidth: 'fit-content' }}>
               {[{ id: 'all', name: 'Все категории', icon: '🏠' }, ...categories].map((c) => {
-                const active = landingCategory === c.id;
+                const active = category === c.id;
                 return (
                   <button
                     key={c.id}
-                    onClick={() => setLandingCategory(c.id)}
+                    onClick={() => setCategory(c.id)}
                     style={{
                       background: 'transparent', border: 'none',
                       padding: '14px 16px', cursor: 'pointer',
