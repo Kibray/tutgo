@@ -206,7 +206,7 @@ const DesktopIndex = () => {
   // ============ LANDING VIEW ============
   if (view === 'landing') {
     return (
-      <div className="min-h-screen bg-background text-foreground font-sans">
+      <div className="min-h-screen text-foreground font-sans" style={{ background: 'linear-gradient(135deg, #f5e6ee 0%, #e8ecf7 50%, #e0e8f5 100%)' }}>
         <DesktopHeader
           searchValue={search}
           onSearch={setSearch}
@@ -320,7 +320,7 @@ const DesktopIndex = () => {
 
             {/* Sidebar */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-              <div className="bg-card border border-border rounded-xl shadow-sm" style={{ padding: 20, display: 'flex', flexDirection: 'column', gap: 10, alignItems: 'flex-start' }}>
+              <div className="border border-border rounded-xl shadow-sm" style={{ background: "#ffffff", padding: 20, display: 'flex', flexDirection: 'column', gap: 10, alignItems: 'flex-start' }}>
                 <div style={{
                   width: 80, height: 80, borderRadius: 16, alignSelf: 'center',
                   background: COLORS.accentBg,
@@ -344,7 +344,7 @@ const DesktopIndex = () => {
                 </button>
               </div>
 
-              <div className="bg-card border border-border rounded-xl shadow-sm" style={{ padding: 20, display: 'flex', flexDirection: 'column', gap: 8, alignItems: 'flex-start' }}>
+              <div className="border border-border rounded-xl shadow-sm" style={{ background: "#ffffff", padding: 20, display: 'flex', flexDirection: 'column', gap: 8, alignItems: 'flex-start' }}>
                 <div style={{ fontSize: 40, lineHeight: 1 }}>🎁</div>
                 <div className="text-foreground" style={{ fontWeight: 700, fontSize: 15 }}>Дарим 10% на первое посещение</div>
                 <div className="text-muted-foreground" style={{ fontSize: 13, lineHeight: 1.5 }}>
@@ -365,7 +365,7 @@ const DesktopIndex = () => {
           </div>
 
           {/* SECTION 2 — Category tabs */}
-          <div className="bg-card border border-border rounded-xl shadow-sm" style={{ padding: '0 8px', overflowX: 'auto', marginBottom: 24 }}>
+          <div className="border border-border rounded-xl shadow-sm" style={{ background: "#ffffff", padding: '0 8px', overflowX: 'auto', marginBottom: 24 }}>
             <div style={{ display: 'flex', gap: 0, minWidth: 'fit-content' }}>
               {[{ id: 'all', name: 'Все категории', icon: '🏠' }, ...categories].map((c) => {
                 const active = category === c.id;
@@ -408,8 +408,8 @@ const DesktopIndex = () => {
                       key={loc.id}
                       whileHover={{ y: -2 }}
                       onClick={() => navigate(`/service/${loc.id}`)}
-                      className="bg-card border border-border rounded-xl shadow-sm"
-                      style={{ overflow: 'hidden', cursor: 'pointer', display: 'flex', flexDirection: 'column' }}
+                      className="border border-border rounded-xl shadow-sm"
+                      style={{ background: '#ffffff', overflow: 'hidden', cursor: 'pointer', display: 'flex', flexDirection: 'column' }}
                     >
                       <div style={{
                         height: 160, position: 'relative', overflow: 'hidden',
@@ -486,8 +486,8 @@ const DesktopIndex = () => {
                       key={loc.id}
                       whileHover={{ y: -1 }}
                       onClick={() => navigate(`/service/${loc.id}`)}
-                      className="bg-card border border-border rounded-xl shadow-sm"
-                      style={{ padding: 12, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 12 }}
+                      className="border border-border rounded-xl shadow-sm"
+                      style={{ background: '#ffffff', padding: 12, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 12 }}
                     >
                       <div style={{
                         width: 64, height: 64, borderRadius: 8, flexShrink: 0, overflow: 'hidden',
@@ -510,7 +510,7 @@ const DesktopIndex = () => {
 
             {/* Right map sidebar */}
             <div>
-              <div className="bg-card border border-border rounded-xl shadow-sm" style={{ padding: 16 }}>
+              <div className="border border-border rounded-xl shadow-sm" style={{ background: "#ffffff", padding: 16 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
                   <div className="text-foreground" style={{ fontSize: 14, fontWeight: 700 }}>Места рядом с вами</div>
                   <button
@@ -533,7 +533,7 @@ const DesktopIndex = () => {
           </div>
 
           {/* SECTION 4 — Trust strip */}
-          <div className="bg-card border border-border rounded-xl shadow-sm" style={{ padding: 28, display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 24, marginBottom: 40 }}>
+          <div className="border border-border rounded-xl shadow-sm" style={{ background: "#ffffff", padding: 28, display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 24, marginBottom: 40 }}>
             {[
               { icon: <ShieldCheck size={20} />, title: 'Проверенные заведения', sub: 'Только реальные отзывы и рейтинги' },
               { icon: <CalendarCheck size={20} />, title: 'Онлайн-запись', sub: 'Мгновенное подтверждение и напоминания' },
@@ -572,7 +572,7 @@ const DesktopIndex = () => {
   const showMap = resultsMode === 'map' || resultsMode === 'split';
 
   return (
-    <div className="min-h-screen bg-background text-foreground font-sans" style={{ height: '100vh', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+    <div className="min-h-screen text-foreground font-sans" style={{ background: 'linear-gradient(135deg, #f5e6ee 0%, #e8ecf7 50%, #e0e8f5 100%)', height: '100vh', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
       <DesktopHeader
         searchValue={search}
         onSearch={setSearch}
