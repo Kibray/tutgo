@@ -408,8 +408,8 @@ const DesktopIndex = () => {
                       key={loc.id}
                       whileHover={{ y: -2 }}
                       onClick={() => navigate(`/service/${loc.id}`)}
-                      className="bg-card border border-border rounded-xl shadow-sm"
-                      style={{ overflow: 'hidden', cursor: 'pointer', display: 'flex', flexDirection: 'column' }}
+                      className="border border-border rounded-xl shadow-sm"
+                      style={{ background: '#ffffff', overflow: 'hidden', cursor: 'pointer', display: 'flex', flexDirection: 'column' }}
                     >
                       <div style={{
                         height: 160, position: 'relative', overflow: 'hidden',
@@ -486,8 +486,8 @@ const DesktopIndex = () => {
                       key={loc.id}
                       whileHover={{ y: -1 }}
                       onClick={() => navigate(`/service/${loc.id}`)}
-                      className="bg-card border border-border rounded-xl shadow-sm"
-                      style={{ padding: 12, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 12 }}
+                      className="border border-border rounded-xl shadow-sm"
+                      style={{ background: '#ffffff', padding: 12, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 12 }}
                     >
                       <div style={{
                         width: 64, height: 64, borderRadius: 8, flexShrink: 0, overflow: 'hidden',
