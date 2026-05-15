@@ -271,7 +271,7 @@ const PartnerDashboardDesktop = () => {
               { icon: Star, label: 'Рейтинг', value: avgRating ? `${avgRating} ⭐` : '—', color: 'text-yellow-400' },
             ].map((s, i) => (
               <motion.div key={i} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
-                <Card className="border-border bg-card">
+                <Card className="border-border" style={{ background: "#ffffff" }}>
                   <CardContent className="p-5">
                     <div className="flex items-center justify-between mb-3">
                       <div className={`w-10 h-10 rounded-xl bg-secondary flex items-center justify-center`}>
@@ -290,7 +290,7 @@ const PartnerDashboardDesktop = () => {
           {/* Row 2: Chart + Queue */}
           <div className="grid grid-cols-3 gap-4">
             {/* Revenue chart */}
-            <Card className="col-span-2 border-border bg-card">
+            <Card className="col-span-2 border-border" style={{ background: "#ffffff" }}>
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-semibold text-foreground">Доход за 7 дней</CardTitle>
               </CardHeader>
@@ -316,7 +316,7 @@ const PartnerDashboardDesktop = () => {
             </Card>
 
             {/* Queue widget */}
-            <Card className="border-border bg-card">
+            <Card className="border-border" style={{ background: "#ffffff" }}>
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-semibold text-foreground flex items-center gap-2">
                   <Hash className="w-4 h-4 text-primary" />
@@ -359,7 +359,7 @@ const PartnerDashboardDesktop = () => {
           {/* Row 3: Today's appointments + Top clients */}
           <div className="grid grid-cols-3 gap-4">
             {/* Appointments */}
-            <Card className="col-span-2 border-border bg-card">
+            <Card className="col-span-2 border-border" style={{ background: "#ffffff" }}>
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-semibold text-foreground flex items-center gap-2">
                   <Calendar className="w-4 h-4 text-blue-400" />
@@ -394,7 +394,7 @@ const PartnerDashboardDesktop = () => {
             </Card>
 
             {/* Top clients */}
-            <Card className="border-border bg-card">
+            <Card className="border-border" style={{ background: "#ffffff" }}>
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-semibold text-foreground flex items-center gap-2">
                   <Users className="w-4 h-4 text-purple-400" />
