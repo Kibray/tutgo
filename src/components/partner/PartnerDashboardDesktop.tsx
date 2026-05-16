@@ -16,6 +16,7 @@ import { format, subDays, startOfDay, endOfDay } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import InstagramConnectCard from '@/components/partner/InstagramConnectCard';
 import SkeletonCard from '@/components/SkeletonCard';
+import { useSubscription } from '@/hooks/useSubscription';
 
 /* ─── Sidebar items ─── */
 const sidebarItems = [
@@ -37,6 +38,7 @@ const PartnerDashboardDesktop = () => {
   const { pathname } = useLocation();
   const { user } = useAuth();
   const { t } = usePreferences();
+  const { plan, isEarlyAdopter, daysLeft } = useSubscription();
 
   // State
   const [locations, setLocations] = useState<any[]>([]);
@@ -262,6 +264,32 @@ const PartnerDashboardDesktop = () => {
 
         {/* Content */}
         <main className="flex-1 overflow-y-auto p-6 space-y-6">
+          {/* Subscription banner */}
+          {isEarlyAdopter && daysLeft !== null && daysLeft > 3 && (
+            <div className="rounded-xl bg-green-600/15 border border-green-600/30 p-3">
+              <p className="text-sm font-semibold text-green-600">⭐ Ранний доступ — Pro бесплатно ещё {daysLeft} дней</p>
+              <p className="text-[11px] text-green-600/70 mt-0.5">Вы среди первых партнёров TutGo</p>
+            </div>
+          )}
+          {isEarlyAdopter && daysLeft !== null && daysLeft > 0 && daysLeft <= 3 && (
+            <div className="rounded-xl bg-orange-500/15 border border-orange-500/30 p-3 flex items-center justify-between">
+              <p className="text-sm font-semibold text-orange-600">⚠️ Pro заканчивается через {daysLeft} дня</p>
+              <a href="https://t.me/tutgo_support" target="_blank" rel="noopener noreferrer"
+                className="px-3 py-1 rounded-lg bg-orange-500 text-white text-xs font-bold shrink-0">
+                Продлить
+              </a>
+            </div>
+          )}
+          {((isEarlyAdopter && daysLeft === 0) || (plan === 'free' && isEarlyAdopter)) && (
+            <div className="rounded-xl bg-primary/15 border border-primary/30 p-3 flex items-center justify-between">
+              <p className="text-sm font-semibold text-primary">Ваш пробный период закончился</p>
+              <a href="https://t.me/tutgo_support" target="_blank" rel="noopener noreferrer"
+                className="px-3 py-1 rounded-lg bg-primary text-primary-foreground text-xs font-bold shrink-0">
+                Подключить Pro
+              </a>
+            </div>
+          )}
+
           {/* Row 1: Stats */}
           <div className="grid grid-cols-4 gap-4">
             {[
