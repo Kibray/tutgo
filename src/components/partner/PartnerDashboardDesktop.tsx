@@ -16,6 +16,7 @@ import { format, subDays, startOfDay, endOfDay } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import InstagramConnectCard from '@/components/partner/InstagramConnectCard';
 import SkeletonCard from '@/components/SkeletonCard';
+import { useSubscription } from '@/hooks/useSubscription';
 
 /* ─── Sidebar items ─── */
 const sidebarItems = [
@@ -37,6 +38,7 @@ const PartnerDashboardDesktop = () => {
   const { pathname } = useLocation();
   const { user } = useAuth();
   const { t } = usePreferences();
+  const { plan, isEarlyAdopter, daysLeft } = useSubscription();
 
   // State
   const [locations, setLocations] = useState<any[]>([]);
