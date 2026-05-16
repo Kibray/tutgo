@@ -189,10 +189,12 @@ const PartnerDashboardDesktop = () => {
     );
   }
 
+  const glassCard = "bg-white/60 backdrop-blur-xl border border-white/40 shadow-[0_8px_32px_rgba(31,38,135,0.08)]";
+
   return (
     <div className="flex h-screen overflow-hidden" style={{ background: 'linear-gradient(135deg, #f5e6ee 0%, #e8ecf7 50%, #e0e8f5 100%)' }}>
       {/* ─── Sidebar ─── */}
-      <aside className="w-[240px] flex-shrink-0 border-r border-border flex flex-col" style={{ background: '#ffffff' }}>
+      <aside className="w-[240px] flex-shrink-0 border-r border-white/40 flex flex-col bg-white/50 backdrop-blur-xl">
         {/* Logo + company */}
         <div className="p-5 border-b border-border">
           <div className="flex items-center gap-2 mb-2">
@@ -245,7 +247,7 @@ const PartnerDashboardDesktop = () => {
       {/* ─── Main ─── */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Topbar */}
-        <header className="h-16 flex items-center justify-between px-6 border-b border-border backdrop-blur-sm flex-shrink-0" style={{ background: 'rgba(255,255,255,0.6)' }}>
+        <header className="h-16 flex items-center justify-between px-6 border-b border-white/40 backdrop-blur-xl flex-shrink-0 bg-white/40">
           <div className="flex items-center gap-3">
             <h1 className="text-lg font-bold text-foreground">Дашборд</h1>
             <span className="text-sm text-muted-foreground">{format(today, 'd MMMM yyyy', { locale: ru })}</span>
@@ -299,7 +301,7 @@ const PartnerDashboardDesktop = () => {
               { icon: Star, label: 'Рейтинг', value: avgRating ? `${avgRating} ⭐` : '—', color: 'text-yellow-400' },
             ].map((s, i) => (
               <motion.div key={i} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
-                <Card className="border-border" style={{ background: "#ffffff" }}>
+                <Card className={glassCard}>
                   <CardContent className="p-5">
                     <div className="flex items-center justify-between mb-3">
                       <div className={`w-10 h-10 rounded-xl bg-secondary flex items-center justify-center`}>
@@ -318,7 +320,7 @@ const PartnerDashboardDesktop = () => {
           {/* Row 2: Chart + Queue */}
           <div className="grid grid-cols-3 gap-4">
             {/* Revenue chart */}
-            <Card className="col-span-2 border-border" style={{ background: "#ffffff" }}>
+            <Card className={`col-span-2 ${glassCard}`}>
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-semibold text-foreground">Доход за 7 дней</CardTitle>
               </CardHeader>
@@ -344,7 +346,7 @@ const PartnerDashboardDesktop = () => {
             </Card>
 
             {/* Queue widget */}
-            <Card className="border-border" style={{ background: "#ffffff" }}>
+            <Card className={glassCard}>
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-semibold text-foreground flex items-center gap-2">
                   <Hash className="w-4 h-4 text-primary" />
@@ -387,7 +389,7 @@ const PartnerDashboardDesktop = () => {
           {/* Row 3: Today's appointments + Top clients */}
           <div className="grid grid-cols-3 gap-4">
             {/* Appointments */}
-            <Card className="col-span-2 border-border" style={{ background: "#ffffff" }}>
+            <Card className={`col-span-2 ${glassCard}`}>
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-semibold text-foreground flex items-center gap-2">
                   <Calendar className="w-4 h-4 text-blue-400" />
@@ -422,7 +424,7 @@ const PartnerDashboardDesktop = () => {
             </Card>
 
             {/* Top clients */}
-            <Card className="border-border" style={{ background: "#ffffff" }}>
+            <Card className={glassCard}>
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-semibold text-foreground flex items-center gap-2">
                   <Users className="w-4 h-4 text-purple-400" />
