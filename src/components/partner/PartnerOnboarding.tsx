@@ -3,11 +3,55 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Building2, Camera, Send, PartyPopper, ArrowRight, ArrowLeft, Upload, X } from 'lucide-react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 
 const TOTAL_STEPS = 5;
+
+const BUSINESS_CATEGORIES = [
+  'Барбершоп',
+  'Салон красоты',
+  'Спа и массаж',
+  'Ногтевая студия',
+  'Медицинская клиника',
+  'Стоматология',
+  'Ресторан',
+  'Кафе',
+  'Кофейня',
+  'Фастфуд',
+  'Магазин',
+  'Автосервис',
+  'Автомойка',
+  'Фитнес-клуб',
+  'Спортивный клуб',
+  'Школа и обучение',
+  'Туристическое агентство',
+  'Отель',
+  'Услуги',
+  'Другое',
+];
+
+const UZBEKISTAN_CITIES = [
+  'Ташкент',
+  'Самарканд',
+  'Бухара',
+  'Андижан',
+  'Наманган',
+  'Фергана',
+  'Карши',
+  'Коканд',
+  'Нукус',
+  'Ургенч',
+  'Хива',
+  'Термез',
+  'Джизак',
+  'Навои',
+  'Гулистан',
+  'Чирчик',
+  'Ангрен',
+];
 
 interface PartnerOnboardingProps {
   open: boolean;
@@ -86,10 +130,28 @@ const StepCompanyInfo = ({ data, setData, onNext, onBack }: {
             <p className="text-xs text-destructive mt-1">Заполните обязательные поля</p>
           )}
         </div>
-        <Input placeholder="Категория (напр. Барбершоп)" value={data.category || ''} onChange={e => setData({ ...data, category: e.target.value })}
-          className="bg-secondary border-border" />
+        <Select value={data.category || ''} onValueChange={(v) => setData({ ...data, category: v })}>
+          <SelectTrigger className="bg-secondary border-border">
+            <SelectValue placeholder="Категория" />
+          </SelectTrigger>
+          <SelectContent>
+            {BUSINESS_CATEGORIES.map((c) => (
+              <SelectItem key={c} value={c}>{c}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
         <Input placeholder="Телефон" value={data.phone || ''} onChange={e => setData({ ...data, phone: e.target.value })}
           className="bg-secondary border-border" />
+        <Select value={data.city || ''} onValueChange={(v) => setData({ ...data, city: v })}>
+          <SelectTrigger className="bg-secondary border-border">
+            <SelectValue placeholder="Город" />
+          </SelectTrigger>
+          <SelectContent>
+            {UZBEKISTAN_CITIES.map((c) => (
+              <SelectItem key={c} value={c}>{c}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
         <div>
           <Input placeholder="Адрес *" value={data.address || ''} onChange={e => setData({ ...data, address: e.target.value })}
             className={`bg-secondary border-border ${showError && addressEmpty ? 'ring-2 ring-destructive' : ''}`} />
@@ -208,7 +270,7 @@ const PartnerOnboarding = ({ open, onComplete }: PartnerOnboardingProps) => {
           address: companyData.address || null,
           description: companyData.description || null,
           business_type: 'service',
-          city: 'Ташкент',
+          city: companyData.city || 'Ташкент',
         });
       } catch (e) {
         console.error('Onboarding save error:', e);
