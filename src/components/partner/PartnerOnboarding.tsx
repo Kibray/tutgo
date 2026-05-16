@@ -7,6 +7,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { cn } from '@/lib/utils';
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { toast } from "sonner";
+import { getBizType } from "@/lib/categories";
 
 const TOTAL_STEPS = 5;
 
@@ -263,17 +265,46 @@ const PartnerOnboarding = ({ open, onComplete }: PartnerOnboardingProps) => {
   const handleComplete = async () => {
     if (user && companyData.name) {
       try {
-        await supabase.from('locations').insert({
-          owner_id: user.id,
-          name: companyData.name || 'Моя компания',
-          phone: companyData.phone || null,
-          address: companyData.address || null,
-          description: companyData.description || null,
-          business_type: 'service',
-          city: companyData.city || 'Ташкент',
+        const { data: location, error: locErr } = await supabase
+          .from('locations')
+          .insert({
+            owner_id: user.id,
+            name: companyData.name || 'Моя компания',
+            phone: companyData.phone || null,
+            address: companyData.address || null,
+            description: companyData.description || null,
+            business_type: getBizType(companyData.category || ''),
+            city: companyData.city || 'Ташкент',
+            verified: true,
+            instagram: socialData.instagram || null,
+          })
+          .select()
+          .single();
+        if (locErr) throw locErr;
+
+        const trialEnds = new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString();
+        const { error: subErr } = await supabase.from('subscriptions').upsert({
+          user_id: user.id,
+          plan: 'pro',
+          status: 'active',
+          is_early_adopter: true,
+          trial_ends_at: trialEnds,
+          current_period_end: trialEnds,
+        }, { onConflict: 'user_id' });
+        if (subErr) throw subErr;
+
+        const { error: notifErr } = await supabase.from('notifications').insert({
+          user_id: user.id,
+          title: 'Добро пожаловать в TUTGo! 🎉',
+          body: 'Ваш бизнес создан. Pro-тариф активирован на 90 дней — добавьте услуги и начните принимать клиентов.',
+          type: 'welcome',
+          related_id: location?.id ?? null,
         });
-      } catch (e) {
+        if (notifErr) throw notifErr;
+      } catch (e: any) {
         console.error('Onboarding save error:', e);
+        toast.error(e?.message || 'Не удалось сохранить данные. Попробуйте ещё раз.');
+        return;
       }
     }
     localStorage.setItem('partner_onboarding_done', 'true');
