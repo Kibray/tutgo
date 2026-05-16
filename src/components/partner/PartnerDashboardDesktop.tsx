@@ -189,22 +189,22 @@ const PartnerDashboardDesktop = () => {
     );
   }
 
-  const glassCard = "bg-white/60 backdrop-blur-xl border border-white/40 shadow-[0_8px_32px_rgba(31,38,135,0.08)]";
+  const glassCard = "bg-white/80 backdrop-blur-xl border border-white/60 shadow-[0_8px_32px_rgba(31,38,135,0.08)]";
 
   return (
     <div className="flex h-screen overflow-hidden" style={{ background: 'linear-gradient(135deg, #f5e6ee 0%, #e8ecf7 50%, #e0e8f5 100%)' }}>
       {/* ─── Sidebar ─── */}
       <aside className="w-[240px] flex-shrink-0 border-r border-white/40 flex flex-col bg-white/50 backdrop-blur-xl">
         {/* Logo + company */}
-        <div className="p-5 border-b border-border">
+        <div className="p-5 border-b border-slate-200/60">
           <div className="flex items-center gap-2 mb-2">
             <span className="text-xl font-bold font-display text-primary">TutGo</span>
             <span className="text-xs bg-primary/15 text-primary px-2 py-0.5 rounded-full font-medium">PRO</span>
           </div>
-          <p className="text-sm text-foreground font-medium truncate">{companyName}</p>
+          <p className="text-sm text-slate-900 font-medium truncate">{companyName}</p>
           <div className="flex items-center gap-1.5 mt-1">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span className="text-[11px] text-muted-foreground">Онлайн</span>
+            <span className="text-[11px] text-slate-500">Онлайн</span>
           </div>
         </div>
 
@@ -220,7 +220,7 @@ const PartnerDashboardDesktop = () => {
                 className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-colors ${
                   active
                     ? 'bg-primary/15 text-primary font-semibold'
-                    : 'text-muted-foreground hover:bg-secondary hover:text-foreground'
+                    : 'text-slate-500 hover:bg-slate-100/70 hover:text-slate-900'
                 }`}
               >
                 <Icon className="w-4 h-4" />
@@ -231,7 +231,7 @@ const PartnerDashboardDesktop = () => {
         </nav>
 
         {/* Bottom */}
-        <div className="p-3 border-t border-border">
+        <div className="p-3 border-t border-slate-200/60">
           <Button
             variant="outline"
             size="sm"
@@ -249,8 +249,8 @@ const PartnerDashboardDesktop = () => {
         {/* Topbar */}
         <header className="h-16 flex items-center justify-between px-6 border-b border-white/40 backdrop-blur-xl flex-shrink-0 bg-white/40">
           <div className="flex items-center gap-3">
-            <h1 className="text-lg font-bold text-foreground">Дашборд</h1>
-            <span className="text-sm text-muted-foreground">{format(today, 'd MMMM yyyy', { locale: ru })}</span>
+            <h1 className="text-lg font-bold text-slate-900">Дашборд</h1>
+            <span className="text-sm text-slate-500">{format(today, 'd MMMM yyyy', { locale: ru })}</span>
           </div>
           <div className="flex items-center gap-2">
             <Button variant="secondary" size="sm" className="text-xs">Сегодня</Button>
@@ -304,13 +304,13 @@ const PartnerDashboardDesktop = () => {
                 <Card className={glassCard}>
                   <CardContent className="p-5">
                     <div className="flex items-center justify-between mb-3">
-                      <div className={`w-10 h-10 rounded-xl bg-secondary flex items-center justify-center`}>
+                      <div className={`w-10 h-10 rounded-xl bg-slate-100/80 flex items-center justify-center`}>
                         <s.icon className={`w-5 h-5 ${s.color}`} />
                       </div>
-                      <TrendingUp className="w-4 h-4 text-muted-foreground" />
+                      <TrendingUp className="w-4 h-4 text-slate-500" />
                     </div>
-                    <p className="text-2xl font-bold text-foreground">{s.value}</p>
-                    <p className="text-xs text-muted-foreground mt-1">{s.label}</p>
+                    <p className="text-2xl font-bold text-slate-900">{s.value}</p>
+                    <p className="text-xs text-slate-500 mt-1">{s.label}</p>
                   </CardContent>
                 </Card>
               </motion.div>
@@ -322,7 +322,7 @@ const PartnerDashboardDesktop = () => {
             {/* Revenue chart */}
             <Card className={`col-span-2 ${glassCard}`}>
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-semibold text-foreground">Доход за 7 дней</CardTitle>
+                <CardTitle className="text-sm font-semibold text-slate-900">Доход за 7 дней</CardTitle>
               </CardHeader>
               <CardContent className="h-[220px]">
                 <ResponsiveContainer width="100%" height="100%">
@@ -348,19 +348,19 @@ const PartnerDashboardDesktop = () => {
             {/* Queue widget */}
             <Card className={glassCard}>
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-semibold text-foreground flex items-center gap-2">
+                <CardTitle className="text-sm font-semibold text-slate-900 flex items-center gap-2">
                   <Hash className="w-4 h-4 text-primary" />
                   Живая очередь
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="text-center py-3">
-                  <p className="text-[11px] text-muted-foreground mb-1">Сейчас обслуживается</p>
+                  <p className="text-[11px] text-slate-500 mb-1">Сейчас обслуживается</p>
                   <p className="text-4xl font-bold text-primary font-display">
                     {queueServing ? `№${queueServing.ticket_number}` : '—'}
                   </p>
                   {queueServing && (
-                    <p className="text-xs text-muted-foreground mt-1">{queueServing.client_name}</p>
+                    <p className="text-xs text-slate-500 mt-1">{queueServing.client_name}</p>
                   )}
                 </div>
 
@@ -370,13 +370,13 @@ const PartnerDashboardDesktop = () => {
                 </Button>
 
                 <div className="grid grid-cols-2 gap-2 text-center">
-                  <div className="bg-secondary rounded-lg p-2">
-                    <p className="text-lg font-bold text-foreground">{queueDone}</p>
-                    <p className="text-[10px] text-muted-foreground">Обслужено</p>
+                  <div className="bg-slate-100/80 rounded-lg p-2">
+                    <p className="text-lg font-bold text-slate-900">{queueDone}</p>
+                    <p className="text-[10px] text-slate-500">Обслужено</p>
                   </div>
-                  <div className="bg-secondary rounded-lg p-2">
-                    <p className="text-lg font-bold text-foreground">{queueSkipped}</p>
-                    <p className="text-[10px] text-muted-foreground">Пропущено</p>
+                  <div className="bg-slate-100/80 rounded-lg p-2">
+                    <p className="text-lg font-bold text-slate-900">{queueSkipped}</p>
+                    <p className="text-[10px] text-slate-500">Пропущено</p>
                   </div>
                 </div>
               </CardContent>
@@ -391,28 +391,28 @@ const PartnerDashboardDesktop = () => {
             {/* Appointments */}
             <Card className={`col-span-2 ${glassCard}`}>
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-semibold text-foreground flex items-center gap-2">
+                <CardTitle className="text-sm font-semibold text-slate-900 flex items-center gap-2">
                   <Calendar className="w-4 h-4 text-blue-400" />
                   Ближайшие записи
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 {todayAppointments.length === 0 ? (
-                  <p className="text-sm text-muted-foreground text-center py-6">Нет записей на сегодня</p>
+                  <p className="text-sm text-slate-500 text-center py-6">Нет записей на сегодня</p>
                 ) : (
                   <div className="space-y-2 max-h-[260px] overflow-y-auto">
                     {todayAppointments.slice(0, 8).map((appt) => (
-                      <div key={appt.id} className="flex items-center gap-3 p-3 rounded-xl bg-secondary/50 hover:bg-secondary transition-colors">
+                      <div key={appt.id} className="flex items-center gap-3 p-3 rounded-xl bg-slate-100/70 hover:bg-slate-100/70 transition-colors">
                         <div className="w-10 text-center">
-                          <p className="text-sm font-bold text-foreground">{format(new Date(appt.start_time), 'HH:mm')}</p>
+                          <p className="text-sm font-bold text-slate-900">{format(new Date(appt.start_time), 'HH:mm')}</p>
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-foreground truncate">{appt.client_name || 'Клиент'}</p>
-                          <p className="text-xs text-muted-foreground truncate">{appt.services?.name || 'Услуга'}</p>
+                          <p className="text-sm font-medium text-slate-900 truncate">{appt.client_name || 'Клиент'}</p>
+                          <p className="text-xs text-slate-500 truncate">{appt.services?.name || 'Услуга'}</p>
                         </div>
                         <div className="flex items-center gap-2">
-                          <p className="text-xs font-medium text-foreground">{appt.services?.price?.toLocaleString('ru-RU')} {appt.services?.currency}</p>
-                          <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${statusColors[appt.status] || 'bg-secondary text-muted-foreground'}`}>
+                          <p className="text-xs font-medium text-slate-900">{appt.services?.price?.toLocaleString('ru-RU')} {appt.services?.currency}</p>
+                          <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${statusColors[appt.status] || 'bg-slate-100/80 text-slate-500'}`}>
                             {statusLabels[appt.status] || appt.status}
                           </span>
                         </div>
@@ -426,26 +426,26 @@ const PartnerDashboardDesktop = () => {
             {/* Top clients */}
             <Card className={glassCard}>
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-semibold text-foreground flex items-center gap-2">
+                <CardTitle className="text-sm font-semibold text-slate-900 flex items-center gap-2">
                   <Users className="w-4 h-4 text-purple-400" />
                   Топ клиенты
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 {topClients.length === 0 ? (
-                  <p className="text-sm text-muted-foreground text-center py-6">Пока нет данных</p>
+                  <p className="text-sm text-slate-500 text-center py-6">Пока нет данных</p>
                 ) : (
                   <div className="space-y-2">
                     {topClients.map((c, i) => (
-                      <div key={i} className="flex items-center gap-3 p-2.5 rounded-xl bg-secondary/50">
+                      <div key={i} className="flex items-center gap-3 p-2.5 rounded-xl bg-slate-100/70">
                         <div className="w-8 h-8 rounded-full bg-primary/15 flex items-center justify-center text-xs font-bold text-primary">
                           {i + 1}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-foreground truncate">{c.name}</p>
-                          <p className="text-[11px] text-muted-foreground">{c.count} визит(ов)</p>
+                          <p className="text-sm font-medium text-slate-900 truncate">{c.name}</p>
+                          <p className="text-[11px] text-slate-500">{c.count} визит(ов)</p>
                         </div>
-                        <p className="text-xs font-semibold text-foreground">{c.total.toLocaleString('ru-RU')}</p>
+                        <p className="text-xs font-semibold text-slate-900">{c.total.toLocaleString('ru-RU')}</p>
                       </div>
                     ))}
                   </div>
