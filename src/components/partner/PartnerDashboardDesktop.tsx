@@ -189,10 +189,12 @@ const PartnerDashboardDesktop = () => {
     );
   }
 
+  const glassCard = "bg-white/60 backdrop-blur-xl border border-white/40 shadow-[0_8px_32px_rgba(31,38,135,0.08)]";
+
   return (
     <div className="flex h-screen overflow-hidden" style={{ background: 'linear-gradient(135deg, #f5e6ee 0%, #e8ecf7 50%, #e0e8f5 100%)' }}>
       {/* ─── Sidebar ─── */}
-      <aside className="w-[240px] flex-shrink-0 border-r border-border flex flex-col" style={{ background: '#ffffff' }}>
+      <aside className="w-[240px] flex-shrink-0 border-r border-white/40 flex flex-col bg-white/50 backdrop-blur-xl">
         {/* Logo + company */}
         <div className="p-5 border-b border-border">
           <div className="flex items-center gap-2 mb-2">
@@ -245,7 +247,7 @@ const PartnerDashboardDesktop = () => {
       {/* ─── Main ─── */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Topbar */}
-        <header className="h-16 flex items-center justify-between px-6 border-b border-border backdrop-blur-sm flex-shrink-0" style={{ background: 'rgba(255,255,255,0.6)' }}>
+        <header className="h-16 flex items-center justify-between px-6 border-b border-white/40 backdrop-blur-xl flex-shrink-0 bg-white/40">
           <div className="flex items-center gap-3">
             <h1 className="text-lg font-bold text-foreground">Дашборд</h1>
             <span className="text-sm text-muted-foreground">{format(today, 'd MMMM yyyy', { locale: ru })}</span>
