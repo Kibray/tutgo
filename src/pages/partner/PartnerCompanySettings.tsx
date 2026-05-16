@@ -11,6 +11,28 @@ import AddressPicker from '@/components/AddressPicker';
 import BusinessLinkSection from '@/components/partner/BusinessLinkSection';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Pencil, Save } from 'lucide-react';
+
+const BUSINESS_TYPE_OPTIONS = [
+  { value: 'service', label: 'Услуги' },
+  { value: 'beauty', label: 'Красота' },
+  { value: 'medical', label: 'Медицина' },
+  { value: 'cafe', label: 'Кафе / Ресторан' },
+  { value: 'retail', label: 'Магазин' },
+  { value: 'tour', label: 'Туры' },
+  { value: 'sport', label: 'Спорт' },
+  { value: 'auto', label: 'Автосервис' },
+  { value: 'education', label: 'Обучение' },
+];
+
+const UZ_CITIES = [
+  'Ташкент', 'Самарканд', 'Бухара', 'Андижан', 'Наманган', 'Фергана',
+  'Карши', 'Коканд', 'Нукус', 'Ургенч', 'Хива', 'Термез', 'Джизак',
+  'Навои', 'Гулистан', 'Чирчик', 'Ангрен',
+];
 
 const tourInclusions = [
   { id: 'transport', label: 'Транспорт', icon: '🚌' },
@@ -64,6 +86,47 @@ const PartnerCompanySettings = () => {
   const [staffForm, setStaffForm] = useState({
     full_name: '', phone: '', specialties: '', location_id: '',
   });
+
+  // About-tab edit state
+  const [editingBizId, setEditingBizId] = useState<string | null>(null);
+  const [editBizForm, setEditBizForm] = useState({
+    name: '', description: '', address: '', phone: '',
+    city: 'Ташкент', business_type: 'service',
+  });
+  const [savingBiz, setSavingBiz] = useState(false);
+
+  const startEditBiz = (biz: any) => {
+    setEditingBizId(biz.id);
+    setEditBizForm({
+      name: biz.name || '',
+      description: biz.description || '',
+      address: biz.address || '',
+      phone: biz.phone || '',
+      city: biz.city || 'Ташкент',
+      business_type: biz.business_type || 'service',
+    });
+  };
+
+  const cancelEditBiz = () => setEditingBizId(null);
+
+  const handleSaveBiz = async (bizId: string) => {
+    if (!editBizForm.name.trim()) { toast.error('Название обязательно'); return; }
+    setSavingBiz(true);
+    const updates = {
+      name: editBizForm.name.trim(),
+      description: editBizForm.description || null,
+      address: editBizForm.address || null,
+      phone: editBizForm.phone || null,
+      city: editBizForm.city || null,
+      business_type: editBizForm.business_type || 'service',
+    };
+    const { error } = await supabase.from('locations').update(updates).eq('id', bizId);
+    setSavingBiz(false);
+    if (error) { toast.error(error.message); return; }
+    setBusinesses(prev => prev.map(b => b.id === bizId ? { ...b, ...updates } : b));
+    setEditingBizId(null);
+    toast.success('Данные сохранены');
+  };
 
   // Tours tab state
   const [tours, setTours] = useState<any[]>([]);
@@ -294,10 +357,75 @@ const PartnerCompanySettings = () => {
             ) : (
               businesses.map(biz => (
                 <div key={biz.id} className="glass rounded-2xl p-4 space-y-3">
-                  <h3 className="text-sm font-semibold text-foreground">{biz.name}</h3>
-                  <p className="text-xs text-muted-foreground">{biz.description || t('partner.no_desc')}</p>
-                  {biz.address && <p className="text-xs text-muted-foreground">📍 {biz.address}</p>}
-                  {biz.phone && <p className="text-xs text-muted-foreground">📞 {biz.phone}</p>}
+                  {editingBizId === biz.id ? (
+                    <div className="space-y-2">
+                      <Input
+                        placeholder="Название *"
+                        value={editBizForm.name}
+                        onChange={e => setEditBizForm(f => ({ ...f, name: e.target.value }))}
+                      />
+                      <Textarea
+                        placeholder="Описание"
+                        value={editBizForm.description}
+                        onChange={e => setEditBizForm(f => ({ ...f, description: e.target.value }))}
+                        className="min-h-[72px]"
+                      />
+                      <Input
+                        placeholder="Адрес"
+                        value={editBizForm.address}
+                        onChange={e => setEditBizForm(f => ({ ...f, address: e.target.value }))}
+                      />
+                      <Input
+                        placeholder="Телефон"
+                        value={editBizForm.phone}
+                        onChange={e => setEditBizForm(f => ({ ...f, phone: e.target.value }))}
+                      />
+                      <Select
+                        value={editBizForm.city}
+                        onValueChange={(v) => setEditBizForm(f => ({ ...f, city: v }))}
+                      >
+                        <SelectTrigger><SelectValue placeholder="Город" /></SelectTrigger>
+                        <SelectContent>
+                          {UZ_CITIES.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                        </SelectContent>
+                      </Select>
+                      <Select
+                        value={editBizForm.business_type}
+                        onValueChange={(v) => setEditBizForm(f => ({ ...f, business_type: v }))}
+                      >
+                        <SelectTrigger><SelectValue placeholder="Тип бизнеса" /></SelectTrigger>
+                        <SelectContent>
+                          {BUSINESS_TYPE_OPTIONS.map(o => (
+                            <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <div className="flex gap-2 pt-1">
+                        <Button size="sm" onClick={() => handleSaveBiz(biz.id)} disabled={savingBiz} className="gap-1 text-xs">
+                          <Save className="w-3.5 h-3.5" /> {savingBiz ? 'Сохранение…' : 'Сохранить'}
+                        </Button>
+                        <Button size="sm" variant="secondary" onClick={cancelEditBiz} className="gap-1 text-xs">
+                          <X className="w-3.5 h-3.5" /> Отмена
+                        </Button>
+                      </div>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="flex items-start justify-between gap-2">
+                        <h3 className="text-sm font-semibold text-foreground">{biz.name}</h3>
+                        <button
+                          onClick={() => startEditBiz(biz)}
+                          className="text-xs text-primary inline-flex items-center gap-1 hover:underline shrink-0"
+                        >
+                          <Pencil className="w-3.5 h-3.5" /> Редактировать
+                        </button>
+                      </div>
+                      <p className="text-xs text-muted-foreground">{biz.description || t('partner.no_desc')}</p>
+                      {biz.address && <p className="text-xs text-muted-foreground">📍 {biz.address}</p>}
+                      {biz.city && <p className="text-xs text-muted-foreground">🏙 {biz.city}</p>}
+                      {biz.phone && <p className="text-xs text-muted-foreground">📞 {biz.phone}</p>}
+                    </>
+                  )}
 
                   {/* Photo Upload Section */}
                   <div className="pt-2 border-t border-border">
