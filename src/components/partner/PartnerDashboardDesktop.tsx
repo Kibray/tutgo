@@ -198,7 +198,10 @@ const PartnerDashboardDesktop = () => {
         {/* Logo + company */}
         <div className="p-5 border-b border-slate-200/60">
           <div className="flex items-center gap-2 mb-2">
-            <span className="text-xl font-bold font-display text-primary">TutGo</span>
+            <span
+              onClick={() => navigate('/')}
+              className="text-xl font-bold font-display text-primary cursor-pointer"
+            >TutGo</span>
             <span className="text-xs bg-primary/15 text-primary px-2 py-0.5 rounded-full font-medium">PRO</span>
           </div>
           <p className="text-sm text-slate-900 font-medium truncate">{companyName}</p>
