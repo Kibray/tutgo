@@ -577,6 +577,7 @@ const DesktopIndex = () => {
         searchValue={search}
         onSearch={setSearch}
         onSearchSubmit={(q) => { setSearch(q); setView('results'); }}
+        onLogoClick={() => setView('landing')}
       />
 
       {/* Sub-header */}
