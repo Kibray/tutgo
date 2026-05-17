@@ -558,7 +558,7 @@ function DesktopAuthLayout(props: any) {
         backgroundSize: 'cover', backgroundPosition: 'center',
         display: 'flex', flexDirection: 'column', padding: '40px 56px', color: '#fff', overflow: 'hidden',
       }}>
-        <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.45)' }} />
+        <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.45)', pointerEvents: 'none' }} />
         <div style={{ position: 'relative', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div style={{ fontSize: 28, fontWeight: 800, letterSpacing: '-0.02em' }}>
             <span style={{ color: '#fff' }}>TUT</span><span style={{ color: BLUE }}>GO</span>
