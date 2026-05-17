@@ -15,7 +15,7 @@ interface PreferencesContextType {
 
 const PreferencesContext = createContext<PreferencesContextType>({
   lang: 'ru',
-  darkMode: true,
+  darkMode: false,
   notifications: true,
   setLang: () => {},
   setDarkMode: () => {},
@@ -34,7 +34,7 @@ function getInitialLang(): Lang {
 export const PreferencesProvider = ({ children }: { children: ReactNode }) => {
   const { user } = useAuth();
   const [lang, setLangState] = useState<Lang>(getInitialLang);
-  const [darkMode, setDarkModeState] = useState(() => localStorage.getItem('tutgo_dark') !== 'false');
+  const [darkMode, setDarkModeState] = useState(() => localStorage.getItem('tutgo_dark') === 'true');
   const [notifications, setNotificationsState] = useState(true);
 
   // Load preferences from DB
@@ -48,8 +48,8 @@ export const PreferencesProvider = ({ children }: { children: ReactNode }) => {
       .then(({ data }) => {
         if (data) {
           if (data.language) { setLangState(data.language as Lang); localStorage.setItem('tutgo_lang', data.language); }
-          setDarkModeState(data.dark_mode ?? true);
-          localStorage.setItem('tutgo_dark', String(data.dark_mode ?? true));
+          setDarkModeState(data.dark_mode ?? false);
+          localStorage.setItem('tutgo_dark', String(data.dark_mode ?? false));
           setNotificationsState(data.notifications_enabled ?? true);
         }
       });
