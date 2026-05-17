@@ -636,6 +636,25 @@ function DesktopAuthLayout(props: any) {
 
           {isLogin ? (
             <>
+              <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 20 }}>
+                <input type="email" placeholder={t('auth.email')} required value={email} onChange={(e) => setEmail(e.target.value)}
+                  onFocus={(e) => { e.currentTarget.style.borderColor = '#2563EB'; }} onBlur={(e) => { e.currentTarget.style.borderColor = '#e5e7eb'; }}
+                  style={{ width: '100%', background: '#f9fafb', border: '1px solid #e5e7eb', color: '#111827', borderRadius: 8, padding: '12px 16px', fontSize: 14, outline: 'none' }} />
+                <input type="password" placeholder={t('auth.password')} required minLength={6} value={password} onChange={(e) => setPassword(e.target.value)}
+                  onFocus={(e) => { e.currentTarget.style.borderColor = '#2563EB'; }} onBlur={(e) => { e.currentTarget.style.borderColor = '#e5e7eb'; }}
+                  style={{ width: '100%', background: '#f9fafb', border: '1px solid #e5e7eb', color: '#111827', borderRadius: 8, padding: '12px 16px', fontSize: 14, outline: 'none' }} />
+                <button type="submit" disabled={loading} style={{
+                  width: '100%', height: 48, borderRadius: 10, border: 'none', background: BLUE, color: '#fff',
+                  fontSize: 14, fontWeight: 600, cursor: 'pointer', opacity: loading ? 0.5 : 1, marginTop: 4,
+                }}>{loading ? '...' : t('btn.login') || 'Войти'}</button>
+              </form>
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12, margin: '0 0 20px' }}>
+                <div style={{ flex: 1, height: 1, background: BORDER }} />
+                <span style={{ fontSize: 12, color: MUTED }}>или</span>
+                <div style={{ flex: 1, height: 1, background: BORDER }} />
+              </div>
+
               <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                 <div style={{ border: '1px solid #2AABEE33', borderRadius: 12, overflow: 'hidden' }}>
                   <button
