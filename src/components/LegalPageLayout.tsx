@@ -41,7 +41,10 @@ const LegalPageLayout = ({
           <ArrowLeft className="w-5 h-5" />
           <span className="text-sm hidden sm:inline">Назад</span>
         </motion.button>
-        <div className="flex-1 flex items-center justify-center gap-2">
+        <div
+          onClick={() => navigate('/')}
+          className="flex-1 flex items-center justify-center gap-2 cursor-pointer"
+        >
           <span className="font-display text-lg font-bold text-[#00ff87]">TUTGO</span>
           <span className="text-muted-foreground text-xs">.UZ</span>
         </div>

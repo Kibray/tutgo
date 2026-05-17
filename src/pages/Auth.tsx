@@ -511,6 +511,7 @@ function DesktopAuthLayout(props: any) {
   const BLUE = '#2563EB';
   const BORDER = '#e5e7eb';
   const MUTED = '#6b7280';
+  const navigate = useNavigate();
 
   const handleGoogle = async () => {
     setGoogleLoading(true);
@@ -560,7 +561,10 @@ function DesktopAuthLayout(props: any) {
       }}>
         <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.45)', pointerEvents: 'none' }} />
         <div style={{ position: 'relative', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div style={{ fontSize: 28, fontWeight: 800, letterSpacing: '-0.02em' }}>
+          <div
+            onClick={() => navigate('/')}
+            style={{ fontSize: 28, fontWeight: 800, letterSpacing: '-0.02em', cursor: 'pointer' }}
+          >
             <span style={{ color: '#fff' }}>TUT</span><span style={{ color: BLUE }}>GO</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
