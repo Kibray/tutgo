@@ -7,9 +7,10 @@ interface DesktopHeaderProps {
   searchValue?: string;
   onSearch?: (q: string) => void;
   onSearchSubmit?: (q: string) => void;
+  onLogoClick?: () => void;
 }
 
-const DesktopHeader = ({ searchValue = '', onSearch, onSearchSubmit }: DesktopHeaderProps) => {
+const DesktopHeader = ({ searchValue = '', onSearch, onSearchSubmit, onLogoClick }: DesktopHeaderProps) => {
   const navigate = useNavigate();
   const { unreadCount } = useNotifications();
   const [query, setQuery] = useState(searchValue);
@@ -38,7 +39,7 @@ const DesktopHeader = ({ searchValue = '', onSearch, onSearchSubmit }: DesktopHe
     >
       {/* Logo */}
       <div
-        onClick={() => navigate('/')}
+        onClick={() => { if (onLogoClick) onLogoClick(); else navigate('/'); }}
         style={{ fontWeight: 800, fontSize: 22, cursor: 'pointer', userSelect: 'none', color: '#111', letterSpacing: '-0.5px' }}
       >
         TUT<span style={{ color: '#2563EB' }}>GO</span>
