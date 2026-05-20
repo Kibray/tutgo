@@ -4,6 +4,8 @@ import { Building2, Camera, Send, PartyPopper, ArrowRight, ArrowLeft, Upload, X 
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { HelpCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -54,6 +56,38 @@ const UZBEKISTAN_CITIES = [
   'Чирчик',
   'Ангрен',
 ];
+
+const KAZAKHSTAN_CITIES = ['Алматы', 'Астана', 'Шымкент', 'Караганда', 'Актобе'];
+const RUSSIA_CITIES = ['Москва', 'Санкт-Петербург', 'Казань', 'Екатеринбург'];
+
+const COUNTRY_OPTIONS = [
+  { value: 'Узбекистан', label: 'Узбекистан 🇺🇿', cities: UZBEKISTAN_CITIES },
+  { value: 'Казахстан', label: 'Казахстан 🇰🇿', cities: KAZAKHSTAN_CITIES },
+  { value: 'Россия', label: 'Россия 🇷🇺', cities: RUSSIA_CITIES },
+];
+
+const HOUR_OPTIONS = Array.from({ length: 18 }, (_, i) => {
+  const h = (6 + i).toString().padStart(2, '0');
+  return `${h}:00`;
+});
+
+const FieldLabel = ({ text, hint, required }: { text: string; hint: string; required?: boolean }) => (
+  <div className="flex items-center gap-1.5 mb-1">
+    <label className="text-xs font-medium text-foreground">
+      {text}{required && ' *'}
+    </label>
+    <TooltipProvider delayDuration={150}>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <button type="button" className="text-muted-foreground hover:text-foreground transition-colors">
+            <HelpCircle className="w-3.5 h-3.5" />
+          </button>
+        </TooltipTrigger>
+        <TooltipContent side="top" className="max-w-[220px] text-xs">{hint}</TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  </div>
+);
 
 interface PartnerOnboardingProps {
   open: boolean;
@@ -117,6 +151,10 @@ const StepCompanyInfo = ({ data, setData, onNext, onBack }: {
     setShowError(false);
     onNext();
   };
+  const selectedCountry = COUNTRY_OPTIONS.find(c => c.value === (data.country || 'Узбекистан')) || COUNTRY_OPTIONS[0];
+  const cityList = selectedCountry.cities;
+  const workFrom = data.work_from || '09:00';
+  const workTo = data.work_to || '21:00';
   return (
     <div className="flex flex-col gap-4">
       <div className="text-center mb-2">
@@ -126,43 +164,96 @@ const StepCompanyInfo = ({ data, setData, onNext, onBack }: {
       </div>
       <div className="space-y-3">
         <div>
-          <Input placeholder="Название компании *" value={data.name || ''} onChange={e => setData({ ...data, name: e.target.value })}
+          <FieldLabel text="Название" hint="Как клиенты будут вас находить в поиске" required />
+          <Input placeholder="Название компании" value={data.name || ''} onChange={e => setData({ ...data, name: e.target.value })}
             className={`bg-secondary border-border ${showError && nameEmpty ? 'ring-2 ring-destructive' : ''}`} />
           {showError && nameEmpty && (
             <p className="text-xs text-destructive mt-1">Заполните обязательные поля</p>
           )}
         </div>
-        <Select value={data.category || ''} onValueChange={(v) => setData({ ...data, category: v })}>
-          <SelectTrigger className="bg-secondary border-border">
-            <SelectValue placeholder="Категория" />
-          </SelectTrigger>
-          <SelectContent>
-            {BUSINESS_CATEGORIES.map((c) => (
-              <SelectItem key={c} value={c}>{c}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <Input placeholder="Телефон" value={data.phone || ''} onChange={e => setData({ ...data, phone: e.target.value })}
-          className="bg-secondary border-border" />
-        <Select value={data.city || ''} onValueChange={(v) => setData({ ...data, city: v })}>
-          <SelectTrigger className="bg-secondary border-border">
-            <SelectValue placeholder="Город" />
-          </SelectTrigger>
-          <SelectContent>
-            {UZBEKISTAN_CITIES.map((c) => (
-              <SelectItem key={c} value={c}>{c}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
         <div>
-          <Input placeholder="Адрес *" value={data.address || ''} onChange={e => setData({ ...data, address: e.target.value })}
+          <FieldLabel text="Категория" hint="Определяет в каком разделе появится бизнес" />
+          <Select value={data.category || ''} onValueChange={(v) => setData({ ...data, category: v })}>
+            <SelectTrigger className="bg-secondary border-border">
+              <SelectValue placeholder="Категория" />
+            </SelectTrigger>
+            <SelectContent>
+              {BUSINESS_CATEGORIES.map((c) => (
+                <SelectItem key={c} value={c}>{c}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div>
+          <FieldLabel text="Страна" hint="Влияет на валюту и список городов" />
+          <Select value={data.country || 'Узбекистан'} onValueChange={(v) => setData({ ...data, country: v, city: '' })}>
+            <SelectTrigger className="bg-secondary border-border">
+              <SelectValue placeholder="Страна" />
+            </SelectTrigger>
+            <SelectContent>
+              {COUNTRY_OPTIONS.map((c) => (
+                <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div>
+          <FieldLabel text="Город" hint="Клиенты ищут заведения рядом с собой" />
+          <Select value={data.city || ''} onValueChange={(v) => setData({ ...data, city: v })}>
+            <SelectTrigger className="bg-secondary border-border">
+              <SelectValue placeholder="Город" />
+            </SelectTrigger>
+            <SelectContent>
+              {cityList.map((c) => (
+                <SelectItem key={c} value={c}>{c}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div>
+          <FieldLabel text="Адрес" hint="Точный адрес — клиенты найдут вас на карте" required />
+          <Input placeholder="Адрес" value={data.address || ''} onChange={e => setData({ ...data, address: e.target.value })}
             className={`bg-secondary border-border ${showError && addressEmpty ? 'ring-2 ring-destructive' : ''}`} />
           {showError && addressEmpty && (
             <p className="text-xs text-destructive mt-1">Заполните обязательные поля</p>
           )}
         </div>
-        <textarea placeholder="Краткое описание" value={data.description || ''} onChange={e => setData({ ...data, description: e.target.value })}
-          className="w-full rounded-md border border-border bg-secondary px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring min-h-[72px] resize-none" />
+        <div>
+          <FieldLabel text="Часы работы" hint="Клиенты видят когда вы открыты" />
+          <div className="flex items-center gap-2">
+            <Select value={workFrom} onValueChange={(v) => setData({ ...data, work_from: v })}>
+              <SelectTrigger className="bg-secondary border-border flex-1">
+                <SelectValue placeholder="с" />
+              </SelectTrigger>
+              <SelectContent>
+                {HOUR_OPTIONS.map((h) => (
+                  <SelectItem key={h} value={h}>{h}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <span className="text-muted-foreground text-sm">—</span>
+            <Select value={workTo} onValueChange={(v) => setData({ ...data, work_to: v })}>
+              <SelectTrigger className="bg-secondary border-border flex-1">
+                <SelectValue placeholder="до" />
+              </SelectTrigger>
+              <SelectContent>
+                {HOUR_OPTIONS.map((h) => (
+                  <SelectItem key={h} value={h}>{h}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+        <div>
+          <FieldLabel text="Телефон" hint="Клиенты смогут позвонить напрямую" />
+          <Input placeholder="Телефон" value={data.phone || ''} onChange={e => setData({ ...data, phone: e.target.value })}
+            className="bg-secondary border-border" />
+        </div>
+        <div>
+          <FieldLabel text="Описание" hint="Расскажите чем вы отличаетесь от других" />
+          <textarea placeholder="Краткое описание" value={data.description || ''} onChange={e => setData({ ...data, description: e.target.value })}
+            className="w-full rounded-md border border-border bg-secondary px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring min-h-[72px] resize-none" />
+        </div>
       </div>
       <div className="flex gap-3 mt-2">
         <button onClick={onBack} className="flex-1 py-3 rounded-xl bg-secondary text-foreground font-semibold text-sm flex items-center justify-center gap-1 active:scale-[0.97] transition-transform">
