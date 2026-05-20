@@ -277,13 +277,29 @@ const StepPhotoSocial = ({ data, setData, onNext, onBack }: {
       <h2 className="text-lg font-bold text-foreground">Фото и соцсети</h2>
       <p className="text-xs text-muted-foreground">Добавьте логотип и ссылку на Instagram</p>
     </div>
-    <div className="flex flex-col items-center gap-4">
-      <div className="w-24 h-24 rounded-2xl bg-secondary border-2 border-dashed border-border flex flex-col items-center justify-center cursor-pointer hover:border-primary/50 transition-colors">
-        <Upload className="w-6 h-6 text-muted-foreground mb-1" />
-        <span className="text-[10px] text-muted-foreground">Логотип</span>
+    <div className="flex flex-col gap-4">
+      <div className="flex flex-col items-center gap-1">
+        <FieldLabel text="Логотип" hint="Ваш бренд — первое что видит клиент" />
+        <div className="w-24 h-24 rounded-2xl bg-secondary border-2 border-dashed border-border flex flex-col items-center justify-center cursor-pointer hover:border-primary/50 transition-colors">
+          <Upload className="w-6 h-6 text-muted-foreground mb-1" />
+          <span className="text-[10px] text-muted-foreground">Логотип</span>
+        </div>
       </div>
-      <Input placeholder="@instagram" value={data.instagram || ''} onChange={e => setData({ ...data, instagram: e.target.value })}
-        className="bg-secondary border-border" />
+      <div>
+        <FieldLabel text="Instagram" hint="Клиенты смотрят ваши работы перед записью" />
+        <Input placeholder="@instagram" value={data.instagram || ''} onChange={e => setData({ ...data, instagram: e.target.value })}
+          className="bg-secondary border-border" />
+      </div>
+      <div>
+        <FieldLabel text="Telegram" hint="Получайте уведомления о новых записях" />
+        <Input placeholder="@username" value={data.telegram || ''} onChange={e => setData({ ...data, telegram: e.target.value })}
+          className="bg-secondary border-border" />
+      </div>
+      <div>
+        <FieldLabel text="Сайт" hint="Дополнительная информация для клиентов" />
+        <Input placeholder="https://yoursite.com" value={data.website || ''} onChange={e => setData({ ...data, website: e.target.value })}
+          className="bg-secondary border-border" />
+      </div>
       <p className="text-[11px] text-muted-foreground text-center">Вы сможете загрузить фото позже в настройках компании</p>
     </div>
     <div className="flex gap-3 mt-2">
