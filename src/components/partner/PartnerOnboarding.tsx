@@ -12,7 +12,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import { getBizType } from "@/lib/categories";
 
-const TOTAL_STEPS = 5;
+const TOTAL_STEPS = 6;
 
 const BUSINESS_CATEGORIES = [
   'Барбершоп',
@@ -359,15 +359,88 @@ const StepDone = ({ onComplete }: { onComplete: () => void }) => (
   </div>
 );
 
+/* ─── Step 5b: First Service ─── */
+const COUNTRY_CURRENCY: Record<string, string> = {
+  'Узбекистан': 'UZS',
+  'Казахстан': 'KZT',
+  'Россия': 'RUB',
+};
+const DURATION_OPTIONS = [15, 30, 45, 60, 90, 120];
+
+const StepFirstService = ({ data, setData, country, onNext, onSkip, onBack }: {
+  data: Record<string, string>;
+  setData: (d: Record<string, string>) => void;
+  country?: string;
+  onNext: () => void;
+  onSkip: () => void;
+  onBack: () => void;
+}) => {
+  const currency = COUNTRY_CURRENCY[country || 'Узбекистан'] || 'UZS';
+  const handleNext = () => {
+    setData({ ...data, currency });
+    onNext();
+  };
+  return (
+    <div className="flex flex-col gap-4">
+      <div className="text-center mb-2">
+        <Building2 className="w-10 h-10 text-primary mx-auto mb-2" />
+        <h2 className="text-lg font-bold text-foreground">Первая услуга</h2>
+        <p className="text-xs text-muted-foreground">Добавьте услугу — клиенты смогут записаться</p>
+      </div>
+      <div className="space-y-3">
+        <div>
+          <FieldLabel text="Название услуги" hint="Как будет называться услуга в каталоге" />
+          <Input placeholder="Например: Стрижка мужская" value={data.name || ''} onChange={e => setData({ ...data, name: e.target.value })}
+            className="bg-secondary border-border" />
+        </div>
+        <div>
+          <FieldLabel text="Цена" hint="Клиенты видят стоимость до записи" />
+          <div className="flex items-center gap-2">
+            <Input type="number" inputMode="numeric" placeholder="0" value={data.price || ''} onChange={e => setData({ ...data, price: e.target.value })}
+              className="bg-secondary border-border flex-1" />
+            <span className="px-3 py-2 rounded-md bg-primary/10 text-primary text-xs font-semibold">{currency}</span>
+          </div>
+        </div>
+        <div>
+          <FieldLabel text="Длительность" hint="Влияет на доступные слоты в расписании" />
+          <Select value={data.duration || '30'} onValueChange={(v) => setData({ ...data, duration: v })}>
+            <SelectTrigger className="bg-secondary border-border">
+              <SelectValue placeholder="Длительность" />
+            </SelectTrigger>
+            <SelectContent>
+              {DURATION_OPTIONS.map((d) => (
+                <SelectItem key={d} value={String(d)}>{d} минут</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+      <div className="flex gap-3 mt-2">
+        <button onClick={onBack} className="flex-1 py-3 rounded-xl bg-secondary text-foreground font-semibold text-sm flex items-center justify-center gap-1 active:scale-[0.97] transition-transform">
+          <ArrowLeft className="w-4 h-4" /> Назад
+        </button>
+        <button onClick={handleNext} className="flex-1 py-3 rounded-xl bg-primary text-primary-foreground font-semibold text-sm flex items-center justify-center gap-1 active:scale-[0.97] transition-transform">
+          Далее <ArrowRight className="w-4 h-4" />
+        </button>
+      </div>
+      <button onClick={onSkip} className="text-xs text-muted-foreground hover:text-foreground transition-colors mt-1">
+        Добавлю позже
+      </button>
+    </div>
+  );
+};
+
 const PartnerOnboarding = ({ open, onComplete }: PartnerOnboardingProps) => {
   const [step, setStep] = useState(0);
   const [dir, setDir] = useState(1);
   const [companyData, setCompanyData] = useState<Record<string, string>>({});
   const [socialData, setSocialData] = useState<Record<string, string>>({});
+  const [serviceData, setServiceData] = useState<Record<string, string>>({});
   const { user } = useAuth();
 
   const next = () => { setDir(1); setStep(s => s + 1); };
   const back = () => { setDir(-1); setStep(s => s - 1); };
+  const skipService = () => { setServiceData({}); setDir(1); setStep(s => s + 1); };
 
   const handleComplete = async () => {
     if (user && companyData.name) {
@@ -408,6 +481,17 @@ const PartnerOnboarding = ({ open, onComplete }: PartnerOnboardingProps) => {
           related_id: location?.id ?? null,
         });
         if (notifErr) throw notifErr;
+
+        if (location?.id && serviceData.name && serviceData.name.trim()) {
+          const { error: svcErr } = await supabase.from('services').insert({
+            location_id: location.id,
+            name: serviceData.name.trim(),
+            price: serviceData.price ? Number(serviceData.price) : 0,
+            duration_minutes: serviceData.duration ? Number(serviceData.duration) : 30,
+            currency: serviceData.currency || COUNTRY_CURRENCY[companyData.country || 'Узбекистан'] || 'UZS',
+          });
+          if (svcErr) console.error('First service save error:', svcErr);
+        }
       } catch (e: any) {
         console.error('Onboarding save error:', e);
         toast.error(e?.message || 'Не удалось сохранить данные. Попробуйте ещё раз.');
@@ -423,6 +507,7 @@ const PartnerOnboarding = ({ open, onComplete }: PartnerOnboardingProps) => {
     <StepCompanyInfo key="company" data={companyData} setData={setCompanyData} onNext={next} onBack={back} />,
     <StepPhotoSocial key="photo" data={socialData} setData={setSocialData} onNext={next} onBack={back} />,
     <StepTelegram key="telegram" onNext={next} onBack={back} />,
+    <StepFirstService key="service" data={serviceData} setData={setServiceData} country={companyData.country} onNext={next} onSkip={skipService} onBack={back} />,
     <StepDone key="done" onComplete={handleComplete} />,
   ];
 
