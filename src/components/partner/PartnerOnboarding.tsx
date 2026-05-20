@@ -502,7 +502,7 @@ const PartnerOnboarding = ({ open, onComplete }: PartnerOnboardingProps) => {
             verified: true,
             instagram: socialData.instagram || null,
             website: socialData.website || null,
-            metadata: Object.keys(locationMetadata).length ? locationMetadata : null,
+            metadata: Object.keys(locationMetadata).length ? (locationMetadata as any) : null,
           })
           .select()
           .single();
