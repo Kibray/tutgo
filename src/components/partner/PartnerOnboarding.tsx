@@ -1,6 +1,7 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Building2, Camera, Send, PartyPopper, ArrowRight, ArrowLeft, Upload, X } from 'lucide-react';
+import { Building2, Camera, Send, PartyPopper, ArrowRight, ArrowLeft, Upload, X, Check, Square, UserPlus } from 'lucide-react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -339,25 +340,58 @@ const StepTelegram = ({ onNext, onBack }: { onNext: () => void; onBack: () => vo
 );
 
 /* ─── Step 5: Done ─── */
-const StepDone = ({ onComplete }: { onComplete: () => void }) => (
-  <div className="flex flex-col items-center text-center gap-6 py-6">
-    <div className="w-20 h-20 rounded-full bg-primary/15 flex items-center justify-center">
-      <PartyPopper className="w-10 h-10 text-primary" />
+const ChecklistItem = ({ done, label }: { done: boolean; label: string }) => (
+  <div className="flex items-center gap-3 py-2">
+    <div className={cn(
+      'w-5 h-5 rounded-md flex items-center justify-center shrink-0',
+      done ? 'bg-primary/15 text-primary' : 'bg-secondary text-muted-foreground'
+    )}>
+      {done ? <Check className="w-3.5 h-3.5" /> : <Square className="w-3.5 h-3.5" />}
     </div>
-    <div>
-      <h2 className="text-xl font-bold text-foreground mb-2">Всё готово! 🎉</h2>
-      <p className="text-sm text-muted-foreground leading-relaxed">
-        Ваш бизнес настроен. Теперь добавьте услуги и мастеров — и клиенты смогут записываться онлайн.
-      </p>
-    </div>
-    <button
-      onClick={onComplete}
-      className="w-full py-3 rounded-xl bg-primary text-primary-foreground font-semibold text-sm active:scale-[0.97] transition-transform"
-    >
-      Перейти в панель управления
-    </button>
+    <span className={cn('text-sm', done ? 'text-foreground' : 'text-muted-foreground')}>{label}</span>
   </div>
 );
+
+const StepDone = ({ onComplete, hasService }: { onComplete: () => void; hasService: boolean }) => {
+  const navigate = useNavigate();
+  const handleAddStaff = async () => {
+    await onComplete();
+    navigate('/partner/staff');
+  };
+  return (
+    <div className="flex flex-col items-center text-center gap-5 py-4">
+      <div className="w-20 h-20 rounded-full bg-primary/15 flex items-center justify-center">
+        <PartyPopper className="w-10 h-10 text-primary" />
+      </div>
+      <div>
+        <h2 className="text-xl font-bold text-foreground mb-2">Всё готово! 🎉</h2>
+        <p className="text-sm text-muted-foreground leading-relaxed">
+          Ваш бизнес настроен. Завершите настройку, чтобы клиенты могли записываться.
+        </p>
+      </div>
+      <div className="w-full bg-secondary/50 rounded-xl p-3 text-left">
+        <ChecklistItem done={true} label="Компания создана" />
+        <ChecklistItem done={hasService} label="Первая услуга" />
+        <ChecklistItem done={false} label="Добавьте мастера" />
+        <ChecklistItem done={false} label="Загрузите фото" />
+      </div>
+      <div className="flex flex-col w-full gap-2">
+        <button
+          onClick={handleAddStaff}
+          className="w-full py-3 rounded-xl bg-secondary text-foreground font-semibold text-sm flex items-center justify-center gap-2 active:scale-[0.97] transition-transform"
+        >
+          <UserPlus className="w-4 h-4" /> Добавить мастера
+        </button>
+        <button
+          onClick={onComplete}
+          className="w-full py-3 rounded-xl bg-primary text-primary-foreground font-semibold text-sm active:scale-[0.97] transition-transform"
+        >
+          Перейти в дашборд
+        </button>
+      </div>
+    </div>
+  );
+};
 
 /* ─── Step 5b: First Service ─── */
 const COUNTRY_CURRENCY: Record<string, string> = {
@@ -445,6 +479,16 @@ const PartnerOnboarding = ({ open, onComplete }: PartnerOnboardingProps) => {
   const handleComplete = async () => {
     if (user && companyData.name) {
       try {
+        const workingHours = (companyData.work_from || companyData.work_to) ? {
+          mon_fri: {
+            open: companyData.work_from || '09:00',
+            close: companyData.work_to || '21:00',
+          },
+        } : null;
+        const locationMetadata: Record<string, unknown> = {};
+        if (companyData.country) locationMetadata.country = companyData.country;
+        if (workingHours) locationMetadata.working_hours = workingHours;
+
         const { data: location, error: locErr } = await supabase
           .from('locations')
           .insert({
@@ -457,6 +501,8 @@ const PartnerOnboarding = ({ open, onComplete }: PartnerOnboardingProps) => {
             city: companyData.city || 'Ташкент',
             verified: true,
             instagram: socialData.instagram || null,
+            website: socialData.website || null,
+            metadata: Object.keys(locationMetadata).length ? (locationMetadata as any) : null,
           })
           .select()
           .single();
@@ -486,8 +532,8 @@ const PartnerOnboarding = ({ open, onComplete }: PartnerOnboardingProps) => {
           const { error: svcErr } = await supabase.from('services').insert({
             location_id: location.id,
             name: serviceData.name.trim(),
-            price: serviceData.price ? Number(serviceData.price) : 0,
-            duration_minutes: serviceData.duration ? Number(serviceData.duration) : 30,
+            price: Number(serviceData.price) || 0,
+            duration_minutes: Number(serviceData.duration) || 60,
             currency: serviceData.currency || COUNTRY_CURRENCY[companyData.country || 'Узбекистан'] || 'UZS',
           });
           if (svcErr) console.error('First service save error:', svcErr);
@@ -499,6 +545,7 @@ const PartnerOnboarding = ({ open, onComplete }: PartnerOnboardingProps) => {
       }
     }
     localStorage.setItem('partner_onboarding_done', 'true');
+    localStorage.setItem('onboarding_completed', 'true');
     onComplete();
   };
 
@@ -508,7 +555,7 @@ const PartnerOnboarding = ({ open, onComplete }: PartnerOnboardingProps) => {
     <StepPhotoSocial key="photo" data={socialData} setData={setSocialData} onNext={next} onBack={back} />,
     <StepTelegram key="telegram" onNext={next} onBack={back} />,
     <StepFirstService key="service" data={serviceData} setData={setServiceData} country={companyData.country} onNext={next} onSkip={skipService} onBack={back} />,
-    <StepDone key="done" onComplete={handleComplete} />,
+    <StepDone key="done" onComplete={handleComplete} hasService={!!(serviceData.name && serviceData.name.trim())} />,
   ];
 
   return (
