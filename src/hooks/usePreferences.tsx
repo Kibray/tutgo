@@ -56,8 +56,12 @@ export const PreferencesProvider = ({ children }: { children: ReactNode }) => {
       .then(({ data }) => {
         if (data) {
           if (data.language) { setLangState(data.language as Lang); localStorage.setItem('tutgo_lang', data.language); }
-          setDarkModeState(data.dark_mode ?? true);
-          localStorage.setItem('tutgo_dark', String(data.dark_mode ?? true));
+          // Only apply DB dark_mode if the user has explicitly set it (non-null).
+          // Otherwise keep the device-default already computed in useState initializer.
+          if (data.dark_mode !== null && data.dark_mode !== undefined) {
+            setDarkModeState(data.dark_mode);
+            localStorage.setItem('tutgo_dark', String(data.dark_mode));
+          }
           setNotificationsState(data.notifications_enabled ?? true);
         }
       });
