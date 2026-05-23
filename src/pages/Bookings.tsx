@@ -167,7 +167,7 @@ const Bookings = () => {
 
   if (!user && !loading) {
     return (
-      <div className="min-h-screen bg-background flex flex-col items-center justify-center text-center px-6">
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center text-center px-6" style={{ background: 'linear-gradient(135deg, #f5e6ee 0%, #e8ecf7 50%, #e0e8f5 100%)' }}>
         <div className="w-16 h-16 rounded-full bg-muted/50 flex items-center justify-center mb-4">
           <Calendar className="w-7 h-7 text-muted-foreground" />
         </div>
@@ -184,7 +184,7 @@ const Bookings = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background pb-24">
+    <div className="min-h-screen bg-background pb-24" style={{ background: 'linear-gradient(135deg, #f5e6ee 0%, #e8ecf7 50%, #e0e8f5 100%)' }}>
       <div className="px-4 pt-6">
         <h1 className="text-lg font-bold font-display text-foreground mb-1">{t('bookings.title')}</h1>
         <p className="text-xs text-muted-foreground mb-4">{t('bookings.subtitle')}</p>
