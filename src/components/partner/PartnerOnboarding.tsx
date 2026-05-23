@@ -561,7 +561,7 @@ const PartnerOnboarding = ({ open, onComplete }: PartnerOnboardingProps) => {
   return (
     <Dialog open={open} onOpenChange={() => {}}>
       <DialogContent
-        className="bg-card border-border max-w-[420px] w-[calc(100%-2rem)] p-6 rounded-2xl [&>button]:hidden"
+        className="bg-card border-border max-w-[420px] w-[calc(100%-2rem)] p-6 rounded-2xl [&>button]:hidden max-h-[calc(100vh-80px)] overflow-y-auto"
         onPointerDownOutside={e => e.preventDefault()}
         onEscapeKeyDown={e => e.preventDefault()}
       >

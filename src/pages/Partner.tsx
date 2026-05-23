@@ -90,6 +90,13 @@ const Partner = () => {
   const [avgRating, setAvgRating] = useState(0);
   const [showOnboarding, setShowOnboarding] = useState(() => !localStorage.getItem('partner_onboarding_done'));
 
+  useEffect(() => {
+    if (user?.email === 'demo@tutgo.uz') {
+      localStorage.setItem('partner_onboarding_done', 'true');
+      setShowOnboarding(false);
+    }
+  }, [user]);
+
   const today = useMemo(() => new Date(), []);
   const todayStr = format(today, 'yyyy-MM-dd');
 
@@ -172,11 +179,14 @@ const Partner = () => {
     return null;
   }
 
+  if (showOnboarding) {
+    return <PartnerOnboarding open={showOnboarding} onComplete={() => setShowOnboarding(false)} />;
+  }
+
   if (isDesktop) return <PartnerDashboardDesktop />;
 
   return (
     <PartnerLayout title={t('partner.dashboard')} showBackToPartner={false}>
-      {showOnboarding && <PartnerOnboarding open={showOnboarding} onComplete={() => setShowOnboarding(false)} />}
       <div className="px-4">
         {/* Subscription banner */}
         {isEarlyAdopter && daysLeft !== null && daysLeft > 3 && (
