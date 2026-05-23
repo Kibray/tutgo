@@ -179,7 +179,7 @@ const ServiceDetail = () => {
   const isBookable = location ? ['beauty', 'medical', 'tour', 'service', 'auto', 'sport', 'education'].includes(location.business_type) : false;
 
   if (loading) return (
-    <div className="min-h-screen bg-background p-4 space-y-4">
+    <div className="min-h-screen bg-background p-4 space-y-4" style={{ background: 'linear-gradient(135deg, #f5e6ee 0%, #e8ecf7 50%, #e0e8f5 100%)' }}>
       <div className="h-56 rounded-2xl bg-muted animate-pulse" />
       <div className="h-6 w-2/3 rounded bg-muted animate-pulse" />
       <div className="h-4 w-1/2 rounded bg-muted animate-pulse" />
@@ -190,7 +190,7 @@ const ServiceDetail = () => {
       </div>
     </div>
   );
-  if (!location) return <div className="min-h-screen bg-background flex items-center justify-center text-muted-foreground">Услуга не найдена</div>;
+  if (!location) return <div className="min-h-screen bg-background flex items-center justify-center text-muted-foreground" style={{ background: 'linear-gradient(135deg, #f5e6ee 0%, #e8ecf7 50%, #e0e8f5 100%)' }}>Услуга не найдена</div>;
 
   const fullAddress = `${location.address || ''}, ${location.city || ''}`;
   const lat = location.lat || 41.3111;
@@ -302,7 +302,7 @@ const ServiceDetail = () => {
   const maxRatingCount = Math.max(...ratingDist.map(d => d.count), 1);
 
   return (
-    <div className="min-h-screen bg-background pb-32 overflow-y-auto">
+    <div className="min-h-screen bg-background pb-32 overflow-y-auto" style={{ background: 'linear-gradient(135deg, #f5e6ee 0%, #e8ecf7 50%, #e0e8f5 100%)' }}>
       {/* Hero */}
       <div className="relative h-56 bg-secondary">
         {location.gallery && location.gallery.length > 0 ? (

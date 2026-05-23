@@ -29,7 +29,7 @@ const Notifications = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-background pb-24">
+    <div className="min-h-screen bg-background pb-24" style={{ background: 'linear-gradient(135deg, #f5e6ee 0%, #e8ecf7 50%, #e0e8f5 100%)' }}>
       <div className="px-4 pt-6">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
