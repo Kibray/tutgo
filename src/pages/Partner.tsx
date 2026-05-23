@@ -180,10 +180,7 @@ const Partner = () => {
   }
 
   if (showOnboarding) {
-    return <PartnerOnboarding open={showOnboarding} onComplete={() => {
-      localStorage.setItem('partner_onboarding_done', 'true');
-      setShowOnboarding(false);
-    }} />;
+    return <PartnerOnboarding open={showOnboarding} onComplete={() => setShowOnboarding(false)} />;
   }
 
   if (isDesktop) return <PartnerDashboardDesktop />;
