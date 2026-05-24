@@ -491,6 +491,11 @@ const PartnerOnboarding = ({ open, onComplete }: PartnerOnboardingProps) => {
         if (companyData.country) locationMetadata.country = companyData.country;
         if (workingHours) locationMetadata.working_hours = workingHours;
 
+        const matchedCategory = categories.find(c =>
+          c.name === companyData.category ||
+          (c.subcategories as any[])?.some((s: any) => s.name === companyData.category)
+        );
+
         const { data: location, error: locErr } = await supabase
           .from('locations')
           .insert({
@@ -504,6 +509,7 @@ const PartnerOnboarding = ({ open, onComplete }: PartnerOnboardingProps) => {
             verified: true,
             instagram: socialData.instagram || null,
             website: socialData.website || null,
+            category_id: matchedCategory?.id || null,
             metadata: Object.keys(locationMetadata).length ? (locationMetadata as any) : null,
           })
           .select()
@@ -531,11 +537,6 @@ const PartnerOnboarding = ({ open, onComplete }: PartnerOnboardingProps) => {
         if (notifErr) throw notifErr;
 
         await becomePartner();
-
-        const matchedCategory = categories.find(c =>
-          c.name === companyData.category ||
-          (c.subcategories as any[])?.some((s: any) => s.name === companyData.category)
-        );
 
         await supabase.from('partner_applications').insert({
           user_id: user.id,
