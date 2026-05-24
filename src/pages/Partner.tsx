@@ -174,13 +174,13 @@ const Partner = () => {
     );
   }
 
+  if (showOnboarding) {
+    return <PartnerOnboarding open={showOnboarding} onComplete={() => setShowOnboarding(false)} />;
+  }
+
   if (!isPartner) {
     navigate('/partner-landing');
     return null;
-  }
-
-  if (showOnboarding) {
-    return <PartnerOnboarding open={showOnboarding} onComplete={() => setShowOnboarding(false)} />;
   }
 
   if (isDesktop) return <PartnerDashboardDesktop />;
