@@ -174,13 +174,11 @@ const Partner = () => {
     );
   }
 
-  if (showOnboarding) {
-    return <PartnerOnboarding open={showOnboarding} onComplete={() => setShowOnboarding(false)} />;
-  }
-
-  if (!isPartner) {
-    navigate('/partner-landing');
-    return null;
+  if (!isPartner || showOnboarding) {
+    return <PartnerOnboarding open={true} onComplete={() => {
+      localStorage.setItem('partner_onboarding_done', 'true');
+      setShowOnboarding(false);
+    }} />;
   }
 
   if (isDesktop) return <PartnerDashboardDesktop />;
