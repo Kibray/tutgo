@@ -12,6 +12,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import { getBizType } from "@/lib/categories";
+import { useCategories } from "@/hooks/useCategories";
 
 const TOTAL_STEPS = 6;
 
@@ -470,7 +471,8 @@ const PartnerOnboarding = ({ open, onComplete }: PartnerOnboardingProps) => {
   const [companyData, setCompanyData] = useState<Record<string, string>>({});
   const [socialData, setSocialData] = useState<Record<string, string>>({});
   const [serviceData, setServiceData] = useState<Record<string, string>>({});
-  const { user } = useAuth();
+  const { user, becomePartner } = useAuth();
+  const { categories } = useCategories();
 
   const next = () => { setDir(1); setStep(s => s + 1); };
   const back = () => { setDir(-1); setStep(s => s - 1); };
@@ -527,6 +529,23 @@ const PartnerOnboarding = ({ open, onComplete }: PartnerOnboardingProps) => {
           related_id: location?.id ?? null,
         });
         if (notifErr) throw notifErr;
+
+        await becomePartner();
+
+        const matchedCategory = categories.find(c =>
+          c.name === companyData.category ||
+          (c.subcategories as any[])?.some((s: any) => s.name === companyData.category)
+        );
+
+        await supabase.from('partner_applications').insert({
+          user_id: user.id,
+          company_name: companyData.name,
+          category: companyData.category || '',
+          phone: companyData.phone || '',
+          address: companyData.address || '',
+          description: companyData.description || null,
+          instagram: socialData.instagram || null,
+        });
 
         if (location?.id && serviceData.name && serviceData.name.trim()) {
           const { error: svcErr } = await supabase.from('services').insert({
