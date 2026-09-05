@@ -407,7 +407,7 @@ const DesktopIndex = () => {
                     <motion.div
                       key={loc.id}
                       whileHover={{ y: -2 }}
-                      onClick={() => navigate(`/service/${loc.id}`)}
+                      onClick={() => navigate(loc.business_type === 'tour' ? `/tours/${loc.id}` : `/service/${loc.id}`)}
                       className="border border-border rounded-xl shadow-sm"
                       style={{ background: '#ffffff', overflow: 'hidden', cursor: 'pointer', display: 'flex', flexDirection: 'column' }}
                     >
@@ -485,7 +485,7 @@ const DesktopIndex = () => {
                     <motion.div
                       key={loc.id}
                       whileHover={{ y: -1 }}
-                      onClick={() => navigate(`/service/${loc.id}`)}
+                      onClick={() => navigate(loc.business_type === 'tour' ? `/tours/${loc.id}` : `/service/${loc.id}`)}
                       className="border border-border rounded-xl shadow-sm"
                       style={{ background: '#ffffff', padding: 12, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 12 }}
                     >
@@ -556,7 +556,7 @@ const DesktopIndex = () => {
         </div>
 
         <BusinessSheet service={sheetService} open={!!sheetService} onClose={() => setSheetService(null)}
-          onFullPage={() => { if (sheetService) { navigate(`/service/${sheetService.id}`); setSheetService(null); } }} />
+          onFullPage={() => { if (sheetService) { navigate(sheetService.business_type === 'tour' ? `/tours/${sheetService.id}` : `/service/${sheetService.id}`); setSheetService(null); } }} />
         <React.Suspense fallback={null}>
           <AiAssistantFab onShowOnMap={(locs) => {
             const first = locs.find((l) => l.lat && l.lng);
@@ -808,7 +808,7 @@ const DesktopIndex = () => {
                         whileHover={{ y: -1 }}
                         onClick={() => {
                           setActiveCard(loc.id);
-                          if (isBookable(loc)) navigate(`/service/${loc.id}`); else setSheetService(loc);
+                          if (isBookable(loc)) navigate(loc.business_type === 'tour' ? `/tours/${loc.id}` : `/service/${loc.id}`); else setSheetService(loc);
                         }}
                         style={{
                           display: 'flex', gap: 12, padding: 10,
@@ -923,7 +923,7 @@ const DesktopIndex = () => {
       </div>
 
       <BusinessSheet service={sheetService} open={!!sheetService} onClose={() => setSheetService(null)}
-        onFullPage={() => { if (sheetService) { navigate(`/service/${sheetService.id}`); setSheetService(null); } }} />
+        onFullPage={() => { if (sheetService) { navigate(sheetService.business_type === 'tour' ? `/tours/${sheetService.id}` : `/service/${sheetService.id}`); setSheetService(null); } }} />
 
       {showMoreFilters && (
         <div
