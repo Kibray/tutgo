@@ -372,7 +372,7 @@ const DesktopIndex = () => {
                 return (
                   <button
                     key={c.id}
-                    onClick={() => c.name === 'Туры' ? navigate('/tours') : setCategory(c.id)}
+                    onClick={() => c.name === 'Туры' ? navigate('/tours') : c.name === 'Спорт' ? navigate('/sport') : setCategory(c.id)}
                     style={{
                       background: 'transparent', border: 'none',
                       padding: '14px 16px', cursor: 'pointer',
