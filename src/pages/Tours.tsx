@@ -269,8 +269,11 @@ const Tours = () => {
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <Input
-            value={search}
-            onChange={e => setSearch(e.target.value)}
+            type="search"
+            name="tours-search"
+            autoComplete="off"
+            value={search ?? ''}
+            onChange={e => setSearch(e.target.value ?? '')}
             placeholder="Куда хотите поехать?"
             className="pl-10 bg-card border-border rounded-xl"
           />
