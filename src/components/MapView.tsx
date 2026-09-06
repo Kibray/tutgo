@@ -297,13 +297,8 @@ interface MapViewProps {
 const MapView = ({ services, onMarkerClick, center, className = '', nearbyMode, userLocation }: MapViewProps) => {
   const defaultCenter: [number, number] = [41.3111, 69.2797];
   const [zoom, setZoom] = useState(12);
-  const [isDark, setIsDark] = useState(() => localStorage.getItem('tutgo_map_dark') !== 'false');
+  const [isDark] = useState(false);
 
-  useEffect(() => {
-    const handler = () => setIsDark(localStorage.getItem('tutgo_map_dark') !== 'false');
-    window.addEventListener('storage', handler);
-    return () => window.removeEventListener('storage', handler);
-  }, []);
   const [districts, setDistricts] = useState<any>(null);
 
   useEffect(() => { injectPulseCSS(); }, []);
