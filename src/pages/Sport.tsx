@@ -21,7 +21,7 @@ const Sport = () => {
   const navigate = useNavigate();
   const isDesktop = useIsDesktop();
   const [sport, setSport] = useState('all');
-  const { locations, loading } = useLocations('sport');
+  const { locations, loading } = useLocations('fitness');
 
   const filtered = useMemo(() => {
     if (sport === 'all') return locations;

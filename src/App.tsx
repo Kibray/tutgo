@@ -170,7 +170,7 @@ const App = () => (
                   <Route path="/sport" element={<Sport />} />
                   <Route path="/sport/games" element={<FindGame />} />
                   <Route path="/games/create" element={<CreateGame />} />
-                 <Route path="/sport/venues" element={<Navigate to="/sport" replace />} />
+                 <Route path="/sport/venues" element={<Sport />} />
                   <Route path="/sport/venue/:id" element={<SportVenueDetail />} />
                   <Route path="/transport" element={<Transport />} />
                   <Route path="/transport/results" element={<TransportResults />} />
