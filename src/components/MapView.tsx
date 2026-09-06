@@ -312,9 +312,7 @@ const MapView = ({ services, onMarkerClick, center, className = '', nearbyMode, 
 
   const filteredServices = services.filter(s => s.lat && s.lng);
 
-  const tileUrl = isDark
-    ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
-    : 'https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png';
+  const tileUrl = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
 
   const mapBg = isDark ? 'hsl(220, 15%, 5%)' : 'hsl(210, 20%, 92%)';
 
