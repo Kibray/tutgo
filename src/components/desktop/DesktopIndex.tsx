@@ -267,7 +267,7 @@ const DesktopIndex = () => {
                   <span style={{ fontSize: 14, color: COLORS.muted }}>▦</span>
                   <select
                     value={category}
-                    onChange={(e) => setCategory(e.target.value)}
+                    onChange={(e) => { setCategory(e.target.value); setView('results'); }}
                     style={{
                       border: 'none', outline: 'none', fontSize: 13, color: COLORS.text2,
                       background: 'transparent', width: '100%', cursor: 'pointer', fontFamily: COLORS.font,
@@ -372,7 +372,7 @@ const DesktopIndex = () => {
                 return (
                   <button
                     key={c.id}
-                    onClick={() => c.name === 'Туры' ? navigate('/tours') : c.name === 'Спорт' ? navigate('/sport') : setCategory(c.id)}
+                    onClick={() => c.name === 'Туры' ? navigate('/tours') : c.name === 'Спорт' ? navigate('/sport') : (setCategory(c.id), setView('results'))}
                     style={{
                       background: 'transparent', border: 'none',
                       padding: '14px 16px', cursor: 'pointer',
