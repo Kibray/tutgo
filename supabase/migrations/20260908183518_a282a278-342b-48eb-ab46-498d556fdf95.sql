@@ -1,0 +1,1 @@
+REVOKE EXECUTE ON FUNCTION public.recalc_cafe_order_total() FROM PUBLIC, anon, authenticated;
