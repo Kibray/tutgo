@@ -10,6 +10,8 @@ const MapView = React.lazy(() => import('@/components/MapView'));
 const AiAssistantFab = React.lazy(() => import('@/components/AiAssistantFab'));
 import DesktopHeader from '@/components/desktop/DesktopHeader';
 import DesktopNavRail from '@/components/desktop/DesktopNavRail';
+import DesktopScenarioTiles, { type ScenarioPreset } from '@/components/desktop/DesktopScenarioTiles';
+import DesktopGuidePanel from '@/components/desktop/DesktopGuidePanel';
 
 import { useLocations } from '@/hooks/useLocations';
 import { useCategories } from '@/hooks/useCategories';
@@ -118,7 +120,25 @@ const DesktopIndex = () => {
 
   const activeFilterCount = (priceSort ? 1 : 0) + (ratingMin ? 1 : 0);
 
+  // Scenario / guide presets: a thin layer over the EXISTING category+search state.
+  // When TutGo has no data model for a scenario yet, we show an honest empty state.
+  const [comingSoon, setComingSoon] = useState<string | null>(null);
+
   const { categories } = useCategories();
+
+  const applyPreset = useCallback((p: ScenarioPreset) => {
+    if (p.route) { navigate(p.route); return; }
+    if (p.soon) { setComingSoon(p.label); setView('results'); return; }
+    const cat = p.biz && p.biz !== 'all'
+      ? categories.find((c) => getBizType(c.name) === p.biz)
+      : null;
+    if (p.biz && p.biz !== 'all' && !cat) { setComingSoon(p.label); setView('results'); return; }
+    setComingSoon(null);
+    setSearch('');
+    setCategory(cat ? cat.id : 'all');
+    setPriceSort(p.price ?? null);
+    setView('results');
+  }, [categories, navigate]);
 
   const autoGeolocated = useRef(false);
   useEffect(() => {
@@ -327,6 +347,10 @@ const DesktopIndex = () => {
 
             {/* Sidebar */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              <DesktopGuidePanel
+                onSelect={applyPreset}
+                onCta={() => applyPreset({ id: 'today', label: 'Куда пойти сегодня', emoji: '✨', biz: 'all' })}
+              />
               <div className="border border-border rounded-xl shadow-sm" style={{ background: "#ffffff", padding: 20, display: 'flex', flexDirection: 'column', gap: 10, alignItems: 'flex-start' }}>
                 <div style={{
                   width: 80, height: 80, borderRadius: 16, alignSelf: 'center',
@@ -370,6 +394,9 @@ const DesktopIndex = () => {
               </div>
             </div>
           </div>
+
+          {/* SECTION 1.5 — Scenario presets (thin layer over existing category/search state) */}
+          <DesktopScenarioTiles onSelect={applyPreset} />
 
           {/* SECTION 2 — Category tabs */}
           <div className="border border-border rounded-xl shadow-sm" style={{ background: "#ffffff", padding: '0 8px', overflowX: 'auto', marginBottom: 24 }}>
@@ -595,7 +622,7 @@ const DesktopIndex = () => {
         padding: '10px 24px', display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap',
       }}>
         <button
-          onClick={() => setView('landing')}
+          onClick={() => { setComingSoon(null); setView('landing'); }}
           style={{
             display: 'flex', alignItems: 'center', gap: 4,
             background: 'transparent', border: 'none', cursor: 'pointer',
@@ -606,10 +633,10 @@ const DesktopIndex = () => {
         </button>
 
         <div className="text-foreground" style={{ fontSize: 15, fontWeight: 700 }}>
-          {search ? `«${search}» — ` : ''}{filtered.length} заведений
+          {comingSoon ? comingSoon : <>{search ? `«${search}» — ` : ''}{filtered.length} заведений</>}
         </div>
 
-        <div style={{ display: 'flex', gap: 6, flex: 1, marginLeft: 8, flexWrap: 'wrap', position: 'relative', zIndex: 9998 }}>
+        <div style={{ display: comingSoon ? 'none' : 'flex', gap: 6, flex: 1, marginLeft: 8, flexWrap: 'wrap', position: 'relative', zIndex: 9998 }}>
           <button
             onClick={() => setShowMoreFilters(true)}
             style={{
@@ -792,6 +819,30 @@ const DesktopIndex = () => {
 
       {/* Body */}
       <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
+        {comingSoon ? (
+          <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 32 }}>
+            <div className="border border-border rounded-xl shadow-sm" style={{
+              background: '#fff', padding: '40px 36px', maxWidth: 520, textAlign: 'center',
+            }}>
+              <div style={{ fontSize: 40, marginBottom: 12 }}>🧭</div>
+              <div className="text-foreground" style={{ fontSize: 18, fontWeight: 700, marginBottom: 8 }}>
+                «{comingSoon}» — скоро
+              </div>
+              <div className="text-muted-foreground" style={{ fontSize: 14, lineHeight: 1.6 }}>
+                Этот раздел гида пока готовится. Мы добавим сюда реальные места, как только они появятся в TutGo.
+              </div>
+              <button
+                onClick={() => { setComingSoon(null); setView('landing'); }}
+                style={{
+                  marginTop: 20, background: COLORS.accent, color: '#fff', border: 'none',
+                  borderRadius: 10, padding: '10px 20px', fontSize: 13, fontWeight: 600, cursor: 'pointer',
+                }}
+              >
+                Вернуться на главную
+              </button>
+            </div>
+          </div>
+        ) : (<>
         {showList && (
           <div style={{
             width: resultsMode === 'list' ? '100%' : 460,
@@ -806,7 +857,15 @@ const DesktopIndex = () => {
               {loading ? (
                 <div className="text-muted-foreground" style={{ padding: 32, textAlign: 'center', fontSize: 14 }}>Загрузка…</div>
               ) : displayList.length === 0 ? (
-                <div className="text-muted-foreground" style={{ padding: 32, textAlign: 'center', fontSize: 14 }}>Ничего не найдено</div>
+                <div style={{ padding: '40px 24px', textAlign: 'center' }}>
+                  <div style={{ fontSize: 34, marginBottom: 10 }}>🗺️</div>
+                  <div className="text-foreground" style={{ fontSize: 15, fontWeight: 700, marginBottom: 6 }}>
+                    Пока нет мест в этой категории
+                  </div>
+                  <div className="text-muted-foreground" style={{ fontSize: 13, lineHeight: 1.55 }}>
+                    Мы добавим их, как только партнёры появятся в этом разделе
+                  </div>
+                </div>
               ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                   {displayList.map((loc, idx) => {
@@ -929,6 +988,7 @@ const DesktopIndex = () => {
             </button>
           </div>
         )}
+        </>)}
       </div>
 
       <BusinessSheet service={sheetService} open={!!sheetService} onClose={() => setSheetService(null)}
