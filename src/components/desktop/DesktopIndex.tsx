@@ -10,6 +10,8 @@ const MapView = React.lazy(() => import('@/components/MapView'));
 const AiAssistantFab = React.lazy(() => import('@/components/AiAssistantFab'));
 import DesktopHeader from '@/components/desktop/DesktopHeader';
 import DesktopNavRail from '@/components/desktop/DesktopNavRail';
+import DesktopScenarioTiles, { type ScenarioPreset } from '@/components/desktop/DesktopScenarioTiles';
+import DesktopGuidePanel from '@/components/desktop/DesktopGuidePanel';
 
 import { useLocations } from '@/hooks/useLocations';
 import { useCategories } from '@/hooks/useCategories';
@@ -118,7 +120,25 @@ const DesktopIndex = () => {
 
   const activeFilterCount = (priceSort ? 1 : 0) + (ratingMin ? 1 : 0);
 
+  // Scenario / guide presets: a thin layer over the EXISTING category+search state.
+  // When TutGo has no data model for a scenario yet, we show an honest empty state.
+  const [comingSoon, setComingSoon] = useState<string | null>(null);
+
   const { categories } = useCategories();
+
+  const applyPreset = useCallback((p: ScenarioPreset) => {
+    if (p.route) { navigate(p.route); return; }
+    if (p.soon) { setComingSoon(p.label); setView('results'); return; }
+    const cat = p.biz && p.biz !== 'all'
+      ? categories.find((c) => getBizType(c.name) === p.biz)
+      : null;
+    if (p.biz && p.biz !== 'all' && !cat) { setComingSoon(p.label); setView('results'); return; }
+    setComingSoon(null);
+    setSearch('');
+    setCategory(cat ? cat.id : 'all');
+    setPriceSort(p.price ?? null);
+    setView('results');
+  }, [categories, navigate]);
 
   const autoGeolocated = useRef(false);
   useEffect(() => {
