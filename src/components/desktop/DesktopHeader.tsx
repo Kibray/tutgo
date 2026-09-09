@@ -27,30 +27,32 @@ const DesktopHeader = ({ searchValue = '', onSearch, onSearchSubmit, onLogoClick
         position: 'sticky',
         top: 0,
         zIndex: 1100,
-        height: 60,
-        background: '#fff',
-        borderBottom: '1px solid #e5e7eb',
+        height: 68,
+        background: 'rgba(255,255,255,0.92)',
+        backdropFilter: 'saturate(180%) blur(8px)',
+        borderBottom: '1px solid #e8eaee',
         display: 'flex',
         alignItems: 'center',
         gap: 16,
-        padding: '0 24px',
+        padding: '0 28px',
         fontFamily: 'system-ui, sans-serif',
       }}
     >
       {/* Logo */}
       <div
         onClick={() => { if (onLogoClick) onLogoClick(); else navigate('/'); }}
-        style={{ fontWeight: 800, fontSize: 22, cursor: 'pointer', userSelect: 'none', color: '#111', letterSpacing: '-0.5px' }}
+        style={{ fontWeight: 800, fontSize: 22, cursor: 'pointer', userSelect: 'none', color: '#0f172a', letterSpacing: '-0.6px' }}
       >
         TUT<span style={{ color: '#2563EB' }}>GO</span>
       </div>
+
 
       {/* Location */}
       <button
         style={{
           display: 'flex', alignItems: 'center', gap: 6,
           height: 36, padding: '0 12px',
-          border: '1px solid #e5e7eb', borderRadius: 8,
+          border: '1px solid #e8eaee', borderRadius: 8,
           background: '#fff', fontSize: 13, color: '#374151', cursor: 'pointer',
         }}
       >
@@ -64,8 +66,8 @@ const DesktopHeader = ({ searchValue = '', onSearch, onSearchSubmit, onLogoClick
         <div style={{
           flex: 1, display: 'flex', alignItems: 'center', gap: 8,
           height: 40, padding: '0 12px',
-          border: '1px solid #e5e7eb', borderRight: 'none',
-          borderRadius: '10px 0 0 10px', background: '#f9fafb',
+          border: '1px solid #e8eaee', borderRight: 'none',
+          borderRadius: '12px 0 0 12px', background: '#f9fafb',
         }}>
           <Search size={16} color="#6b7280" />
           <input
@@ -85,7 +87,7 @@ const DesktopHeader = ({ searchValue = '', onSearch, onSearchSubmit, onLogoClick
           style={{
             height: 40, padding: '0 22px',
             background: '#2563EB', color: '#fff',
-            border: 'none', borderRadius: '0 10px 10px 0',
+            border: 'none', borderRadius: '0 12px 12px 0',
             fontSize: 14, fontWeight: 600, cursor: 'pointer',
           }}
         >
@@ -136,7 +138,7 @@ const DesktopHeader = ({ searchValue = '', onSearch, onSearchSubmit, onLogoClick
           style={{
             display: 'flex', alignItems: 'center', gap: 8,
             height: 36, padding: '0 10px 0 4px', borderRadius: 18,
-            background: '#f9fafb', border: '1px solid #e5e7eb', cursor: 'pointer',
+            background: '#f9fafb', border: '1px solid #e8eaee', cursor: 'pointer',
             color: '#111', fontSize: 13, fontWeight: 500,
           }}
         >

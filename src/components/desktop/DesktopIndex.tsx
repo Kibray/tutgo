@@ -9,6 +9,8 @@ import BusinessSheet from '@/components/BusinessSheet';
 const MapView = React.lazy(() => import('@/components/MapView'));
 const AiAssistantFab = React.lazy(() => import('@/components/AiAssistantFab'));
 import DesktopHeader from '@/components/desktop/DesktopHeader';
+import DesktopNavRail from '@/components/desktop/DesktopNavRail';
+
 import { useLocations } from '@/hooks/useLocations';
 import { useCategories } from '@/hooks/useCategories';
 import type { LocationItem } from '@/lib/types';
@@ -206,30 +208,34 @@ const DesktopIndex = () => {
   // ============ LANDING VIEW ============
   if (view === 'landing') {
     return (
-      <div className="min-h-screen text-foreground font-sans" style={{ background: 'linear-gradient(135deg, #f5e6ee 0%, #e8ecf7 50%, #e0e8f5 100%)' }}>
+      <div className="min-h-screen text-foreground font-sans" style={{ background: '#f7f8fa' }}>
         <DesktopHeader
           searchValue={search}
           onSearch={setSearch}
           onSearchSubmit={(q) => { setSearch(q); setView('results'); }}
         />
 
-        <div style={{ maxWidth: 1280, margin: '0 auto', padding: 24 }}>
+        <div style={{ maxWidth: 1440, margin: '0 auto', padding: 24, display: 'flex', gap: 24, alignItems: 'flex-start' }}>
+          <DesktopNavRail activeOverride="/" />
+          <div style={{ flex: 1, minWidth: 0 }}>
           {/* SECTION 1 — Hero + sidebar */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: 20, marginBottom: 24 }}>
+
             {/* Hero */}
             <div style={{
-              borderRadius: 16,
+              borderRadius: 20,
               overflow: 'hidden',
-              padding: 36, minHeight: 280, color: '#fff',
+              padding: 40, minHeight: 340, color: '#fff',
               display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
               position: 'relative',
+              border: '1px solid #e8eaee',
             }}>
               {HERO_IMAGES.map((src, i) => (
                 <div
                   key={src}
                   style={{
                     position: 'absolute', inset: 0,
-                    backgroundImage: `linear-gradient(rgba(0,0,0,0.55),rgba(0,0,0,0.7)), url(${src})`,
+                    backgroundImage: `linear-gradient(100deg, rgba(9,14,26,0.78) 0%, rgba(9,14,26,0.55) 45%, rgba(9,14,26,0.35) 100%), url(${src})`,
                     backgroundSize: 'cover', backgroundPosition: 'center',
                     opacity: i === heroIndex ? 1 : 0,
                     transition: 'opacity 1s ease-in-out',
@@ -237,15 +243,16 @@ const DesktopIndex = () => {
                   }}
                 />
               ))}
-              <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', flex: 1, gap: 24 }}>
+              <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', flex: 1, gap: 28 }}>
               <div>
-                <h1 style={{ fontSize: 32, fontWeight: 800, margin: 0, lineHeight: 1.15, color: '#fff' }}>
+                <h1 style={{ fontSize: 40, fontWeight: 800, margin: 0, lineHeight: 1.1, letterSpacing: '-1px', color: '#fff' }}>
                   Красота и забота<br />рядом с вами
                 </h1>
-                <p style={{ marginTop: 14, fontSize: 15, color: 'rgba(255,255,255,0.75)', maxWidth: 480, lineHeight: 1.5 }}>
+                <p style={{ marginTop: 16, fontSize: 16, color: 'rgba(255,255,255,0.82)', maxWidth: 480, lineHeight: 1.55 }}>
                   Находите лучшие места, проверяйте свободное время и записывайтесь онлайн
                 </p>
               </div>
+
 
               {/* Search form */}
               <div style={{
@@ -553,7 +560,9 @@ const DesktopIndex = () => {
               </div>
             ))}
           </div>
+          </div>
         </div>
+
 
         <BusinessSheet service={sheetService} open={!!sheetService} onClose={() => setSheetService(null)}
           onFullPage={() => { if (sheetService) { navigate(sheetService.business_type === 'tour' ? `/tours/${sheetService.id}` : `/service/${sheetService.id}`); setSheetService(null); } }} />
@@ -572,7 +581,7 @@ const DesktopIndex = () => {
   const showMap = resultsMode === 'map' || resultsMode === 'split';
 
   return (
-    <div className="min-h-screen text-foreground font-sans" style={{ background: 'linear-gradient(135deg, #f5e6ee 0%, #e8ecf7 50%, #e0e8f5 100%)', height: '100vh', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+    <div className="min-h-screen text-foreground font-sans" style={{ background: '#f7f8fa', height: '100vh', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
       <DesktopHeader
         searchValue={search}
         onSearch={setSearch}
