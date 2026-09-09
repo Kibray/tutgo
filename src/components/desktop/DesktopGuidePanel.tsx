@@ -1,6 +1,8 @@
 import React from 'react';
 import { Compass } from 'lucide-react';
 import type { ScenarioPreset } from '@/components/desktop/DesktopScenarioTiles';
+import DesktopPresetIcon from '@/components/desktop/DesktopPresetIcon';
+import { Button } from '@/components/ui/button';
 
 export const GUIDE_SHORTCUTS: ScenarioPreset[] = [
   { id: 'g-eat', label: 'Поесть', emoji: '🍽️', biz: 'cafe' },
@@ -19,51 +21,34 @@ interface Props {
 }
 
 const DesktopGuidePanel: React.FC<Props> = ({ onSelect, onCta }) => (
-  <div
-    className="border border-border rounded-xl shadow-sm"
-    style={{ background: '#ffffff', padding: 20, display: 'flex', flexDirection: 'column', gap: 14 }}
-  >
-    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-      <Compass size={18} color="#2563EB" />
-      <div className="text-foreground" style={{ fontSize: 15, fontWeight: 700 }}>Гид по Ташкенту</div>
+  <section className="flex flex-col gap-3 rounded-lg border border-border bg-card p-4 text-card-foreground shadow-sm">
+    <div className="flex items-center gap-2">
+      <span className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-primary">
+        <Compass size={18} strokeWidth={1.8} />
+      </span>
+      <div className="text-sm font-bold">Гид по Ташкенту</div>
     </div>
-    <div className="text-muted-foreground" style={{ fontSize: 13, lineHeight: 1.5, marginTop: -6 }}>
+    <div className="text-xs leading-5 text-muted-foreground">
       Открывайте город по настроению — от завтрака до вечерней прогулки
     </div>
 
-    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+    <div className="grid grid-cols-2 gap-2">
       {GUIDE_SHORTCUTS.map((s) => (
         <button
           key={s.id}
           onClick={() => onSelect(s)}
-          style={{
-            display: 'flex', alignItems: 'center', gap: 8,
-            background: '#f9fafb', border: '1px solid #e5e7eb', borderRadius: 10,
-            padding: '10px 10px', cursor: 'pointer', textAlign: 'left',
-            fontFamily: 'system-ui, sans-serif', minWidth: 0,
-          }}
-          onMouseEnter={(e) => { e.currentTarget.style.background = '#eff6ff'; e.currentTarget.style.borderColor = '#bfdbfe'; }}
-          onMouseLeave={(e) => { e.currentTarget.style.background = '#f9fafb'; e.currentTarget.style.borderColor = '#e5e7eb'; }}
+          className="flex min-w-0 items-center gap-2 rounded-lg border border-border bg-background px-2 py-2 text-left transition hover:border-primary/30 hover:bg-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
-          <span style={{ fontSize: 16, lineHeight: 1, flexShrink: 0 }}>{s.emoji}</span>
-          <span style={{
-            fontSize: 12, fontWeight: 600, color: '#374151',
-            overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-          }}>{s.label}</span>
+          <DesktopPresetIcon presetId={s.id} compact />
+          <span className="min-w-0 truncate text-xs font-semibold">{s.label}</span>
         </button>
       ))}
     </div>
 
-    <button
-      onClick={onCta}
-      style={{
-        background: '#2563EB', color: '#fff', border: 'none', borderRadius: 10,
-        padding: '11px 16px', fontSize: 13, fontWeight: 600, cursor: 'pointer',
-      }}
-    >
+    <Button onClick={onCta} className="h-10 w-full rounded-lg text-xs">
       Куда пойти сегодня? →
-    </button>
-  </div>
+    </Button>
+  </section>
 );
 
 export default DesktopGuidePanel;

@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import {
   Search, MapPin, Calendar, Star, ShieldCheck, Clock, CalendarCheck, Filter,
   ChevronDown, ChevronLeft, List, LayoutGrid, Map as MapIcon, Locate, BadgeCheck, Heart, X,
+  CloudSun, Gift, Layers3, Newspaper,
 } from 'lucide-react';
 import BusinessSheet from '@/components/BusinessSheet';
 const MapView = React.lazy(() => import('@/components/MapView'));
@@ -12,6 +13,7 @@ import DesktopHeader from '@/components/desktop/DesktopHeader';
 import DesktopNavRail from '@/components/desktop/DesktopNavRail';
 import DesktopScenarioTiles, { type ScenarioPreset } from '@/components/desktop/DesktopScenarioTiles';
 import DesktopGuidePanel from '@/components/desktop/DesktopGuidePanel';
+import { Button } from '@/components/ui/button';
 
 import { useLocations } from '@/hooks/useLocations';
 import { useCategories } from '@/hooks/useCategories';
@@ -238,17 +240,14 @@ const DesktopIndex = () => {
         <div style={{ maxWidth: 1440, margin: '0 auto', padding: 24, display: 'flex', gap: 24, alignItems: 'flex-start' }}>
           <DesktopNavRail activeOverride="/" />
           <div style={{ flex: 1, minWidth: 0 }}>
-          {/* SECTION 1 — Hero + sidebar */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: 20, marginBottom: 24 }}>
-
-            {/* Hero */}
-            <div style={{
-              borderRadius: 20,
+          <div className="desktop-home-layout">
+            <main style={{ minWidth: 0 }}>
+            {/* SECTION 1 — Hero */}
+            <div className="desktop-hero rounded-lg border border-border" style={{
               overflow: 'hidden',
-              padding: '28px 32px', minHeight: 240, color: '#fff',
+              padding: '24px 28px', color: 'hsl(var(--primary-foreground))',
               display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
               position: 'relative',
-              border: '1px solid #e8eaee',
             }}>
               {HERO_IMAGES.map((src, i) => (
                 <div
@@ -263,9 +262,9 @@ const DesktopIndex = () => {
                   }}
                 />
               ))}
-              <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', flex: 1, gap: 20 }}>
+              <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', flex: 1, gap: 16 }}>
               <div>
-                <h1 style={{ fontSize: 32, fontWeight: 800, margin: 0, lineHeight: 1.1, letterSpacing: '-0.8px', color: '#fff' }}>
+                <h1 style={{ fontSize: 30, fontWeight: 800, margin: 0, lineHeight: 1.1, letterSpacing: 0, color: 'hsl(var(--primary-foreground))' }}>
                   Красота и забота<br />рядом с вами
                 </h1>
                 <p style={{ marginTop: 10, fontSize: 15, color: 'rgba(255,255,255,0.82)', maxWidth: 420, lineHeight: 1.5 }}>
@@ -275,11 +274,7 @@ const DesktopIndex = () => {
 
 
               {/* Search form */}
-              <div style={{
-                background: '#fff', borderRadius: 12, padding: 6,
-                display: 'grid', gridTemplateColumns: '1.5fr 1fr 0.9fr 0.9fr auto',
-                alignItems: 'center',
-              }}>
+              <div className="desktop-hero-search rounded-lg bg-card p-1.5" style={{ alignItems: 'center' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '0 12px', height: 40, borderRight: `1px solid ${COLORS.border}` }}>
                   <Search size={16} color={COLORS.muted} />
                   <input
@@ -291,7 +286,7 @@ const DesktopIndex = () => {
                   />
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '0 12px', height: 40, borderRight: `1px solid ${COLORS.border}` }}>
-                  <span style={{ fontSize: 14, color: COLORS.muted }}>▦</span>
+                  <LayoutGrid size={15} color={COLORS.muted} />
                   <select
                     value={category}
                     onChange={(e) => { setCategory(e.target.value); setView('results'); }}
@@ -306,22 +301,18 @@ const DesktopIndex = () => {
                     ))}
                   </select>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '0 12px', height: 40, color: COLORS.muted, fontSize: 13, borderRight: `1px solid ${COLORS.border}` }}>
+                <div className="desktop-search-optional" style={{ alignItems: 'center', gap: 6, padding: '0 12px', height: 40, color: COLORS.muted, fontSize: 13, borderRight: `1px solid ${COLORS.border}` }}>
                   <MapPin size={14} color={COLORS.accent} /> Где вы?
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '0 12px', height: 40, color: COLORS.muted, fontSize: 13 }}>
+                <div className="desktop-search-optional" style={{ alignItems: 'center', gap: 6, padding: '0 12px', height: 40, color: COLORS.muted, fontSize: 13 }}>
                   <Calendar size={14} color={COLORS.accent} /> Сегодня
                 </div>
-                <button
+                <Button
                   onClick={() => setView('results')}
-                  style={{
-                    background: COLORS.accent, color: '#fff', border: 'none', borderRadius: 8,
-                    height: 40, padding: '0 18px', fontWeight: 600, fontSize: 14, cursor: 'pointer',
-                    whiteSpace: 'nowrap', marginLeft: 8,
-                  }}
+                  className="ml-2 h-10 rounded-lg px-4 text-sm"
                 >
                   Найти места
-                </button>
+                </Button>
               </div>
               </div>
               {/* Slideshow dots */}
@@ -345,61 +336,11 @@ const DesktopIndex = () => {
               </div>
             </div>
 
-            {/* Sidebar */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-              <DesktopGuidePanel
-                onSelect={applyPreset}
-                onCta={() => applyPreset({ id: 'today', label: 'Куда пойти сегодня', emoji: '✨', biz: 'all' })}
-              />
-              <div className="border border-border rounded-xl shadow-sm" style={{ background: "#ffffff", padding: 20, display: 'flex', flexDirection: 'column', gap: 10, alignItems: 'flex-start' }}>
-                <div style={{
-                  width: 80, height: 80, borderRadius: 16, alignSelf: 'center',
-                  background: COLORS.accentBg,
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  position: 'relative',
-                }}>
-                  <MapPin size={40} color={COLORS.accent} strokeWidth={2.2} fill={COLORS.accent} />
-                </div>
-                <div className="text-foreground" style={{ fontSize: 15, fontWeight: 600 }}>Посмотрите места на карте</div>
-                <div className="text-muted-foreground" style={{ fontSize: 13, lineHeight: 1.5 }}>
-                  Удобный поиск рядом с вами и актуальная информация о свободном времени
-                </div>
-                <button
-                  onClick={() => setView('results')}
-                  style={{
-                    background: '#fff', color: COLORS.accent, border: `1px solid ${COLORS.accent}`,
-                    borderRadius: 8, padding: '8px 16px', fontSize: 13, fontWeight: 600, cursor: 'pointer',
-                  }}
-                >
-                  Открыть карту →
-                </button>
-              </div>
-
-              <div className="border border-border rounded-xl shadow-sm" style={{ background: "#ffffff", padding: 20, display: 'flex', flexDirection: 'column', gap: 8, alignItems: 'flex-start' }}>
-                <div style={{ fontSize: 40, lineHeight: 1 }}>🎁</div>
-                <div className="text-foreground" style={{ fontWeight: 700, fontSize: 15 }}>Дарим 10% на первое посещение</div>
-                <div className="text-muted-foreground" style={{ fontSize: 13, lineHeight: 1.5 }}>
-                  Зарегистрируйтесь и получите скидку на любую услугу в вашем городе
-                </div>
-                <button
-                  onClick={() => navigate('/auth')}
-                  style={{
-                    background: '#fff', color: COLORS.accent, border: `1px solid ${COLORS.accent}`,
-                    borderRadius: 8, padding: '8px 16px', fontSize: 13, fontWeight: 600, cursor: 'pointer',
-                    marginTop: 4,
-                  }}
-                >
-                  Получить скидку
-                </button>
-              </div>
-            </div>
-          </div>
-
           {/* SECTION 1.5 — Scenario presets (thin layer over existing category/search state) */}
-          <DesktopScenarioTiles onSelect={applyPreset} />
+          <div className="mt-6"><DesktopScenarioTiles onSelect={applyPreset} /></div>
 
           {/* SECTION 2 — Category tabs */}
-          <div className="border border-border rounded-xl shadow-sm" style={{ background: "#ffffff", padding: '0 8px', overflowX: 'auto', marginBottom: 24 }}>
+          <div className="mb-6 overflow-x-auto rounded-lg border border-border bg-card px-2 shadow-sm">
             <div style={{ display: 'flex', gap: 0, minWidth: 'fit-content' }}>
               {[{ id: 'all', name: 'Все категории', icon: '🏠' }, ...categories].map((c) => {
                 const active = category === c.id;
@@ -425,7 +366,7 @@ const DesktopIndex = () => {
           </div>
 
           {/* SECTION 3 — Popular + Free + Map */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: 24, marginBottom: 24 }}>
+          <div className="desktop-discovery-grid mb-6">
             <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
               {/* Popular */}
               <div>
@@ -436,7 +377,7 @@ const DesktopIndex = () => {
                     style={{ background: 'none', border: 'none', color: COLORS.accent, fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
                   >Смотреть все</button>
                 </div>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }}>
+                <div className="desktop-popular-grid">
                   {popularEnriched.map((loc, idx) => (
                     <motion.div
                       key={loc.id}
@@ -544,7 +485,7 @@ const DesktopIndex = () => {
 
             {/* Right map sidebar */}
             <div>
-              <div className="border border-border rounded-xl shadow-sm" style={{ background: "#ffffff", padding: 16 }}>
+              <div className="rounded-lg border border-border bg-card p-4 shadow-sm">
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
                   <div className="text-foreground" style={{ fontSize: 14, fontWeight: 700 }}>Места рядом с вами</div>
                   <button
@@ -567,7 +508,7 @@ const DesktopIndex = () => {
           </div>
 
           {/* SECTION 4 — Trust strip */}
-          <div className="border border-border rounded-xl shadow-sm" style={{ background: "#ffffff", padding: 28, display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 24, marginBottom: 40 }}>
+          <div className="mb-10 grid grid-cols-2 gap-6 rounded-lg border border-border bg-card p-7 shadow-sm xl:grid-cols-4">
             {[
               { icon: <ShieldCheck size={20} />, title: 'Проверенные заведения', sub: 'Только реальные отзывы и рейтинги' },
               { icon: <CalendarCheck size={20} />, title: 'Онлайн-запись', sub: 'Мгновенное подтверждение и напоминания' },
@@ -586,6 +527,50 @@ const DesktopIndex = () => {
                 </div>
               </div>
             ))}
+          </div>
+          </main>
+
+          {/* Desktop city-guide sidebar; independent from hero height. */}
+          <aside className="flex flex-col gap-4">
+            <DesktopGuidePanel
+              onSelect={applyPreset}
+              onCta={() => applyPreset({ id: 'today', label: 'Куда пойти сегодня', emoji: '✨', biz: 'all' })}
+            />
+
+            <section className="rounded-lg border border-border bg-card p-4 text-card-foreground shadow-sm">
+              <div className="mb-2 flex items-center gap-2">
+                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-primary"><Newspaper size={18} strokeWidth={1.8} /></span>
+                <div className="text-sm font-bold">Интересное</div>
+              </div>
+              <p className="m-0 text-xs leading-5 text-muted-foreground">Подборки появятся здесь после добавления реальных материалов.</p>
+            </section>
+
+            <section className="rounded-lg border border-border bg-card p-4 text-card-foreground shadow-sm">
+              <div className="mb-2 flex items-center gap-2">
+                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-primary"><Gift size={18} strokeWidth={1.8} /></span>
+                <div className="text-sm font-bold">Дарим 10% на первое посещение</div>
+              </div>
+              <p className="mb-3 mt-0 text-xs leading-5 text-muted-foreground">Зарегистрируйтесь и получите скидку на любую услугу в вашем городе</p>
+              <Button variant="outline" size="sm" onClick={() => navigate('/auth')} className="rounded-lg border-primary text-primary hover:bg-primary/5">Получить скидку</Button>
+            </section>
+
+            <section className="rounded-lg border border-border bg-card p-4 text-card-foreground shadow-sm">
+              <div className="mb-2 flex items-center gap-2">
+                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-primary"><Layers3 size={18} strokeWidth={1.8} /></span>
+                <div className="text-sm font-bold">Посмотрите места на карте</div>
+              </div>
+              <p className="mb-3 mt-0 text-xs leading-5 text-muted-foreground">Удобный поиск рядом с вами и актуальная информация о свободном времени</p>
+              <Button variant="outline" size="sm" onClick={() => setView('results')} className="rounded-lg border-primary text-primary hover:bg-primary/5">Открыть карту →</Button>
+            </section>
+
+            <section className="flex items-center gap-3 rounded-lg border border-border bg-card p-4 text-card-foreground shadow-sm">
+              <span className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-primary"><CloudSun size={18} strokeWidth={1.8} /></span>
+              <div>
+                <div className="text-sm font-bold">Погода в Ташкенте</div>
+                <div className="mt-1 text-xs text-muted-foreground">Данные пока недоступны</div>
+              </div>
+            </section>
+          </aside>
           </div>
           </div>
         </div>
