@@ -256,11 +256,11 @@ const DesktopIndex = () => {
 
               {/* Search form */}
               <div style={{
-                background: '#fff', borderRadius: 12, padding: 8,
+                background: '#fff', borderRadius: 12, padding: 6,
                 display: 'grid', gridTemplateColumns: '1.5fr 1fr 0.9fr 0.9fr auto',
                 alignItems: 'center',
               }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '0 12px', height: 44, borderRight: `1px solid ${COLORS.border}` }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '0 12px', height: 40, borderRight: `1px solid ${COLORS.border}` }}>
                   <Search size={16} color={COLORS.muted} />
                   <input
                     placeholder="Что ищете?"
@@ -270,7 +270,7 @@ const DesktopIndex = () => {
                     style={{ border: 'none', outline: 'none', flex: 1, fontSize: 14, color: COLORS.text, background: 'transparent', fontFamily: COLORS.font, minWidth: 0 }}
                   />
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '0 12px', height: 44, borderRight: `1px solid ${COLORS.border}` }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '0 12px', height: 40, borderRight: `1px solid ${COLORS.border}` }}>
                   <span style={{ fontSize: 14, color: COLORS.muted }}>▦</span>
                   <select
                     value={category}
@@ -286,17 +286,17 @@ const DesktopIndex = () => {
                     ))}
                   </select>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '0 12px', height: 44, color: COLORS.muted, fontSize: 13, borderRight: `1px solid ${COLORS.border}` }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '0 12px', height: 40, color: COLORS.muted, fontSize: 13, borderRight: `1px solid ${COLORS.border}` }}>
                   <MapPin size={14} color={COLORS.accent} /> Где вы?
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '0 12px', height: 44, color: COLORS.muted, fontSize: 13 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '0 12px', height: 40, color: COLORS.muted, fontSize: 13 }}>
                   <Calendar size={14} color={COLORS.accent} /> Сегодня
                 </div>
                 <button
                   onClick={() => setView('results')}
                   style={{
                     background: COLORS.accent, color: '#fff', border: 'none', borderRadius: 8,
-                    height: 44, padding: '0 20px', fontWeight: 600, fontSize: 14, cursor: 'pointer',
+                    height: 40, padding: '0 18px', fontWeight: 600, fontSize: 14, cursor: 'pointer',
                     whiteSpace: 'nowrap', marginLeft: 8,
                   }}
                 >
