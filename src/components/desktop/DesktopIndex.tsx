@@ -988,6 +988,7 @@ const DesktopIndex = () => {
             </button>
           </div>
         )}
+        </>)}
       </div>
 
       <BusinessSheet service={sheetService} open={!!sheetService} onClose={() => setSheetService(null)}
