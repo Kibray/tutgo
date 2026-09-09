@@ -1,63 +1,40 @@
+# Desktop home visual regression correction
 
+## Scope
+Correct only the desktop landing view introduced in Stages 1–2. Preserve all search, category, filter, routing, map, booking, favorites, notifications, profile, and AI Assistant behavior. Do not change shared mobile components, data models, Supabase, or add invented content.
 
-## Что произойдёт после применения этого промта
+## What is wrong now
+- The hero and right sidebar share one CSS grid row. The sidebar’s full stacked height stretches that row, making the hero background nearly full-page despite its `minHeight: 240`.
+- Mood and Guide shortcuts use emojis with inconsistent sizes and rendering, rather than one outline icon language.
+- The sidebar currently orders Guide → map card → promo card and lacks the requested visual slots for an honest collections state and unavailable weather state.
+- Fixed eight-column tiles and the five-column hero search become cramped near 1024px.
+- Card radii, gaps, and raw pastel surfaces are inconsistent with the reference and the project’s semantic design tokens.
 
-### Изменения в `ServiceCard.tsx`
+## Implementation
+1. **Stabilize the hero**
+   - Separate the hero/main-column flow from the independently stacked right column so sidebar height cannot stretch the hero.
+   - Give every carousel slide the same compact constrained hero height.
+   - Keep the existing search controls inset inside the image and preserve every handler.
+   - Add desktop-only responsive layout rules so search controls and tiles remain contained at 1440, 1280, and 1024 widths.
 
-1. **`glass` → `bg-secondary/80 border border-border/50`** (2 места)
-   - Уберёт `backdrop-blur` с каждой карточки. Это **главный буст производительности** — сейчас при 30 карточках браузер делает 30 blur-проходов на каждом кадре анимации шторки.
-   - Визуально: карточки станут чуть менее «стеклянными», но останутся в стиле тёмной темы (полупрозрачный secondary + тонкий бордер).
+2. **Unify shortcut icons**
+   - Replace mood and Guide emojis with a shared Lucide outline-icon mapping.
+   - Use matching icon size, stroke weight, and small semantic pastel icon wells in both components.
+   - Keep all existing preset objects and click behavior unchanged.
 
-2. **`motion.div` → `div`** на корне карточки (2 места: compact + full)
-   - Уберёт framer-motion инстанс с каждой карточки. Сейчас 30+ motion-инстансов слушают drag-контекст родительской шторки → пересчитываются на каждом кадре drag.
-   - Анимация появления карточек (`opacity 0→1, y 16→0` со staggered delay) **исчезнет** — карточки будут появляться мгновенно. Это сознательная жертва ради FPS.
-   - `motion.button` на TG/Share остаются — `whileTap` сохранится.
+3. **Correct the right-column stack**
+   - Order it as Guide → “Интересное” → promo → map link → weather.
+   - Reuse the existing promo and map-link cards and their handlers.
+   - Render “Интересное” and weather as compact honest unavailable/coming-soon states only; no place names, ratings, counts, or weather values.
 
-### Изменения в `SmartBottomSheet.tsx`
+4. **Normalize visual rhythm**
+   - Use semantic background, border, foreground, muted, primary, and accent classes.
+   - Apply consistent large radii, restrained shadows, and the existing spacing scale across cards, tiles, and buttons.
+   - Keep large surfaces white/light-gray; limit pastel colors to small icon wells and tile accents.
 
-3. **Убрать `backdrop-blur-xl` со шторки**
-   - Совпадает с рекомендацией из stack-overflow контекста. Blur при анимации высоты = killer для GPU.
-
-4. **`locations.map` → `locations.slice(0, 20).map`**
-   - Жёсткий лимит на 20 карточек в DOM вместо всех (могло быть 50–100+).
-   - Это упрощённая «виртуализация бедняка» — работает, но **с двумя нюансами**:
-     - Пользователь физически не увидит результаты после 20-го (нет пагинации/«загрузить ещё»).
-     - Section header с count покажет полное число, а в списке будет только 20 — лёгкое расхождение UX.
-
-### Чего НЕ трогаем
-- Drag-логика, handleDragEnd, физика шторки, поиск, геолокация, категории, haptic, фильтр-пилюли, кнопка «🔥 Find available in 30 min», quick chips, viewMode toggle — всё остаётся как есть.
-
----
-
-## Ожидаемый эффект
-
-| Метрика | До | После |
-|---|---|---|
-| Backdrop-blur слоёв при drag | 1 (шторка) + N карточек | 0 |
-| Framer-motion инстансов в списке | N карточек | 0 |
-| Карточек в DOM | все (до 100+) | максимум 20 |
-| FPS при перетаскивании шторки | 15–25 (лаги) | 55–60 (плавно) |
-
-**Должно полностью убрать зависание** при раскрытии bottom sheet. Это та самая комбинация #2+#3+#4 из моего предыдущего сообщения, только #2 реализован через простой `slice(0,20)` вместо умной виртуализации.
-
----
-
-## Потенциальные минусы (честно)
-
-1. **Карточки появляются без анимации fade-in** — визуально менее «премиально», но никто не заметит при скролле.
-2. **Только 20 результатов** — если у юзера в категории 50 кафе, он увидит только 20. Решается позже добавлением «Показать ещё» или настоящей виртуализации через `@tanstack/react-virtual`.
-3. **Карточки потеряют глубину `glass`** — `bg-secondary/80 + border` выглядит проще, но консистентно с тёмной темой проекта.
-
----
-
-## Технические детали
-
-- **Файлы:** `src/components/ServiceCard.tsx`, `src/components/SmartBottomSheet.tsx`
-- **Зависимости:** ничего не добавляется, только удаления
-- **Риски:** нулевые — все изменения поверхностные, не затрагивают логику
-- **Откат:** тривиальный (вернуть `glass` и `motion.div`)
-
-## Рекомендация
-
-**Применяй промт** — это правильное и безопасное первое решение. Если после этого 20 карточек окажется мало → добавим кнопку «Показать ещё 20» или настоящую виртуализацию (это уже отдельная задача, ~10 строк с `@tanstack/react-virtual`).
-
+## Verification
+- Check screenshots at 1440×900, 1280×900, and 1024×900.
+- Confirm the hero remains compact on all six slides and the mood row plus popular section are visible without scrolling at 1440×900.
+- Exercise hero search, category selection, mood presets, Guide shortcuts/CTA, promo, map link, carousel dots, logo/home navigation, and existing result controls.
+- Check console/runtime/build output and confirm no new errors.
+- Confirm no mobile/shared map/search/navigation files changed.
