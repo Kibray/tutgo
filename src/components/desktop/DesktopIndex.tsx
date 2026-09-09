@@ -366,7 +366,7 @@ const DesktopIndex = () => {
           </div>
 
           {/* SECTION 3 — Popular + Free + Map */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: 24, marginBottom: 24 }}>
+          <div className="desktop-discovery-grid mb-6">
             <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
               {/* Popular */}
               <div>
@@ -377,7 +377,7 @@ const DesktopIndex = () => {
                     style={{ background: 'none', border: 'none', color: COLORS.accent, fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
                   >Смотреть все</button>
                 </div>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }}>
+                <div className="desktop-popular-grid">
                   {popularEnriched.map((loc, idx) => (
                     <motion.div
                       key={loc.id}
@@ -485,7 +485,7 @@ const DesktopIndex = () => {
 
             {/* Right map sidebar */}
             <div>
-              <div className="border border-border rounded-xl shadow-sm" style={{ background: "#ffffff", padding: 16 }}>
+              <div className="rounded-lg border border-border bg-card p-4 shadow-sm">
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
                   <div className="text-foreground" style={{ fontSize: 14, fontWeight: 700 }}>Места рядом с вами</div>
                   <button
