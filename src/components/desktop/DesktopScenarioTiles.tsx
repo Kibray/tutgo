@@ -1,4 +1,5 @@
 import React from 'react';
+import DesktopPresetIcon from '@/components/desktop/DesktopPresetIcon';
 
 export type ScenarioPreset = {
   id: string;
@@ -30,38 +31,23 @@ interface Props {
 }
 
 const DesktopScenarioTiles: React.FC<Props> = ({ onSelect }) => (
-  <div style={{ marginBottom: 24 }}>
-    <div style={{ fontSize: 17, fontWeight: 700, color: '#111111', marginBottom: 12, letterSpacing: '-0.3px' }}>
+  <section className="mb-6">
+    <div className="mb-3 text-lg font-bold text-foreground">
       Чем займёмся сегодня?
     </div>
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(8, minmax(0, 1fr))', gap: 10 }}>
+    <div className="grid grid-cols-4 gap-3 xl:grid-cols-8">
       {SCENARIOS.map((s) => (
         <button
           key={s.id}
           onClick={() => onSelect(s)}
-          style={{
-            background: '#ffffff',
-            border: '1px solid #e5e7eb',
-            borderRadius: 14,
-            padding: '14px 8px',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            gap: 8,
-            cursor: 'pointer',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
-            transition: 'transform 0.15s, box-shadow 0.15s',
-            fontFamily: 'system-ui, sans-serif',
-          }}
-          onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 6px 16px rgba(0,0,0,0.08)'; }}
-          onMouseLeave={(e) => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 1px 3px rgba(0,0,0,0.05)'; }}
+          className="flex min-w-0 flex-col items-center gap-2 rounded-lg border border-border bg-card px-2 py-3 text-card-foreground shadow-sm transition hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
-          <span style={{ fontSize: 24, lineHeight: 1 }}>{s.emoji}</span>
-          <span style={{ fontSize: 13, fontWeight: 600, color: '#374151', whiteSpace: 'nowrap' }}>{s.label}</span>
+          <DesktopPresetIcon presetId={s.id} />
+          <span className="w-full truncate text-center text-xs font-semibold">{s.label}</span>
         </button>
       ))}
     </div>
-  </div>
+  </section>
 );
 
 export default DesktopScenarioTiles;

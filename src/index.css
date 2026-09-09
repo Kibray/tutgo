@@ -163,6 +163,39 @@
   }
 }
 
+@layer components {
+  .desktop-home-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 21.25rem;
+    gap: 1.5rem;
+    align-items: start;
+  }
+
+  .desktop-hero {
+    height: 15rem;
+  }
+
+  .desktop-hero-search {
+    display: grid;
+    grid-template-columns: minmax(9rem, 1.5fr) minmax(8rem, 1fr) minmax(6.5rem, 0.8fr) minmax(6rem, 0.75fr) auto;
+  }
+
+  @media (max-width: 1279px) {
+    .desktop-home-layout {
+      grid-template-columns: minmax(0, 1fr) 18rem;
+      gap: 1rem;
+    }
+
+    .desktop-hero-search {
+      grid-template-columns: minmax(9rem, 1fr) minmax(8rem, 0.8fr) auto;
+    }
+
+    .desktop-hero-search .desktop-search-optional {
+      display: none;
+    }
+  }
+}
+
 @keyframes pulse-green {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.5; }
