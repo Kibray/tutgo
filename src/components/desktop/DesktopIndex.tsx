@@ -633,10 +633,10 @@ const DesktopIndex = () => {
         </button>
 
         <div className="text-foreground" style={{ fontSize: 15, fontWeight: 700 }}>
-          {search ? `«${search}» — ` : ''}{filtered.length} заведений
+          {comingSoon ? comingSoon : <>{search ? `«${search}» — ` : ''}{filtered.length} заведений</>}
         </div>
 
-        <div style={{ display: 'flex', gap: 6, flex: 1, marginLeft: 8, flexWrap: 'wrap', position: 'relative', zIndex: 9998 }}>
+        <div style={{ display: comingSoon ? 'none' : 'flex', gap: 6, flex: 1, marginLeft: 8, flexWrap: 'wrap', position: 'relative', zIndex: 9998 }}>
           <button
             onClick={() => setShowMoreFilters(true)}
             style={{
