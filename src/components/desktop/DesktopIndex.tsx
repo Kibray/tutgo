@@ -225,7 +225,7 @@ const DesktopIndex = () => {
             <div style={{
               borderRadius: 20,
               overflow: 'hidden',
-              padding: 40, minHeight: 340, color: '#fff',
+              padding: '28px 32px', minHeight: 240, color: '#fff',
               display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
               position: 'relative',
               border: '1px solid #e8eaee',
@@ -243,12 +243,12 @@ const DesktopIndex = () => {
                   }}
                 />
               ))}
-              <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', flex: 1, gap: 28 }}>
+              <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', flex: 1, gap: 20 }}>
               <div>
-                <h1 style={{ fontSize: 40, fontWeight: 800, margin: 0, lineHeight: 1.1, letterSpacing: '-1px', color: '#fff' }}>
+                <h1 style={{ fontSize: 32, fontWeight: 800, margin: 0, lineHeight: 1.1, letterSpacing: '-0.8px', color: '#fff' }}>
                   Красота и забота<br />рядом с вами
                 </h1>
-                <p style={{ marginTop: 16, fontSize: 16, color: 'rgba(255,255,255,0.82)', maxWidth: 480, lineHeight: 1.55 }}>
+                <p style={{ marginTop: 10, fontSize: 15, color: 'rgba(255,255,255,0.82)', maxWidth: 420, lineHeight: 1.5 }}>
                   Находите лучшие места, проверяйте свободное время и записывайтесь онлайн
                 </p>
               </div>
@@ -256,11 +256,11 @@ const DesktopIndex = () => {
 
               {/* Search form */}
               <div style={{
-                background: '#fff', borderRadius: 12, padding: 8,
+                background: '#fff', borderRadius: 12, padding: 6,
                 display: 'grid', gridTemplateColumns: '1.5fr 1fr 0.9fr 0.9fr auto',
                 alignItems: 'center',
               }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '0 12px', height: 44, borderRight: `1px solid ${COLORS.border}` }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '0 12px', height: 40, borderRight: `1px solid ${COLORS.border}` }}>
                   <Search size={16} color={COLORS.muted} />
                   <input
                     placeholder="Что ищете?"
@@ -270,7 +270,7 @@ const DesktopIndex = () => {
                     style={{ border: 'none', outline: 'none', flex: 1, fontSize: 14, color: COLORS.text, background: 'transparent', fontFamily: COLORS.font, minWidth: 0 }}
                   />
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '0 12px', height: 44, borderRight: `1px solid ${COLORS.border}` }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '0 12px', height: 40, borderRight: `1px solid ${COLORS.border}` }}>
                   <span style={{ fontSize: 14, color: COLORS.muted }}>▦</span>
                   <select
                     value={category}
@@ -286,17 +286,17 @@ const DesktopIndex = () => {
                     ))}
                   </select>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '0 12px', height: 44, color: COLORS.muted, fontSize: 13, borderRight: `1px solid ${COLORS.border}` }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '0 12px', height: 40, color: COLORS.muted, fontSize: 13, borderRight: `1px solid ${COLORS.border}` }}>
                   <MapPin size={14} color={COLORS.accent} /> Где вы?
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '0 12px', height: 44, color: COLORS.muted, fontSize: 13 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '0 12px', height: 40, color: COLORS.muted, fontSize: 13 }}>
                   <Calendar size={14} color={COLORS.accent} /> Сегодня
                 </div>
                 <button
                   onClick={() => setView('results')}
                   style={{
                     background: COLORS.accent, color: '#fff', border: 'none', borderRadius: 8,
-                    height: 44, padding: '0 20px', fontWeight: 600, fontSize: 14, cursor: 'pointer',
+                    height: 40, padding: '0 18px', fontWeight: 600, fontSize: 14, cursor: 'pointer',
                     whiteSpace: 'nowrap', marginLeft: 8,
                   }}
                 >
