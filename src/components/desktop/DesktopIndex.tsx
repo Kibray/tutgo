@@ -819,6 +819,30 @@ const DesktopIndex = () => {
 
       {/* Body */}
       <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
+        {comingSoon ? (
+          <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 32 }}>
+            <div className="border border-border rounded-xl shadow-sm" style={{
+              background: '#fff', padding: '40px 36px', maxWidth: 520, textAlign: 'center',
+            }}>
+              <div style={{ fontSize: 40, marginBottom: 12 }}>🧭</div>
+              <div className="text-foreground" style={{ fontSize: 18, fontWeight: 700, marginBottom: 8 }}>
+                «{comingSoon}» — скоро
+              </div>
+              <div className="text-muted-foreground" style={{ fontSize: 14, lineHeight: 1.6 }}>
+                Этот раздел гида пока готовится. Мы добавим сюда реальные места, как только они появятся в TutGo.
+              </div>
+              <button
+                onClick={() => { setComingSoon(null); setView('landing'); }}
+                style={{
+                  marginTop: 20, background: COLORS.accent, color: '#fff', border: 'none',
+                  borderRadius: 10, padding: '10px 20px', fontSize: 13, fontWeight: 600, cursor: 'pointer',
+                }}
+              >
+                Вернуться на главную
+              </button>
+            </div>
+          </div>
+        ) : (<>
         {showList && (
           <div style={{
             width: resultsMode === 'list' ? '100%' : 460,
