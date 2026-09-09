@@ -347,6 +347,10 @@ const DesktopIndex = () => {
 
             {/* Sidebar */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              <DesktopGuidePanel
+                onSelect={applyPreset}
+                onCta={() => applyPreset({ id: 'today', label: 'Куда пойти сегодня', emoji: '✨', biz: 'all' })}
+              />
               <div className="border border-border rounded-xl shadow-sm" style={{ background: "#ffffff", padding: 20, display: 'flex', flexDirection: 'column', gap: 10, alignItems: 'flex-start' }}>
                 <div style={{
                   width: 80, height: 80, borderRadius: 16, alignSelf: 'center',
@@ -390,6 +394,9 @@ const DesktopIndex = () => {
               </div>
             </div>
           </div>
+
+          {/* SECTION 1.5 — Scenario presets (thin layer over existing category/search state) */}
+          <DesktopScenarioTiles onSelect={applyPreset} />
 
           {/* SECTION 2 — Category tabs */}
           <div className="border border-border rounded-xl shadow-sm" style={{ background: "#ffffff", padding: '0 8px', overflowX: 'auto', marginBottom: 24 }}>
@@ -615,7 +622,7 @@ const DesktopIndex = () => {
         padding: '10px 24px', display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap',
       }}>
         <button
-          onClick={() => setView('landing')}
+          onClick={() => { setComingSoon(null); setView('landing'); }}
           style={{
             display: 'flex', alignItems: 'center', gap: 4,
             background: 'transparent', border: 'none', cursor: 'pointer',
@@ -826,7 +833,15 @@ const DesktopIndex = () => {
               {loading ? (
                 <div className="text-muted-foreground" style={{ padding: 32, textAlign: 'center', fontSize: 14 }}>Загрузка…</div>
               ) : displayList.length === 0 ? (
-                <div className="text-muted-foreground" style={{ padding: 32, textAlign: 'center', fontSize: 14 }}>Ничего не найдено</div>
+                <div style={{ padding: '40px 24px', textAlign: 'center' }}>
+                  <div style={{ fontSize: 34, marginBottom: 10 }}>🗺️</div>
+                  <div className="text-foreground" style={{ fontSize: 15, fontWeight: 700, marginBottom: 6 }}>
+                    Пока нет мест в этой категории
+                  </div>
+                  <div className="text-muted-foreground" style={{ fontSize: 13, lineHeight: 1.55 }}>
+                    Мы добавим их, как только партнёры появятся в этом разделе
+                  </div>
+                </div>
               ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                   {displayList.map((loc, idx) => {
