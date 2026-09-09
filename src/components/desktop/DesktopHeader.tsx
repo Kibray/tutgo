@@ -27,23 +27,25 @@ const DesktopHeader = ({ searchValue = '', onSearch, onSearchSubmit, onLogoClick
         position: 'sticky',
         top: 0,
         zIndex: 1100,
-        height: 60,
-        background: '#fff',
-        borderBottom: '1px solid #e5e7eb',
+        height: 68,
+        background: 'rgba(255,255,255,0.92)',
+        backdropFilter: 'saturate(180%) blur(8px)',
+        borderBottom: '1px solid #e8eaee',
         display: 'flex',
         alignItems: 'center',
         gap: 16,
-        padding: '0 24px',
+        padding: '0 28px',
         fontFamily: 'system-ui, sans-serif',
       }}
     >
       {/* Logo */}
       <div
         onClick={() => { if (onLogoClick) onLogoClick(); else navigate('/'); }}
-        style={{ fontWeight: 800, fontSize: 22, cursor: 'pointer', userSelect: 'none', color: '#111', letterSpacing: '-0.5px' }}
+        style={{ fontWeight: 800, fontSize: 22, cursor: 'pointer', userSelect: 'none', color: '#0f172a', letterSpacing: '-0.6px' }}
       >
         TUT<span style={{ color: '#2563EB' }}>GO</span>
       </div>
+
 
       {/* Location */}
       <button
