@@ -9,6 +9,8 @@ import BusinessSheet from '@/components/BusinessSheet';
 const MapView = React.lazy(() => import('@/components/MapView'));
 const AiAssistantFab = React.lazy(() => import('@/components/AiAssistantFab'));
 import DesktopHeader from '@/components/desktop/DesktopHeader';
+import DesktopNavRail from '@/components/desktop/DesktopNavRail';
+
 import { useLocations } from '@/hooks/useLocations';
 import { useCategories } from '@/hooks/useCategories';
 import type { LocationItem } from '@/lib/types';
@@ -558,7 +560,9 @@ const DesktopIndex = () => {
               </div>
             ))}
           </div>
+          </div>
         </div>
+
 
         <BusinessSheet service={sheetService} open={!!sheetService} onClose={() => setSheetService(null)}
           onFullPage={() => { if (sheetService) { navigate(sheetService.business_type === 'tour' ? `/tours/${sheetService.id}` : `/service/${sheetService.id}`); setSheetService(null); } }} />
