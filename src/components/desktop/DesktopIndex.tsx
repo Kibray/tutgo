@@ -225,7 +225,7 @@ const DesktopIndex = () => {
             <div style={{
               borderRadius: 20,
               overflow: 'hidden',
-              padding: 40, minHeight: 340, color: '#fff',
+              padding: '28px 32px', minHeight: 240, color: '#fff',
               display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
               position: 'relative',
               border: '1px solid #e8eaee',
@@ -243,12 +243,12 @@ const DesktopIndex = () => {
                   }}
                 />
               ))}
-              <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', flex: 1, gap: 28 }}>
+              <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', flex: 1, gap: 20 }}>
               <div>
-                <h1 style={{ fontSize: 40, fontWeight: 800, margin: 0, lineHeight: 1.1, letterSpacing: '-1px', color: '#fff' }}>
+                <h1 style={{ fontSize: 32, fontWeight: 800, margin: 0, lineHeight: 1.1, letterSpacing: '-0.8px', color: '#fff' }}>
                   Красота и забота<br />рядом с вами
                 </h1>
-                <p style={{ marginTop: 16, fontSize: 16, color: 'rgba(255,255,255,0.82)', maxWidth: 480, lineHeight: 1.55 }}>
+                <p style={{ marginTop: 10, fontSize: 15, color: 'rgba(255,255,255,0.82)', maxWidth: 420, lineHeight: 1.5 }}>
                   Находите лучшие места, проверяйте свободное время и записывайтесь онлайн
                 </p>
               </div>
