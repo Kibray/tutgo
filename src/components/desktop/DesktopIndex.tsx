@@ -54,14 +54,27 @@ const getDistanceKm = (lat1: number, lng1: number, lat2: number, lng2: number) =
 
 const TIME_PILLS = ['14:00', '15:30', '17:00'];
 
-const PhotoPlaceholder: React.FC<{ size?: number }> = ({ size = 32 }) => (
-  <div style={{
-    width: '100%', height: '100%',
-    background: 'linear-gradient(135deg,#e5e7eb,#f3f4f6)',
-    display: 'flex', alignItems: 'center', justifyContent: 'center',
-    fontSize: size, color: '#9ca3af',
-  }}>📷</div>
-);
+const PLACEHOLDER_BY_TYPE: Record<string, { icon: React.ElementType; bg: string; color: string }> = {
+  beauty: { icon: Sparkles, bg: 'linear-gradient(135deg,#fce7f3,#fdf2f8)', color: '#db2777' },
+  medical: { icon: HeartPulse, bg: 'linear-gradient(135deg,#fee2e2,#fef2f2)', color: '#dc2626' },
+  cafe: { icon: Coffee, bg: 'linear-gradient(135deg,#ffedd5,#fff7ed)', color: '#ea580c' },
+  tour: { icon: Plane, bg: 'linear-gradient(135deg,#dbeafe,#eff6ff)', color: '#2563eb' },
+  retail: { icon: ShoppingBag, bg: 'linear-gradient(135deg,#f3e8ff,#faf5ff)', color: '#9333ea' },
+};
+
+const PhotoPlaceholder: React.FC<{ size?: number; business_type?: string }> = ({ size = 32, business_type }) => {
+  const config = (business_type && PLACEHOLDER_BY_TYPE[business_type]) || { icon: Building2, bg: 'linear-gradient(135deg,#e5e7eb,#f3f4f6)', color: '#6b7280' };
+  const Icon = config.icon;
+  return (
+    <div style={{
+      width: '100%', height: '100%',
+      background: config.bg,
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+    }}>
+      <Icon size={size} color={config.color} strokeWidth={1.5} />
+    </div>
+  );
+};
 
 const TimePill: React.FC<{ t: string; muted?: boolean }> = ({ t, muted }) => (
   <span style={{
