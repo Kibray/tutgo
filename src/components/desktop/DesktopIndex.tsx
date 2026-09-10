@@ -345,29 +345,55 @@ const DesktopIndex = () => {
             </div>
 
           {/* SECTION 2 — Category tabs */}
-          <div className="mb-6 overflow-x-auto rounded-lg border border-border bg-card px-2 shadow-sm">
-            <div style={{ display: 'flex', gap: 0, minWidth: 'fit-content' }}>
-              {[{ id: 'all', name: 'Все категории', icon: '🏠' }, ...categories].map((c) => {
-                const active = category === c.id;
-                return (
-                  <button
-                    key={c.id}
-                    onClick={() => c.name === 'Туры' ? navigate('/tours') : c.name === 'Спорт' ? navigate('/sport') : (setCategory(c.id), setView('results'))}
-                    style={{
-                      background: 'transparent', border: 'none',
-                      padding: '14px 16px', cursor: 'pointer',
-                      fontSize: 13, fontWeight: active ? 700 : 500,
-                      color: active ? COLORS.accent : COLORS.text2,
-                      borderBottom: active ? `2px solid ${COLORS.accent}` : '2px solid transparent',
-                      whiteSpace: 'nowrap', fontFamily: COLORS.font,
-                      display: 'flex', alignItems: 'center', gap: 6,
-                    }}
-                  >
-                    <span>{c.icon}</span> {c.name}
-                  </button>
-                );
-              })}
+          <div className="relative mb-6">
+            {tabsScroll.showLeft && (
+              <button
+                type="button"
+                aria-label="Прокрутить категории влево"
+                onClick={() => { const el = tabsScrollRef.current; if (el) el.scrollBy({ left: -el.clientWidth * 0.75, behavior: 'smooth' }); }}
+                className="absolute left-1 top-1/2 z-10 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-foreground shadow-md ring-1 ring-border transition hover:bg-white"
+              >
+                <ChevronLeft size={16} />
+              </button>
+            )}
+            <div
+              ref={tabsScrollRef}
+              onScroll={updateTabsScroll}
+              className="overflow-x-auto rounded-lg border border-border bg-card px-2 shadow-sm scrollbar-hide"
+            >
+              <div style={{ display: 'flex', gap: 0, minWidth: 'fit-content' }}>
+                {[{ id: 'all', name: 'Все категории', icon: '🏠' }, ...categories].map((c) => {
+                  const active = category === c.id;
+                  return (
+                    <button
+                      key={c.id}
+                      onClick={() => c.name === 'Туры' ? navigate('/tours') : c.name === 'Спорт' ? navigate('/sport') : (setCategory(c.id), setView('results'))}
+                      style={{
+                        background: 'transparent', border: 'none',
+                        padding: '14px 16px', cursor: 'pointer',
+                        fontSize: 13, fontWeight: active ? 700 : 500,
+                        color: active ? COLORS.accent : COLORS.text2,
+                        borderBottom: active ? `2px solid ${COLORS.accent}` : '2px solid transparent',
+                        whiteSpace: 'nowrap', fontFamily: COLORS.font,
+                        display: 'flex', alignItems: 'center', gap: 6,
+                      }}
+                    >
+                      <span>{c.icon}</span> {c.name}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
+            {tabsScroll.showRight && (
+              <button
+                type="button"
+                aria-label="Прокрутить категории вправо"
+                onClick={() => { const el = tabsScrollRef.current; if (el) el.scrollBy({ left: el.clientWidth * 0.75, behavior: 'smooth' }); }}
+                className="absolute right-1 top-1/2 z-10 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-foreground shadow-md ring-1 ring-border transition hover:bg-white"
+              >
+                <ChevronRight size={16} />
+              </button>
+            )}
           </div>
 
           {/* SECTION 1.5 — Scenario presets (thin layer over existing category/search state) */}
