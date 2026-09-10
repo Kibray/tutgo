@@ -111,6 +111,8 @@ const DesktopIndex = () => {
   const [showMoreFilters, setShowMoreFilters] = useState(false);
   const priceMenuRef = useRef<HTMLDivElement | null>(null);
   const ratingMenuRef = useRef<HTMLDivElement | null>(null);
+  const tabsScrollRef = useRef<HTMLDivElement | null>(null);
+  const [tabsScroll, setTabsScroll] = useState({ showLeft: false, showRight: false });
 
   useEffect(() => {
     const onDown = (e: MouseEvent) => {
