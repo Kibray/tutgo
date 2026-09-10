@@ -309,9 +309,6 @@ const DesktopIndex = () => {
               </div>
             </div>
 
-          {/* SECTION 1.5 — Scenario presets (thin layer over existing category/search state) */}
-          <div className="mt-6"><DesktopScenarioTiles onSelect={applyPreset} /></div>
-
           {/* SECTION 2 — Category tabs */}
           <div className="mb-6 overflow-x-auto rounded-lg border border-border bg-card px-2 shadow-sm">
             <div style={{ display: 'flex', gap: 0, minWidth: 'fit-content' }}>
@@ -337,6 +334,9 @@ const DesktopIndex = () => {
               })}
             </div>
           </div>
+
+          {/* SECTION 1.5 — Scenario presets (thin layer over existing category/search state) */}
+          <div className="mb-6"><DesktopScenarioTiles onSelect={applyPreset} /></div>
 
           {/* SECTION 3 — Popular + Free + Map */}
           <div className="desktop-discovery-grid mb-6">
