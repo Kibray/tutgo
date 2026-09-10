@@ -237,19 +237,23 @@ const DesktopIndex = () => {
               display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
               position: 'relative',
             }}>
-              {HERO_IMAGES.map((src, i) => (
-                <div
-                  key={src}
-                  style={{
-                    position: 'absolute', inset: 0,
-                    backgroundImage: `linear-gradient(100deg, rgba(9,14,26,0.78) 0%, rgba(9,14,26,0.55) 45%, rgba(9,14,26,0.35) 100%), url(${src})`,
-                    backgroundSize: 'cover', backgroundPosition: 'center',
-                    opacity: i === heroIndex ? 1 : 0,
-                    transition: 'opacity 1s ease-in-out',
-                    zIndex: 0,
-                  }}
-                />
-              ))}
+              {/* Static hero image */}
+              <div
+                style={{
+                  position: 'absolute', inset: 0,
+                  backgroundImage: `url(${HERO_IMAGE})`,
+                  backgroundSize: 'cover', backgroundPosition: 'center',
+                  zIndex: 0,
+                }}
+              />
+              {/* Bottom gradient overlay for search readability */}
+              <div
+                style={{
+                  position: 'absolute', inset: 0,
+                  background: 'linear-gradient(to top, rgba(0,0,0,0.40) 0%, rgba(0,0,0,0.12) 45%, rgba(0,0,0,0) 100%)',
+                  zIndex: 0,
+                }}
+              />
               <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', flex: 1, gap: 16 }}>
               <div>
                 <h1 style={{ fontSize: 30, fontWeight: 800, margin: 0, lineHeight: 1.1, letterSpacing: 0, color: 'hsl(var(--primary-foreground))' }}>
@@ -302,25 +306,6 @@ const DesktopIndex = () => {
                   Найти места
                 </Button>
               </div>
-              </div>
-              {/* Slideshow dots */}
-              <div style={{
-                position: 'absolute', bottom: 12, left: 0, right: 0, zIndex: 2,
-                display: 'flex', justifyContent: 'center', gap: 8,
-              }}>
-                {HERO_IMAGES.map((_, i) => (
-                  <button
-                    key={i}
-                    onClick={() => setHeroIndex(i)}
-                    aria-label={`Слайд ${i + 1}`}
-                    style={{
-                      width: i === heroIndex ? 24 : 8, height: 8, borderRadius: 4,
-                      background: i === heroIndex ? '#fff' : 'rgba(255,255,255,0.5)',
-                      border: 'none', cursor: 'pointer', padding: 0,
-                      transition: 'all 0.3s ease',
-                    }}
-                  />
-                ))}
               </div>
             </div>
 
