@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import {
   Search, MapPin, Calendar, Star, ShieldCheck, Clock, CalendarCheck, Filter,
   ChevronDown, ChevronLeft, List, LayoutGrid, Map as MapIcon, Locate, BadgeCheck, Heart, X,
-  CloudSun, Gift, Layers3, Newspaper,
+  CloudSun, Gift, Layers3, Newspaper, Sparkles, HeartPulse, Coffee, Plane, ShoppingBag, Building2,
 } from 'lucide-react';
 import BusinessSheet from '@/components/BusinessSheet';
 const MapView = React.lazy(() => import('@/components/MapView'));
@@ -54,14 +54,27 @@ const getDistanceKm = (lat1: number, lng1: number, lat2: number, lng2: number) =
 
 const TIME_PILLS = ['14:00', '15:30', '17:00'];
 
-const PhotoPlaceholder: React.FC<{ size?: number }> = ({ size = 32 }) => (
-  <div style={{
-    width: '100%', height: '100%',
-    background: 'linear-gradient(135deg,#e5e7eb,#f3f4f6)',
-    display: 'flex', alignItems: 'center', justifyContent: 'center',
-    fontSize: size, color: '#9ca3af',
-  }}>📷</div>
-);
+const PLACEHOLDER_BY_TYPE: Record<string, { icon: React.ElementType; bg: string; color: string }> = {
+  beauty: { icon: Sparkles, bg: 'linear-gradient(135deg,#fce7f3,#fdf2f8)', color: '#db2777' },
+  medical: { icon: HeartPulse, bg: 'linear-gradient(135deg,#fee2e2,#fef2f2)', color: '#dc2626' },
+  cafe: { icon: Coffee, bg: 'linear-gradient(135deg,#ffedd5,#fff7ed)', color: '#ea580c' },
+  tour: { icon: Plane, bg: 'linear-gradient(135deg,#dbeafe,#eff6ff)', color: '#2563eb' },
+  retail: { icon: ShoppingBag, bg: 'linear-gradient(135deg,#f3e8ff,#faf5ff)', color: '#9333ea' },
+};
+
+const PhotoPlaceholder: React.FC<{ size?: number; business_type?: string }> = ({ size = 32, business_type }) => {
+  const config = (business_type && PLACEHOLDER_BY_TYPE[business_type]) || { icon: Building2, bg: 'linear-gradient(135deg,#e5e7eb,#f3f4f6)', color: '#6b7280' };
+  const Icon = config.icon;
+  return (
+    <div style={{
+      width: '100%', height: '100%',
+      background: config.bg,
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+    }}>
+      <Icon size={size} color={config.color} strokeWidth={1.5} />
+    </div>
+  );
+};
 
 const TimePill: React.FC<{ t: string; muted?: boolean }> = ({ t, muted }) => (
   <span style={{
@@ -363,7 +376,7 @@ const DesktopIndex = () => {
                         height: 160, position: 'relative', overflow: 'hidden',
                         background: loc.gallery?.[0] ? `url(${loc.gallery[0]}) center/cover no-repeat` : undefined,
                       }}>
-                        {!loc.gallery?.[0] && <PhotoPlaceholder />}
+                        {!loc.gallery?.[0] && <PhotoPlaceholder business_type={loc.business_type} />}
                         {(loc.is_promoted || idx === 0) && (
                           <div style={{
                             position: 'absolute', top: 8, left: 8,
@@ -441,7 +454,7 @@ const DesktopIndex = () => {
                         width: 64, height: 64, borderRadius: 8, flexShrink: 0, overflow: 'hidden',
                         background: loc.gallery?.[0] ? `url(${loc.gallery[0]}) center/cover` : undefined,
                       }}>
-                        {!loc.gallery?.[0] && <PhotoPlaceholder size={20} />}
+                        {!loc.gallery?.[0] && <PhotoPlaceholder size={20} business_type={loc.business_type} />}
                       </div>
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <div className="text-foreground" style={{ fontSize: 13, fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{loc.name}</div>
@@ -849,7 +862,7 @@ const DesktopIndex = () => {
                           position: 'relative', width: 120, height: 90, borderRadius: 8, flexShrink: 0, overflow: 'hidden',
                           background: loc.gallery?.[0] ? `url(${loc.gallery[0]}) center/cover no-repeat` : undefined,
                         }}>
-                          {!loc.gallery?.[0] && <PhotoPlaceholder size={22} />}
+                          {!loc.gallery?.[0] && <PhotoPlaceholder size={22} business_type={loc.business_type} />}
                           {(loc.is_promoted || idx === 0) && (
                             <div style={{
                               position: 'absolute', top: 6, left: 6,
