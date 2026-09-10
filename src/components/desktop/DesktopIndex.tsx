@@ -148,6 +148,10 @@ const DesktopIndex = () => {
 
   const { categories } = useCategories();
 
+  useEffect(() => {
+    updateTabsScroll();
+  }, [categories, updateTabsScroll]);
+
   const applyPreset = useCallback((p: ScenarioPreset) => {
     if (p.route) { navigate(p.route); return; }
     if (p.soon) { setComingSoon(p.label); setView('results'); return; }
