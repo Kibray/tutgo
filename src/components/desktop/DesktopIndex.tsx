@@ -88,19 +88,7 @@ const DesktopIndex = () => {
   const [openNow, setOpenNow] = useState(false);
   // landingCategory removed — uses shared `category` state
 
-  const HERO_IMAGES = [
-    'https://images.unsplash.com/photo-1585747860715-2ba37e788b70?w=1600', // barbershop
-    'https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=1600', // spa
-    'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1600', // restaurant
-    'https://images.unsplash.com/photo-1521412644187-c49fa049e84d?w=1600', // sport
-    'https://images.unsplash.com/photo-1560066984-138dadb4c035?w=1600',   // beauty salon
-    'https://images.unsplash.com/photo-1595476108010-b4d1f102b1b1?w=1600', // spa/wellness
-  ];
-  const [heroIndex, setHeroIndex] = useState(0);
-  useEffect(() => {
-    const id = setInterval(() => setHeroIndex((i) => (i + 1) % HERO_IMAGES.length), 4000);
-    return () => clearInterval(id);
-  }, []);
+  const HERO_IMAGE = 'https://images.unsplash.com/photo-1516571137133-19eb1f8c9b90?w=1600&auto=format&fit=crop&q=80';
 
   // Filter bar state
   const [priceSort, setPriceSort] = useState<'asc' | 'desc' | null>(null);
