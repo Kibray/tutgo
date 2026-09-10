@@ -265,10 +265,10 @@ const DesktopIndex = () => {
               <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', flex: 1, gap: 16 }}>
               <div>
                 <h1 style={{ fontSize: 30, fontWeight: 800, margin: 0, lineHeight: 1.1, letterSpacing: 0, color: 'hsl(var(--primary-foreground))' }}>
-                  Красота и забота<br />рядом с вами
+                  Всё, что нужно — рядом
                 </h1>
                 <p style={{ marginTop: 10, fontSize: 15, color: 'rgba(255,255,255,0.82)', maxWidth: 420, lineHeight: 1.5 }}>
-                  Находите лучшие места, проверяйте свободное время и записывайтесь онлайн
+                  Поиск услуг, интересных мест и событий в Ташкенте
                 </p>
               </div>
 
