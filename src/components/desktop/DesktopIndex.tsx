@@ -139,9 +139,6 @@ const DesktopIndex = () => {
     return () => window.removeEventListener('resize', onResize);
   }, [updateTabsScroll]);
 
-  useEffect(() => {
-    updateTabsScroll();
-  }, [categories, updateTabsScroll]);
 
   const activeFilterCount = (priceSort ? 1 : 0) + (ratingMin ? 1 : 0);
 
