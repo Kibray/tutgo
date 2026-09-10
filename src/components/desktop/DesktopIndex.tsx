@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   Search, MapPin, Calendar, Star, ShieldCheck, Clock, CalendarCheck, Filter,
-  ChevronDown, ChevronLeft, List, LayoutGrid, Map as MapIcon, Locate, BadgeCheck, Heart, X,
+  ChevronDown, ChevronLeft, ChevronRight, List, LayoutGrid, Map as MapIcon, Locate, BadgeCheck, Heart, X,
   CloudSun, Gift, Layers3, Newspaper, Sparkles, HeartPulse, Coffee, Plane, ShoppingBag, Building2,
 } from 'lucide-react';
 import BusinessSheet from '@/components/BusinessSheet';
