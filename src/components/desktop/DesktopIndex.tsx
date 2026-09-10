@@ -123,6 +123,26 @@ const DesktopIndex = () => {
     return () => document.removeEventListener('mousedown', onDown);
   }, []);
 
+  const updateTabsScroll = useCallback(() => {
+    const el = tabsScrollRef.current;
+    if (!el) return;
+    setTabsScroll({
+      showLeft: el.scrollLeft > 4,
+      showRight: el.scrollLeft + el.clientWidth < el.scrollWidth - 4,
+    });
+  }, []);
+
+  useEffect(() => {
+    updateTabsScroll();
+    const onResize = () => updateTabsScroll();
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, [updateTabsScroll]);
+
+  useEffect(() => {
+    updateTabsScroll();
+  }, [categories, updateTabsScroll]);
+
   const activeFilterCount = (priceSort ? 1 : 0) + (ratingMin ? 1 : 0);
 
   // Scenario / guide presets: a thin layer over the EXISTING category+search state.
