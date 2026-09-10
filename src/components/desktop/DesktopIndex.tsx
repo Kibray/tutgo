@@ -376,7 +376,7 @@ const DesktopIndex = () => {
                         height: 160, position: 'relative', overflow: 'hidden',
                         background: loc.gallery?.[0] ? `url(${loc.gallery[0]}) center/cover no-repeat` : undefined,
                       }}>
-                        {!loc.gallery?.[0] && <PhotoPlaceholder />}
+                        {!loc.gallery?.[0] && <PhotoPlaceholder business_type={loc.business_type} />}
                         {(loc.is_promoted || idx === 0) && (
                           <div style={{
                             position: 'absolute', top: 8, left: 8,
@@ -454,7 +454,7 @@ const DesktopIndex = () => {
                         width: 64, height: 64, borderRadius: 8, flexShrink: 0, overflow: 'hidden',
                         background: loc.gallery?.[0] ? `url(${loc.gallery[0]}) center/cover` : undefined,
                       }}>
-                        {!loc.gallery?.[0] && <PhotoPlaceholder size={20} />}
+                        {!loc.gallery?.[0] && <PhotoPlaceholder size={20} business_type={loc.business_type} />}
                       </div>
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <div className="text-foreground" style={{ fontSize: 13, fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{loc.name}</div>
@@ -862,7 +862,7 @@ const DesktopIndex = () => {
                           position: 'relative', width: 120, height: 90, borderRadius: 8, flexShrink: 0, overflow: 'hidden',
                           background: loc.gallery?.[0] ? `url(${loc.gallery[0]}) center/cover no-repeat` : undefined,
                         }}>
-                          {!loc.gallery?.[0] && <PhotoPlaceholder size={22} />}
+                          {!loc.gallery?.[0] && <PhotoPlaceholder size={22} business_type={loc.business_type} />}
                           {(loc.is_promoted || idx === 0) && (
                             <div style={{
                               position: 'absolute', top: 6, left: 6,
