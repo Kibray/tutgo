@@ -39,6 +39,30 @@ const COLORS = {
   font: 'system-ui, sans-serif',
 };
 
+/**
+ * Hero showcase slides — one per real category that exists in the app.
+ * No photos are invented: only "Красота" has a fitting local asset, the rest
+ * use a pastel gradient + outline icon in the same language as the mood tiles.
+ */
+const HERO_SLIDES: {
+  categoryName: string;
+  title: string;
+  subtitle: string;
+  gradient: string;
+  icon: React.ComponentType<{ size?: number; color?: string; strokeWidth?: number }>;
+  photo?: string;
+}[] = [
+  { categoryName: 'Красота', title: 'Красота и уход', subtitle: 'Барбершопы и салоны рядом с вами', gradient: 'linear-gradient(135deg,#fde8ef 0%,#f7d6e6 100%)', icon: Scissors, photo: salonPhoto },
+  { categoryName: 'Медицина', title: 'Медицина', subtitle: 'Клиники с отзывами и записью онлайн', gradient: 'linear-gradient(135deg,#e0f2fe 0%,#dbeafe 100%)', icon: Stethoscope },
+  { categoryName: 'Туры', title: 'Туры и поездки', subtitle: 'Маршруты по Узбекистану', gradient: 'linear-gradient(135deg,#e0f7f1 0%,#d7ebff 100%)', icon: Mountain },
+  { categoryName: 'Еда и напитки', title: 'Кафе и рестораны', subtitle: 'Где поесть в Ташкенте', gradient: 'linear-gradient(135deg,#fff1dc 0%,#ffe3e0 100%)', icon: UtensilsCrossed },
+  { categoryName: 'Магазины', title: 'Магазины', subtitle: 'Покупки рядом с домом', gradient: 'linear-gradient(135deg,#ede9fe 0%,#e0e7ff 100%)', icon: ShoppingBag },
+  { categoryName: 'Услуги', title: 'Услуги', subtitle: 'Мастера и сервисы на каждый день', gradient: 'linear-gradient(135deg,#eef2f7 0%,#e2e8f0 100%)', icon: Wrench },
+  { categoryName: 'Автосервис', title: 'Автоуслуги', subtitle: 'Сервис, шиномонтаж и мойка', gradient: 'linear-gradient(135deg,#e2e8f0 0%,#dbeafe 100%)', icon: Car },
+  { categoryName: 'Спорт', title: 'Спорт', subtitle: 'Залы, корты и тренировки', gradient: 'linear-gradient(135deg,#dcfce7 0%,#d1fae5 100%)', icon: Dumbbell },
+  { categoryName: 'Обучение', title: 'Обучение', subtitle: 'Курсы и школы в городе', gradient: 'linear-gradient(135deg,#fef3c7 0%,#fde68a 100%)', icon: GraduationCap },
+];
+
 const card: React.CSSProperties = {
   background: COLORS.card,
   border: `1px solid ${COLORS.border}`,
