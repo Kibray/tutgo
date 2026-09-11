@@ -8,13 +8,22 @@ import { supabase } from '@/integrations/supabase/client';
 interface ResultCard {
   id: string;
   name: string;
+  category?: string;
   address?: string;
   rating?: number;
+  review_count?: number;
   price_from?: number;
   currency?: string;
   lat?: number;
   lng?: number;
   business_type?: string;
+  booking_path?: string;
+  services?: { id: string; name: string; price?: number; duration_minutes?: number }[];
+}
+
+interface BookingIntent {
+  date?: string | null;
+  time_from?: string | null;
 }
 
 interface ChatMessage {
