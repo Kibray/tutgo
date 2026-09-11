@@ -360,12 +360,13 @@ const DesktopIndex = () => {
                       <SlideIcon size={22} color={onPhoto ? '#ffffff' : COLORS.accent} strokeWidth={1.8} />
                     </div>
                     <div>
-                      <h1 style={{ fontSize: 30, fontWeight: 800, margin: 0, lineHeight: 1.1, color: titleColor }}>
+                      <h1 style={{ fontSize: 30, fontWeight: 800, margin: 0, lineHeight: 1.1, color: titleColor, textShadow: onPhoto ? '0 2px 12px rgba(0,0,0,0.55)' : 'none' }}>
                         {slide.title}
                       </h1>
-                      <p style={{ marginTop: 8, fontSize: 15, color: subColor, maxWidth: 420, lineHeight: 1.5 }}>
+                      <p style={{ marginTop: 8, fontSize: 15, color: subColor, maxWidth: 420, lineHeight: 1.5, textShadow: onPhoto ? '0 1px 8px rgba(0,0,0,0.6)' : 'none' }}>
                         {slide.subtitle}
                       </p>
+
                     </div>
                   </div>
                 );
