@@ -5,7 +5,10 @@ import {
   Search, MapPin, Calendar, Star, ShieldCheck, Clock, CalendarCheck, Filter,
   ChevronDown, ChevronLeft, ChevronRight, List, LayoutGrid, Map as MapIcon, Locate, BadgeCheck, Heart, X,
   CloudSun, Gift, Layers3, Newspaper, Sparkles, HeartPulse, Coffee, Plane, ShoppingBag, Building2,
+  Scissors, Stethoscope, Mountain, UtensilsCrossed, Wrench, Car, Dumbbell, GraduationCap,
 } from 'lucide-react';
+import salonPhoto from '@/assets/cat-salon.png';
+
 import BusinessSheet from '@/components/BusinessSheet';
 const MapView = React.lazy(() => import('@/components/MapView'));
 const AiAssistantFab = React.lazy(() => import('@/components/AiAssistantFab'));
