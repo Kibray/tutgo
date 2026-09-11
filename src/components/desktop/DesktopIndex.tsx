@@ -415,6 +415,25 @@ const DesktopIndex = () => {
                 </Button>
               </div>
               </div>
+              {/* Slide dots */}
+              <div style={{ position: 'absolute', bottom: 8, right: 16, zIndex: 2, display: 'flex', gap: 6 }}>
+                {HERO_SLIDES.map((s, i) => (
+                  <button
+                    key={s.categoryName}
+                    type="button"
+                    aria-label={`Показать «${s.title}»`}
+                    onClick={() => setHeroSlide(i)}
+                    style={{
+                      width: i === heroSlide ? 18 : 7, height: 7, borderRadius: 999, border: 'none',
+                      cursor: 'pointer', padding: 0, transition: 'width 250ms ease, background 250ms ease',
+                      background: i === heroSlide
+                        ? COLORS.accent
+                        : (HERO_SLIDES[heroSlide].photo ? 'rgba(255,255,255,0.6)' : 'rgba(17,17,17,0.22)'),
+                    }}
+                  />
+                ))}
+              </div>
+
             </div>
 
           {/* SECTION 2 — Category tabs */}
