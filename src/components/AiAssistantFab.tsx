@@ -54,6 +54,7 @@ const AiAssistantFab = ({ onShowOnMap }: { onShowOnMap?: (locations: ResultCard[
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [loading, setLoading] = useState(false);
   const [listening, setListening] = useState(false);
+  const [bookingIntent, setBookingIntent] = useState<BookingIntent>({});
   const scrollRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<any>(null);
 
@@ -114,6 +115,18 @@ const AiAssistantFab = ({ onShowOnMap }: { onShowOnMap?: (locations: ResultCard[
         },
         body: JSON.stringify({ messages: apiMessages }),
       });
+
+      // Structured intent (date/time) preserved for the existing booking flow
+      const intentHeader = resp.headers.get('X-Tutgo-Intent');
+      if (intentHeader) {
+        try {
+          const parsed = JSON.parse(decodeURIComponent(intentHeader));
+          setBookingIntent(prev => ({
+            date: parsed.date ?? prev.date,
+            time_from: parsed.time_from ?? prev.time_from,
+          }));
+        } catch { /* ignore */ }
+      }
 
       if (!resp.ok) {
         const err = await resp.json().catch(() => ({ error: 'Ошибка сервера' }));
