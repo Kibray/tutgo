@@ -5,7 +5,10 @@ import {
   Search, MapPin, Calendar, Star, ShieldCheck, Clock, CalendarCheck, Filter,
   ChevronDown, ChevronLeft, ChevronRight, List, LayoutGrid, Map as MapIcon, Locate, BadgeCheck, Heart, X,
   CloudSun, Gift, Layers3, Newspaper, Sparkles, HeartPulse, Coffee, Plane, ShoppingBag, Building2,
+  Scissors, Stethoscope, Mountain, UtensilsCrossed, Wrench, Car, Dumbbell, GraduationCap,
 } from 'lucide-react';
+import salonPhoto from '@/assets/cat-salon.png';
+
 import BusinessSheet from '@/components/BusinessSheet';
 const MapView = React.lazy(() => import('@/components/MapView'));
 const AiAssistantFab = React.lazy(() => import('@/components/AiAssistantFab'));
@@ -35,6 +38,30 @@ const COLORS = {
   shadow: '0 1px 3px rgba(0,0,0,0.06)',
   font: 'system-ui, sans-serif',
 };
+
+/**
+ * Hero showcase slides — one per real category that exists in the app.
+ * No photos are invented: only "Красота" has a fitting local asset, the rest
+ * use a pastel gradient + outline icon in the same language as the mood tiles.
+ */
+const HERO_SLIDES: {
+  categoryName: string;
+  title: string;
+  subtitle: string;
+  gradient: string;
+  icon: React.ComponentType<any>;
+  photo?: string;
+}[] = [
+  { categoryName: 'Красота', title: 'Красота и уход', subtitle: 'Барбершопы и салоны рядом с вами', gradient: 'linear-gradient(135deg,#fde8ef 0%,#f7d6e6 100%)', icon: Scissors, photo: salonPhoto },
+  { categoryName: 'Медицина', title: 'Медицина', subtitle: 'Клиники с отзывами и записью онлайн', gradient: 'linear-gradient(135deg,#e0f2fe 0%,#dbeafe 100%)', icon: Stethoscope },
+  { categoryName: 'Туры', title: 'Туры и поездки', subtitle: 'Маршруты по Узбекистану', gradient: 'linear-gradient(135deg,#e0f7f1 0%,#d7ebff 100%)', icon: Mountain },
+  { categoryName: 'Еда и напитки', title: 'Кафе и рестораны', subtitle: 'Где поесть в Ташкенте', gradient: 'linear-gradient(135deg,#fff1dc 0%,#ffe3e0 100%)', icon: UtensilsCrossed },
+  { categoryName: 'Магазины', title: 'Магазины', subtitle: 'Покупки рядом с домом', gradient: 'linear-gradient(135deg,#ede9fe 0%,#e0e7ff 100%)', icon: ShoppingBag },
+  { categoryName: 'Услуги', title: 'Услуги', subtitle: 'Мастера и сервисы на каждый день', gradient: 'linear-gradient(135deg,#eef2f7 0%,#e2e8f0 100%)', icon: Wrench },
+  { categoryName: 'Автосервис', title: 'Автоуслуги', subtitle: 'Сервис, шиномонтаж и мойка', gradient: 'linear-gradient(135deg,#e2e8f0 0%,#dbeafe 100%)', icon: Car },
+  { categoryName: 'Спорт', title: 'Спорт', subtitle: 'Залы, корты и тренировки', gradient: 'linear-gradient(135deg,#dcfce7 0%,#d1fae5 100%)', icon: Dumbbell },
+  { categoryName: 'Обучение', title: 'Обучение', subtitle: 'Курсы и школы в городе', gradient: 'linear-gradient(135deg,#fef3c7 0%,#fde68a 100%)', icon: GraduationCap },
+];
 
 const card: React.CSSProperties = {
   background: COLORS.card,
@@ -101,7 +128,13 @@ const DesktopIndex = () => {
   const [openNow, setOpenNow] = useState(false);
   // landingCategory removed — uses shared `category` state
 
-  const HERO_IMAGE = 'https://images.unsplash.com/photo-1516571137133-19eb1f8c9b90?w=1600&auto=format&fit=crop&q=80';
+  // Hero showcase carousel (independent from the selected search category)
+  const [heroSlide, setHeroSlide] = useState(0);
+  useEffect(() => {
+    const id = setInterval(() => setHeroSlide((i) => (i + 1) % HERO_SLIDES.length), 5500);
+    return () => clearInterval(id);
+  }, []);
+
 
   // Filter bar state
   const [priceSort, setPriceSort] = useState<'asc' | 'desc' | null>(null);
@@ -273,32 +306,72 @@ const DesktopIndex = () => {
               display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
               position: 'relative',
             }}>
-              {/* Static hero image */}
+              {/* Rotating category showcase backgrounds */}
+              {HERO_SLIDES.map((slide, i) => (
+                <div
+                  key={slide.categoryName}
+                  aria-hidden={i !== heroSlide}
+                  style={{
+                    position: 'absolute', inset: 0, zIndex: 0,
+                    opacity: i === heroSlide ? 1 : 0,
+                    transition: 'opacity 900ms ease',
+                    background: slide.gradient,
+                    backgroundImage: slide.photo ? `url(${slide.photo})` : slide.gradient,
+                    backgroundSize: 'cover', backgroundPosition: 'center',
+                  }}
+                />
+              ))}
+              {/* Bottom overlay for search readability */}
               <div
                 style={{
-                  position: 'absolute', inset: 0,
-                  backgroundImage: `url(${HERO_IMAGE})`,
-                  backgroundSize: 'cover', backgroundPosition: 'center',
-                  zIndex: 0,
-                }}
-              />
-              {/* Bottom gradient overlay for search readability */}
-              <div
-                style={{
-                  position: 'absolute', inset: 0,
-                  background: 'linear-gradient(to top, rgba(0,0,0,0.40) 0%, rgba(0,0,0,0.12) 45%, rgba(0,0,0,0) 100%)',
-                  zIndex: 0,
+                  position: 'absolute', inset: 0, zIndex: 0,
+                  background: HERO_SLIDES[heroSlide].photo
+                    ? 'linear-gradient(to top, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.15) 45%, rgba(0,0,0,0) 100%)'
+                    : 'linear-gradient(to top, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0.15) 50%, rgba(255,255,255,0) 100%)',
                 }}
               />
               <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', flex: 1, gap: 16 }}>
-              <div>
-                <h1 style={{ fontSize: 30, fontWeight: 800, margin: 0, lineHeight: 1.1, letterSpacing: 0, color: 'hsl(var(--primary-foreground))' }}>
-                  Всё, что нужно — рядом
-                </h1>
-                <p style={{ marginTop: 10, fontSize: 15, color: 'rgba(255,255,255,0.82)', maxWidth: 420, lineHeight: 1.5 }}>
-                  Поиск услуг, интересных мест и событий в Ташкенте
-                </p>
-              </div>
+              {(() => {
+                const slide = HERO_SLIDES[heroSlide];
+                const onPhoto = Boolean(slide.photo);
+                const titleColor = onPhoto ? '#ffffff' : COLORS.text;
+                const subColor = onPhoto ? 'rgba(255,255,255,0.85)' : COLORS.text2;
+                const SlideIcon = slide.icon;
+                const cat = categories.find((c) => c.name === slide.categoryName);
+                const goToSlideCategory = () => {
+                  if (slide.categoryName === 'Туры') { navigate('/tours'); return; }
+                  if (slide.categoryName === 'Спорт') { navigate('/sport'); return; }
+                  if (cat) { setCategory(cat.id); setView('results'); }
+                };
+                return (
+                  <div
+                    role="button"
+                    tabIndex={0}
+                    onClick={goToSlideCategory}
+                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); goToSlideCategory(); } }}
+                    style={{ cursor: 'pointer', display: 'flex', alignItems: 'flex-start', gap: 14, maxWidth: 520 }}
+                  >
+                    <div style={{
+                      width: 44, height: 44, borderRadius: 14, flexShrink: 0,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      background: onPhoto ? 'rgba(255,255,255,0.22)' : 'rgba(255,255,255,0.75)',
+                      border: `1px solid ${onPhoto ? 'rgba(255,255,255,0.35)' : 'rgba(17,17,17,0.06)'}`,
+                    }}>
+                      <SlideIcon size={22} color={onPhoto ? '#ffffff' : COLORS.accent} strokeWidth={1.8} />
+                    </div>
+                    <div>
+                      <h1 style={{ fontSize: 30, fontWeight: 800, margin: 0, lineHeight: 1.1, color: titleColor, textShadow: onPhoto ? '0 2px 12px rgba(0,0,0,0.55)' : 'none' }}>
+                        {slide.title}
+                      </h1>
+                      <p style={{ marginTop: 8, fontSize: 15, color: subColor, maxWidth: 420, lineHeight: 1.5, textShadow: onPhoto ? '0 1px 8px rgba(0,0,0,0.6)' : 'none' }}>
+                        {slide.subtitle}
+                      </p>
+
+                    </div>
+                  </div>
+                );
+              })()}
+
 
 
               {/* Search form */}
@@ -343,6 +416,25 @@ const DesktopIndex = () => {
                 </Button>
               </div>
               </div>
+              {/* Slide dots */}
+              <div style={{ position: 'absolute', bottom: 8, right: 16, zIndex: 2, display: 'flex', gap: 6 }}>
+                {HERO_SLIDES.map((s, i) => (
+                  <button
+                    key={s.categoryName}
+                    type="button"
+                    aria-label={`Показать «${s.title}»`}
+                    onClick={() => setHeroSlide(i)}
+                    style={{
+                      width: i === heroSlide ? 18 : 7, height: 7, borderRadius: 999, border: 'none',
+                      cursor: 'pointer', padding: 0, transition: 'width 250ms ease, background 250ms ease',
+                      background: i === heroSlide
+                        ? COLORS.accent
+                        : (HERO_SLIDES[heroSlide].photo ? 'rgba(255,255,255,0.6)' : 'rgba(17,17,17,0.22)'),
+                    }}
+                  />
+                ))}
+              </div>
+
             </div>
 
           {/* SECTION 2 — Category tabs */}
