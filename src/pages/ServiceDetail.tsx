@@ -1,5 +1,5 @@
-import { useState, useEffect, useMemo } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useState, useEffect, useMemo, useRef } from 'react';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Star, Clock, MapPin, ChevronRight, Navigation, Copy, Phone, Share2, Send, User, Users, CalendarDays, Bell } from 'lucide-react';
 import AddressPicker from '@/components/AddressPicker';
@@ -29,6 +29,8 @@ const pluralReviews = (n: number) => {
 
 const ServiceDetail = () => {
   const { id } = useParams();
+  const [searchParams] = useSearchParams();
+  const prefillApplied = useRef(false);
   const isDesktop = useIsDesktop();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -142,6 +144,26 @@ const ServiceDetail = () => {
     }
     return slots;
   }, [selectedDate, selectedStaff, staffList, dates, bookedSlots]);
+
+  // Prefill date/time coming from the AI assistant (?date=YYYY-MM-DD&time=HH:MM)
+  useEffect(() => {
+    if (prefillApplied.current) return;
+    const dateParam = searchParams.get('date');
+    const timeParam = searchParams.get('time');
+    if (!dateParam && !timeParam) return;
+    if (dateParam) {
+      const idx = dates.findIndex(d =>
+        `${d.getFullYear()}-${(d.getMonth() + 1).toString().padStart(2, '0')}-${d.getDate().toString().padStart(2, '0')}` === dateParam
+      );
+      if (idx >= 0) setSelectedDate(idx);
+    }
+    if (timeParam) {
+      const slot = timeSlots.find(s => s.time === timeParam && s.available);
+      if (slot) setSelectedSlot(slot.time);
+    }
+    prefillApplied.current = true;
+  }, [searchParams, dates, timeSlots]);
+
 
   // Fetch existing appointments for selected staff + date
   useEffect(() => {

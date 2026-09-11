@@ -8,13 +8,22 @@ import { supabase } from '@/integrations/supabase/client';
 interface ResultCard {
   id: string;
   name: string;
+  category?: string;
   address?: string;
   rating?: number;
+  review_count?: number;
   price_from?: number;
   currency?: string;
   lat?: number;
   lng?: number;
   business_type?: string;
+  booking_path?: string;
+  services?: { id: string; name: string; price?: number; duration_minutes?: number }[];
+}
+
+interface BookingIntent {
+  date?: string | null;
+  time_from?: string | null;
 }
 
 interface ChatMessage {
@@ -45,6 +54,7 @@ const AiAssistantFab = ({ onShowOnMap }: { onShowOnMap?: (locations: ResultCard[
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [loading, setLoading] = useState(false);
   const [listening, setListening] = useState(false);
+  const [bookingIntent, setBookingIntent] = useState<BookingIntent>({});
   const scrollRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<any>(null);
 
@@ -105,6 +115,18 @@ const AiAssistantFab = ({ onShowOnMap }: { onShowOnMap?: (locations: ResultCard[
         },
         body: JSON.stringify({ messages: apiMessages }),
       });
+
+      // Structured intent (date/time) preserved for the existing booking flow
+      const intentHeader = resp.headers.get('X-Tutgo-Intent');
+      if (intentHeader) {
+        try {
+          const parsed = JSON.parse(decodeURIComponent(intentHeader));
+          setBookingIntent(prev => ({
+            date: parsed.date ?? prev.date,
+            time_from: parsed.time_from ?? prev.time_from,
+          }));
+        } catch { /* ignore */ }
+      }
 
       if (!resp.ok) {
         const err = await resp.json().catch(() => ({ error: 'Ошибка сервера' }));
@@ -282,7 +304,14 @@ const AiAssistantFab = ({ onShowOnMap }: { onShowOnMap?: (locations: ResultCard[
                                   </button>
                                 )}
                                 {bookableTypes.includes(r.business_type || '') && (
-                                  <button onClick={() => { navigate(`/service/${r.id}`); setOpen(false); }}
+                                   <button onClick={() => {
+                                    const params = new URLSearchParams();
+                                    if (bookingIntent.date) params.set('date', bookingIntent.date);
+                                    if (bookingIntent.time_from) params.set('time', bookingIntent.time_from);
+                                    const qs = params.toString();
+                                    navigate(`${r.booking_path || `/service/${r.id}`}${qs ? `?${qs}` : ''}`);
+                                    setOpen(false);
+                                  }}
                                     className="flex items-center gap-1 text-[10px] px-2.5 py-1.5 rounded-lg bg-primary/20 text-primary hover:bg-primary/30 transition-colors">
                                     <CalendarPlus className="w-3 h-3" /> Записаться
                                   </button>
