@@ -37,11 +37,8 @@ export const PreferencesProvider = ({ children }: { children: ReactNode }) => {
   const [darkMode, setDarkModeState] = useState(() => {
     const stored = localStorage.getItem('tutgo_dark');
     if (stored !== null) return stored !== 'false';
-    // No stored preference: default to light on desktop (>=1024px), dark on mobile
-    if (typeof window !== 'undefined' && window.matchMedia('(min-width: 1024px)').matches) {
-      return false;
-    }
-    return true;
+    // No stored preference: default to light everywhere (mobile-first change)
+    return false;
   });
   const [notifications, setNotificationsState] = useState(true);
 
