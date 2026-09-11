@@ -304,7 +304,14 @@ const AiAssistantFab = ({ onShowOnMap }: { onShowOnMap?: (locations: ResultCard[
                                   </button>
                                 )}
                                 {bookableTypes.includes(r.business_type || '') && (
-                                  <button onClick={() => { navigate(`/service/${r.id}`); setOpen(false); }}
+                                   <button onClick={() => {
+                                    const params = new URLSearchParams();
+                                    if (bookingIntent.date) params.set('date', bookingIntent.date);
+                                    if (bookingIntent.time_from) params.set('time', bookingIntent.time_from);
+                                    const qs = params.toString();
+                                    navigate(`${r.booking_path || `/service/${r.id}`}${qs ? `?${qs}` : ''}`);
+                                    setOpen(false);
+                                  }}
                                     className="flex items-center gap-1 text-[10px] px-2.5 py-1.5 rounded-lg bg-primary/20 text-primary hover:bg-primary/30 transition-colors">
                                     <CalendarPlus className="w-3 h-3" /> Записаться
                                   </button>
