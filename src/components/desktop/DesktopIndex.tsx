@@ -306,32 +306,71 @@ const DesktopIndex = () => {
               display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
               position: 'relative',
             }}>
-              {/* Static hero image */}
+              {/* Rotating category showcase backgrounds */}
+              {HERO_SLIDES.map((slide, i) => (
+                <div
+                  key={slide.categoryName}
+                  aria-hidden={i !== heroSlide}
+                  style={{
+                    position: 'absolute', inset: 0, zIndex: 0,
+                    opacity: i === heroSlide ? 1 : 0,
+                    transition: 'opacity 900ms ease',
+                    background: slide.gradient,
+                    backgroundImage: slide.photo ? `url(${slide.photo})` : slide.gradient,
+                    backgroundSize: 'cover', backgroundPosition: 'center',
+                  }}
+                />
+              ))}
+              {/* Bottom overlay for search readability */}
               <div
                 style={{
-                  position: 'absolute', inset: 0,
-                  backgroundImage: `url(${HERO_IMAGE})`,
-                  backgroundSize: 'cover', backgroundPosition: 'center',
-                  zIndex: 0,
-                }}
-              />
-              {/* Bottom gradient overlay for search readability */}
-              <div
-                style={{
-                  position: 'absolute', inset: 0,
-                  background: 'linear-gradient(to top, rgba(0,0,0,0.40) 0%, rgba(0,0,0,0.12) 45%, rgba(0,0,0,0) 100%)',
-                  zIndex: 0,
+                  position: 'absolute', inset: 0, zIndex: 0,
+                  background: HERO_SLIDES[heroSlide].photo
+                    ? 'linear-gradient(to top, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.15) 45%, rgba(0,0,0,0) 100%)'
+                    : 'linear-gradient(to top, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0.15) 50%, rgba(255,255,255,0) 100%)',
                 }}
               />
               <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', flex: 1, gap: 16 }}>
-              <div>
-                <h1 style={{ fontSize: 30, fontWeight: 800, margin: 0, lineHeight: 1.1, letterSpacing: 0, color: 'hsl(var(--primary-foreground))' }}>
-                  Всё, что нужно — рядом
-                </h1>
-                <p style={{ marginTop: 10, fontSize: 15, color: 'rgba(255,255,255,0.82)', maxWidth: 420, lineHeight: 1.5 }}>
-                  Поиск услуг, интересных мест и событий в Ташкенте
-                </p>
-              </div>
+              {(() => {
+                const slide = HERO_SLIDES[heroSlide];
+                const onPhoto = Boolean(slide.photo);
+                const titleColor = onPhoto ? '#ffffff' : COLORS.text;
+                const subColor = onPhoto ? 'rgba(255,255,255,0.85)' : COLORS.text2;
+                const SlideIcon = slide.icon;
+                const cat = categories.find((c) => c.name === slide.categoryName);
+                const goToSlideCategory = () => {
+                  if (slide.categoryName === 'Туры') { navigate('/tours'); return; }
+                  if (slide.categoryName === 'Спорт') { navigate('/sport'); return; }
+                  if (cat) { setCategory(cat.id); setView('results'); }
+                };
+                return (
+                  <div
+                    role="button"
+                    tabIndex={0}
+                    onClick={goToSlideCategory}
+                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); goToSlideCategory(); } }}
+                    style={{ cursor: 'pointer', display: 'flex', alignItems: 'flex-start', gap: 14, maxWidth: 520 }}
+                  >
+                    <div style={{
+                      width: 44, height: 44, borderRadius: 14, flexShrink: 0,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      background: onPhoto ? 'rgba(255,255,255,0.22)' : 'rgba(255,255,255,0.75)',
+                      border: `1px solid ${onPhoto ? 'rgba(255,255,255,0.35)' : 'rgba(17,17,17,0.06)'}`,
+                    }}>
+                      <SlideIcon size={22} color={onPhoto ? '#ffffff' : COLORS.accent} strokeWidth={1.8} />
+                    </div>
+                    <div>
+                      <h1 style={{ fontSize: 30, fontWeight: 800, margin: 0, lineHeight: 1.1, color: titleColor }}>
+                        {slide.title}
+                      </h1>
+                      <p style={{ marginTop: 8, fontSize: 15, color: subColor, maxWidth: 420, lineHeight: 1.5 }}>
+                        {slide.subtitle}
+                      </p>
+                    </div>
+                  </div>
+                );
+              })()}
+
 
 
               {/* Search form */}
