@@ -145,6 +145,26 @@ const ServiceDetail = () => {
     return slots;
   }, [selectedDate, selectedStaff, staffList, dates, bookedSlots]);
 
+  // Prefill date/time coming from the AI assistant (?date=YYYY-MM-DD&time=HH:MM)
+  useEffect(() => {
+    if (prefillApplied.current) return;
+    const dateParam = searchParams.get('date');
+    const timeParam = searchParams.get('time');
+    if (!dateParam && !timeParam) return;
+    if (dateParam) {
+      const idx = dates.findIndex(d =>
+        `${d.getFullYear()}-${(d.getMonth() + 1).toString().padStart(2, '0')}-${d.getDate().toString().padStart(2, '0')}` === dateParam
+      );
+      if (idx >= 0) setSelectedDate(idx);
+    }
+    if (timeParam) {
+      const slot = timeSlots.find(s => s.time === timeParam && s.available);
+      if (slot) setSelectedSlot(slot.time);
+    }
+    prefillApplied.current = true;
+  }, [searchParams, dates, timeSlots]);
+
+
   // Fetch existing appointments for selected staff + date
   useEffect(() => {
     const fetchBooked = async () => {
