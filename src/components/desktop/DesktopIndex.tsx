@@ -128,7 +128,13 @@ const DesktopIndex = () => {
   const [openNow, setOpenNow] = useState(false);
   // landingCategory removed — uses shared `category` state
 
-  const HERO_IMAGE = 'https://images.unsplash.com/photo-1516571137133-19eb1f8c9b90?w=1600&auto=format&fit=crop&q=80';
+  // Hero showcase carousel (independent from the selected search category)
+  const [heroSlide, setHeroSlide] = useState(0);
+  useEffect(() => {
+    const id = setInterval(() => setHeroSlide((i) => (i + 1) % HERO_SLIDES.length), 5500);
+    return () => clearInterval(id);
+  }, []);
+
 
   // Filter bar state
   const [priceSort, setPriceSort] = useState<'asc' | 'desc' | null>(null);
