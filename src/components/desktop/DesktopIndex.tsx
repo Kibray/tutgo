@@ -49,7 +49,7 @@ const HERO_SLIDES: {
   title: string;
   subtitle: string;
   gradient: string;
-  icon: React.ComponentType<{ size?: number; color?: string; strokeWidth?: number }>;
+  icon: React.ComponentType<any>;
   photo?: string;
 }[] = [
   { categoryName: 'Красота', title: 'Красота и уход', subtitle: 'Барбершопы и салоны рядом с вами', gradient: 'linear-gradient(135deg,#fde8ef 0%,#f7d6e6 100%)', icon: Scissors, photo: salonPhoto },
